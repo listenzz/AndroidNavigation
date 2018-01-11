@@ -7,6 +7,7 @@ import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -216,9 +217,17 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         }
     }
 
-    public void dismissFragment(AwesomeFragment fragment) {
+    public void dismissFragment() {
+        setAnimation(PresentAnimation.Modal);
+        AwesomeFragment parent = getParent();
+        if (parent != null) {
+            parent.setResult(resultCode, result);
+            parent.dismissFragment();
+            return;
+        }
+
         if (presentableActivity != null) {
-            presentableActivity.dismissFragment(fragment);
+            presentableActivity.dismissFragment(this);
         }
     }
 
@@ -270,14 +279,6 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
 
     private void executeAddFragment(int containerId, AwesomeFragment fragment, PresentAnimation animation) {
         FragmentHelper.addFragment(getChildFragmentManager(), containerId, fragment, animation);
-    }
-
-    public void replaceFragment(AwesomeFragment fragment, PresentAnimation animation) {
-
-    }
-
-    public void replaceAllFragment(AwesomeFragment fragment, PresentAnimation animation) {
-
     }
 
     public boolean dispatchBackPressed() {

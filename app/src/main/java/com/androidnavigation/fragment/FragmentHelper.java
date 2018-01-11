@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import com.androidnavigation.R;
+
 /**
  * Created by Listen on 2018/1/11.
  */
@@ -28,7 +30,7 @@ public class FragmentHelper {
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(containerId, fragment, fragment.getSceneId());
-        transaction.setPrimaryNavigationFragment(fragment);
+        //transaction.setPrimaryNavigationFragment(fragment);
 
         if (top != null) {
             top.setAnimation(animation);
@@ -37,9 +39,10 @@ public class FragmentHelper {
 
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
+
     }
 
-    public static AwesomeFragment getPresentedFragment(FragmentManager fragmentManager, AwesomeFragment fragment) {
+    public static AwesomeFragment getLatterFragment(FragmentManager fragmentManager, AwesomeFragment fragment) {
         int count = fragmentManager.getBackStackEntryCount();
         int index = findIndexAtBackStack(fragmentManager, fragment);
         if (index > 0 && index < count - 1) {
@@ -49,7 +52,7 @@ public class FragmentHelper {
         return null;
     }
 
-    public static AwesomeFragment getPresentingFragment(FragmentManager fragmentManager, AwesomeFragment fragment) {
+    public static AwesomeFragment getAheadFragment(FragmentManager fragmentManager, AwesomeFragment fragment) {
         int count = fragmentManager.getBackStackEntryCount();
         int index = findIndexAtBackStack(fragmentManager, fragment);
         if (index > 0 && index < count) {

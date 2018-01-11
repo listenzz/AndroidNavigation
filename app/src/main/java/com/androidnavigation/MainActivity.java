@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
         getLifecycle().addObserver(this);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         if (savedInstanceState == null) {
-            FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, new TestNavigationFragment(), PresentAnimation.Node);
+            FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, new TestNavigationFragment(), PresentAnimation.None);
         }
     }
 
@@ -100,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
     }
 
     private void executeDismissFragment(AwesomeFragment fragment) {
-
         // 如果有 presented 就 dismiss presented, 否则就 dismiss 自己
         AwesomeFragment presented = getPresentedFragment(fragment);
         AwesomeFragment presenting;
@@ -126,11 +125,11 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
     }
 
     public AwesomeFragment getPresentedFragment(AwesomeFragment fragment) {
-        return FragmentHelper.getPresentedFragment(getSupportFragmentManager(), fragment);
+        return FragmentHelper.getLatterFragment(getSupportFragmentManager(), fragment);
     }
 
     public AwesomeFragment getPresentingFragment(AwesomeFragment fragment) {
-        return FragmentHelper.getPresentingFragment(getSupportFragmentManager(), fragment);
+        return FragmentHelper.getAheadFragment(getSupportFragmentManager(), fragment);
     }
 
     private boolean active;

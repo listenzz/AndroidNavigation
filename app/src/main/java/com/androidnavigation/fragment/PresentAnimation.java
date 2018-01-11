@@ -14,7 +14,7 @@ public enum PresentAnimation {
     Modal(R.anim.slide_up, R.anim.delay, R.anim.delay, R.anim.slide_down),
     Delay(R.anim.delay, R.anim.delay, R.anim.delay, R.anim.delay),
     Fade(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out),
-    Node(R.anim.node, R.anim.node, R.anim.node, R.anim.node);
+    None(R.anim.node, R.anim.node, R.anim.node, R.anim.node);
 
     @AnimRes int enter;
     @AnimRes int exit;

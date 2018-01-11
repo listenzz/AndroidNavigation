@@ -38,7 +38,7 @@ public class TestFragment extends AwesomeFragment {
         root.findViewById(R.id.present).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presentFragment(new TestFragment(), REQUEST_CODE);
+                presentFragment(new TestNavigationFragment(), REQUEST_CODE);
             }
         });
 
@@ -48,7 +48,7 @@ public class TestFragment extends AwesomeFragment {
                 Bundle result = new Bundle();
                 result.putString("text", resultEditText.getText().toString());
                 setResult(Activity.RESULT_OK, result);
-                dismissFragment(TestFragment.this);
+                dismissFragment();
             }
         });
 
@@ -67,6 +67,9 @@ public class TestFragment extends AwesomeFragment {
             public void onClick(View v) {
                 NavigationFragment navigationFragment = getNavigatoinFragment();
                 if (navigationFragment != null) {
+                    Bundle result = new Bundle();
+                    result.putString("text", resultEditText.getText().toString());
+                    setResult(Activity.RESULT_OK, result);
                     navigationFragment.popFragment();
                 }
             }
@@ -77,7 +80,30 @@ public class TestFragment extends AwesomeFragment {
             public void onClick(View v) {
                 NavigationFragment navigationFragment = getNavigatoinFragment();
                 if (navigationFragment != null) {
+                    Bundle result = new Bundle();
+                    result.putString("text", resultEditText.getText().toString());
+                    setResult(Activity.RESULT_OK, result);
                     navigationFragment.popToRootFragment();
+                }
+            }
+        });
+
+        root.findViewById(R.id.replace).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavigationFragment navigationFragment = getNavigatoinFragment();
+                if (navigationFragment != null) {
+                    navigationFragment.replaceFragment(new TestFragment());
+                }
+            }
+        });
+
+        root.findViewById(R.id.replace_to_root).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavigationFragment navigationFragment = getNavigatoinFragment();
+                if (navigationFragment != null) {
+                    navigationFragment.replaceRootFragment(new TestFragment());
                 }
             }
         });
@@ -97,9 +123,14 @@ public class TestFragment extends AwesomeFragment {
         if (requestCode == REQUEST_CODE) {
             if (resultCode != 0) {
                 String text = data.getString("text", "");
-                resultText.setText("result：" + text);
+                resultText.setText("present result：" + text);
             } else {
                 resultText.setText("ACTION CANCEL");
+            }
+        } else {
+            if (resultCode != 0) {
+                String text = data.getString("text", "");
+                resultText.setText("pop result：" + text);
             }
         }
     }

@@ -3,6 +3,7 @@ package com.androidnavigation.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,7 @@ public class NavigationFragment extends AwesomeFragment {
         if (count > 0) {
             throw new IllegalStateException("已经设置了 root fragment，不能再设置");
         }
-        addFragment(R.id.navigation_content, fragment, PresentAnimation.Node);
+        addFragment(R.id.navigation_content, fragment, PresentAnimation.None);
     }
 
     public void pushFragment(AwesomeFragment fragment) {
@@ -72,19 +73,20 @@ public class NavigationFragment extends AwesomeFragment {
         }
         topFragment.setAnimation(PresentAnimation.Push);
         fragment.setAnimation(PresentAnimation.Push);
+
         fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
         getChildFragmentManager().popBackStack(fragment.getSceneId(), 0);
     }
 
     public void popFragment() {
 
-        AwesomeFragment after = FragmentHelper.getPresentedFragment(getChildFragmentManager(), getTopFragment());
+        AwesomeFragment after = FragmentHelper.getLatterFragment(getChildFragmentManager(), getTopFragment());
         if (after != null) {
             popToFragment(this);
             return;
         }
 
-        AwesomeFragment before = FragmentHelper.getPresentingFragment(getChildFragmentManager(), getTopFragment());
+        AwesomeFragment before = FragmentHelper.getAheadFragment(getChildFragmentManager(), getTopFragment());
         if (before != null) {
             popToFragment(before);
         }
@@ -95,6 +97,82 @@ public class NavigationFragment extends AwesomeFragment {
         if (awesomeFragment != null) {
             popToFragment(getRootFragment());
         }
+    }
+
+    public void replaceFragment(final AwesomeFragment fragment) {
+        if (isAtLeastStarted()) {
+            executeReplaceFragment(fragment);
+        } else {
+            scheduleTask(new Runnable() {
+                @Override
+                public void run() {
+                    executeReplaceFragment(fragment);
+                }
+            });
+        }
+    }
+
+    private void executeReplaceFragment(AwesomeFragment fragment) {
+        int count = getChildFragmentCount();
+        if (count == 0) {
+            throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
+        }
+
+        FragmentManager fragmentManager = getChildFragmentManager();
+        AwesomeFragment topFragment = getTopFragment();
+        AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, topFragment);
+        topFragment.setAnimation(PresentAnimation.Fade);
+
+        if (aheadFragment != null) {
+            aheadFragment.setAnimation(PresentAnimation.Fade);
+        }
+
+        fragmentManager.popBackStack();
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setReorderingAllowed(true);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
+
+        if (aheadFragment != null) {
+            transaction.hide(aheadFragment);
+        }
+        transaction.addToBackStack(fragment.getSceneId());
+        transaction.commit();
+    }
+
+    public void replaceRootFragment(final AwesomeFragment fragment) {
+       if (isAtLeastStarted()) {
+           executeReplaceFragment(fragment);
+       } else {
+           scheduleTask(new Runnable() {
+               @Override
+               public void run() {
+                   executeReplaceFragment(fragment);
+               }
+           });
+       }
+    }
+
+    private void executeReplaceRootFragment(AwesomeFragment fragment) {
+        AwesomeFragment rootFragment = getRootFragment();
+        if (rootFragment == null) {
+            throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
+        }
+
+        AwesomeFragment topFragment = getTopFragment();
+        topFragment.setAnimation(PresentAnimation.Fade);
+        rootFragment.setAnimation(PresentAnimation.Fade);
+
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.popBackStack(rootFragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setReorderingAllowed(true);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
+        transaction.addToBackStack(fragment.getSceneId());
+        transaction.commit();
     }
 
     public void setFragments(List<AwesomeFragment> fragments) {
