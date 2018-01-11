@@ -13,6 +13,7 @@ import com.androidnavigation.fragment.AwesomeFragment;
 import com.androidnavigation.fragment.FragmentHelper;
 import com.androidnavigation.fragment.PresentAnimation;
 import com.androidnavigation.fragment.PresentableActivity;
+import com.androidnavigation.fragment.TabBarFragment;
 
 import java.util.LinkedList;
 
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
         getLifecycle().addObserver(this);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         if (savedInstanceState == null) {
-            FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, new TestNavigationFragment(), PresentAnimation.None);
+            FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, new TabBarFragment(), PresentAnimation.None);
         }
     }
 
