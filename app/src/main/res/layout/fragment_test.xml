@@ -12,13 +12,12 @@
         android:layout_height="40dp"
         android:gravity="center"
         android:textColor="#000000"
-        android:textSize="18dp" />
+        android:textSize="12dp" />
 
     <TextView
         android:id="@+id/present"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-
         android:gravity="center"
         android:text="present"
         android:textColor="@color/touchable_opacity_font_color" />
@@ -27,9 +26,32 @@
         android:id="@+id/dismiss"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="dismiss"
+        android:textColor="@color/touchable_opacity_font_color" />
+
+    <TextView
+        android:id="@+id/push"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:text="push"
+        android:textColor="@color/touchable_opacity_font_color" />
+
+    <TextView
+        android:id="@+id/pop"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:text="pop"
+        android:textColor="@color/touchable_opacity_font_color" />
+
+    <TextView
+        android:id="@+id/pop_to_root"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:text="popToRoot"
         android:textColor="@color/touchable_opacity_font_color" />
 
 
@@ -54,5 +76,6 @@
         android:gravity="center"
         android:textColor="#000000"
         android:textSize="13dp" />
+
 
 </LinearLayout>

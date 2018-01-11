@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.androidnavigation.fragment.AwesomeFragment;
-import com.androidnavigation.fragment.PresentAnimation;
+import com.androidnavigation.fragment.NavigationFragment;
 
 /**
  * Created by Listen on 2018/1/11.
@@ -38,7 +38,7 @@ public class TestFragment extends AwesomeFragment {
         root.findViewById(R.id.present).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presentFragment(new TestFragment(), REQUEST_CODE, PresentAnimation.Modal);
+                presentFragment(new TestFragment(), REQUEST_CODE);
             }
         });
 
@@ -48,7 +48,37 @@ public class TestFragment extends AwesomeFragment {
                 Bundle result = new Bundle();
                 result.putString("text", resultEditText.getText().toString());
                 setResult(Activity.RESULT_OK, result);
-                dismissFragment(TestFragment.this, PresentAnimation.Modal);
+                dismissFragment(TestFragment.this);
+            }
+        });
+
+        root.findViewById(R.id.push).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavigationFragment navigationFragment = getNavigatoinFragment();
+                if (navigationFragment != null) {
+                    navigationFragment.pushFragment(new TestFragment());
+                }
+            }
+        });
+
+        root.findViewById(R.id.pop).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavigationFragment navigationFragment = getNavigatoinFragment();
+                if (navigationFragment != null) {
+                    navigationFragment.popFragment();
+                }
+            }
+        });
+
+        root.findViewById(R.id.pop_to_root).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavigationFragment navigationFragment = getNavigatoinFragment();
+                if (navigationFragment != null) {
+                    navigationFragment.popToRootFragment();
+                }
             }
         });
 

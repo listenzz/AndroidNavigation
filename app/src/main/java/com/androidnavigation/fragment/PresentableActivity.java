@@ -6,9 +6,9 @@ package com.androidnavigation.fragment;
 
 public interface PresentableActivity {
 
-    void presentFragment(AwesomeFragment fragment, PresentAnimation animation);
+    void presentFragment(AwesomeFragment fragment);
 
-    void dismissFragment(AwesomeFragment fragment, PresentAnimation animation);
+    void dismissFragment(AwesomeFragment fragment);
 
     AwesomeFragment getPresentedFragment(AwesomeFragment fragment);
 

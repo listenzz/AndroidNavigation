@@ -5,16 +5,22 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+
+import com.androidnavigation.R;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -38,7 +44,9 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
     public static void hideSoftInput(View view) {
         if (view == null || view.getContext() == null) return;
         InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     // ------- lifecycle methods -------
@@ -72,6 +80,34 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
     public void onDestroy() {
         getChildFragmentManager().removeOnBackStackChangedListener(this);
         super.onDestroy();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        View root = getView();
+        AwesomeFragment parent =  getParent();
+        if (root != null && parent instanceof NavigationFragment) {
+            TypedValue typedValue = new TypedValue();
+            int height = 0;
+            if (getContext().getTheme().resolveAttribute(R.attr.actionBarSize, typedValue, true)) {
+                height = (int) TypedValue.complexToDimension(typedValue.data, getContext().getResources().getDisplayMetrics());
+            }
+
+            TopBar topBar = new TopBar(getContext());
+            topBar.setBackgroundColor(Color.BLUE);
+            topBar.setTitle("这是标题");
+            if (root instanceof LinearLayout) {
+                LinearLayout linearLayout = (LinearLayout) root;
+                linearLayout.addView(topBar, 0, new LinearLayout.LayoutParams(-1, height));
+            } else if (root instanceof FrameLayout) {
+                FrameLayout frameLayout = (FrameLayout) root;
+                frameLayout.addView(topBar, new FrameLayout.LayoutParams(-1, height));
+            } else {
+                throw new UnsupportedOperationException("NavigationFragment 还没适配 " + root.getClass().getSimpleName());
+            }
+        }
     }
 
     @Override
@@ -172,17 +208,17 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         return this.sceneId;
     }
 
-    public void presentFragment(AwesomeFragment fragment, int requestCode, PresentAnimation animation) {
+    public void presentFragment(AwesomeFragment fragment, int requestCode) {
         if (presentableActivity != null) {
             Bundle args = FragmentHelper.getArguments(fragment);
             args.putInt(ARGS_REQUEST_CODE, requestCode);
-            presentableActivity.presentFragment(fragment, animation);
+            presentableActivity.presentFragment(fragment);
         }
     }
 
-    public void dismissFragment(AwesomeFragment fragment, PresentAnimation animation) {
+    public void dismissFragment(AwesomeFragment fragment) {
         if (presentableActivity != null) {
-            presentableActivity.dismissFragment(fragment, animation);
+            presentableActivity.dismissFragment(fragment);
         }
     }
 
@@ -219,6 +255,31 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         }
     }
 
+    public void addFragment(final int containerId, final AwesomeFragment fragment, final PresentAnimation animation) {
+        if (isAtLeastStarted()) {
+            executeAddFragment(containerId, fragment, animation);
+        } else {
+            scheduleTask(new Runnable() {
+                @Override
+                public void run() {
+                    executeAddFragment( containerId, fragment, animation);
+                }
+            });
+        }
+    }
+
+    private void executeAddFragment(int containerId, AwesomeFragment fragment, PresentAnimation animation) {
+        FragmentHelper.addFragment(getChildFragmentManager(), containerId, fragment, animation);
+    }
+
+    public void replaceFragment(AwesomeFragment fragment, PresentAnimation animation) {
+
+    }
+
+    public void replaceAllFragment(AwesomeFragment fragment, PresentAnimation animation) {
+
+    }
+
     public boolean dispatchBackPressed() {
         FragmentManager fragmentManager =  getChildFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
@@ -253,23 +314,14 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         }
         AwesomeFragment parent =  getParent();
         if (parent == null) {
-            return getActivity().getClass().getSimpleName() + "#" + findIndexAtBackStack();
+            return "#" + findIndexAtBackStack() + "-" + getClass().getSimpleName();
         } else {
-            return parent.getDebugTag() + "-" + getClass().getSimpleName() + "#" + findIndexAtBackStack();
+            return parent.getDebugTag() + "#" + findIndexAtBackStack() + "-" + getClass().getSimpleName();
         }
     }
 
     protected int findIndexAtBackStack() {
-        FragmentManager fragmentManager = getFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        int index = -1;
-        for (int i = 0; i < count; i++) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(i);
-            if (getTag().equals(backStackEntry.getName())) {
-                index = i;
-            }
-        }
-        return index;
+        return FragmentHelper.findIndexAtBackStack(getFragmentManager(), this);
     }
 
     public AwesomeFragment getParent() {
@@ -287,6 +339,11 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
             children.add((AwesomeFragment) fragments.get(i));
         }
         return children;
+    }
+
+    public int getChildFragmentCount() {
+        FragmentManager fragmentManager = getChildFragmentManager();
+        return fragmentManager.getBackStackEntryCount();
     }
 
     private PresentAnimation animation = PresentAnimation.Fade;

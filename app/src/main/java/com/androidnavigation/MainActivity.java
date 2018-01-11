@@ -6,11 +6,11 @@ import android.arch.lifecycle.OnLifecycleEvent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.androidnavigation.fragment.AwesomeFragment;
+import com.androidnavigation.fragment.FragmentHelper;
 import com.androidnavigation.fragment.PresentAnimation;
 import com.androidnavigation.fragment.PresentableActivity;
 
@@ -26,8 +26,7 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
         getLifecycle().addObserver(this);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         if (savedInstanceState == null) {
-            TestFragment testFragment = new TestFragment();
-            presentFragment(testFragment, PresentAnimation.Node);
+            FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, new TestNavigationFragment(), PresentAnimation.Node);
         }
     }
 
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
                 if (count == 1) {
                     ActivityCompat.finishAfterTransition(this);
                 } else {
-                    dismissFragment(fragment, PresentAnimation.Modal);
+                    dismissFragment(fragment);
                 }
             }
         } else {
@@ -67,57 +66,40 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
     }
 
     @Override
-    public void presentFragment(final AwesomeFragment fragment, final PresentAnimation animation) {
+    public void presentFragment(final AwesomeFragment fragment) {
         if (isAtLeastStarted()) {
-            executePresentFragment(fragment, animation);
+            executePresentFragment(fragment);
         } else {
             Log.i(TAG, "schedule present");
             scheduleTask(new Runnable() {
                 @Override
                 public void run() {
-                    executePresentFragment(fragment, animation);
+                    executePresentFragment(fragment);
                 }
             });
         }
     }
 
-    private void executePresentFragment(AwesomeFragment fragment, PresentAnimation animation) {
-
-        fragment.setAnimation(animation);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        AwesomeFragment top = (AwesomeFragment) fragmentManager.findFragmentById(android.R.id.content);
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setReorderingAllowed(true);
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(android.R.id.content, fragment, fragment.getSceneId());
-        transaction.setPrimaryNavigationFragment(fragment);
-
-        if (top != null) {
-            top.setAnimation(animation);
-            transaction.hide(top);
-        }
-
-        transaction.addToBackStack(fragment.getSceneId());
-        transaction.commit();
+    private void executePresentFragment(AwesomeFragment fragment) {
+        FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.Modal);
     }
 
     @Override
-    public void dismissFragment(final AwesomeFragment fragment, final PresentAnimation animation) {
+    public void dismissFragment(final AwesomeFragment fragment) {
         if (isAtLeastStarted()) {
-            executeDismissFragment(fragment, animation);
+            executeDismissFragment(fragment);
         } else {
             Log.i(TAG, "schedule dismiss");
             scheduleTask(new Runnable() {
                 @Override
                 public void run() {
-                    executeDismissFragment(fragment, animation);
+                    executeDismissFragment(fragment);
                 }
             });
         }
     }
 
-    private void executeDismissFragment(AwesomeFragment fragment, PresentAnimation animation) {
+    private void executeDismissFragment(AwesomeFragment fragment) {
 
         // 如果有 presented 就 dismiss presented, 否则就 dismiss 自己
         AwesomeFragment presented = getPresentedFragment(fragment);
@@ -129,9 +111,9 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
             presenting = getPresentingFragment(fragment);
         }
 
-        presented.setAnimation(animation);
+        presented.setAnimation(PresentAnimation.Modal);
         if (presenting != null) {
-            presenting.setAnimation(animation);
+            presenting.setAnimation(PresentAnimation.Modal);
         }
 
         if (presenting == null) {
@@ -144,37 +126,11 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
     }
 
     public AwesomeFragment getPresentedFragment(AwesomeFragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        int index = findIndexAtBackStack(fragment);
-        if (index < count - 2) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(index + 1);
-            return (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-        }
-        return null;
+        return FragmentHelper.getPresentedFragment(getSupportFragmentManager(), fragment);
     }
 
     public AwesomeFragment getPresentingFragment(AwesomeFragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        int index = findIndexAtBackStack(fragment);
-        if (index > 0) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(index - 1);
-            return (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-        }
-        return null;
-    }
-
-    public int findIndexAtBackStack(AwesomeFragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        int index = -1;
-        for (int i = 0; i < count; i++) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(i);
-            if (fragment.getTag().equals(backStackEntry.getName())) {
-                index = i;
-            }
-        }
-        return index;
+        return FragmentHelper.getPresentingFragment(getSupportFragmentManager(), fragment);
     }
 
     private boolean active;
