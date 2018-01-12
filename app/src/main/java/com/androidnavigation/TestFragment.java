@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.androidnavigation.fragment.AwesomeFragment;
-import com.androidnavigation.fragment.DrawerFragment;
 import com.androidnavigation.fragment.NavigationFragment;
 import com.androidnavigation.fragment.TabBarFragment;
 
@@ -29,10 +28,7 @@ public class TestFragment extends AwesomeFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
     }
-
-
 
     @Nullable
     @Override
@@ -48,7 +44,9 @@ public class TestFragment extends AwesomeFragment {
         root.findViewById(R.id.present).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presentFragment(new TestNavigationFragment(), REQUEST_CODE);
+                NavigationFragment navigationFragment = new NavigationFragment();
+                navigationFragment.setRootFragment(new TestFragment());
+                presentFragment(navigationFragment, REQUEST_CODE);
             }
         });
 
@@ -128,15 +126,7 @@ public class TestFragment extends AwesomeFragment {
             }
         });
 
-        root.findViewById(R.id.toggle_drawer).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DrawerFragment drawerFragment = getDrawerFragment();
-                if (drawerFragment != null) {
-                    drawerFragment.toggleMenu();
-                }
-            }
-        });
+
 
         return root;
     }

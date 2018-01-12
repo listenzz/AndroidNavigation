@@ -14,7 +14,7 @@ import com.androidnavigation.R;
  * Created by Listen on 2018/1/11.
  */
 
-public class DrawerFragment extends AwesomeFragment {
+public class DrawerFragment extends AwesomeFragment implements DrawerLayout.DrawerListener{
 
     DrawerLayout drawerLayout;
 
@@ -23,7 +23,14 @@ public class DrawerFragment extends AwesomeFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_drawer, container, false);
         drawerLayout = root.findViewById(R.id.drawer);
+        drawerLayout.addDrawerListener(this);
         return root;
+    }
+
+    @Override
+    public void onDestroyView() {
+        drawerLayout.removeDrawerListener(this);
+        super.onDestroyView();
     }
 
     @Override
@@ -39,6 +46,28 @@ public class DrawerFragment extends AwesomeFragment {
             return true;
         }
         return super.onBackPressed();
+    }
+
+    @Override
+    public void onDrawerSlide(View drawerView, float slideOffset) {
+
+    }
+
+    @Override
+    public void onDrawerOpened(View drawerView) {
+        setStatusBarHidden(true);
+        //setStatusBarStyle("dark-content");
+    }
+
+    @Override
+    public void onDrawerClosed(View drawerView) {
+        setStatusBarHidden(false);
+        //setStatusBarStyle("light-content");
+    }
+
+    @Override
+    public void onDrawerStateChanged(int newState) {
+
     }
 
     public void setContentFragment(AwesomeFragment fragment) {
@@ -60,12 +89,14 @@ public class DrawerFragment extends AwesomeFragment {
     public void openMenu() {
         if (drawerLayout != null) {
             drawerLayout.openDrawer(Gravity.START);
+            setStatusBarHidden(true);
         }
     }
 
     public void closeMenu() {
         if (drawerLayout != null) {
             drawerLayout.closeDrawer(Gravity.START);
+            setStatusBarHidden(false);
         }
     }
 

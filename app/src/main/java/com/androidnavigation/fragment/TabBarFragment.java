@@ -18,6 +18,7 @@ import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.ashokvarma.bottomnavigation.TextBadgeItem;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -69,6 +70,10 @@ public class TabBarFragment extends AwesomeFragment {
                 .setFirstSelectedPosition(0)
                 .initialise();
 
+    }
+
+    public void setFragments(AwesomeFragment... fragments) {
+        setFragments(Arrays.asList(fragments));
     }
 
     public void setFragments(final List<AwesomeFragment> fragments) {

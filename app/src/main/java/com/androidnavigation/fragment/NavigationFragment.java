@@ -36,11 +36,13 @@ public class NavigationFragment extends AwesomeFragment {
         }
     }
 
-    protected void setRootFragment(AwesomeFragment fragment) {
-        int count = getChildFragmentCount();
-        if (count > 0) {
-            throw new IllegalStateException("已经设置了 root fragment，不能再设置");
-        }
+    public void setRootFragment(AwesomeFragment fragment) {
+        // FIXME
+//
+//        int count = getChildFragmentCount();
+//        if (count > 0) {
+//            throw new IllegalStateException("已经设置了 root fragment，不能再设置");
+//        }
         addFragment(R.id.navigation_content, fragment, PresentAnimation.None);
     }
 

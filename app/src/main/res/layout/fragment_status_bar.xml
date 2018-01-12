@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#ffffff"
-    android:orientation="vertical">
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <TextView
         android:layout_marginTop="32dp"
@@ -14,91 +12,94 @@
         android:textColor="#000000"
         android:textSize="12dp" />
 
+
     <TextView
-        android:id="@+id/present"
+        android:id="@+id/toggle_drawer"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:text="present"
+        android:text="toggleDrawer"
         android:textColor="@color/touchable_opacity_font_color" />
 
     <TextView
-        android:id="@+id/dismiss"
+        android:id="@+id/status_bar_style_dark"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:text="dismiss"
+        android:text="set status bar style dark"
         android:textColor="@color/touchable_opacity_font_color" />
 
     <TextView
-        android:id="@+id/push"
+        android:id="@+id/status_bar_style_light"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:text="push"
+        android:text="set status bar style light"
         android:textColor="@color/touchable_opacity_font_color" />
 
     <TextView
-        android:id="@+id/pop"
+        android:id="@+id/status_bar_show"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:text="pop"
+        android:text="show status bar"
         android:textColor="@color/touchable_opacity_font_color" />
 
     <TextView
-        android:id="@+id/pop_to_root"
+        android:id="@+id/status_bar_hide"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:text="popToRoot"
+        android:text="hide status bar"
         android:textColor="@color/touchable_opacity_font_color" />
 
     <TextView
-        android:id="@+id/replace"
+        android:id="@+id/status_bar_translucent"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:text="replace"
+        android:text="make status bar translucent"
         android:textColor="@color/touchable_opacity_font_color" />
 
     <TextView
-        android:id="@+id/replace_to_root"
+        android:id="@+id/status_bar_opacity"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:text="replaceToRoot"
+        android:text="make status bar opacity"
         android:textColor="@color/touchable_opacity_font_color" />
 
     <TextView
-        android:id="@+id/toggle_tab_bar"
+        android:id="@+id/status_bar_color_red"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:text="toggleTabBar"
+        android:text="set status bar color to red"
         android:textColor="@color/touchable_opacity_font_color" />
 
-    <EditText
-        android:id="@+id/result"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_input"
-        android:hint="请输入要返回的结果"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:textSize="14dp" />
-
     <TextView
-        android:id="@+id/result_text"
+        android:id="@+id/status_bar_color_transparent"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:textColor="#000000"
-        android:textSize="13dp" />
+        android:text="set status bar color to transparent"
+        android:textColor="@color/touchable_opacity_font_color" />
+
+    <TextView
+        android:id="@+id/status_bar_append_padding"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="append status bar padding"
+        android:textColor="@color/touchable_opacity_font_color" />
+
+    <TextView
+        android:id="@+id/status_bar_remove_padding"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="remove status bar padding"
+        android:textColor="@color/touchable_opacity_font_color" />
 
 
 </LinearLayout>

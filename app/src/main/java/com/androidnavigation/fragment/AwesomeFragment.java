@@ -1,5 +1,8 @@
 package com.androidnavigation.fragment;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
@@ -9,13 +12,16 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
@@ -33,7 +39,7 @@ import java.util.UUID;
  * Created by Listen on 2018/1/11.
  */
 
-public class AwesomeFragment extends DialogFragment implements LifecycleObserver, FragmentManager.OnBackStackChangedListener {
+public class AwesomeFragment extends Fragment implements LifecycleObserver, FragmentManager.OnBackStackChangedListener {
 
     public static final String TAG = "AndroidNavigation";
 
@@ -90,13 +96,17 @@ public class AwesomeFragment extends DialogFragment implements LifecycleObserver
 
         View root = getView();
         AwesomeFragment parent = getParent();
-        if (root != null && parent instanceof NavigationFragment) {
-            TypedValue typedValue = new TypedValue();
-            int height = 0;
-            if (getContext().getTheme().resolveAttribute(R.attr.actionBarSize, typedValue, true)) {
-                height = (int) TypedValue.complexToDimension(typedValue.data, getContext().getResources().getDisplayMetrics());
+        if(root != null) {
+            boolean isNavigation = this instanceof NavigationFragment;
+            boolean isTabBar = this instanceof TabBarFragment;
+            boolean isDrawer = this instanceof DrawerFragment;
+            if (!(isNavigation || isTabBar || isDrawer)) {
+                root.setBackgroundColor(Color.WHITE);
+                getWindow().setBackgroundDrawable(null);
             }
-
+        }
+        if (root != null && parent instanceof NavigationFragment) {
+            int height = getTopBarHeight();
             TopBar topBar = new TopBar(getContext());
             topBar.setBackgroundColor(Color.BLUE);
             topBar.setTitle("这是标题");
@@ -109,35 +119,9 @@ public class AwesomeFragment extends DialogFragment implements LifecycleObserver
             } else {
                 throw new UnsupportedOperationException("NavigationFragment 还没适配 " + root.getClass().getSimpleName());
             }
-
-            setStatusBarPaddingAndHeight(topBar);
-
+            this.topBar = topBar;
         }
     }
-
-    protected void setStatusBarPaddingAndHeight(View toolBar) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (toolBar != null) {
-                int statusBarHeight = getStatusBarHeight();
-                toolBar.setPadding(toolBar.getPaddingLeft(), statusBarHeight, toolBar.getPaddingRight(),
-                        toolBar.getPaddingBottom());
-                toolBar.getLayoutParams().height = statusBarHeight +
-                        (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 45, getResources().getDisplayMetrics());
-            }
-        }
-    }
-
-    private int getStatusBarHeight() {
-        int statusBarHeight1 = -1;
-        //获取status_bar_height资源的ID
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            //根据资源ID获取响应的尺寸值
-            statusBarHeight1 = getResources().getDimensionPixelSize(resourceId);
-        }
-        return statusBarHeight1;
-    }
-
 
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
@@ -433,27 +417,129 @@ public class AwesomeFragment extends DialogFragment implements LifecycleObserver
 
     // ------- statusBar --------
 
-    public StatusBarStyle statusBarStyle() {
-        return StatusBarStyle.LightContent;
-    }
-
     public boolean isStatusBarHidden() {
         return false;
     }
 
-    public Animation statusBarUpdateAnimation() {
-        return null;
+    public Window getWindow() {
+        return getActivity().getWindow();
     }
 
-    public void updateStatusBarAppearance() {
-
+    protected void setStatusBarStyle(String style) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    style.equals("dark-content") ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
+        }
     }
 
-    public AwesomeFragment childFragmentForStatusBarStyle() {
+    protected void setStatusBarTranslucent(boolean translucent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            View decorView = getWindow().getDecorView();
+            if (translucent) {
+                decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+                        WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
+                        return defaultInsets.replaceSystemWindowInsets(
+                                defaultInsets.getSystemWindowInsetLeft(),
+                                0,
+                                defaultInsets.getSystemWindowInsetRight(),
+                                defaultInsets.getSystemWindowInsetBottom());
+                    }
+                });
+            } else {
+                decorView.setOnApplyWindowInsetsListener(null);
+            }
+
+            ViewCompat.requestApplyInsets(decorView);
+        }
+    }
+
+    protected void setStatusBarHidden(boolean hidden) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (hidden) {
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            } else {
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            }
+        }
+    }
+
+    protected void setStatusBarColor(int color, boolean animated) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            if (animated) {
+                int curColor = getWindow().getStatusBarColor();
+                ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
+
+                colorAnimation.addUpdateListener(
+                        new ValueAnimator.AnimatorUpdateListener() {
+                            @TargetApi(21)
+                            @Override
+                            public void onAnimationUpdate(ValueAnimator animator) {
+                                getWindow()
+                                        .setStatusBarColor((Integer) animator.getAnimatedValue());
+                            }
+                        });
+                colorAnimation.setDuration(300).setStartDelay(0);
+                colorAnimation.start();
+            } else {
+                getWindow().setStatusBarColor(color);
+            }
+        }
+    }
+
+    protected void appendStatusBarPaddingAndHeight(View view, int viewHeight) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (view != null) {
+                int statusBarHeight = getStatusBarHeight();
+                view.setPadding(view.getPaddingLeft(), statusBarHeight, view.getPaddingRight(),
+                        view.getPaddingBottom());
+                view.getLayoutParams().height = statusBarHeight + viewHeight;
+            }
+        }
+    }
+
+    protected void removeStatusBarPaddingAndHeight(View view, int viewHeight) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (view != null) {
+                view.setPadding(view.getPaddingLeft(), 0, view.getPaddingRight(),
+                        view.getPaddingBottom());
+                view.getLayoutParams().height = viewHeight;
+            }
+        }
+    }
+
+    private int getStatusBarHeight() {
+        int statusBarHeight1 = -1;
+        //获取status_bar_height资源的ID
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            //根据资源ID获取响应的尺寸值
+            statusBarHeight1 = getResources().getDimensionPixelSize(resourceId);
+        }
+        return statusBarHeight1;
+    }
+
+    protected int getTopBarHeight() {
+        TypedValue typedValue = new TypedValue();
+        int height = 0;
+        if (getContext().getTheme().resolveAttribute(R.attr.actionBarSize, typedValue, true)) {
+            height = (int) TypedValue.complexToDimension(typedValue.data, getContext().getResources().getDisplayMetrics());
+        }
+        return height;
+    }
+
+
+    public AwesomeFragment innermostFragmentForStatusBarStyle() {
         return this;
     }
 
-    public AwesomeFragment childFragmentForStatusBarHidden() {
+    public AwesomeFragment innermostFragmentForStatusBarHidden() {
         return this;
     }
 
@@ -472,6 +558,15 @@ public class AwesomeFragment extends DialogFragment implements LifecycleObserver
             return parent.getNavigationFragment();
         }
         return null;
+    }
+
+    private TopBar topBar;
+
+    public TopBar getTopBar() {
+        if (getNavigationFragment() == null) {
+            throw new IllegalStateException("只有当前 fragment 有一个 NavigationFragment 作为容器时，才能调用此方法");
+        }
+        return topBar;
     }
 
     public NavigationItem getNavigationItem() {
