@@ -6,6 +6,7 @@ import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -108,8 +109,35 @@ public class AwesomeFragment extends DialogFragment implements LifecycleObserver
             } else {
                 throw new UnsupportedOperationException("NavigationFragment 还没适配 " + root.getClass().getSimpleName());
             }
+
+            setStatusBarPaddingAndHeight(topBar);
+
         }
     }
+
+    protected void setStatusBarPaddingAndHeight(View toolBar) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (toolBar != null) {
+                int statusBarHeight = getStatusBarHeight();
+                toolBar.setPadding(toolBar.getPaddingLeft(), statusBarHeight, toolBar.getPaddingRight(),
+                        toolBar.getPaddingBottom());
+                toolBar.getLayoutParams().height = statusBarHeight +
+                        (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 45, getResources().getDisplayMetrics());
+            }
+        }
+    }
+
+    private int getStatusBarHeight() {
+        int statusBarHeight1 = -1;
+        //获取status_bar_height资源的ID
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            //根据资源ID获取响应的尺寸值
+            statusBarHeight1 = getResources().getDimensionPixelSize(resourceId);
+        }
+        return statusBarHeight1;
+    }
+
 
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
@@ -431,14 +459,8 @@ public class AwesomeFragment extends DialogFragment implements LifecycleObserver
 
     // ------ NavigationFragment -----
 
-    private static boolean isHidesBottomBarWhenPushed;
-
     public boolean hidesBottomBarWhenPushed() {
-        return isHidesBottomBarWhenPushed;
-    }
-
-    public void setHidesBottomBarWhenPushed(boolean hidden) {
-        isHidesBottomBarWhenPushed = hidden;
+        return true;
     }
 
     public NavigationFragment getNavigationFragment() {

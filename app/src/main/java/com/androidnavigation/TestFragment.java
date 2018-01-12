@@ -26,6 +26,14 @@ public class TestFragment extends AwesomeFragment {
 
     EditText resultEditText;
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+    }
+
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -115,8 +123,7 @@ public class TestFragment extends AwesomeFragment {
             public void onClick(View v) {
                 TabBarFragment tabBarFragment = getTabBarFragment();
                 if (tabBarFragment != null) {
-                    //tabBarFragment.getBottomNavigationBar().toggle();
-                    setHidesBottomBarWhenPushed(!hidesBottomBarWhenPushed());
+                    tabBarFragment.getBottomNavigationBar().toggle();
                 }
             }
         });

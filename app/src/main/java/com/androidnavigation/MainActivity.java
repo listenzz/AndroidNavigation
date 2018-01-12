@@ -3,11 +3,16 @@ package com.androidnavigation;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.androidnavigation.fragment.AwesomeFragment;
 import com.androidnavigation.fragment.FragmentHelper;
@@ -23,11 +28,60 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+       // AndroidBug5497Workaround.assistActivity(findViewById(android.R.id.content));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+                
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(Color.TRANSPARENT);
+
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+//                }
+
+
+
+            }
+
+//            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.content), new android.support.v4.view.OnApplyWindowInsetsListener() {
+//                @Override
+//                public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+//                    return insets.consumeSystemWindowInsets();
+//                }
+//            });
+
+
+
+        }
+
+
+
+
         getLifecycle().addObserver(this);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         if (savedInstanceState == null) {
-            FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, new TestDrawerFragment(), PresentAnimation.None);
+            FragmentHelper.addFragment(getSupportFragmentManager(), R.id.content, new TestDrawerFragment(), PresentAnimation.None);
         }
+    }
+
+
+    public int getStatusBarHeight() {
+        int statusBarHeight1 = -1;
+        //获取status_bar_height资源的ID
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            //根据资源ID获取响应的尺寸值
+            statusBarHeight1 = getResources().getDimensionPixelSize(resourceId);
+        }
+        return statusBarHeight1;
     }
 
     @Override
@@ -82,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
     }
 
     private void executePresentFragment(AwesomeFragment fragment) {
-        FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.Modal);
+        FragmentHelper.addFragment(getSupportFragmentManager(), R.id.content, fragment, PresentAnimation.Modal);
     }
 
     @Override
