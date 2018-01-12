@@ -143,12 +143,12 @@ public class NavigationFragment extends AwesomeFragment {
 
     public void replaceRootFragment(final AwesomeFragment fragment) {
        if (isAtLeastStarted()) {
-           executeReplaceFragment(fragment);
+           executeReplaceRootFragment(fragment);
        } else {
            scheduleTask(new Runnable() {
                @Override
                public void run() {
-                   executeReplaceFragment(fragment);
+                   executeReplaceRootFragment(fragment);
                }
            });
        }

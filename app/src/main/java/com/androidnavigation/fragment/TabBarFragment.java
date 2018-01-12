@@ -2,6 +2,10 @@ package com.androidnavigation.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,22 +44,53 @@ public class TabBarFragment extends AwesomeFragment {
 
         TextBadgeItem badgeItem = new TextBadgeItem();
         badgeItem.setText("12");
+        bottomNavigationBar.setTabSelectedListener(new BottomNavigationBar.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(int position) {
+                Log.i(TAG, "tab position:" + position);
+                setSelectedIndex(position);
+            }
+
+            @Override
+            public void onTabUnselected(int position) {
+
+            }
+
+            @Override
+            public void onTabReselected(int position) {
+
+            }
+        });
         bottomNavigationBar.addItem(new BottomNavigationItem(R.drawable.ic_home_white_24dp, "Home"))
                 .addItem(new BottomNavigationItem(R.drawable.ic_discover_white_24dp, "Discover").setBadgeItem(badgeItem))
-                .addItem(new BottomNavigationItem(R.drawable.ic_discover_white_24dp, "Discover"))
                 .setFirstSelectedPosition(0)
                 .initialise();
 
-
-
     }
 
-    public List<AwesomeFragment> getFragments() {
-        return null;
-    }
-
-    public void setFragments(List<AwesomeFragment> fragments) {
+    public void setFragments(final List<AwesomeFragment> fragments) {
         this.fragments = fragments;
+        if (fragments == null || fragments.size() == 0) {
+            return;
+        }
+        scheduleTask(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager fragmentManager = getChildFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.setReorderingAllowed(true);
+                for (int i = 0, size = fragments.size(); i < size; i ++) {
+                    AwesomeFragment fragment = fragments.get(i);
+                    transaction.add(R.id.tabs_content, fragment, fragment.getSceneId());
+                    if (i == 0) {
+                        transaction.setPrimaryNavigationFragment(fragment);
+                    } else {
+                        transaction.hide(fragment);
+                    }
+                }
+                transaction.commit();
+            }
+        });
     }
 
     public AwesomeFragment getSelectedFragment() {
@@ -67,8 +102,20 @@ public class TabBarFragment extends AwesomeFragment {
         setSelectedIndex(index);
     }
 
-    public void setSelectedIndex(int index) {
-        bottomNavigationBar.selectTab(index);
+    public void setSelectedIndex(final int index) {
+        scheduleTask(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager fragmentManager = getChildFragmentManager();
+                Fragment previous = fragmentManager.getPrimaryNavigationFragment();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.hide(previous);
+                AwesomeFragment current = fragments.get(index);
+                transaction.setPrimaryNavigationFragment(current);
+                transaction.show(current);
+                transaction.commit();
+            }
+        });
     }
 
     public int getSelectedIndex() {
@@ -79,9 +126,8 @@ public class TabBarFragment extends AwesomeFragment {
         return null;
     }
 
-
-
-
-
+    public void toggle() {
+        bottomNavigationBar.toggle();
+    }
 
 }

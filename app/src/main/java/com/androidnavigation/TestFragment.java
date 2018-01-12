@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.androidnavigation.fragment.AwesomeFragment;
 import com.androidnavigation.fragment.NavigationFragment;
+import com.androidnavigation.fragment.TabBarFragment;
 
 /**
  * Created by Listen on 2018/1/11.
@@ -55,7 +56,7 @@ public class TestFragment extends AwesomeFragment {
         root.findViewById(R.id.push).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavigationFragment navigationFragment = getNavigatoinFragment();
+                NavigationFragment navigationFragment = getNavigationFragment();
                 if (navigationFragment != null) {
                     navigationFragment.pushFragment(new TestFragment());
                 }
@@ -65,7 +66,7 @@ public class TestFragment extends AwesomeFragment {
         root.findViewById(R.id.pop).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavigationFragment navigationFragment = getNavigatoinFragment();
+                NavigationFragment navigationFragment = getNavigationFragment();
                 if (navigationFragment != null) {
                     Bundle result = new Bundle();
                     result.putString("text", resultEditText.getText().toString());
@@ -78,7 +79,7 @@ public class TestFragment extends AwesomeFragment {
         root.findViewById(R.id.pop_to_root).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavigationFragment navigationFragment = getNavigatoinFragment();
+                NavigationFragment navigationFragment = getNavigationFragment();
                 if (navigationFragment != null) {
                     Bundle result = new Bundle();
                     result.putString("text", resultEditText.getText().toString());
@@ -91,7 +92,7 @@ public class TestFragment extends AwesomeFragment {
         root.findViewById(R.id.replace).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavigationFragment navigationFragment = getNavigatoinFragment();
+                NavigationFragment navigationFragment = getNavigationFragment();
                 if (navigationFragment != null) {
                     navigationFragment.replaceFragment(new TestFragment());
                 }
@@ -101,9 +102,19 @@ public class TestFragment extends AwesomeFragment {
         root.findViewById(R.id.replace_to_root).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavigationFragment navigationFragment = getNavigatoinFragment();
+                NavigationFragment navigationFragment = getNavigationFragment();
                 if (navigationFragment != null) {
                     navigationFragment.replaceRootFragment(new TestFragment());
+                }
+            }
+        });
+
+        root.findViewById(R.id.toggle_tab_bar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TabBarFragment tabBarFragment = getTabBarFragment();
+                if (tabBarFragment != null) {
+                    tabBarFragment.toggle();
                 }
             }
         });

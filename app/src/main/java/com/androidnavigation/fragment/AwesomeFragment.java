@@ -7,7 +7,6 @@ import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -218,7 +217,6 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
     }
 
     public void dismissFragment() {
-        setAnimation(PresentAnimation.Modal);
         AwesomeFragment parent = getParent();
         if (parent != null) {
             parent.setResult(resultCode, result);
@@ -309,20 +307,40 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         return presentableActivity.getPresentingFragment(this);
     }
 
+    public AwesomeFragment getBottommostDescendantFragment() {
+        FragmentManager fragmentManager =  getChildFragmentManager();
+        int count = fragmentManager.getBackStackEntryCount();
+        Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
+        if (fragment != null) {
+            AwesomeFragment child = (AwesomeFragment) fragment;
+            return child.getBottommostDescendantFragment();
+        } else if (count > 0) {
+            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count -1);
+            AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+            return child.getBottommostDescendantFragment();
+        }
+        return this;
+    }
+
     public String getDebugTag() {
         if (getActivity() == null) {
             return null;
         }
         AwesomeFragment parent =  getParent();
         if (parent == null) {
-            return "#" + findIndexAtBackStack() + "-" + getClass().getSimpleName();
+            return "#" + findIndexAtAdded() + "-" + getClass().getSimpleName();
         } else {
-            return parent.getDebugTag() + "#" + findIndexAtBackStack() + "-" + getClass().getSimpleName();
+            return parent.getDebugTag() + "#" + findIndexAtAdded() + "-" + getClass().getSimpleName();
         }
     }
 
     protected int findIndexAtBackStack() {
         return FragmentHelper.findIndexAtBackStack(getFragmentManager(), this);
+    }
+
+    protected int findIndexAtAdded() {
+        List<Fragment> fragments = getFragmentManager().getFragments();
+        return fragments.indexOf(this);
     }
 
     public AwesomeFragment getParent() {
@@ -389,13 +407,13 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         return false;
     }
 
-    public NavigationFragment getNavigatoinFragment() {
+    public NavigationFragment getNavigationFragment() {
         if (this instanceof NavigationFragment) {
             return (NavigationFragment) this;
         }
         AwesomeFragment parent = getParent();
         if (parent != null) {
-            return parent.getNavigatoinFragment();
+            return parent.getNavigationFragment();
         }
         return null;
     }

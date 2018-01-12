@@ -5,8 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
-import com.androidnavigation.R;
-
 /**
  * Created by Listen on 2018/1/11.
  */
@@ -24,17 +22,17 @@ public class FragmentHelper {
 
     public static void addFragment(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment, PresentAnimation animation) {
         fragment.setAnimation(animation);
-        AwesomeFragment top = (AwesomeFragment) fragmentManager.findFragmentById(containerId);
+        AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentById(containerId);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(containerId, fragment, fragment.getSceneId());
-        //transaction.setPrimaryNavigationFragment(fragment);
+        transaction.setPrimaryNavigationFragment(fragment);
 
-        if (top != null) {
-            top.setAnimation(animation);
-            transaction.hide(top);
+        if (topFragment != null) {
+            topFragment.setAnimation(animation);
+            transaction.hide(topFragment);
         }
 
         transaction.addToBackStack(fragment.getSceneId());

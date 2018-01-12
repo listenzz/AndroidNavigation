@@ -13,7 +13,6 @@ import com.androidnavigation.fragment.AwesomeFragment;
 import com.androidnavigation.fragment.FragmentHelper;
 import com.androidnavigation.fragment.PresentAnimation;
 import com.androidnavigation.fragment.PresentableActivity;
-import com.androidnavigation.fragment.TabBarFragment;
 
 import java.util.LinkedList;
 
@@ -27,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
         getLifecycle().addObserver(this);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         if (savedInstanceState == null) {
-            FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, new TabBarFragment(), PresentAnimation.None);
+            FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, new TestTabBarFragment(), PresentAnimation.None);
         }
     }
 
@@ -48,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
                 if (count == 1) {
                     ActivityCompat.finishAfterTransition(this);
                 } else {
+                    Log.i(TAG, "dismiss:");
                     dismissFragment(fragment);
                 }
             }
@@ -111,9 +111,9 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
             presenting = getPresentingFragment(fragment);
         }
 
-        presented.setAnimation(PresentAnimation.Modal);
+        presented.getBottommostDescendantFragment().setAnimation(PresentAnimation.Modal);
         if (presenting != null) {
-            presenting.setAnimation(PresentAnimation.Modal);
+            presenting.getBottommostDescendantFragment().setAnimation(PresentAnimation.Modal);
         }
 
         if (presenting == null) {
