@@ -25,6 +25,21 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     @Override
+    protected AwesomeFragment childFragmentForStatusBarHidden() {
+        return getTopFragment();
+    }
+
+    @Override
+    protected AwesomeFragment childFragmentForStatusBarStyle() {
+        return getTopFragment();
+    }
+
+    @Override
+    protected AwesomeFragment childFragmentForStatusBarColor() {
+        return getTopFragment();
+    }
+
+    @Override
     protected boolean onBackPressed() {
         FragmentManager fragmentManager = getChildFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();

@@ -417,8 +417,64 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
 
     // ------- statusBar --------
 
-    public boolean isStatusBarHidden() {
+    protected String preferredStatusBarStyle() {
+        AwesomeFragment childFragmentForStatusBarStyle = childFragmentForStatusBarStyle();
+        if (childFragmentForStatusBarStyle != null) {
+            return childFragmentForStatusBarStyle.preferredStatusBarStyle();
+        }
+        return "light-content";
+    }
+
+    protected boolean prefersStatusBarHidden() {
+        AwesomeFragment childFragmentForStatusBarHidden = childFragmentForStatusBarHidden();
+        if (childFragmentForStatusBarHidden != null) {
+            return childFragmentForStatusBarHidden.prefersStatusBarHidden();
+        }
         return false;
+    }
+
+    protected int prefersStatusBarColor() {
+        AwesomeFragment childFragmentForStatusBarColor = childFragmentForStatusBarColor();
+        if (childFragmentForStatusBarColor != null) {
+            return childFragmentForStatusBarColor.prefersStatusBarColor();
+        }
+        return Color.TRANSPARENT;
+    }
+
+    protected boolean prefersStatusBarColorAnimated() {
+        AwesomeFragment childFragmentForStatusBarColor = childFragmentForStatusBarColor();
+        if (childFragmentForStatusBarColor != null) {
+            return childFragmentForStatusBarColor.prefersStatusBarColorAnimated();
+        }
+        return false;
+    }
+
+    protected AwesomeFragment childFragmentForStatusBarStyle() {
+        return null;
+    }
+
+    protected AwesomeFragment childFragmentForStatusBarHidden() {
+        return null;
+    }
+
+    protected AwesomeFragment childFragmentForStatusBarColor() {
+        return null;
+    }
+
+    public void setNeedsStatusBarAppearanceUpdate() {
+        AwesomeFragment parent = getParent();
+        if (parent != null) {
+            parent.setNeedsStatusBarAppearanceUpdate();
+        } else {
+            // statusBarStyle
+            setStatusBarStyle(preferredStatusBarStyle());
+
+            // statusBarHidden
+            setStatusBarHidden(prefersStatusBarHidden());
+
+            // statusBarColor
+            setStatusBarColor(prefersStatusBarColor(), prefersStatusBarColorAnimated());
+        }
     }
 
     public Window getWindow() {
@@ -532,15 +588,6 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
             height = (int) TypedValue.complexToDimension(typedValue.data, getContext().getResources().getDisplayMetrics());
         }
         return height;
-    }
-
-
-    public AwesomeFragment innermostFragmentForStatusBarStyle() {
-        return this;
-    }
-
-    public AwesomeFragment innermostFragmentForStatusBarHidden() {
-        return this;
     }
 
     // ------ NavigationFragment -----

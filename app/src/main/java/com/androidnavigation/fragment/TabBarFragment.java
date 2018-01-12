@@ -72,6 +72,21 @@ public class TabBarFragment extends AwesomeFragment {
 
     }
 
+    @Override
+    protected AwesomeFragment childFragmentForStatusBarColor() {
+        return getSelectedFragment();
+    }
+
+    @Override
+    protected AwesomeFragment childFragmentForStatusBarStyle() {
+        return getSelectedFragment();
+    }
+
+    @Override
+    protected AwesomeFragment childFragmentForStatusBarHidden() {
+        return getSelectedFragment();
+    }
+
     public void setFragments(AwesomeFragment... fragments) {
         setFragments(Arrays.asList(fragments));
     }
@@ -81,6 +96,7 @@ public class TabBarFragment extends AwesomeFragment {
         if (fragments == null || fragments.size() == 0) {
             return;
         }
+        // TODO: 移除旧的，然后添加新的
         scheduleTask(new Runnable() {
             @Override
             public void run() {
@@ -101,13 +117,17 @@ public class TabBarFragment extends AwesomeFragment {
         });
     }
 
+    public void setSelectedFragment(AwesomeFragment fragment) {
+        int index = fragments.indexOf(fragment);
+        setSelectedIndex(index);
+    }
+
     public AwesomeFragment getSelectedFragment() {
         return fragments.get(getSelectedIndex());
     }
 
-    public void setSelectedFragment(AwesomeFragment fragment) {
-        int index = fragments.indexOf(fragment);
-        setSelectedIndex(index);
+    public int getSelectedIndex() {
+        return bottomNavigationBar.getCurrentSelectedPosition();
     }
 
     public void setSelectedIndex(final int index) {
@@ -125,11 +145,6 @@ public class TabBarFragment extends AwesomeFragment {
             }
         });
     }
-
-    public int getSelectedIndex() {
-        return bottomNavigationBar.getCurrentSelectedPosition();
-    }
-
 
     // -------------------------
     // ------- bottom bar ------

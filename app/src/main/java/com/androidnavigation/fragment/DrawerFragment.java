@@ -14,7 +14,7 @@ import com.androidnavigation.R;
  * Created by Listen on 2018/1/11.
  */
 
-public class DrawerFragment extends AwesomeFragment implements DrawerLayout.DrawerListener{
+public class DrawerFragment extends AwesomeFragment implements DrawerLayout.DrawerListener {
 
     DrawerLayout drawerLayout;
 
@@ -36,7 +36,24 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState == null) {
+            getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
+        }
+    }
 
+    @Override
+    protected AwesomeFragment childFragmentForStatusBarColor() {
+        return getContentFragment();
+    }
+
+    @Override
+    protected AwesomeFragment childFragmentForStatusBarStyle() {
+        return getContentFragment();
+    }
+
+    @Override
+    protected boolean prefersStatusBarHidden() {
+        return isMenuOpened();
     }
 
     @Override
@@ -55,14 +72,12 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     public void onDrawerOpened(View drawerView) {
-        setStatusBarHidden(true);
-        //setStatusBarStyle("dark-content");
+        setNeedsStatusBarAppearanceUpdate();
     }
 
     @Override
     public void onDrawerClosed(View drawerView) {
-        setStatusBarHidden(false);
-        //setStatusBarStyle("light-content");
+        setNeedsStatusBarAppearanceUpdate();
     }
 
     @Override

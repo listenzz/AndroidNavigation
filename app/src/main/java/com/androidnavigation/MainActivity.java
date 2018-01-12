@@ -31,8 +31,6 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         if (savedInstanceState == null) {
 
-
-
             TestFragment testFragment = new TestFragment();
             NavigationFragment navigation = new NavigationFragment();
             navigation.setRootFragment(testFragment);
