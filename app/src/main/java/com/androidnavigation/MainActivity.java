@@ -111,9 +111,9 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
             presenting = getPresentingFragment(fragment);
         }
 
-        presented.getBottommostDescendantFragment().setAnimation(PresentAnimation.Modal);
+        presented.getInnermostFragment().setAnimation(PresentAnimation.Modal);
         if (presenting != null) {
-            presenting.getBottommostDescendantFragment().setAnimation(PresentAnimation.Modal);
+            presenting.getInnermostFragment().setAnimation(PresentAnimation.Modal);
         }
 
         if (presenting == null) {

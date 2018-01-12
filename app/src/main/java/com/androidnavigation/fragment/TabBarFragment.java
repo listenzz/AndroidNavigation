@@ -1,6 +1,7 @@
 package com.androidnavigation.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.AnimRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.androidnavigation.R;
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
@@ -79,7 +82,7 @@ public class TabBarFragment extends AwesomeFragment {
                 FragmentManager fragmentManager = getChildFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.setReorderingAllowed(true);
-                for (int i = 0, size = fragments.size(); i < size; i ++) {
+                for (int i = 0, size = fragments.size(); i < size; i++) {
                     AwesomeFragment fragment = fragments.get(i);
                     transaction.add(R.id.tabs_content, fragment, fragment.getSceneId());
                     if (i == 0) {
@@ -122,12 +125,53 @@ public class TabBarFragment extends AwesomeFragment {
         return bottomNavigationBar.getCurrentSelectedPosition();
     }
 
-    public TabBar getTabBar() {
-        return null;
+
+    // -------------------------
+    // ------- bottom bar ------
+    // -------------------------
+
+    public BottomNavigationBar getBottomNavigationBar() {
+        return bottomNavigationBar;
     }
 
-    public void toggle() {
-        bottomNavigationBar.toggle();
+    public void showBottomNavigationBarAnimatedWhenPop(@AnimRes int anim) {
+        Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
+        animation.setAnimationListener(new BottomNavigationBarAnimationListener(false));
+        bottomNavigationBar.startAnimation(animation);
     }
+
+    public void hideBottomNavigationBarAnimatedWhenPush(@AnimRes int anim) {
+        Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
+        animation.setAnimationListener(new BottomNavigationBarAnimationListener(true));
+        bottomNavigationBar.startAnimation(animation);
+    }
+
+    public class BottomNavigationBarAnimationListener implements Animation.AnimationListener {
+
+        boolean hidden;
+        public BottomNavigationBarAnimationListener(boolean hidden) {
+            this.hidden = hidden;
+        }
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+            if (hidden) {
+                bottomNavigationBar.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            if (!hidden) {
+                bottomNavigationBar.setVisibility(View.VISIBLE);
+            }
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
+    }
+
 
 }

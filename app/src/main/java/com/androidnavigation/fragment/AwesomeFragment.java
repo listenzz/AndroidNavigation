@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -31,7 +32,7 @@ import java.util.UUID;
  * Created by Listen on 2018/1/11.
  */
 
-public class AwesomeFragment extends Fragment implements LifecycleObserver, FragmentManager.OnBackStackChangedListener {
+public class AwesomeFragment extends DialogFragment implements LifecycleObserver, FragmentManager.OnBackStackChangedListener {
 
     public static final String TAG = "AndroidNavigation";
 
@@ -87,7 +88,7 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         super.onActivityCreated(savedInstanceState);
 
         View root = getView();
-        AwesomeFragment parent =  getParent();
+        AwesomeFragment parent = getParent();
         if (root != null && parent instanceof NavigationFragment) {
             TypedValue typedValue = new TypedValue();
             int height = 0;
@@ -113,6 +114,33 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
         PresentAnimation animation = getAnimation();
+
+        // handle hidesBottomBarWhenPushed
+        if (hidesBottomBarWhenPushed()) {
+            NavigationFragment navigationFragment = getNavigationFragment();
+            if (navigationFragment != null) {
+                TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
+                if (tabBarFragment != null) {
+                    int index = findIndexAtBackStack();
+                    if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
+                        if (enter) {
+                            if (index == 0) {
+                                tabBarFragment.getBottomNavigationBar().setVisibility(View.VISIBLE);
+                            } else if (index == 1) {
+                                tabBarFragment.hideBottomNavigationBarAnimatedWhenPush(animation.exit);
+                            }
+                        }
+                    } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
+                        if (enter && index == 0) {
+                            tabBarFragment.showBottomNavigationBarAnimatedWhenPop(animation.popEnter);
+                        }
+                    }
+                }
+            }
+        }
+
+        // ---------
+
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
                 return AnimationUtils.loadAnimation(getContext(), animation.enter);
@@ -269,7 +297,7 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
             scheduleTask(new Runnable() {
                 @Override
                 public void run() {
-                    executeAddFragment( containerId, fragment, animation);
+                    executeAddFragment(containerId, fragment, animation);
                 }
             });
         }
@@ -280,14 +308,14 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
     }
 
     public boolean dispatchBackPressed() {
-        FragmentManager fragmentManager =  getChildFragmentManager();
+        FragmentManager fragmentManager = getChildFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
         if (fragment != null) {
             AwesomeFragment child = (AwesomeFragment) fragment;
             return child.dispatchBackPressed() || onBackPressed();
         } else if (count > 0) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count -1);
+            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count - 1);
             AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
             return child.dispatchBackPressed() || onBackPressed();
         } else {
@@ -307,17 +335,17 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         return presentableActivity.getPresentingFragment(this);
     }
 
-    public AwesomeFragment getBottommostDescendantFragment() {
-        FragmentManager fragmentManager =  getChildFragmentManager();
+    public AwesomeFragment getInnermostFragment() {
+        FragmentManager fragmentManager = getChildFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
         if (fragment != null) {
             AwesomeFragment child = (AwesomeFragment) fragment;
-            return child.getBottommostDescendantFragment();
+            return child.getInnermostFragment();
         } else if (count > 0) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count -1);
+            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count - 1);
             AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-            return child.getBottommostDescendantFragment();
+            return child.getInnermostFragment();
         }
         return this;
     }
@@ -326,7 +354,7 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         if (getActivity() == null) {
             return null;
         }
-        AwesomeFragment parent =  getParent();
+        AwesomeFragment parent = getParent();
         if (parent == null) {
             return "#" + findIndexAtAdded() + "-" + getClass().getSimpleName();
         } else {
@@ -403,8 +431,14 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
 
     // ------ NavigationFragment -----
 
+    private static boolean isHidesBottomBarWhenPushed;
+
     public boolean hidesBottomBarWhenPushed() {
-        return false;
+        return isHidesBottomBarWhenPushed;
+    }
+
+    public void setHidesBottomBarWhenPushed(boolean hidden) {
+        isHidesBottomBarWhenPushed = hidden;
     }
 
     public NavigationFragment getNavigationFragment() {

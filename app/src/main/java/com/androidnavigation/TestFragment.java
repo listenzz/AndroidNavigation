@@ -115,7 +115,8 @@ public class TestFragment extends AwesomeFragment {
             public void onClick(View v) {
                 TabBarFragment tabBarFragment = getTabBarFragment();
                 if (tabBarFragment != null) {
-                    tabBarFragment.toggle();
+                    //tabBarFragment.getBottomNavigationBar().toggle();
+                    setHidesBottomBarWhenPushed(!hidesBottomBarWhenPushed());
                 }
             }
         });
