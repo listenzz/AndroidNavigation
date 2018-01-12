@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.androidnavigation.fragment.AwesomeFragment;
+import com.androidnavigation.fragment.DrawerFragment;
 import com.androidnavigation.fragment.NavigationFragment;
 import com.androidnavigation.fragment.TabBarFragment;
 
@@ -115,6 +116,16 @@ public class TestFragment extends AwesomeFragment {
                 TabBarFragment tabBarFragment = getTabBarFragment();
                 if (tabBarFragment != null) {
                     tabBarFragment.toggle();
+                }
+            }
+        });
+
+        root.findViewById(R.id.toggle_drawer).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerFragment drawerFragment = getDrawerFragment();
+                if (drawerFragment != null) {
+                    drawerFragment.toggleMenu();
                 }
             }
         });

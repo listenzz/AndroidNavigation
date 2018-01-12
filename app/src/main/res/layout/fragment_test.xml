@@ -17,7 +17,7 @@
     <TextView
         android:id="@+id/present"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:text="present"
         android:textColor="@color/touchable_opacity_font_color" />
@@ -25,7 +25,7 @@
     <TextView
         android:id="@+id/dismiss"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:text="dismiss"
         android:textColor="@color/touchable_opacity_font_color" />
@@ -33,7 +33,7 @@
     <TextView
         android:id="@+id/push"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:text="push"
         android:textColor="@color/touchable_opacity_font_color" />
@@ -41,7 +41,7 @@
     <TextView
         android:id="@+id/pop"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:text="pop"
         android:textColor="@color/touchable_opacity_font_color" />
@@ -49,7 +49,7 @@
     <TextView
         android:id="@+id/pop_to_root"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:text="popToRoot"
         android:textColor="@color/touchable_opacity_font_color" />
@@ -57,7 +57,7 @@
     <TextView
         android:id="@+id/replace"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:text="replace"
         android:textColor="@color/touchable_opacity_font_color" />
@@ -65,7 +65,7 @@
     <TextView
         android:id="@+id/replace_to_root"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:text="replaceToRoot"
         android:textColor="@color/touchable_opacity_font_color" />
@@ -73,16 +73,24 @@
     <TextView
         android:id="@+id/toggle_tab_bar"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:text="toggleTabBar"
+        android:textColor="@color/touchable_opacity_font_color" />
+
+    <TextView
+        android:id="@+id/toggle_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="toggleDrawer"
         android:textColor="@color/touchable_opacity_font_color" />
 
 
     <EditText
         android:id="@+id/result"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="32dp"
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"
@@ -96,7 +104,7 @@
     <TextView
         android:id="@+id/result_text"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:textColor="#000000"
         android:textSize="13dp" />

@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
         getLifecycle().addObserver(this);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         if (savedInstanceState == null) {
-            FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, new TestTabBarFragment(), PresentAnimation.None);
+            FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, new TestDrawerFragment(), PresentAnimation.None);
         }
     }
 
