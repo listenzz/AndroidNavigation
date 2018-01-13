@@ -1,6 +1,5 @@
 package com.androidnavigation;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -39,42 +38,15 @@ public class TestStatusBarFragment extends AwesomeFragment {
         root.findViewById(R.id.status_bar_style_dark).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setStatusBarStyle("dark-content");
+                getNavigationFragment().pushFragment(new StatusBarStyleFragment());
             }
         });
 
-        root.findViewById(R.id.status_bar_style_light).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setStatusBarStyle("light-content");
-            }
-        });
 
-        root.findViewById(R.id.status_bar_hide).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.status_bar_hidden).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setStatusBarHidden(true);
-            }
-        });
-
-        root.findViewById(R.id.status_bar_show).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setStatusBarHidden(false);
-            }
-        });
-
-        root.findViewById(R.id.status_bar_translucent).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setStatusBarTranslucent(true);
-            }
-        });
-
-        root.findViewById(R.id.status_bar_opacity).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setStatusBarTranslucent(false);
+               getNavigationFragment().pushFragment(new StatusBarHiddenFragment());
             }
         });
 
@@ -82,30 +54,11 @@ public class TestStatusBarFragment extends AwesomeFragment {
         root.findViewById(R.id.status_bar_color_red).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setStatusBarColor(Color.RED, true);
+                getNavigationFragment().pushFragment(new StatusBarColorFragment());
             }
         });
 
-        root.findViewById(R.id.status_bar_color_transparent).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setStatusBarColor(Color.TRANSPARENT, true);
-            }
-        });
 
-        root.findViewById(R.id.status_bar_append_padding).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                appendStatusBarPaddingAndHeight(getTopBar(), getTopBarHeight());
-            }
-        });
-
-        root.findViewById(R.id.status_bar_remove_padding).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeStatusBarPaddingAndHeight(getTopBar(), getTopBarHeight());
-            }
-        });
 
         return root;
     }

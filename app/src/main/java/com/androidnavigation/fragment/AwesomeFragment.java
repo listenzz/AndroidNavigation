@@ -96,13 +96,14 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
 
         View root = getView();
         AwesomeFragment parent = getParent();
-        if(root != null) {
+        if (root != null) {
             boolean isNavigation = this instanceof NavigationFragment;
             boolean isTabBar = this instanceof TabBarFragment;
             boolean isDrawer = this instanceof DrawerFragment;
             if (!(isNavigation || isTabBar || isDrawer)) {
                 root.setBackgroundColor(Color.WHITE);
                 getWindow().setBackgroundDrawable(null);
+                //setNeedsStatusBarAppearanceUpdate();
             }
         }
         if (root != null && parent instanceof NavigationFragment) {
@@ -120,7 +121,47 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
                 throw new UnsupportedOperationException("NavigationFragment 还没适配 " + root.getClass().getSimpleName());
             }
             this.topBar = topBar;
+            appendStatusBarPaddingAndHeight(topBar, getTopBarHeight());
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        boolean isNavigation = this instanceof NavigationFragment;
+        boolean isTabBar = this instanceof TabBarFragment;
+        boolean isDrawer = this instanceof DrawerFragment;
+        if (!(isNavigation || isTabBar || isDrawer)) {
+            Log.w(TAG, getDebugTag() + "#onResume-");
+            setNeedsStatusBarAppearanceUpdate();
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden && isAdded()) {
+
+            boolean isNavigation = this instanceof NavigationFragment;
+            boolean isTabBar = this instanceof TabBarFragment;
+            boolean isDrawer = this instanceof DrawerFragment;
+            if (!(isNavigation || isTabBar || isDrawer)) {
+                Log.w(TAG, getDebugTag() + "#onHiddenChanged:-");
+                setNeedsStatusBarAppearanceUpdate();
+            }
+        }
+
+        Log.w(TAG, getDebugTag() + "#onHiddenChanged:" + hidden);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isAdded()) {
+            Log.w(TAG, getDebugTag() + "#isVisibleToUser:-");
+            setNeedsStatusBarAppearanceUpdate();
+        }
+        Log.w(TAG, getDebugTag() + "#isVisibleToUser:" + isVisibleToUser);
     }
 
     @Override

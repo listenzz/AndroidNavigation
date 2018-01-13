@@ -1,13 +1,18 @@
 package com.androidnavigation;
 
+import android.annotation.TargetApi;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowInsets;
 
 import com.androidnavigation.fragment.AwesomeFragment;
 import com.androidnavigation.fragment.DrawerFragment;
@@ -29,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
        // AndroidBug5497Workaround.assistActivity(findViewById(android.R.id.content));
         getLifecycle().addObserver(this);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
+        setStatusBarTranslucent(true);
         if (savedInstanceState == null) {
 
             TestFragment testFragment = new TestFragment();
@@ -46,9 +52,34 @@ public class MainActivity extends AppCompatActivity implements PresentableActivi
 
             drawerFragment.setContentFragment(tabBarFragment);
 
-            drawerFragment.setMenuFragment(new TestStatusBarFragment());
+            drawerFragment.setMenuFragment(new FirstFragment());
+
 
             FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, drawerFragment, PresentAnimation.None);
+        }
+    }
+
+    protected void setStatusBarTranslucent(boolean translucent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            View decorView = getWindow().getDecorView();
+            if (translucent) {
+                decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+                        WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
+                        return defaultInsets.replaceSystemWindowInsets(
+                                defaultInsets.getSystemWindowInsetLeft(),
+                                0,
+                                defaultInsets.getSystemWindowInsetRight(),
+                                defaultInsets.getSystemWindowInsetBottom());
+                    }
+                });
+            } else {
+                decorView.setOnApplyWindowInsetsListener(null);
+            }
+
+            ViewCompat.requestApplyInsets(decorView);
         }
     }
 

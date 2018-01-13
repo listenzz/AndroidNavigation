@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 import com.androidnavigation.R;
 
+import java.util.List;
+
 /**
  * Created by Listen on 2018/1/11.
  */
@@ -17,6 +19,9 @@ import com.androidnavigation.R;
 public class DrawerFragment extends AwesomeFragment implements DrawerLayout.DrawerListener {
 
     DrawerLayout drawerLayout;
+
+    AwesomeFragment contentFragment;
+    AwesomeFragment menuFragment;
 
     @Nullable
     @Override
@@ -37,7 +42,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState == null) {
-            getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
+            addFragment(R.id.drawer_menu, menuFragment, PresentAnimation.None);
+            addFragment(R.id.drawer_content, contentFragment, PresentAnimation.None);
         }
     }
 
@@ -52,8 +58,13 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     @Override
+    protected AwesomeFragment childFragmentForStatusBarHidden() {
+        return getContentFragment();
+    }
+
+    @Override
     protected boolean prefersStatusBarHidden() {
-        return isMenuOpened();
+        return isMenuOpened() || super.prefersStatusBarHidden();
     }
 
     @Override
@@ -66,6 +77,59 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     @Override
+    public NavigationFragment getNavigationFragment() {
+        NavigationFragment navigationFragment = super.getNavigationFragment();
+        if (navigationFragment == null && getContentFragment() != null) {
+            return findClosestNavigationFragment(getContentFragment());
+        }
+        return null;
+    }
+
+    private NavigationFragment findClosestNavigationFragment(AwesomeFragment fragment) {
+        if (fragment instanceof  NavigationFragment) {
+            return (NavigationFragment) fragment;
+        }
+        AwesomeFragment primary = (AwesomeFragment) fragment.getChildFragmentManager().getPrimaryNavigationFragment();
+        if (primary != null) {
+            return findClosestNavigationFragment(primary);
+        }
+        List<AwesomeFragment> children =  fragment.getFragments();
+        if (children != null && children.size() > 0) {
+            return findClosestNavigationFragment(children.get(children.size() -1));
+        }
+        return null;
+    }
+
+    @Override
+    public TabBarFragment getTabBarFragment() {
+        TabBarFragment navigationFragment = super.getTabBarFragment();
+        if (navigationFragment == null && getContentFragment() != null) {
+            AwesomeFragment innermost =  getContentFragment().getInnermostFragment();
+            if (innermost != null) {
+                return innermost.getTabBarFragment();
+            }
+        }
+        return null;
+    }
+
+    private TabBarFragment findClosestTabBarFragment(AwesomeFragment fragment) {
+        if (fragment instanceof  TabBarFragment) {
+            return (TabBarFragment) fragment;
+        }
+        AwesomeFragment primary = (AwesomeFragment) fragment.getChildFragmentManager().getPrimaryNavigationFragment();
+        if (primary != null) {
+            return findClosestTabBarFragment(primary);
+        }
+        List<AwesomeFragment> children =  fragment.getFragments();
+        if (children != null && children.size() > 0) {
+            return findClosestTabBarFragment(children.get(children.size() -1));
+        }
+        return null;
+    }
+
+
+
+    @Override
     public void onDrawerSlide(View drawerView, float slideOffset) {
 
     }
@@ -73,11 +137,13 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     @Override
     public void onDrawerOpened(View drawerView) {
         setNeedsStatusBarAppearanceUpdate();
+        getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
     }
 
     @Override
     public void onDrawerClosed(View drawerView) {
         setNeedsStatusBarAppearanceUpdate();
+        getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
     }
 
     @Override
@@ -86,18 +152,26 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     public void setContentFragment(AwesomeFragment fragment) {
-        addFragment(R.id.drawer_content, fragment, PresentAnimation.None);
+        this.contentFragment = fragment;
+
     }
 
     public AwesomeFragment getContentFragment() {
+        if (!isAdded()) {
+            return null;
+        }
         return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_content);
     }
 
     public void setMenuFragment(AwesomeFragment fragment) {
-        addFragment(R.id.drawer_menu, fragment, PresentAnimation.None);
+        this.menuFragment = fragment;
+
     }
 
     public AwesomeFragment getMenuFragment() {
+        if (!isAdded()) {
+            return null;
+        }
         return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_menu);
     }
 

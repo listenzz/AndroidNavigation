@@ -25,6 +25,15 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        AwesomeFragment top = getTopFragment();
+        if (top != null) {
+            setUserVisibleHint(!hidden);
+        }
+    }
+
+    @Override
     protected AwesomeFragment childFragmentForStatusBarHidden() {
         return getTopFragment();
     }
@@ -159,16 +168,16 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     public void replaceRootFragment(final AwesomeFragment fragment) {
-       if (isAtLeastStarted()) {
-           executeReplaceRootFragment(fragment);
-       } else {
-           scheduleTask(new Runnable() {
-               @Override
-               public void run() {
-                   executeReplaceRootFragment(fragment);
-               }
-           });
-       }
+        if (isAtLeastStarted()) {
+            executeReplaceRootFragment(fragment);
+        } else {
+            scheduleTask(new Runnable() {
+                @Override
+                public void run() {
+                    executeReplaceRootFragment(fragment);
+                }
+            });
+        }
     }
 
     private void executeReplaceRootFragment(AwesomeFragment fragment) {
@@ -211,7 +220,11 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     public AwesomeFragment getTopFragment() {
-        return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.navigation_content);
+        if (isAdded()) {
+            return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.navigation_content);
+        } else {
+            return null;
+        }
     }
 
     public boolean isTopBarHidden() {

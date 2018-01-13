@@ -69,7 +69,6 @@ public class TabBarFragment extends AwesomeFragment {
                 .addItem(new BottomNavigationItem(R.drawable.ic_discover_white_24dp, "Discover").setBadgeItem(badgeItem))
                 .setFirstSelectedPosition(0)
                 .initialise();
-
     }
 
     @Override
