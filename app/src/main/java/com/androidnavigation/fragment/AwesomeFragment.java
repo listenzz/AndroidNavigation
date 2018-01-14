@@ -45,6 +45,8 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
 
     public static final String ARGS_SCENE_ID = "scene_id";
     public static final String ARGS_REQUEST_CODE = "request_code";
+    public static final String ARGS_ANIMATION = "animation";
+    public static final String ARGS_TAB_BAR_ITEM = "tab_bar_item";
 
     /**
      * 隐藏软键盘
@@ -93,46 +95,22 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         View root = getView();
         AwesomeFragment parent = getParent();
-        if (root != null) {
-            boolean isNavigation = this instanceof NavigationFragment;
-            boolean isTabBar = this instanceof TabBarFragment;
-            boolean isDrawer = this instanceof DrawerFragment;
-            if (!(isNavigation || isTabBar || isDrawer)) {
-                root.setBackgroundColor(Color.WHITE);
-                getWindow().setBackgroundDrawable(null);
-                //setNeedsStatusBarAppearanceUpdate();
-            }
+        if (root != null && !isContainer()) {
+            root.setBackgroundColor(Color.WHITE);
+            getWindow().setBackgroundDrawable(null);
         }
         if (root != null && parent instanceof NavigationFragment) {
-            int height = getTopBarHeight();
-            TopBar topBar = new TopBar(getContext());
-            topBar.setBackgroundColor(Color.BLUE);
-            topBar.setTitle("这是标题");
-            if (root instanceof LinearLayout) {
-                LinearLayout linearLayout = (LinearLayout) root;
-                linearLayout.addView(topBar, 0, new LinearLayout.LayoutParams(-1, height));
-            } else if (root instanceof FrameLayout) {
-                FrameLayout frameLayout = (FrameLayout) root;
-                frameLayout.addView(topBar, new FrameLayout.LayoutParams(-1, height));
-            } else {
-                throw new UnsupportedOperationException("NavigationFragment 还没适配 " + root.getClass().getSimpleName());
-            }
-            this.topBar = topBar;
-            appendStatusBarPaddingAndHeight(topBar, getTopBarHeight());
+            this.topBar = createTopBar();
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        boolean isNavigation = this instanceof NavigationFragment;
-        boolean isTabBar = this instanceof TabBarFragment;
-        boolean isDrawer = this instanceof DrawerFragment;
-        if (!(isNavigation || isTabBar || isDrawer)) {
-            Log.w(TAG, getDebugTag() + "#onResume-");
+        if (!isContainer()) {
+           // Log.w(TAG, getDebugTag() + "#onResume-");
             setNeedsStatusBarAppearanceUpdate();
         }
     }
@@ -141,27 +119,23 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden && isAdded()) {
-
-            boolean isNavigation = this instanceof NavigationFragment;
-            boolean isTabBar = this instanceof TabBarFragment;
-            boolean isDrawer = this instanceof DrawerFragment;
-            if (!(isNavigation || isTabBar || isDrawer)) {
-                Log.w(TAG, getDebugTag() + "#onHiddenChanged:-");
+            if (!isContainer()) {
+               // Log.w(TAG, getDebugTag() + "#onHiddenChanged:-");
                 setNeedsStatusBarAppearanceUpdate();
             }
         }
 
-        Log.w(TAG, getDebugTag() + "#onHiddenChanged:" + hidden);
+       // Log.w(TAG, getDebugTag() + "#onHiddenChanged:" + hidden);
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && isAdded()) {
-            Log.w(TAG, getDebugTag() + "#isVisibleToUser:-");
+           // Log.w(TAG, getDebugTag() + "#isVisibleToUser:-");
             setNeedsStatusBarAppearanceUpdate();
         }
-        Log.w(TAG, getDebugTag() + "#isVisibleToUser:" + isVisibleToUser);
+      //  Log.w(TAG, getDebugTag() + "#isVisibleToUser:" + isVisibleToUser);
     }
 
     @Override
@@ -175,6 +149,7 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
                 TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
                 if (tabBarFragment != null) {
                     int index = findIndexAtBackStack();
+                    Log.d(TAG, getDebugTag() + "  " + index);
                     if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
                         if (enter) {
                             if (index == 0) {
@@ -193,6 +168,7 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         }
 
         // ---------
+        Log.d(TAG, getDebugTag() + "  " + animation.name() + " transit:" + transit + " enter:" + enter);
 
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
@@ -336,7 +312,7 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
     }
 
     public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
-        Log.i(TAG, toString() + "#onFragmentResult requestCode=" + requestCode + " resultCode=" + resultCode + " data=" + data);
+        //Log.i(TAG, toString() + "#onFragmentResult requestCode=" + requestCode + " resultCode=" + resultCode + " data=" + data);
         List<AwesomeFragment> fragments = getFragments();
         for (AwesomeFragment child : fragments) {
             child.onFragmentResult(requestCode, resultCode, data);
@@ -446,14 +422,29 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         return fragmentManager.getBackStackEntryCount();
     }
 
-    private PresentAnimation animation = PresentAnimation.Fade;
+    private PresentAnimation animation = null;
 
     public void setAnimation(PresentAnimation animation) {
+        Bundle bundle = FragmentHelper.getArguments(this);
+        bundle.putString(ARGS_ANIMATION, animation.name());
         this.animation = animation;
     }
 
     public PresentAnimation getAnimation() {
+        if (animation == null) {
+            Bundle bundle = FragmentHelper.getArguments(this);
+            String animationName = bundle.getString(ARGS_ANIMATION);
+            if (animationName != null) {
+                animation = PresentAnimation.valueOf(animationName);
+            } else {
+                animation = PresentAnimation.None;
+            }
+        }
         return animation;
+    }
+
+    public boolean isContainer() {
+        return false;
     }
 
     // ------- statusBar --------
@@ -657,8 +648,37 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         return topBar;
     }
 
+    protected TopBar createTopBar() {
+        View root = getView();
+        if (root == null) {
+            return null;
+        }
+        int height = getTopBarHeight();
+        TopBar topBar = new TopBar(getContext());
+        topBar.setBackgroundColor(Color.BLUE);
+        topBar.setTitle("这是标题");
+
+        if (root instanceof LinearLayout) {
+            LinearLayout linearLayout = (LinearLayout) root;
+            linearLayout.addView(topBar, 0, new LinearLayout.LayoutParams(-1, height));
+        } else if (root instanceof FrameLayout) {
+            FrameLayout frameLayout = (FrameLayout) root;
+            frameLayout.addView(topBar, new FrameLayout.LayoutParams(-1, height));
+        } else {
+            throw new UnsupportedOperationException("NavigationFragment 还没适配 " + root.getClass().getSimpleName());
+        }
+        appendStatusBarPaddingAndHeight(topBar, getTopBarHeight());
+        return topBar;
+    }
+
+    private NavigationItem navigationItem;
+
+    public void setNavigationItem(NavigationItem item) {
+        navigationItem = item;
+    }
+
     public NavigationItem getNavigationItem() {
-        return null;
+        return navigationItem;
     }
 
     // ------ TabBarFragment -------
@@ -674,8 +694,20 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         return null;
     }
 
+    private TabBarItem tabBarItem;
+
+    public void setTabBarItem(TabBarItem item) {
+        tabBarItem = item;
+        Bundle args = FragmentHelper.getArguments(this);
+        args.putParcelable(ARGS_TAB_BAR_ITEM, tabBarItem);
+    }
+
     public TabBarItem getTabBarItem() {
-        return null;
+        if (tabBarItem == null) {
+            Bundle args = FragmentHelper.getArguments(this);
+            tabBarItem = args.getParcelable(ARGS_TAB_BAR_ITEM);
+        }
+        return tabBarItem;
     }
 
     // ------ DrawerFragment -------

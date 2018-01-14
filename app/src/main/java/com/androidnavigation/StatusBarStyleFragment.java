@@ -1,7 +1,5 @@
 package com.androidnavigation;
 
-import android.graphics.Color;
-
 /**
  * Created by listen on 2018/1/13.
  */
@@ -14,8 +12,4 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
         return "dark-content";
     }
 
-    @Override
-    protected int prefersStatusBarColor() {
-        return Color.GREEN;
-    }
 }

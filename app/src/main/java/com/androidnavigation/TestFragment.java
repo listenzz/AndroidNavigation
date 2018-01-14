@@ -121,7 +121,7 @@ public class TestFragment extends AwesomeFragment {
             public void onClick(View v) {
                 TabBarFragment tabBarFragment = getTabBarFragment();
                 if (tabBarFragment != null) {
-                    tabBarFragment.getBottomNavigationBar().toggle();
+                    tabBarFragment.toggleBottomBar();
                 }
             }
         });

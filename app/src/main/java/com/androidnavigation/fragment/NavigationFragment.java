@@ -60,6 +60,12 @@ public class NavigationFragment extends AwesomeFragment {
         }
     }
 
+    @Override
+    public boolean isContainer() {
+        return true;
+    }
+
+
     public void setRootFragment(AwesomeFragment fragment) {
         // FIXME
 //

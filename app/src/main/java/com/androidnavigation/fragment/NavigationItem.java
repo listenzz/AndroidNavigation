@@ -5,4 +5,7 @@ package com.androidnavigation.fragment;
  */
 
 public class NavigationItem {
+
+    public String title;
+
 }

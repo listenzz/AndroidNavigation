@@ -2,6 +2,8 @@ package com.androidnavigation.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -44,6 +46,9 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         if (savedInstanceState == null) {
             addFragment(R.id.drawer_menu, menuFragment, PresentAnimation.None);
             addFragment(R.id.drawer_content, contentFragment, PresentAnimation.None);
+        } else {
+            contentFragment = (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_content);
+            menuFragment = (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_menu);
         }
     }
 
@@ -77,12 +82,25 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     @Override
+    public boolean isContainer() {
+        return true;
+    }
+
+    @Override
     public NavigationFragment getNavigationFragment() {
         NavigationFragment navigationFragment = super.getNavigationFragment();
         if (navigationFragment == null && getContentFragment() != null) {
             return findClosestNavigationFragment(getContentFragment());
         }
         return null;
+    }
+
+    @Override
+    public void addFragment(int containerId, AwesomeFragment fragment, PresentAnimation animation) {
+        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(containerId, fragment, fragment.getSceneId());
+        transaction.commit();
     }
 
     private NavigationFragment findClosestNavigationFragment(AwesomeFragment fragment) {
@@ -126,8 +144,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         }
         return null;
     }
-
-
 
     @Override
     public void onDrawerSlide(View drawerView, float slideOffset) {
