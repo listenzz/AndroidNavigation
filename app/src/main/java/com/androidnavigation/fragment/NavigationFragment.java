@@ -173,7 +173,7 @@ public class NavigationFragment extends AwesomeFragment {
         transaction.commit();
     }
 
-    public void replaceRootFragment(final AwesomeFragment fragment) {
+    public void replaceToRootFragment(final AwesomeFragment fragment) {
         if (isAtLeastStarted()) {
             executeReplaceRootFragment(fragment);
         } else {

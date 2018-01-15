@@ -111,7 +111,7 @@ public class TestFragment extends AwesomeFragment {
             public void onClick(View v) {
                 NavigationFragment navigationFragment = getNavigationFragment();
                 if (navigationFragment != null) {
-                    navigationFragment.replaceRootFragment(new TestFragment());
+                    navigationFragment.replaceToRootFragment(new TestFragment());
                 }
             }
         });
