@@ -65,7 +65,6 @@ public class NavigationFragment extends AwesomeFragment {
         return true;
     }
 
-
     public void setRootFragment(AwesomeFragment fragment) {
         // FIXME
 //

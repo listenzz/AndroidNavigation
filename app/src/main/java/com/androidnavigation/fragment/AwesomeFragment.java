@@ -110,7 +110,7 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
     public void onResume() {
         super.onResume();
         if (!isContainer()) {
-           // Log.w(TAG, getDebugTag() + "#onResume-");
+            // Log.w(TAG, getDebugTag() + "#onResume-");
             setNeedsStatusBarAppearanceUpdate();
         }
     }
@@ -120,22 +120,22 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         super.onHiddenChanged(hidden);
         if (!hidden && isAdded()) {
             if (!isContainer()) {
-               // Log.w(TAG, getDebugTag() + "#onHiddenChanged:-");
+                // Log.w(TAG, getDebugTag() + "#onHiddenChanged:-");
                 setNeedsStatusBarAppearanceUpdate();
             }
         }
 
-       // Log.w(TAG, getDebugTag() + "#onHiddenChanged:" + hidden);
+        // Log.w(TAG, getDebugTag() + "#onHiddenChanged:" + hidden);
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && isAdded()) {
-           // Log.w(TAG, getDebugTag() + "#isVisibleToUser:-");
+            // Log.w(TAG, getDebugTag() + "#isVisibleToUser:-");
             setNeedsStatusBarAppearanceUpdate();
         }
-      //  Log.w(TAG, getDebugTag() + "#isVisibleToUser:" + isVisibleToUser);
+        //  Log.w(TAG, getDebugTag() + "#isVisibleToUser:" + isVisibleToUser);
     }
 
     @Override
@@ -143,7 +143,7 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
         PresentAnimation animation = getAnimation();
 
         // handle hidesBottomBarWhenPushed
-        if (hidesBottomBarWhenPushed()) {
+        if (!isContainer() && shouldHideBottomBarWhenPushed()) {
             NavigationFragment navigationFragment = getNavigationFragment();
             if (navigationFragment != null) {
                 TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
@@ -626,6 +626,18 @@ public class AwesomeFragment extends Fragment implements LifecycleObserver, Frag
 
     public boolean hidesBottomBarWhenPushed() {
         return true;
+    }
+
+    boolean shouldHideBottomBarWhenPushed() {
+        if (hidesBottomBarWhenPushed()) {
+            return true;
+        } else {
+            AwesomeFragment ahead = FragmentHelper.getAheadFragment(getFragmentManager(), this);
+            if (ahead != null) {
+                return ahead.shouldHideBottomBarWhenPushed();
+            }
+        }
+        return false;
     }
 
     public NavigationFragment getNavigationFragment() {
