@@ -6,6 +6,8 @@ Single Activity architecture component, inspired by iOS navigation system. A ver
 
 ![android-navigation](./screenshot/android-navigation.png)
 
+<img src="./screenshot/drawer.gif" width="280px"/> <img src="./screenshot/status.gif" width="280px"/>
+
 ## 特性
 
 - 使用 Lifecycle 架构组件，解决了生命周期问题
