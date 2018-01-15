@@ -100,6 +100,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(containerId, fragment, fragment.getSceneId());
+        transaction.setPrimaryNavigationFragment(fragment);
         transaction.commit();
     }
 
