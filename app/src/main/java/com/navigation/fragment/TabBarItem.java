@@ -1,8 +1,7 @@
-package com.androidnavigation.fragment;
+package com.navigation.fragment;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.DrawableRes;
 
 /**
  * Created by Listen on 2018/1/11.
@@ -12,13 +11,15 @@ public class TabBarItem implements Parcelable {
 
     public String title;
 
-    public @DrawableRes int icon;
+    public String icon;
 
-    public TabBarItem(@DrawableRes int icon, String title) {
-        this.icon = icon;
+    public boolean hideTabBarWhenPush;
+
+    public TabBarItem(String iconUri, String title, boolean hideTabBarWhenPush) {
+        this.icon = iconUri;
         this.title = title;
+        this.hideTabBarWhenPush = hideTabBarWhenPush;
     }
-
 
     @Override
     public int describeContents() {
@@ -28,15 +29,17 @@ public class TabBarItem implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.title);
-        dest.writeInt(this.icon);
+        dest.writeString(this.icon);
+        dest.writeByte(this.hideTabBarWhenPush ? (byte) 1 : (byte) 0);
     }
 
     protected TabBarItem(Parcel in) {
         this.title = in.readString();
-        this.icon = in.readInt();
+        this.icon = in.readString();
+        this.hideTabBarWhenPush = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<TabBarItem> CREATOR = new Parcelable.Creator<TabBarItem>() {
+    public static final Creator<TabBarItem> CREATOR = new Creator<TabBarItem>() {
         @Override
         public TabBarItem createFromParcel(Parcel source) {
             return new TabBarItem(source);

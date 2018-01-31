@@ -1,12 +1,10 @@
-package com.androidnavigation.fragment;
+package com.navigation.fragment;
 
 import android.annotation.TargetApi;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.OnLifecycleEvent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
@@ -15,16 +13,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowInsets;
 
-import java.util.LinkedList;
+public abstract class AwesomeActivity extends AppCompatActivity implements PresentableActivity, FragmentManager.OnBackStackChangedListener {
 
-public class AwesomeActivity extends AppCompatActivity implements PresentableActivity, LifecycleObserver, FragmentManager.OnBackStackChangedListener {
+    public static final String TAG = "Navigation";
 
-    public static final String TAG = "AndroidNavigation";
+    private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getLifecycle().addObserver(this);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         setStatusBarTranslucent(true);
     }
@@ -44,6 +41,7 @@ public class AwesomeActivity extends AppCompatActivity implements PresentableAct
             AwesomeFragment fragment = (AwesomeFragment) fragmentManager.findFragmentByTag(entry.getName());
             if (!fragment.dispatchBackPressed()) {
                 if (count == 1) {
+                    Log.w(TAG, "finish activity");
                     ActivityCompat.finishAfterTransition(this);
                 } else {
                     Log.i(TAG, "dismiss:");
@@ -105,30 +103,38 @@ public class AwesomeActivity extends AppCompatActivity implements PresentableAct
         return FragmentHelper.getAheadFragment(getSupportFragmentManager(), fragment);
     }
 
-    protected void setRootFragment(final AwesomeFragment fragment) {
-        scheduleTask(new Runnable() {
-            @Override
-            public void run() {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                int count = fragmentManager.getBackStackEntryCount();
-                if (count > 0) {
-                    AwesomeFragment top = (AwesomeFragment) fragmentManager.findFragmentByTag(fragmentManager.getBackStackEntryAt(count - 1).getName());
-                    top.getNavigationFragment().setAnimation(PresentAnimation.None);
-
-                    String tag = fragmentManager.getBackStackEntryAt(0).getName();
-                    fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    public void setRootFragment(final AwesomeFragment fragment) {
+        Fragment f = getSupportFragmentManager().findFragmentById(android.R.id.content);
+        if (f != null) {
+            scheduleTask(new Runnable() {
+                @Override
+                public void run() {
+                    setRootFragmentInternal(fragment);
                 }
+            });
+        } else {
+            setRootFragmentInternal(fragment);
+        }
+    }
 
-                fragment.setAnimation(PresentAnimation.None);
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.setReorderingAllowed(true);
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.add(android.R.id.content, fragment, fragment.getSceneId());
-                transaction.addToBackStack(fragment.getSceneId());
-                transaction.commit();
+    private void setRootFragmentInternal(AwesomeFragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        int count = fragmentManager.getBackStackEntryCount();
+        if (count > 0) {
+            AwesomeFragment top = (AwesomeFragment) fragmentManager.findFragmentByTag(fragmentManager.getBackStackEntryAt(count - 1).getName());
+            top.getNavigationFragment().setAnimation(PresentAnimation.None);
 
-            }
-        });
+            String tag = fragmentManager.getBackStackEntryAt(0).getName();
+            fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+
+        fragment.setAnimation(PresentAnimation.None);
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setReorderingAllowed(true);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(android.R.id.content, fragment, fragment.getSceneId());
+        transaction.addToBackStack(fragment.getSceneId());
+        transaction.commit();
     }
 
     private void setStatusBarTranslucent(boolean translucent) {
@@ -172,17 +178,12 @@ public class AwesomeActivity extends AppCompatActivity implements PresentableAct
 
     private void executeDismissFragment(AwesomeFragment fragment) {
         // 如果有 presented 就 dismiss presented, 否则就 dismiss 自己
-        AwesomeFragment presented = getPresentedFragment(fragment);
-        AwesomeFragment presenting;
-        if (presented != null) {
-            presenting = fragment;
-        } else {
-            presented = fragment;
-            presenting = getPresentingFragment(fragment);
-        }
+        AwesomeFragment top = (AwesomeFragment) getSupportFragmentManager().findFragmentById(android.R.id.content);
+        AwesomeFragment presenting = getPresentingFragment(fragment);
 
-        presented.setAnimation(PresentAnimation.Modal);
-        presented.getInnermostFragment().setAnimation(PresentAnimation.Modal);
+
+        top.setAnimation(PresentAnimation.Modal);
+        top.getInnermostFragment().setAnimation(PresentAnimation.Modal);
 
         if (presenting != null) {
             presenting.setAnimation(PresentAnimation.Modal);
@@ -192,59 +193,21 @@ public class AwesomeActivity extends AppCompatActivity implements PresentableAct
             ActivityCompat.finishAfterTransition(this);
         } else {
             presenting.onFragmentResult(fragment.getRequestCode(), fragment.getResultCode(), fragment.getResultData());
-            getSupportFragmentManager().popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            getSupportFragmentManager().popBackStack(fragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
 
     }
-
-
-    private boolean active;
-    private LinkedList<Runnable> tasks = new LinkedList<>();
 
     protected void scheduleTask(Runnable runnable) {
-        if (getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
-            tasks.add(runnable);
-            considerExecute();
-        }
+        lifecycleDelegate.scheduleTask(runnable);
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
-    void onStateChange() {
-        if (getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
-            // 清空队列
-            tasks.clear();
-            getLifecycle().removeObserver(this);
-        } else {
-            activeStateChanged(isActiveState(getLifecycle().getCurrentState()));
-        }
+    protected boolean isAtLeastStarted() {
+        return lifecycleDelegate.isAtLeastStarted();
     }
 
-    void activeStateChanged(boolean newActive) {
-        if (newActive != this.active) {
-            this.active = newActive;
-            considerExecute();
-        }
-    }
-
-    void considerExecute() {
-        if (active) {
-            if (isActiveState(getLifecycle().getCurrentState())) {
-                if (tasks.size() > 0) {
-                    for (Runnable task : tasks) {
-                        task.run();
-                    }
-                    tasks.clear();
-                }
-            }
-        }
-    }
-
-    boolean isActiveState(Lifecycle.State state) {
-        return state.isAtLeast(Lifecycle.State.STARTED);
-    }
-
-    boolean isAtLeastStarted() {
-        return isActiveState(getLifecycle().getCurrentState());
+    protected boolean isAtLeastCreated() {
+        return lifecycleDelegate.isAtLeatCreated();
     }
 
 }

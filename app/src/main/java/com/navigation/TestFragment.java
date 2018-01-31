@@ -1,6 +1,8 @@
-package com.androidnavigation;
+package com.navigation;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -9,9 +11,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.androidnavigation.fragment.AwesomeFragment;
-import com.androidnavigation.fragment.NavigationFragment;
-import com.androidnavigation.fragment.TabBarFragment;
+import com.navigation.fragment.AwesomeFragment;
+import com.navigation.fragment.NavigationFragment;
+import com.navigation.fragment.TabBarFragment;
+import com.navigation.fragment.TopBar;
 
 /**
  * Created by Listen on 2018/1/11.
@@ -24,11 +27,6 @@ public class TestFragment extends AwesomeFragment {
     TextView resultText;
 
     EditText resultEditText;
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
 
     @Nullable
     @Override
@@ -126,8 +124,6 @@ public class TestFragment extends AwesomeFragment {
             }
         });
 
-
-
         return root;
     }
 
@@ -135,6 +131,21 @@ public class TestFragment extends AwesomeFragment {
     public void onDestroyView() {
         super.onDestroyView();
         hideSoftInput(resultEditText);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        TopBar topBar = getTopBar();
+        if (topBar != null) {
+            getTopBar().setTitle("导航");
+            topBar.setBackgroundColor(Color.BLUE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                topBar.setElevation(2);
+            } else {
+                topBar.setShadow(null);
+            }
+        }
     }
 
     @Override
@@ -153,6 +164,11 @@ public class TestFragment extends AwesomeFragment {
                 resultText.setText("pop result：" + text);
             }
         }
+    }
+
+    @Override
+    protected String preferredStatusBarStyle() {
+        return "dark-content";
     }
 
 }

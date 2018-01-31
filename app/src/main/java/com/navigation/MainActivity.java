@@ -1,12 +1,12 @@
-package com.androidnavigation;
+package com.navigation;
 
 import android.os.Bundle;
 
-import com.androidnavigation.fragment.AwesomeActivity;
-import com.androidnavigation.fragment.DrawerFragment;
-import com.androidnavigation.fragment.NavigationFragment;
-import com.androidnavigation.fragment.TabBarFragment;
-import com.androidnavigation.fragment.TabBarItem;
+import com.navigation.fragment.AwesomeActivity;
+import com.navigation.fragment.DrawerFragment;
+import com.navigation.fragment.NavigationFragment;
+import com.navigation.fragment.TabBarFragment;
+import com.navigation.fragment.TabBarItem;
 
 public class MainActivity extends AwesomeActivity {
 
@@ -20,12 +20,12 @@ public class MainActivity extends AwesomeActivity {
             TestFragment testFragment = new TestFragment();
             NavigationFragment navigation = new NavigationFragment();
             navigation.setRootFragment(testFragment);
-            navigation.setTabBarItem(new TabBarItem(R.drawable.ic_home_white_24dp, "Home"));
+            navigation.setTabBarItem(new TabBarItem("ic_home_white_24dp", "Home", true));
 
             TestStatusBarFragment testStatusBarFragment = new TestStatusBarFragment();
             NavigationFragment statusBar = new NavigationFragment();
             statusBar.setRootFragment(testStatusBarFragment);
-            statusBar.setTabBarItem(new TabBarItem(R.drawable.ic_discover_white_24dp, "Status"));
+            statusBar.setTabBarItem(new TabBarItem("ic_discover_white_24dp", "Status", true));
 
             TabBarFragment tabBarFragment = new TabBarFragment();
             tabBarFragment.setFragments(navigation, statusBar);

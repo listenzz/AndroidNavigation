@@ -1,4 +1,4 @@
-package com.androidnavigation;
+package com.navigation;
 
 import android.graphics.Rect;
 import android.view.View;

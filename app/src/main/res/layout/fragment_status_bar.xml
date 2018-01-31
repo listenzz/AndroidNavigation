@@ -12,6 +12,13 @@
         android:textColor="#000000"
         android:textSize="12dp" />
 
+    <TextView
+        android:id="@+id/pop_to_root"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="popToRoot"
+        android:textColor="@color/touchable_opacity_font_color" />
 
     <TextView
         android:id="@+id/toggle_drawer"

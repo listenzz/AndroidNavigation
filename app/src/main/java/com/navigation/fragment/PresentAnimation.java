@@ -1,8 +1,8 @@
-package com.androidnavigation.fragment;
+package com.navigation.fragment;
 
 import android.support.annotation.AnimRes;
 
-import com.androidnavigation.R;
+import com.navigation.R;
 
 /**
  * Created by Listen on 2017/11/20.

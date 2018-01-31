@@ -1,4 +1,4 @@
-package com.androidnavigation;
+package com.navigation;
 
 import android.graphics.Color;
 
@@ -9,13 +9,13 @@ import android.graphics.Color;
 public class StatusBarColorFragment extends TestStatusBarFragment {
 
     @Override
-    protected int prefersStatusBarColor() {
+    protected int preferredStatusBarColor() {
         return Color.RED;
     }
 
 
     @Override
-    protected boolean prefersStatusBarColorAnimated() {
+    protected boolean preferredStatusBarColorAnimated() {
         return true;
     }
 }

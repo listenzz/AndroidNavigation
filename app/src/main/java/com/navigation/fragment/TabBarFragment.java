@@ -1,21 +1,24 @@
-package com.androidnavigation.fragment;
+package com.navigation.fragment;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.AnimRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-
-import com.androidnavigation.R;
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
+import com.ashokvarma.bottomnavigation.TextBadgeItem;
+import com.navigation.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,21 +34,21 @@ public class TabBarFragment extends AwesomeFragment {
     private static final String SAVED_POSITION = "position";
     private static final String SAVED_BOTTOM_BAR_HIDDEN = "bottom_bar_hidden";
 
-    BottomNavigationBar bottomNavigationBar;
+    private BottomBar bottomBar;
 
-    List<AwesomeFragment> fragments;
+    private List<AwesomeFragment> fragments;
 
-    ArrayList<String> fragmentTags = new ArrayList<>();
+    private ArrayList<String> fragmentTags = new ArrayList<>();
+    private ArrayList<TextBadgeItem> badges = new ArrayList<>();
 
-    int position;
-
-    boolean bottomBarHidden;
+    private int position;
+    private boolean bottomBarHidden;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_tabbar, container, false);
-        bottomNavigationBar = root.findViewById(R.id.bottom_bar);
+        bottomBar = root.findViewById(R.id.bottom_bar);
         return root;
     }
 
@@ -61,63 +64,23 @@ public class TabBarFragment extends AwesomeFragment {
             for (int i = 0, size = fragmentTags.size(); i < size; i++) {
                 fragments.add((AwesomeFragment) fragmentManager.findFragmentByTag(fragmentTags.get(i)));
             }
+            initBottomNavigationBar(fragments);
         } else {
-            FragmentManager fragmentManager = getChildFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.setReorderingAllowed(true);
-            for (int i = 0, size = fragments.size(); i < size; i++) {
-                AwesomeFragment fragment = fragments.get(i);
-                fragmentTags.add(fragment.getSceneId());
-                transaction.add(R.id.tabs_content, fragment, fragment.getSceneId());
-                if (i == 0) {
-                    transaction.setPrimaryNavigationFragment(fragment);
-                } else {
-                    transaction.hide(fragment);
-                }
+            if (fragments != null) {
+                addFragments(fragments);
+                initBottomNavigationBar(fragments);
             }
-            transaction.commit();
         }
 
-        // bottomNavigationBar
-
-        bottomNavigationBar.setMode(BottomNavigationBar.MODE_FIXED);
-        bottomNavigationBar.setBackgroundStyle(BottomNavigationBar.BACKGROUND_STYLE_STATIC);
-        bottomNavigationBar.setTabSelectedListener(new BottomNavigationBar.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(int position) {
-                Log.i(TAG, "tab position:" + position);
-                setSelectedIndex(position);
-            }
-
-            @Override
-            public void onTabUnselected(int position) {
-
-            }
-
-            @Override
-            public void onTabReselected(int position) {
-
-            }
-        });
-
-        for (int i = 0, size = fragments.size(); i < size; i++) {
-            AwesomeFragment fragment = fragments.get(i);
-            TabBarItem tabBarItem = fragment.getTabBarItem();
-            bottomNavigationBar.addItem(new BottomNavigationItem(tabBarItem.icon, tabBarItem.title));
-        }
-
-        bottomNavigationBar
-                .initialise();
-
+        // bottomBar
         if (savedInstanceState != null) {
             position = savedInstanceState.getInt(SAVED_POSITION);
-            bottomNavigationBar.selectTab(position);
+            bottomBar.selectTab(position);
             bottomBarHidden = savedInstanceState.getBoolean(SAVED_BOTTOM_BAR_HIDDEN, false);
             if (bottomBarHidden) {
-                bottomNavigationBar.setVisibility(View.GONE);
+                bottomBar.setVisibility(View.GONE);
             }
         }
-
     }
 
     @Override
@@ -153,8 +116,74 @@ public class TabBarFragment extends AwesomeFragment {
         setFragments(Arrays.asList(fragments));
     }
 
-    public void setFragments(final List<AwesomeFragment> fragments) {
+    public void setFragments(List<AwesomeFragment> fragments) {
+        if (isAtLeastCreated()) {
+            addFragments(fragments);
+            initBottomNavigationBar(fragments);
+        }
         this.fragments = fragments;
+    }
+
+    private void addFragments(List<AwesomeFragment> fragments) {
+        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setReorderingAllowed(true);
+        for (int i = 0, size = fragments.size(); i < size; i++) {
+            AwesomeFragment fragment = fragments.get(i);
+            fragmentTags.add(fragment.getSceneId());
+            transaction.add(R.id.tabs_content, fragment, fragment.getSceneId());
+            if (i == 0) {
+                transaction.setPrimaryNavigationFragment(fragment);
+            } else {
+                transaction.hide(fragment);
+            }
+        }
+        transaction.commit();
+    }
+
+    private void initBottomNavigationBar(List<AwesomeFragment> fragments) {
+        bottomBar.setMode(BottomNavigationBar.MODE_FIXED);
+        bottomBar.setBackgroundStyle(BottomNavigationBar.BACKGROUND_STYLE_STATIC);
+        bottomBar.setTabSelectedListener(new BottomNavigationBar.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(int position) {
+                Log.i(TAG, "tab position:" + position);
+                setSelectedIndex(position);
+            }
+
+            @Override
+            public void onTabUnselected(int position) {
+
+            }
+
+            @Override
+            public void onTabReselected(int position) {
+
+            }
+        });
+
+        for (int i = 0, size = fragments.size(); i < size; i++) {
+            AwesomeFragment fragment = fragments.get(i);
+            TabBarItem tabBarItem = fragment.getTabBarItem();
+            Drawable icon = null;
+            if (tabBarItem.icon != null) {
+                icon = DrawableUtils.fromUri(getContext(), tabBarItem.icon);
+            }
+            BottomNavigationItem bottomNavigationItem = new BottomNavigationItem(icon, tabBarItem.title);
+            TextBadgeItem textBadgeItem = new TextBadgeItem();
+            textBadgeItem.setBackgroundColor("#FF3B30");
+            bottomNavigationItem.setBadgeItem(textBadgeItem);
+            bottomBar.addItem(bottomNavigationItem);
+            badges.add(textBadgeItem);
+        }
+
+        onBottomBarInitialise(bottomBar);
+        bottomBar.initialise();
+
+        for (int i = 0, size = badges.size(); i < size; i++) {
+            TextBadgeItem badgeItem = badges.get(i);
+            badgeItem.hide(false);
+        }
     }
 
     public void setSelectedFragment(AwesomeFragment fragment) {
@@ -167,11 +196,11 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     public int getSelectedIndex() {
-        return bottomNavigationBar.getCurrentSelectedPosition();
+        return bottomBar.getCurrentSelectedPosition();
     }
 
     public void setSelectedIndex(final int index) {
-
+        bottomBar.selectTab(index, false);
         scheduleTask(new Runnable() {
             @Override
             public void run() {
@@ -184,6 +213,17 @@ public class TabBarFragment extends AwesomeFragment {
                 transaction.setPrimaryNavigationFragment(current);
                 transaction.show(current);
                 transaction.commit();
+
+                if (current.getNavigationFragment() != null && current.shouldHideBottomBarWhenPushed()) {
+                    if (current.getChildFragmentCountAtBackStack() <= 1) {
+                        bottomBar.setVisibility(View.VISIBLE);
+                    } else {
+                        bottomBar.setVisibility(View.GONE);
+                    }
+                } else {
+                    bottomBar.setVisibility(View.VISIBLE);
+                }
+
             }
         });
     }
@@ -193,11 +233,30 @@ public class TabBarFragment extends AwesomeFragment {
     // -------------------------
 
     public void toggleBottomBar() {
-        bottomNavigationBar.toggle();
+        bottomBar.toggle();
     }
 
-    protected BottomNavigationBar getBottomNavigationBar() {
-        return bottomNavigationBar;
+    protected void onBottomBarInitialise(BottomBar bottomBar) {
+
+    }
+
+    public void setBadge(final int index, final String text) {
+        scheduleTask(new Runnable() {
+            @Override
+            public void run() {
+                TextBadgeItem textBadgeItem = badges.get(index);
+                if (TextUtils.isEmpty(text)) {
+                    textBadgeItem.hide();
+                } else {
+                    textBadgeItem.setText(text);
+                    textBadgeItem.show();
+                }
+            }
+        });
+    }
+
+    protected BottomNavigationBar getBottomBar() {
+        return bottomBar;
     }
 
     void showBottomNavigationBarAnimatedWhenPop(@AnimRes int anim) {
@@ -205,7 +264,7 @@ public class TabBarFragment extends AwesomeFragment {
         Log.w(TAG, "bottomBarHidden:" + bottomBarHidden);
         Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
         animation.setAnimationListener(new BottomNavigationBarAnimationListener(false));
-        bottomNavigationBar.startAnimation(animation);
+        bottomBar.startAnimation(animation);
     }
 
     void hideBottomNavigationBarAnimatedWhenPush(@AnimRes int anim) {
@@ -213,7 +272,7 @@ public class TabBarFragment extends AwesomeFragment {
         Log.w(TAG, "bottomBarHidden:" + bottomBarHidden);
         Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
         animation.setAnimationListener(new BottomNavigationBarAnimationListener(true));
-        bottomNavigationBar.startAnimation(animation);
+        bottomBar.startAnimation(animation);
     }
 
     class BottomNavigationBarAnimationListener implements Animation.AnimationListener {
@@ -227,14 +286,14 @@ public class TabBarFragment extends AwesomeFragment {
         @Override
         public void onAnimationStart(Animation animation) {
             if (hidden) {
-                bottomNavigationBar.setVisibility(View.GONE);
+                bottomBar.setVisibility(View.GONE);
             }
         }
 
         @Override
         public void onAnimationEnd(Animation animation) {
             if (!hidden) {
-                bottomNavigationBar.setVisibility(View.VISIBLE);
+                bottomBar.setVisibility(View.VISIBLE);
             }
         }
 

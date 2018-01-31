@@ -1,4 +1,4 @@
-package com.androidnavigation.fragment;
+package com.navigation.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.androidnavigation.R;
+import com.navigation.R;
 
 import java.util.List;
 
@@ -18,10 +18,21 @@ import java.util.List;
 
 public class NavigationFragment extends AwesomeFragment {
 
+    private AwesomeFragment rootFragment;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_navigation, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState == null && rootFragment != null) {
+            addRootFragment(rootFragment);
+            rootFragment = null;
+        }
     }
 
     @Override
@@ -53,7 +64,10 @@ public class NavigationFragment extends AwesomeFragment {
         FragmentManager fragmentManager = getChildFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 1) {
-            popFragment();
+            AwesomeFragment topFragment = getTopFragment();
+            if (!topFragment.shouldHideBackButton()) {
+                popFragment();
+            }
             return true;
         } else {
             return super.onBackPressed();
@@ -66,17 +80,29 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     public void setRootFragment(AwesomeFragment fragment) {
-        // FIXME
-//
-//        int count = getChildFragmentCount();
-//        if (count > 0) {
-//            throw new IllegalStateException("已经设置了 root fragment，不能再设置");
-//        }
-        addFragment(R.id.navigation_content, fragment, PresentAnimation.None);
+        if (isAtLeastCreated()) {
+            addRootFragment(fragment);
+        } else {
+            rootFragment = fragment;
+        }
+    }
+
+    private void addRootFragment(AwesomeFragment fragment) {
+        AwesomeFragment root =  getRootFragment();
+        if (root != null) {
+            throw new IllegalStateException("不可以重复设置 rootFragment");
+        }
+
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.setReorderingAllowed(true);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
+        transaction.addToBackStack(fragment.getSceneId());
+        transaction.commit();
     }
 
     public void pushFragment(AwesomeFragment fragment) {
-        int count = getChildFragmentCount();
+        int count = getChildFragmentCountAtBackStack();
         if (count == 0) {
             throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
         }
@@ -144,7 +170,7 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     private void executeReplaceFragment(AwesomeFragment fragment) {
-        int count = getChildFragmentCount();
+        int count = getChildFragmentCountAtBackStack();
         if (count == 0) {
             throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
         }
