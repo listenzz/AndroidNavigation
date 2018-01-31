@@ -76,13 +76,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         }
 
         presentableActivity = (PresentableActivity) activity;
-        try {
-            style = presentableActivity.getStyle().clone();
-            onCustomStyle(style);
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            style = presentableActivity.getStyle();
-        }
+        //Log.i(TAG, getDebugTag() + "#onAttach");
     }
 
     @Override
@@ -95,6 +89,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getChildFragmentManager().addOnBackStackChangedListener(this);
+        //Log.i(TAG, getDebugTag() + "#onCreate");
     }
 
     @Override
@@ -106,6 +101,15 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
     @Override
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
+
+        try {
+            style = presentableActivity.getStyle().clone();
+            onCustomStyle(style);
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            style = presentableActivity.getStyle();
+        }
+
         if(!isContainer()) {
             setBackgroundDrawable(root, new ColorDrawable(preferredBackgroundColor()));
         }
@@ -114,11 +118,13 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         if (parent instanceof NavigationFragment) {
             this.toolBar = createToolBar(getView());
         }
+        //Log.i(TAG, getDebugTag() + "#onViewCreated");
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //Log.i(TAG, getDebugTag() + "#onActivityCreated");
     }
 
     private void setBackgroundDrawable(View root, Drawable drawable) {
