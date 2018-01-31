@@ -680,13 +680,13 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         return null;
     }
 
-    protected boolean isRoot() {
+    protected boolean isNavigationRoot() {
         NavigationFragment navigationFragment = getNavigationFragment();
         if (navigationFragment != null) {
             AwesomeFragment awesomeFragment = navigationFragment.getRootFragment();
             return awesomeFragment == this;
         }
-        return true;
+        return false;
     }
 
     private TopBar toolBar;
@@ -731,7 +731,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
             toolBar.setShadow(style.getShadow());
         }
 
-        if (!isRoot() && !shouldHideBackButton()) {
+        if (!isNavigationRoot() && !shouldHideBackButton()) {
             toolBar.setNavigationIcon(style.getBackIcon(getContext()));
             toolBar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override

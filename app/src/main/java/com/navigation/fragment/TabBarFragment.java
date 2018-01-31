@@ -279,7 +279,7 @@ public class TabBarFragment extends AwesomeFragment {
 
     void showBottomNavigationBarAnimatedWhenPop(@AnimRes int anim) {
         bottomBarHidden = false;
-        Log.w(TAG, "bottomBarHidden:" + bottomBarHidden);
+       // Log.w(TAG, "bottomBarHidden:" + bottomBarHidden);
         Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
         animation.setAnimationListener(new BottomNavigationBarAnimationListener(false));
         bottomBar.startAnimation(animation);
@@ -287,7 +287,7 @@ public class TabBarFragment extends AwesomeFragment {
 
     void hideBottomNavigationBarAnimatedWhenPush(@AnimRes int anim) {
         bottomBarHidden = true;
-        Log.w(TAG, "bottomBarHidden:" + bottomBarHidden);
+       // Log.w(TAG, "bottomBarHidden:" + bottomBarHidden);
         Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
         animation.setAnimationListener(new BottomNavigationBarAnimationListener(true));
         bottomBar.startAnimation(animation);

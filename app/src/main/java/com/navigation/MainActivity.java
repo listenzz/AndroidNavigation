@@ -13,6 +13,10 @@ import com.navigation.fragment.TabBarItem;
 
 public class MainActivity extends AwesomeActivity {
 
+    public static String fromCharCode(int... codePoints) {
+        return new String(codePoints, 0, codePoints.length);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,12 +27,14 @@ public class MainActivity extends AwesomeActivity {
             TestFragment testFragment = new TestFragment();
             NavigationFragment navigation = new NavigationFragment();
             navigation.setRootFragment(testFragment);
-            navigation.setTabBarItem(new TabBarItem("ic_home_white_24dp", "Home"));
+            String navigationIcon = "font://FontAwesome/" + fromCharCode(61732) + "/24";
+            navigation.setTabBarItem(new TabBarItem(navigationIcon, "Navigation"));
 
             TestStatusBarFragment testStatusBarFragment = new TestStatusBarFragment();
             NavigationFragment statusBar = new NavigationFragment();
             statusBar.setRootFragment(testStatusBarFragment);
-            statusBar.setTabBarItem(new TabBarItem("ic_discover_white_24dp", "Status"));
+            String styleIcon = "flower";
+            statusBar.setTabBarItem(new TabBarItem(styleIcon, "Status"));
 
             TabBarFragment tabBarFragment = new TabBarFragment();
             tabBarFragment.setFragments(navigation, statusBar);
