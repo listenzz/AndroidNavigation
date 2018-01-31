@@ -1,8 +1,6 @@
 package com.navigation;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -12,9 +10,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.navigation.fragment.AwesomeFragment;
+import com.navigation.fragment.BarStyle;
 import com.navigation.fragment.NavigationFragment;
 import com.navigation.fragment.TabBarFragment;
-import com.navigation.fragment.TopBar;
 
 /**
  * Created by Listen on 2018/1/11.
@@ -136,16 +134,7 @@ public class TestFragment extends AwesomeFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        TopBar topBar = getTopBar();
-        if (topBar != null) {
-            getTopBar().setTitle("导航");
-            topBar.setBackgroundColor(Color.BLUE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                topBar.setElevation(2);
-            } else {
-                topBar.setShadow(null);
-            }
-        }
+        setTitle("导航");
     }
 
     @Override
@@ -167,8 +156,8 @@ public class TestFragment extends AwesomeFragment {
     }
 
     @Override
-    protected String preferredStatusBarStyle() {
-        return "dark-content";
+    protected BarStyle preferredStatusBarStyle() {
+        return BarStyle.DarkContent;
     }
 
 }

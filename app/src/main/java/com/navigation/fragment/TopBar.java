@@ -82,31 +82,35 @@ public class TopBar extends Toolbar {
         }
     }
 
-    public TextView getTitleView() {
-        return titleView;
-    }
-
-    public TextView getLeftButton() {
-        return leftButton;
-    }
-
-    public TextView getRightButton() {
-        return rightButton;
-    }
-
-    public int getContentInset() {
-        return this.contentInset;
-    }
-
-    public void setTitleViewAlignment(String alignment) {
+    public void setTitleGravity(int gravity) {
         LayoutParams layoutParams = (LayoutParams) titleView.getLayoutParams();
-        if ("center".equals(alignment)) {
-            layoutParams.gravity = Gravity.CENTER;
-        } else {
-            layoutParams.gravity = Gravity.CENTER_VERTICAL | Gravity.LEFT;
-
-        }
+        layoutParams.gravity = gravity;
         titleView.setLayoutParams(layoutParams);
     }
 
+    @Override
+    public void setTitle(int resId) {
+        setTitle(getContext().getText(resId));
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        throw new UnsupportedOperationException("please use AwesomeFragment#setTitle to setup title.");
+    }
+
+    protected TextView getTitleView() {
+        return titleView;
+    }
+
+    protected TextView getLeftButton() {
+        return leftButton;
+    }
+
+    protected TextView getRightButton() {
+        return rightButton;
+    }
+
+    protected int getContentInset() {
+        return this.contentInset;
+    }
 }

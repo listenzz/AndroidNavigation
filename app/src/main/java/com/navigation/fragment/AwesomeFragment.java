@@ -5,7 +5,7 @@ import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -27,6 +27,7 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.navigation.R;
 
@@ -64,6 +65,8 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
 
     private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
 
+    private Style style;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -71,7 +74,15 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         if (!(activity instanceof PresentableActivity)) {
             throw new IllegalArgumentException("Activity must implements PresentableActivity!");
         }
+
         presentableActivity = (PresentableActivity) activity;
+        try {
+            style = presentableActivity.getStyle().clone();
+            onCustomStyle(style);
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            style = presentableActivity.getStyle();
+        }
     }
 
     @Override
@@ -101,7 +112,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
 
         AwesomeFragment parent = getParent();
         if (parent instanceof NavigationFragment) {
-            this.topBar = createTopBar(getView());
+            this.toolBar = createToolBar(getView());
         }
     }
 
@@ -116,7 +127,11 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
     }
 
     protected int preferredBackgroundColor() {
-        return Color.WHITE;
+        return style.getScreenBackgroundColor();
+    }
+
+    protected void onCustomStyle(Style style) {
+
     }
 
     @Override
@@ -428,12 +443,12 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
 
     // ------- statusBar --------
 
-    protected String preferredStatusBarStyle() {
+    protected BarStyle preferredStatusBarStyle() {
         AwesomeFragment childFragmentForStatusBarStyle = childFragmentForStatusBarStyle();
         if (childFragmentForStatusBarStyle != null) {
             return childFragmentForStatusBarStyle.preferredStatusBarStyle();
         }
-        return "light-content";
+        return BarStyle.LightContent;
     }
 
     protected boolean preferredStatusBarHidden() {
@@ -449,7 +464,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         if (childFragmentForStatusBarColor != null) {
             return childFragmentForStatusBarColor.preferredStatusBarColor();
         }
-        return Color.TRANSPARENT;
+        return style.getStatusBarColor();
     }
 
     protected boolean preferredStatusBarColorAnimated() {
@@ -498,11 +513,11 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         return getActivity().getWindow();
     }
 
-    protected void setStatusBarStyle(String style) {
+    protected void setStatusBarStyle(BarStyle style) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(
-                    style.equals("dark-content") ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
+                    style == BarStyle.DarkContent ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
         }
     }
 
@@ -659,13 +674,22 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         return null;
     }
 
-    private TopBar topBar;
-
-    public TopBar getTopBar() {
-        return topBar;
+    protected boolean isRoot() {
+        NavigationFragment navigationFragment = getNavigationFragment();
+        if (navigationFragment != null) {
+            AwesomeFragment awesomeFragment = navigationFragment.getRootFragment();
+            return awesomeFragment == this;
+        }
+        return true;
     }
 
-    protected TopBar createTopBar(View parent) {
+    private TopBar toolBar;
+
+    public TopBar getToolBar() {
+        return toolBar;
+    }
+
+    private TopBar createToolBar(View parent) {
         if (getView() == null || getContext() == null) return null;
 
         TypedValue typedValue = new TypedValue();
@@ -684,18 +708,110 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         } else {
             throw new UnsupportedOperationException("NavigationFragment 还没适配 " + parent.getClass().getSimpleName());
         }
+
         appendStatusBarPaddingAndHeight(topBar, getTopBarHeight());
+        precustomTopBar(topBar);
+        onCreateToolBar(topBar);
+
         return topBar;
     }
 
-    private NavigationItem navigationItem;
+    protected void precustomTopBar(TopBar toolBar) {
+        toolBar.setBackgroundColor(style.getToolBarBackgroundColor());
 
-    public void setNavigationItem(NavigationItem item) {
-        navigationItem = item;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolBar.setElevation(style.getElevation(getContext().getApplicationContext()));
+        } else {
+            toolBar.setShadow(style.getShadow());
+        }
+
+        if (!isRoot() && !shouldHideBackButton()) {
+            toolBar.setNavigationIcon(style.getBackIcon(getContext()));
+            toolBar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    getNavigationFragment().popFragment();
+                }
+            });
+        }
     }
 
-    public NavigationItem getNavigationItem() {
-        return navigationItem;
+    protected void onCreateToolBar(TopBar toolBar) {
+
+    }
+
+    protected void setTitle(int resId) {
+        setTitle(getContext().getText(resId));
+    }
+
+    public void setTitle(CharSequence title) {
+        TopBar toolBar = getToolBar();
+        if (toolBar != null) {
+
+            TextView titleView = toolBar.getTitleView();
+            toolBar.setTitleGravity(style.getTitleGravity());
+            titleView.setTextColor(style.getTitleTextColor());
+            titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, style.getTitleTextSize());
+            titleView.setText(title);
+        }
+    }
+
+    protected void setToolBarLeftButton(Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
+        TopBar toolBar = getToolBar();
+        if (toolBar != null) {
+            TextView leftButton = toolBar.getLeftButton();
+            toolBar.setContentInsetsRelative(0, toolBar.getContentInsetEnd());
+            toolBar.setNavigationIcon(null);
+            toolBar.setNavigationOnClickListener(null);
+            setToolBarButton(toolBar, leftButton, icon, title, enabled);
+            leftButton.setOnClickListener(onClickListener);
+        }
+    }
+
+    protected void setToolBarRightButton(Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
+        TopBar toolBar = getToolBar();
+        if (toolBar != null) {
+            TextView rightButton = toolBar.getRightButton();
+            toolBar.setContentInsetsRelative(toolBar.getContentInsetStart(), 0);
+            setToolBarButton(toolBar, rightButton, icon, title, enabled);
+            rightButton.setOnClickListener(onClickListener);
+        }
+    }
+
+    private void setToolBarButton(TopBar toolBar, TextView button, Drawable icon, String title, boolean enabled) {
+        button.setOnClickListener(null);
+        button.setText(null);
+        button.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+        button.setMaxWidth(Integer.MAX_VALUE);
+        button.setAlpha(1.0f);
+        button.setVisibility(View.VISIBLE);
+
+        int color = style.getToolBarButtonItemTintColor();
+        if (!enabled) {
+            color = DrawableUtils.generateGrayColor(color);
+            button.setAlpha(0.3f);
+        }
+        button.setEnabled(enabled);
+
+        if (icon != null) {
+            icon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+            button.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
+            int width = toolBar.getContentInsetStartWithNavigation();
+            int padding = (width - icon.getIntrinsicWidth()) / 2;
+            button.setMaxWidth(width);
+            button.setPaddingRelative(padding, 0, padding, 0);
+        } else {
+            int padding = toolBar.getContentInset();
+            button.setPaddingRelative(padding, 0, padding, 0);
+            button.setText(title);
+            button.setTextColor(color);
+            button.setTextSize(style.getToolBarButtonItemTextSize());
+        }
+
+        TypedValue typedValue = new TypedValue();
+        if (toolBar.getContext().getTheme().resolveAttribute(R.attr.actionBarItemBackground, typedValue, true)) {
+            button.setBackgroundResource(typedValue.resourceId);
+        }
     }
 
     // ------ TabBarFragment -------

@@ -1,9 +1,12 @@
 package com.navigation;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 
 import com.navigation.fragment.AwesomeActivity;
 import com.navigation.fragment.DrawerFragment;
+import com.navigation.fragment.Style;
 import com.navigation.fragment.NavigationFragment;
 import com.navigation.fragment.TabBarFragment;
 import com.navigation.fragment.TabBarItem;
@@ -38,5 +41,9 @@ public class MainActivity extends AwesomeActivity {
         }
     }
 
-
+    @Override
+    protected void onCustomStyle(Style style) {
+        style.setToolBarBackgroundColor(Color.BLUE);
+        style.setTitleGravity(Gravity.CENTER);
+    }
 }

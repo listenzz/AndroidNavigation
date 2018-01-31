@@ -29,11 +29,11 @@
         android:textColor="@color/touchable_opacity_font_color" />
 
     <TextView
-        android:id="@+id/status_bar_style_dark"
+        android:id="@+id/status_bar_style"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:text="status bar style dark"
+        android:text="status bar style"
         android:textColor="@color/touchable_opacity_font_color" />
 
 

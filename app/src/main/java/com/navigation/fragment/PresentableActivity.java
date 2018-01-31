@@ -14,4 +14,6 @@ public interface PresentableActivity {
 
     AwesomeFragment getPresentingFragment(AwesomeFragment fragment);
 
+    Style getStyle();
+
 }

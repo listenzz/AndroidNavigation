@@ -262,7 +262,7 @@ public class NavigationFragment extends AwesomeFragment {
         return false;
     }
 
-    public TopBar getTopBar() {
+    public TopBar getToolBar() {
         return null;
     }
 

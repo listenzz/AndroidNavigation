@@ -19,10 +19,13 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
 
+    private Style style = new Style();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
+        onCustomStyle(style);
         setStatusBarTranslucent(true);
     }
 
@@ -101,6 +104,15 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     @Override
     public AwesomeFragment getPresentingFragment(AwesomeFragment fragment) {
         return FragmentHelper.getAheadFragment(getSupportFragmentManager(), fragment);
+    }
+
+    @Override
+    public Style getStyle() {
+        return style;
+    }
+
+    protected void onCustomStyle(Style style) {
+
     }
 
     public void setRootFragment(final AwesomeFragment fragment) {
