@@ -1,5 +1,6 @@
 package com.navigation.fragment;
 
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.AnimRes;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.ashokvarma.bottomnavigation.TextBadgeItem;
@@ -165,11 +167,17 @@ public class TabBarFragment extends AwesomeFragment {
         for (int i = 0, size = fragments.size(); i < size; i++) {
             AwesomeFragment fragment = fragments.get(i);
             TabBarItem tabBarItem = fragment.getTabBarItem();
-            Drawable icon = null;
-            if (tabBarItem.icon != null) {
-                icon = DrawableUtils.fromUri(getContext(), tabBarItem.icon);
+            BottomNavigationItem bottomNavigationItem;
+            if (tabBarItem != null) {
+                Drawable icon = new ColorDrawable();
+                if (tabBarItem.icon != null) {
+                    icon = DrawableUtils.fromUri(getContext(), tabBarItem.icon);
+                }
+                bottomNavigationItem = new BottomNavigationItem(icon, tabBarItem.title);
+            } else {
+                bottomNavigationItem = new BottomNavigationItem(new ColorDrawable(), "Tab");
             }
-            BottomNavigationItem bottomNavigationItem = new BottomNavigationItem(icon, tabBarItem.title);
+
             TextBadgeItem textBadgeItem = new TextBadgeItem();
             textBadgeItem.setBackgroundColor("#FF3B30");
             bottomNavigationItem.setBadgeItem(textBadgeItem);
@@ -237,7 +245,17 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     protected void onBottomBarInitialise(BottomBar bottomBar) {
+        bottomBar.setBarBackgroundColor(style.getBottomBarBackgroundColor());
 
+        if (style.getBottomBarActiveColor() != null) {
+            bottomBar.setActiveColor(style.getBottomBarActiveColor());
+        }
+
+        if (style.getBottomBarInActiveColor() != null) {
+            bottomBar.setInActiveColor(style.getBottomBarInActiveColor());
+        }
+
+        bottomBar.setShadow(style.getBottomBarShadow());
     }
 
     public void setBadge(final int index, final String text) {

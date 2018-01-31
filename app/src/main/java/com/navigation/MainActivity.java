@@ -23,12 +23,12 @@ public class MainActivity extends AwesomeActivity {
             TestFragment testFragment = new TestFragment();
             NavigationFragment navigation = new NavigationFragment();
             navigation.setRootFragment(testFragment);
-            navigation.setTabBarItem(new TabBarItem("ic_home_white_24dp", "Home", true));
+            navigation.setTabBarItem(new TabBarItem("ic_home_white_24dp", "Home"));
 
             TestStatusBarFragment testStatusBarFragment = new TestStatusBarFragment();
             NavigationFragment statusBar = new NavigationFragment();
             statusBar.setRootFragment(testStatusBarFragment);
-            statusBar.setTabBarItem(new TabBarItem("ic_discover_white_24dp", "Status", true));
+            statusBar.setTabBarItem(new TabBarItem("ic_discover_white_24dp", "Status"));
 
             TabBarFragment tabBarFragment = new TabBarFragment();
             tabBarFragment.setFragments(navigation, statusBar);
@@ -43,7 +43,9 @@ public class MainActivity extends AwesomeActivity {
 
     @Override
     protected void onCustomStyle(Style style) {
-        style.setToolBarBackgroundColor(Color.BLUE);
+        style.setStatusBarColor(Color.parseColor("#303F9F"));
+        style.setToolBarBackgroundColor(Color.parseColor("#3F51B5"));
         style.setTitleGravity(Gravity.CENTER);
+        // style.setBottomBarBackgroundColor("#3F51B5");
     }
 }

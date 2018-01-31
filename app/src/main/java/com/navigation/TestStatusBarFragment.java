@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.navigation.fragment.AwesomeFragment;
+import com.navigation.fragment.BarStyle;
 import com.navigation.fragment.DrawerFragment;
 import com.navigation.fragment.NavigationFragment;
+import com.navigation.fragment.Style;
 
 /**
  * Created by listen on 2018/1/12.
@@ -76,4 +78,15 @@ public class TestStatusBarFragment extends AwesomeFragment {
         super.onActivityCreated(savedInstanceState);
         setTitle("状态栏");
     }
+
+    @Override
+    protected void onCustomStyle(Style style) {
+        style.setToolBarStyle(BarStyle.LightContent);
+    }
+
+    @Override
+    protected boolean hidesBottomBarWhenPushed() {
+        return false;
+    }
+
 }

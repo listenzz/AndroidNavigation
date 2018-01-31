@@ -65,7 +65,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
 
     private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
 
-    private Style style;
+    protected Style style;
 
     @Override
     public void onAttach(Context context) {
@@ -454,7 +454,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         if (childFragmentForStatusBarStyle != null) {
             return childFragmentForStatusBarStyle.preferredStatusBarStyle();
         }
-        return BarStyle.LightContent;
+        return style.getToolBarStyle();
     }
 
     protected boolean preferredStatusBarHidden() {
@@ -630,7 +630,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
 
     // ------ NavigationFragment -----
 
-    public boolean hidesBottomBarWhenPushed() {
+    protected boolean hidesBottomBarWhenPushed() {
         return true;
     }
 
@@ -639,7 +639,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         return navigationFragment.getRootFragment().hidesBottomBarWhenPushed();
     }
 
-    protected void handleHideBottomBarWhenPushed(int transit, boolean enter, PresentAnimation animation) {
+    void handleHideBottomBarWhenPushed(int transit, boolean enter, PresentAnimation animation) {
         // handle hidesBottomBarWhenPushed
         if (!isContainer()) {
             NavigationFragment navigationFragment = getNavigationFragment();

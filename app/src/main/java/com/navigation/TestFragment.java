@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.navigation.fragment.AwesomeFragment;
 import com.navigation.fragment.BarStyle;
 import com.navigation.fragment.NavigationFragment;
+import com.navigation.fragment.Style;
 import com.navigation.fragment.TabBarFragment;
 
 /**
@@ -156,8 +157,8 @@ public class TestFragment extends AwesomeFragment {
     }
 
     @Override
-    protected BarStyle preferredStatusBarStyle() {
-        return BarStyle.DarkContent;
+    protected void onCustomStyle(Style style) {
+        style.setToolBarStyle(BarStyle.DarkContent);
     }
 
 }

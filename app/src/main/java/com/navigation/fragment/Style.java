@@ -26,17 +26,18 @@ public class Style implements Cloneable {
     private int toolBarBackgroundColor = INVALID_COLOR;
     private int toolBarTintColor = INVALID_COLOR;
     private int titleTextColor = INVALID_COLOR;
-    private int titleTextSize = 18;
+    private int titleTextSize = 17;
     private float elevation = -1;
     private Drawable shadow = defaultShadow;
 
     private int titleGravity = Gravity.START;
 
     private int toolBarButtonItemTintColor = INVALID_COLOR;
-    private int toolBarButtonItemTextSize = 16;
+    private int toolBarButtonItemTextSize = 15;
 
-    private String bottomBarBackgroundColor;
-    private String bottomBarButtonItemTintColor;
+    private String bottomBarBackgroundColor = "#FFFFFF";
+    private String bottomBarActiveColor = null;
+    private String bottomBarInActiveColor = null;
     private Drawable bottomBarShadow = defaultShadow;
 
     // ------ screen ------
@@ -59,12 +60,20 @@ public class Style implements Cloneable {
         return bottomBarBackgroundColor;
     }
 
-    public void setBottomBarButtonItemTintColor(String bottomBarButtonItemTintColor) {
-        this.bottomBarButtonItemTintColor = bottomBarButtonItemTintColor;
+    public void setBottomBarActiveColor(String bottomBarActiveColor) {
+        this.bottomBarActiveColor = bottomBarActiveColor;
     }
 
-    public String getBottomBarButtonItemTintColor() {
-        return bottomBarButtonItemTintColor;
+    public String getBottomBarActiveColor() {
+        return bottomBarActiveColor;
+    }
+
+    public String getBottomBarInActiveColor() {
+        return bottomBarInActiveColor;
+    }
+
+    public void setBottomBarInActiveColor(String bottomBarInActiveColor) {
+        this.bottomBarInActiveColor = bottomBarInActiveColor;
     }
 
     // ------- toolBar ---------
