@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:text="status bar style"
+        android:text="StatusBar Style"
         android:textColor="@color/touchable_opacity_font_color" />
 
 
@@ -42,16 +42,48 @@
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:text="status bar hidden"
+        android:text="StatusBar Hidden"
         android:textColor="@color/touchable_opacity_font_color" />
 
 
     <TextView
-        android:id="@+id/status_bar_color_red"
+        android:id="@+id/status_bar_color"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center"
-        android:text="status bar color red"
+        android:text="StatusBar Color"
+        android:textColor="@color/touchable_opacity_font_color" />
+
+    <TextView
+        android:id="@+id/no_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="No Toolbar"
+        android:textColor="@color/touchable_opacity_font_color" />
+
+    <TextView
+        android:id="@+id/toolbar_color_transition"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="Toolbar Color Transition"
+        android:textColor="@color/touchable_opacity_font_color" />
+
+    <TextView
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="ViewPagerFragment"
+        android:textColor="@color/touchable_opacity_font_color" />
+
+    <TextView
+        android:id="@+id/coordinator"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="Coordinator"
         android:textColor="@color/touchable_opacity_font_color" />
 
 

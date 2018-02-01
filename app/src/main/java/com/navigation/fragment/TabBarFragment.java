@@ -94,23 +94,12 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     @Override
-    public boolean isContainer() {
+    public boolean isParentFragment() {
         return true;
     }
 
-
     @Override
-    protected AwesomeFragment childFragmentForStatusBarColor() {
-        return getSelectedFragment();
-    }
-
-    @Override
-    protected AwesomeFragment childFragmentForStatusBarStyle() {
-        return getSelectedFragment();
-    }
-
-    @Override
-    protected AwesomeFragment childFragmentForStatusBarHidden() {
+    protected AwesomeFragment childFragmentForAppearance() {
         return getSelectedFragment();
     }
 

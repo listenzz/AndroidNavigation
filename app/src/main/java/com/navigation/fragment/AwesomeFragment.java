@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -39,7 +40,7 @@ import java.util.UUID;
  * Created by Listen on 2018/1/11.
  */
 
-public class AwesomeFragment extends Fragment implements FragmentManager.OnBackStackChangedListener {
+public abstract class AwesomeFragment extends Fragment implements FragmentManager.OnBackStackChangedListener {
 
     public static final String TAG = "Navigation";
 
@@ -110,12 +111,11 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
             style = presentableActivity.getStyle();
         }
 
-        if(!isContainer()) {
-            setBackgroundDrawable(root, new ColorDrawable(preferredBackgroundColor()));
+        if (!isParentFragment()) {
+            setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
         }
 
-        AwesomeFragment parent = getParent();
-        if (parent instanceof NavigationFragment) {
+        if (shouldAutoCreateToolBar()) {
             this.toolBar = createToolBar(getView());
         }
         //Log.i(TAG, getDebugTag() + "#onViewCreated");
@@ -132,10 +132,6 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         getWindow().setBackgroundDrawable(null);
     }
 
-    protected int preferredBackgroundColor() {
-        return style.getScreenBackgroundColor();
-    }
-
     protected void onCustomStyle(Style style) {
 
     }
@@ -143,7 +139,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
     @Override
     public void onResume() {
         super.onResume();
-        if (!isContainer()) {
+        if (!isParentFragment()) {
             //Log.w(TAG, getDebugTag() + "#onResume-");
             setNeedsStatusBarAppearanceUpdate();
         }
@@ -154,7 +150,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden && isAdded()) {
-            if (!isContainer()) {
+            if (!isParentFragment()) {
                 //Log.w(TAG, getDebugTag() + "#onHiddenChanged:-");
                 setNeedsStatusBarAppearanceUpdate();
             }
@@ -293,13 +289,13 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
     public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
         //Log.i(TAG, toString() + "#onFragmentResult requestCode=" + requestCode + " resultCode=" + resultCode + " data=" + data);
         if (this instanceof TabBarFragment) {
-            AwesomeFragment child = ((TabBarFragment)this).getSelectedFragment();
+            AwesomeFragment child = ((TabBarFragment) this).getSelectedFragment();
             child.onFragmentResult(requestCode, resultCode, data);
         } else if (this instanceof NavigationFragment) {
-            AwesomeFragment child = ((NavigationFragment)this).getTopFragment();
+            AwesomeFragment child = ((NavigationFragment) this).getTopFragment();
             child.onFragmentResult(requestCode, resultCode, data);
         } else if (this instanceof DrawerFragment) {
-            AwesomeFragment child = ((DrawerFragment)this).getContentFragment();
+            AwesomeFragment child = ((DrawerFragment) this).getContentFragment();
             child.onFragmentResult(requestCode, resultCode, data);
         } else {
             List<AwesomeFragment> fragments = getAddedChildFragments();
@@ -443,14 +439,14 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         return animation;
     }
 
-    public boolean isContainer() {
+    protected boolean isParentFragment() {
         return false;
     }
 
     // ------- statusBar --------
 
     protected BarStyle preferredStatusBarStyle() {
-        AwesomeFragment childFragmentForStatusBarStyle = childFragmentForStatusBarStyle();
+        AwesomeFragment childFragmentForStatusBarStyle = childFragmentForAppearance();
         if (childFragmentForStatusBarStyle != null) {
             return childFragmentForStatusBarStyle.preferredStatusBarStyle();
         }
@@ -458,7 +454,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
     }
 
     protected boolean preferredStatusBarHidden() {
-        AwesomeFragment childFragmentForStatusBarHidden = childFragmentForStatusBarHidden();
+        AwesomeFragment childFragmentForStatusBarHidden = childFragmentForAppearance();
         if (childFragmentForStatusBarHidden != null) {
             return childFragmentForStatusBarHidden.preferredStatusBarHidden();
         }
@@ -466,7 +462,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
     }
 
     protected int preferredStatusBarColor() {
-        AwesomeFragment childFragmentForStatusBarColor = childFragmentForStatusBarColor();
+        AwesomeFragment childFragmentForStatusBarColor = childFragmentForAppearance();
         if (childFragmentForStatusBarColor != null) {
             return childFragmentForStatusBarColor.preferredStatusBarColor();
         }
@@ -474,22 +470,14 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
     }
 
     protected boolean preferredStatusBarColorAnimated() {
-        AwesomeFragment childFragmentForStatusBarColor = childFragmentForStatusBarColor();
+        AwesomeFragment childFragmentForStatusBarColor = childFragmentForAppearance();
         if (childFragmentForStatusBarColor != null) {
             return childFragmentForStatusBarColor.preferredStatusBarColorAnimated();
         }
-        return false;
+        return true;
     }
 
-    protected AwesomeFragment childFragmentForStatusBarStyle() {
-        return null;
-    }
-
-    protected AwesomeFragment childFragmentForStatusBarHidden() {
-        return null;
-    }
-
-    protected AwesomeFragment childFragmentForStatusBarColor() {
+    protected AwesomeFragment childFragmentForAppearance() {
         return null;
     }
 
@@ -579,7 +567,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
                                         .setStatusBarColor((Integer) animator.getAnimatedValue());
                             }
                         });
-                colorAnimation.setDuration(300).setStartDelay(0);
+                colorAnimation.setDuration(200).setStartDelay(0);
                 colorAnimation.start();
             } else {
                 getWindow().setStatusBarColor(color);
@@ -593,7 +581,11 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
                 int statusBarHeight = getStatusBarHeight();
                 view.setPadding(view.getPaddingLeft(), statusBarHeight, view.getPaddingRight(),
                         view.getPaddingBottom());
-                view.getLayoutParams().height = statusBarHeight + viewHeight;
+                if (viewHeight > 0) {
+                    view.getLayoutParams().height = statusBarHeight + viewHeight;
+                } else {
+                    view.getLayoutParams().height = viewHeight;
+                }
             }
         }
     }
@@ -609,17 +601,17 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
     }
 
     private int getStatusBarHeight() {
-        int statusBarHeight1 = -1;
+        int statusBarHeight = -1;
         //获取status_bar_height资源的ID
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
             //根据资源ID获取响应的尺寸值
-            statusBarHeight1 = getResources().getDimensionPixelSize(resourceId);
+            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
         }
-        return statusBarHeight1;
+        return statusBarHeight;
     }
 
-    protected int getTopBarHeight() {
+    protected int getToolBarHeight() {
         TypedValue typedValue = new TypedValue();
         int height = 0;
         if (getContext().getTheme().resolveAttribute(R.attr.actionBarSize, typedValue, true)) {
@@ -629,6 +621,30 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
     }
 
     // ------ NavigationFragment -----
+
+    public NavigationFragment getNavigationFragment() {
+        if (this instanceof NavigationFragment) {
+            return (NavigationFragment) this;
+        }
+        AwesomeFragment parent = getParent();
+        if (parent != null) {
+            return parent.getNavigationFragment();
+        }
+        return null;
+    }
+
+    protected boolean isNavigationRoot() {
+        NavigationFragment navigationFragment = getNavigationFragment();
+        if (navigationFragment != null) {
+            AwesomeFragment awesomeFragment = navigationFragment.getRootFragment();
+            return awesomeFragment == this;
+        }
+        return false;
+    }
+
+    protected boolean shouldHideBackButton() {
+        return false;
+    }
 
     protected boolean hidesBottomBarWhenPushed() {
         return true;
@@ -641,7 +657,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
 
     void handleHideBottomBarWhenPushed(int transit, boolean enter, PresentAnimation animation) {
         // handle hidesBottomBarWhenPushed
-        if (!isContainer()) {
+        if (!isParentFragment()) {
             NavigationFragment navigationFragment = getNavigationFragment();
             if (navigationFragment != null) {
                 TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
@@ -665,37 +681,18 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         }
     }
 
-    protected boolean shouldHideBackButton() {
-        return false;
-    }
-
-    public NavigationFragment getNavigationFragment() {
-        if (this instanceof NavigationFragment) {
-            return (NavigationFragment) this;
-        }
+    protected boolean shouldAutoCreateToolBar() {
         AwesomeFragment parent = getParent();
-        if (parent != null) {
-            return parent.getNavigationFragment();
-        }
-        return null;
+        return parent != null && (parent instanceof NavigationFragment);
     }
 
-    protected boolean isNavigationRoot() {
-        NavigationFragment navigationFragment = getNavigationFragment();
-        if (navigationFragment != null) {
-            AwesomeFragment awesomeFragment = navigationFragment.getRootFragment();
-            return awesomeFragment == this;
-        }
-        return false;
-    }
+    private Toolbar toolBar;
 
-    private TopBar toolBar;
-
-    public TopBar getToolBar() {
+    public Toolbar getToolbar() {
         return toolBar;
     }
 
-    private TopBar createToolBar(View parent) {
+    protected Toolbar createToolBar(View parent) {
         if (getView() == null || getContext() == null) return null;
 
         TypedValue typedValue = new TypedValue();
@@ -704,25 +701,25 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
             height = (int) TypedValue.complexToDimension(typedValue.data, getContext().getResources().getDisplayMetrics());
         }
 
-        TopBar topBar = new TopBar(getContext());
+        AwesomeToolbar toolBar = new AwesomeToolbar(getContext());
         if (parent instanceof LinearLayout) {
             LinearLayout linearLayout = (LinearLayout) parent;
-            linearLayout.addView(topBar, 0, new LinearLayout.LayoutParams(-1, height));
+            linearLayout.addView(toolBar, 0, new LinearLayout.LayoutParams(-1, height));
         } else if (parent instanceof FrameLayout) {
             FrameLayout frameLayout = (FrameLayout) parent;
-            frameLayout.addView(topBar, new FrameLayout.LayoutParams(-1, height));
+            frameLayout.addView(toolBar, new FrameLayout.LayoutParams(-1, height));
         } else {
             throw new UnsupportedOperationException("NavigationFragment 还没适配 " + parent.getClass().getSimpleName());
         }
 
-        appendStatusBarPaddingAndHeight(topBar, getTopBarHeight());
-        precustomTopBar(topBar);
-        onCreateToolBar(topBar);
+        appendStatusBarPaddingAndHeight(toolBar, getToolBarHeight());
+        customAwesomeToolbar(toolBar);
+        onCreateToolbar(toolBar);
 
-        return topBar;
+        return toolBar;
     }
 
-    protected void precustomTopBar(TopBar toolBar) {
+    private void customAwesomeToolbar(AwesomeToolbar toolBar) {
         toolBar.setBackgroundColor(style.getToolBarBackgroundColor());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -742,7 +739,7 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
         }
     }
 
-    protected void onCreateToolBar(TopBar toolBar) {
+    protected void onCreateToolbar(Toolbar toolBar) {
 
     }
 
@@ -751,40 +748,54 @@ public class AwesomeFragment extends Fragment implements FragmentManager.OnBackS
     }
 
     public void setTitle(CharSequence title) {
-        TopBar toolBar = getToolBar();
+        Toolbar toolBar = getToolbar();
         if (toolBar != null) {
-
-            TextView titleView = toolBar.getTitleView();
-            toolBar.setTitleGravity(style.getTitleGravity());
-            titleView.setTextColor(style.getTitleTextColor());
-            titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, style.getTitleTextSize());
-            titleView.setText(title);
+            if (toolBar instanceof AwesomeToolbar) {
+                AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolBar;
+                TextView titleView = awesomeToolbar.getTitleView();
+                awesomeToolbar.setTitleGravity(style.getTitleGravity());
+                titleView.setTextColor(style.getTitleTextColor());
+                titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, style.getTitleTextSize());
+                titleView.setText(title);
+            } else {
+                toolBar.setTitle(title);
+            }
         }
     }
 
-    protected void setToolBarLeftButton(Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
-        TopBar toolBar = getToolBar();
+    protected void setToolbarLeftButton(Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
+        Toolbar toolBar = getToolbar();
         if (toolBar != null) {
-            TextView leftButton = toolBar.getLeftButton();
-            toolBar.setContentInsetsRelative(0, toolBar.getContentInsetEnd());
-            toolBar.setNavigationIcon(null);
-            toolBar.setNavigationOnClickListener(null);
-            setToolBarButton(toolBar, leftButton, icon, title, enabled);
-            leftButton.setOnClickListener(onClickListener);
+            if (toolBar instanceof AwesomeToolbar) {
+                AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolBar;
+                TextView leftButton = awesomeToolbar.getLeftButton();
+                toolBar.setContentInsetsRelative(0, toolBar.getContentInsetEnd());
+                toolBar.setNavigationIcon(null);
+                toolBar.setNavigationOnClickListener(null);
+                setAwesomeToolbarButton(awesomeToolbar, leftButton, icon, title, enabled);
+                leftButton.setOnClickListener(onClickListener);
+            } else {
+                // todo
+            }
         }
     }
 
-    protected void setToolBarRightButton(Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
-        TopBar toolBar = getToolBar();
+    protected void setToolbarRightButton(Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
+        Toolbar toolBar = getToolbar();
         if (toolBar != null) {
-            TextView rightButton = toolBar.getRightButton();
-            toolBar.setContentInsetsRelative(toolBar.getContentInsetStart(), 0);
-            setToolBarButton(toolBar, rightButton, icon, title, enabled);
-            rightButton.setOnClickListener(onClickListener);
+            if (toolBar instanceof AwesomeToolbar) {
+                AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolBar;
+                TextView rightButton = awesomeToolbar.getRightButton();
+                toolBar.setContentInsetsRelative(toolBar.getContentInsetStart(), 0);
+                setAwesomeToolbarButton(awesomeToolbar, rightButton, icon, title, enabled);
+                rightButton.setOnClickListener(onClickListener);
+            } else {
+                // todo
+            }
         }
     }
 
-    private void setToolBarButton(TopBar toolBar, TextView button, Drawable icon, String title, boolean enabled) {
+    private void setAwesomeToolbarButton(AwesomeToolbar toolBar, TextView button, Drawable icon, String title, boolean enabled) {
         button.setOnClickListener(null);
         button.setText(null);
         button.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);

@@ -45,17 +45,12 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     @Override
-    protected AwesomeFragment childFragmentForStatusBarHidden() {
-        return getTopFragment();
+    public boolean isParentFragment() {
+        return true;
     }
 
     @Override
-    protected AwesomeFragment childFragmentForStatusBarStyle() {
-        return getTopFragment();
-    }
-
-    @Override
-    protected AwesomeFragment childFragmentForStatusBarColor() {
+    protected AwesomeFragment childFragmentForAppearance() {
         return getTopFragment();
     }
 
@@ -72,11 +67,6 @@ public class NavigationFragment extends AwesomeFragment {
         } else {
             return super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean isContainer() {
-        return true;
     }
 
     public void setRootFragment(AwesomeFragment fragment) {
@@ -262,7 +252,7 @@ public class NavigationFragment extends AwesomeFragment {
         return false;
     }
 
-    public TopBar getToolBar() {
+    public AwesomeToolbar getToolbar() {
         return null;
     }
 

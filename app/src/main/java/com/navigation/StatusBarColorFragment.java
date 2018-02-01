@@ -20,9 +20,5 @@ public class StatusBarColorFragment extends TestStatusBarFragment {
         return Color.RED;
     }
 
-    @Override
-    protected boolean preferredStatusBarColorAnimated() {
-        return true;
-    }
 
 }

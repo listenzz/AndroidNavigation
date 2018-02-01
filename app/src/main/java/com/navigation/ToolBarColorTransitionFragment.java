@@ -1,0 +1,66 @@
+package com.navigation;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.graphics.ColorUtils;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.SeekBar;
+
+import com.navigation.fragment.AwesomeFragment;
+import com.navigation.fragment.Style;
+
+/**
+ * Created by Listen on 2018/2/1.
+ */
+
+public class ToolBarColorTransitionFragment extends AwesomeFragment {
+
+    @Override
+    protected int preferredStatusBarColor() {
+        return Color.TRANSPARENT;
+    }
+
+    @Override
+    protected void onCreateToolbar(Toolbar toolBar) {
+        toolBar.setBackgroundColor(Color.TRANSPARENT);
+    }
+
+    @Override
+    protected void onCustomStyle(Style style) {
+       style.setToolBarBackgroundColor(Color.parseColor("#EE6413"));
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.fragment_toolbar_color_transition, container, false);
+        SeekBar seekBar = root.findViewById(R.id.seek_bar);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int alpha = progress * 255 / 100;
+                Toolbar topBar = getToolbar();
+                int color = ColorUtils.setAlphaComponent(style.getToolBarBackgroundColor(), alpha);
+                topBar.setBackgroundColor(color);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        return root;
+    }
+
+}

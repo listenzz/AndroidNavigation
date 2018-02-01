@@ -54,17 +54,12 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     @Override
-    protected AwesomeFragment childFragmentForStatusBarColor() {
-        return getContentFragment();
+    public boolean isParentFragment() {
+        return true;
     }
 
     @Override
-    protected AwesomeFragment childFragmentForStatusBarStyle() {
-        return getContentFragment();
-    }
-
-    @Override
-    protected AwesomeFragment childFragmentForStatusBarHidden() {
+    protected AwesomeFragment childFragmentForAppearance() {
         return getContentFragment();
     }
 
@@ -80,11 +75,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             return true;
         }
         return super.onBackPressed();
-    }
-
-    @Override
-    public boolean isContainer() {
-        return true;
     }
 
     @Override

@@ -41,7 +41,7 @@ public class MainActivity extends AwesomeActivity {
 
             DrawerFragment drawerFragment = new DrawerFragment();
             drawerFragment.setContentFragment(tabBarFragment);
-            drawerFragment.setMenuFragment(new FirstFragment());
+            drawerFragment.setMenuFragment(new MenuFragment());
 
             setRootFragment(drawerFragment);
         }

@@ -175,14 +175,14 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     public int getStatusBarHeight() {
-        int statusBarHeight1 = -1;
+        int statusBarHeight = -1;
         //获取status_bar_height资源的ID
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
             //根据资源ID获取响应的尺寸值
-            statusBarHeight1 = getResources().getDimensionPixelSize(resourceId);
+            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
         }
-        return statusBarHeight1;
+        return statusBarHeight;
     }
 
     private void executePresentFragment(AwesomeFragment fragment) {

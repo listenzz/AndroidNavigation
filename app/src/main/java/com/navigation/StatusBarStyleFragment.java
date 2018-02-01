@@ -18,7 +18,7 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setToolBarRightButton(null, "切换", true, new View.OnClickListener() {
+        setToolbarRightButton(null, "切换", true, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (preferredStatusBarStyle() == BarStyle.DarkContent) {

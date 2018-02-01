@@ -15,7 +15,7 @@ import android.widget.TextView;
  * Created by Listen on 2017/11/22.
  */
 
-public class TopBar extends Toolbar {
+public class AwesomeToolbar extends Toolbar {
 
     private TextView titleView;
 
@@ -27,12 +27,12 @@ public class TopBar extends Toolbar {
 
     private int contentInset;
 
-    public TopBar(Context context) {
+    public AwesomeToolbar(Context context) {
         super(context);
         init(context);
     }
 
-    public TopBar(Context context, AttributeSet attrs) {
+    public AwesomeToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }

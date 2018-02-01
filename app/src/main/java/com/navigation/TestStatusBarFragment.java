@@ -69,10 +69,38 @@ public class TestStatusBarFragment extends AwesomeFragment {
         });
 
 
-        root.findViewById(R.id.status_bar_color_red).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.status_bar_color).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getNavigationFragment().pushFragment(new StatusBarColorFragment());
+            }
+        });
+
+        root.findViewById(R.id.no_toolbar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getNavigationFragment().pushFragment(new NoToolBarFragment());
+            }
+        });
+
+        root.findViewById(R.id.toolbar_color_transition).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getNavigationFragment().pushFragment(new ToolBarColorTransitionFragment());
+            }
+        });
+
+        root.findViewById(R.id.view_pager).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getNavigationFragment().pushFragment(new ViewPagerFragment());
+            }
+        });
+
+        root.findViewById(R.id.coordinator).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getNavigationFragment().pushFragment(new CoordinatorFragment());
             }
         });
 
@@ -85,7 +113,7 @@ public class TestStatusBarFragment extends AwesomeFragment {
         setTitle("状态栏");
         if (isNavigationRoot()) {
             Drawable icon = DrawableUtils.fromFont(getContext(), "FontAwesome", fromCharCode(61641), 24, -1 );
-            setToolBarLeftButton(icon, "Menu", true, new View.OnClickListener() {
+            setToolbarLeftButton(icon, "Menu", true, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     DrawerFragment drawerFragment = getDrawerFragment();
