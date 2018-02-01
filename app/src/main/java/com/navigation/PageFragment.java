@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.navigation.fragment.AwesomeFragment;
+import com.navigation.fragment.FragmentHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,15 @@ import java.util.List;
  */
 
 public class PageFragment extends AwesomeFragment {
+
+    private static final String ARG_TITLE = "title";
+
+    public static PageFragment newInstance(String title) {
+        PageFragment fragment = new PageFragment();
+        Bundle args = FragmentHelper.getArguments(fragment);
+        args.putString(ARG_TITLE, title);
+        return fragment;
+    }
 
     private PageAdapter adapter;
 
@@ -48,9 +58,11 @@ public class PageFragment extends AwesomeFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Bundle args = FragmentHelper.getArguments(this);
+        String title = args.getString(ARG_TITLE);
         List<String> items = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            items.add("Awesome");
+            items.add(title);
         }
         adapter.setData(items);
     }

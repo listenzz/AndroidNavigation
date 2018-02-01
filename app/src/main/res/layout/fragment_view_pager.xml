@@ -10,9 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/appbar_layout"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         >
 
-        <android.support.v7.widget.Toolbar
+        <com.navigation.fragment.AwesomeToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"

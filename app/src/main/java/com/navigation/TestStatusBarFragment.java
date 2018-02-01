@@ -79,7 +79,7 @@ public class TestStatusBarFragment extends AwesomeFragment {
         root.findViewById(R.id.no_toolbar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getNavigationFragment().pushFragment(new NoToolBarFragment());
+                getNavigationFragment().pushFragment(new NoToolbarFragment());
             }
         });
 
@@ -127,7 +127,7 @@ public class TestStatusBarFragment extends AwesomeFragment {
 
     @Override
     protected void onCustomStyle(Style style) {
-        style.setToolBarStyle(BarStyle.LightContent);
+        style.setToolbarStyle(BarStyle.LightContent);
     }
 
     @Override

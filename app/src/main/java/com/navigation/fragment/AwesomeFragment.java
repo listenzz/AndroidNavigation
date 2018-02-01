@@ -5,20 +5,26 @@ import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
@@ -115,8 +121,20 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
             setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
         }
 
-        if (shouldAutoCreateToolBar()) {
-            this.toolBar = createToolBar(getView());
+        AwesomeFragment parent = getParent();
+        boolean shouldAutoCreateToolbar = parent != null && (parent instanceof NavigationFragment);
+        if (shouldAutoCreateToolbar) {
+            Toolbar toolbar = onCreateToolbar(getView());
+            if (toolbar != null && !isNavigationRoot() && !shouldHideBackButton()) {
+                toolbar.setNavigationIcon(style.getBackIcon(getContext()));
+                toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        getNavigationFragment().popFragment();
+                    }
+                });
+            }
+            this.toolbar = toolbar;
         }
         //Log.i(TAG, getDebugTag() + "#onViewCreated");
     }
@@ -450,7 +468,7 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
         if (childFragmentForStatusBarStyle != null) {
             return childFragmentForStatusBarStyle.preferredStatusBarStyle();
         }
-        return style.getToolBarStyle();
+        return style.getToolbarStyle();
     }
 
     protected boolean preferredStatusBarHidden() {
@@ -477,11 +495,27 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
         return true;
     }
 
+    protected int preferredToolbarBackgroundColor() {
+        AwesomeFragment childFragmentForAppearance = childFragmentForAppearance();
+        if (childFragmentForAppearance != null) {
+            return childFragmentForAppearance.preferredToolbarBackgroundColor();
+        }
+        if (toolbar == null) {
+            return Color.TRANSPARENT;
+        } else {
+            return style.getToolbarBackgroundColor();
+        }
+    }
+
     protected AwesomeFragment childFragmentForAppearance() {
         return null;
     }
 
     public void setNeedsStatusBarAppearanceUpdate() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return;
+        }
+
         AwesomeFragment parent = getParent();
         if (parent != null) {
             parent.setNeedsStatusBarAppearanceUpdate();
@@ -495,7 +529,16 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
                 setStatusBarStyle(preferredStatusBarStyle());
 
                 // statusBarColor
-                setStatusBarColor(preferredStatusBarColor(), preferredStatusBarColorAnimated());
+                boolean xxx = preferredStatusBarColor() == Color.TRANSPARENT && preferredToolbarBackgroundColor() == Color.WHITE;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    xxx = xxx && preferredStatusBarStyle() == BarStyle.LightContent;
+                }
+                if (xxx) {
+                    int color = Color.parseColor("#666666");
+                    setStatusBarColor(color, preferredStatusBarColorAnimated());
+                } else {
+                    setStatusBarColor(preferredStatusBarColor(), preferredStatusBarColorAnimated());
+                }
             }
         }
     }
@@ -579,8 +622,7 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (view != null) {
                 int statusBarHeight = getStatusBarHeight();
-                view.setPadding(view.getPaddingLeft(), statusBarHeight, view.getPaddingRight(),
-                        view.getPaddingBottom());
+                view.setPadding(view.getPaddingLeft(), statusBarHeight, view.getPaddingRight(), view.getPaddingBottom());
                 if (viewHeight > 0) {
                     view.getLayoutParams().height = statusBarHeight + viewHeight;
                 } else {
@@ -611,7 +653,7 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
         return statusBarHeight;
     }
 
-    protected int getToolBarHeight() {
+    protected int getToolbarHeight() {
         TypedValue typedValue = new TypedValue();
         int height = 0;
         if (getContext().getTheme().resolveAttribute(R.attr.actionBarSize, typedValue, true)) {
@@ -681,18 +723,13 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
         }
     }
 
-    protected boolean shouldAutoCreateToolBar() {
-        AwesomeFragment parent = getParent();
-        return parent != null && (parent instanceof NavigationFragment);
-    }
-
-    private Toolbar toolBar;
+    private volatile Toolbar toolbar;
 
     public Toolbar getToolbar() {
-        return toolBar;
+        return toolbar;
     }
 
-    protected Toolbar createToolBar(View parent) {
+    protected Toolbar onCreateToolbar(View parent) {
         if (getView() == null || getContext() == null) return null;
 
         TypedValue typedValue = new TypedValue();
@@ -701,101 +738,110 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
             height = (int) TypedValue.complexToDimension(typedValue.data, getContext().getResources().getDisplayMetrics());
         }
 
-        AwesomeToolbar toolBar = new AwesomeToolbar(getContext());
+        AwesomeToolbar toolbar = new AwesomeToolbar(getContext());
         if (parent instanceof LinearLayout) {
             LinearLayout linearLayout = (LinearLayout) parent;
-            linearLayout.addView(toolBar, 0, new LinearLayout.LayoutParams(-1, height));
+            linearLayout.addView(toolbar, 0, new LinearLayout.LayoutParams(-1, height));
         } else if (parent instanceof FrameLayout) {
             FrameLayout frameLayout = (FrameLayout) parent;
-            frameLayout.addView(toolBar, new FrameLayout.LayoutParams(-1, height));
+            frameLayout.addView(toolbar, new FrameLayout.LayoutParams(-1, height));
         } else {
             throw new UnsupportedOperationException("NavigationFragment 还没适配 " + parent.getClass().getSimpleName());
         }
 
-        appendStatusBarPaddingAndHeight(toolBar, getToolBarHeight());
-        customAwesomeToolbar(toolBar);
-        onCreateToolbar(toolBar);
+        appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+        customAwesomeToolbar(toolbar);
 
-        return toolBar;
+        return toolbar;
     }
 
-    private void customAwesomeToolbar(AwesomeToolbar toolBar) {
-        toolBar.setBackgroundColor(style.getToolBarBackgroundColor());
-
+    private void customAwesomeToolbar(AwesomeToolbar toolbar) {
+        toolbar.setBackgroundColor(style.getToolbarBackgroundColor());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolBar.setElevation(style.getElevation(getContext().getApplicationContext()));
+            toolbar.setElevation(style.getElevation(getContext().getApplicationContext()));
         } else {
-            toolBar.setShadow(style.getShadow());
-        }
-
-        if (!isNavigationRoot() && !shouldHideBackButton()) {
-            toolBar.setNavigationIcon(style.getBackIcon(getContext()));
-            toolBar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    getNavigationFragment().popFragment();
-                }
-            });
+            toolbar.setShadow(style.getShadow());
         }
     }
 
-    protected void onCreateToolbar(Toolbar toolBar) {
-
-    }
-
-    protected void setTitle(int resId) {
+    protected void setTitle(@StringRes int resId) {
         setTitle(getContext().getText(resId));
     }
 
     public void setTitle(CharSequence title) {
-        Toolbar toolBar = getToolbar();
-        if (toolBar != null) {
-            if (toolBar instanceof AwesomeToolbar) {
-                AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolBar;
+        Toolbar toolbar = getToolbar();
+        if (toolbar != null) {
+            if (toolbar instanceof AwesomeToolbar) {
+                AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolbar;
                 TextView titleView = awesomeToolbar.getTitleView();
                 awesomeToolbar.setTitleGravity(style.getTitleGravity());
                 titleView.setTextColor(style.getTitleTextColor());
                 titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, style.getTitleTextSize());
                 titleView.setText(title);
             } else {
-                toolBar.setTitle(title);
+                toolbar.setTitle(title);
             }
         }
     }
 
-    protected void setToolbarLeftButton(Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
-        Toolbar toolBar = getToolbar();
-        if (toolBar != null) {
-            if (toolBar instanceof AwesomeToolbar) {
-                AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolBar;
+    protected void setToolbarLeftButton(@DrawableRes int icon, @StringRes int title, boolean enabled, final View.OnClickListener onClickListener) {
+        setToolbarLeftButton(ContextCompat.getDrawable(getContext(), icon), getContext().getString(title), enabled, onClickListener);
+    }
+
+    protected void setToolbarLeftButton(Drawable icon, String title, boolean enabled, final View.OnClickListener onClickListener) {
+        Toolbar toolbar = getToolbar();
+        if (toolbar != null) {
+            if (toolbar instanceof AwesomeToolbar) {
+                AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolbar;
                 TextView leftButton = awesomeToolbar.getLeftButton();
-                toolBar.setContentInsetsRelative(0, toolBar.getContentInsetEnd());
-                toolBar.setNavigationIcon(null);
-                toolBar.setNavigationOnClickListener(null);
+                toolbar.setContentInsetsRelative(0, toolbar.getContentInsetEnd());
+                toolbar.setNavigationIcon(null);
+                toolbar.setNavigationOnClickListener(null);
                 setAwesomeToolbarButton(awesomeToolbar, leftButton, icon, title, enabled);
                 leftButton.setOnClickListener(onClickListener);
             } else {
-                // todo
+                toolbar.setNavigationIcon(icon);
+                toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onClickListener.onClick(v);
+                    }
+                });
             }
         }
     }
 
-    protected void setToolbarRightButton(Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
-        Toolbar toolBar = getToolbar();
-        if (toolBar != null) {
-            if (toolBar instanceof AwesomeToolbar) {
-                AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolBar;
+    protected void setToolbarRightButton(@DrawableRes int icon, @StringRes int title, boolean enabled, final View.OnClickListener onClickListener) {
+        setToolbarRightButton(ContextCompat.getDrawable(getContext(), icon), getContext().getString(title), enabled, onClickListener);
+    }
+
+    protected void setToolbarRightButton(Drawable icon, String title, boolean enabled, final View.OnClickListener onClickListener) {
+        Toolbar toolbar = getToolbar();
+        if (toolbar != null) {
+            if (toolbar instanceof AwesomeToolbar) {
+                AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolbar;
                 TextView rightButton = awesomeToolbar.getRightButton();
-                toolBar.setContentInsetsRelative(toolBar.getContentInsetStart(), 0);
+                toolbar.setContentInsetsRelative(toolbar.getContentInsetStart(), 0);
                 setAwesomeToolbarButton(awesomeToolbar, rightButton, icon, title, enabled);
                 rightButton.setOnClickListener(onClickListener);
             } else {
-                // todo
+                Menu menu = toolbar.getMenu();
+                MenuItem menuItem = menu.add(title);
+                menuItem.setIcon(icon);
+                menuItem.setEnabled(enabled);
+                menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        onClickListener.onClick(null);
+                        return true;
+                    }
+                });
             }
         }
     }
 
-    private void setAwesomeToolbarButton(AwesomeToolbar toolBar, TextView button, Drawable icon, String title, boolean enabled) {
+    private void setAwesomeToolbarButton(AwesomeToolbar toolbar, TextView button, Drawable icon, String title, boolean enabled) {
         button.setOnClickListener(null);
         button.setText(null);
         button.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
@@ -803,7 +849,7 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
         button.setAlpha(1.0f);
         button.setVisibility(View.VISIBLE);
 
-        int color = style.getToolBarButtonItemTintColor();
+        int color = style.getToolbarButtonItemTintColor();
         if (!enabled) {
             color = DrawableUtils.generateGrayColor(color);
             button.setAlpha(0.3f);
@@ -813,20 +859,20 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
         if (icon != null) {
             icon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             button.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
-            int width = toolBar.getContentInsetStartWithNavigation();
+            int width = toolbar.getContentInsetStartWithNavigation();
             int padding = (width - icon.getIntrinsicWidth()) / 2;
             button.setMaxWidth(width);
             button.setPaddingRelative(padding, 0, padding, 0);
         } else {
-            int padding = toolBar.getContentInset();
+            int padding = toolbar.getContentInset();
             button.setPaddingRelative(padding, 0, padding, 0);
             button.setText(title);
             button.setTextColor(color);
-            button.setTextSize(style.getToolBarButtonItemTextSize());
+            button.setTextSize(style.getToolbarButtonItemTextSize());
         }
 
         TypedValue typedValue = new TypedValue();
-        if (toolBar.getContext().getTheme().resolveAttribute(R.attr.actionBarItemBackground, typedValue, true)) {
+        if (toolbar.getContext().getTheme().resolveAttribute(R.attr.actionBarItemBackground, typedValue, true)) {
             button.setBackgroundResource(typedValue.resourceId);
         }
     }

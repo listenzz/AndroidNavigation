@@ -6,8 +6,8 @@ import android.view.Gravity;
 
 import com.navigation.fragment.AwesomeActivity;
 import com.navigation.fragment.DrawerFragment;
-import com.navigation.fragment.Style;
 import com.navigation.fragment.NavigationFragment;
+import com.navigation.fragment.Style;
 import com.navigation.fragment.TabBarFragment;
 import com.navigation.fragment.TabBarItem;
 
@@ -50,7 +50,7 @@ public class MainActivity extends AwesomeActivity {
     @Override
     protected void onCustomStyle(Style style) {
         style.setStatusBarColor(Color.parseColor("#303F9F"));
-        style.setToolBarBackgroundColor(Color.parseColor("#3F51B5"));
+        style.setToolbarBackgroundColor(Color.parseColor("#3F51B5"));
         style.setTitleGravity(Gravity.CENTER);
         // style.setBottomBarBackgroundColor("#3F51B5");
     }

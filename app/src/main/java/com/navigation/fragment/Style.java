@@ -20,11 +20,11 @@ public class Style implements Cloneable {
 
     private int screenBackgroundColor = Color.WHITE;
 
-    private BarStyle toolBarStyle = BarStyle.LightContent;
+    private BarStyle toolbarStyle = BarStyle.LightContent;
     private Drawable backIcon;
     private int statusBarColor = Color.TRANSPARENT;
-    private int toolBarBackgroundColor = INVALID_COLOR;
-    private int toolBarTintColor = INVALID_COLOR;
+    private int toolbarBackgroundColor = INVALID_COLOR;
+    private int toolbarTintColor = INVALID_COLOR;
     private int titleTextColor = INVALID_COLOR;
     private int titleTextSize = 17;
     private float elevation = -1;
@@ -32,8 +32,8 @@ public class Style implements Cloneable {
 
     private int titleGravity = Gravity.START;
 
-    private int toolBarButtonItemTintColor = INVALID_COLOR;
-    private int toolBarButtonItemTextSize = 15;
+    private int toolbarButtonItemTintColor = INVALID_COLOR;
+    private int toolbarButtonItemTextSize = 15;
 
     private String bottomBarBackgroundColor = "#FFFFFF";
     private String bottomBarActiveColor = null;
@@ -78,12 +78,12 @@ public class Style implements Cloneable {
 
     // ------- toolBar ---------
 
-    public void setToolBarStyle(BarStyle barStyle) {
-        toolBarStyle = barStyle;
+    public void setToolbarStyle(BarStyle barStyle) {
+        toolbarStyle = barStyle;
     }
 
-    public BarStyle getToolBarStyle() {
-        return toolBarStyle;
+    public BarStyle getToolbarStyle() {
+        return toolbarStyle;
     }
 
     public void setStatusBarColor(int color) {
@@ -94,16 +94,16 @@ public class Style implements Cloneable {
         return statusBarColor;
     }
 
-    public void setToolBarBackgroundColor(int color) {
-        toolBarBackgroundColor = color;
+    public void setToolbarBackgroundColor(int color) {
+        toolbarBackgroundColor = color;
     }
 
-    public int getToolBarBackgroundColor() {
-        if (toolBarBackgroundColor != INVALID_COLOR) {
-            return toolBarBackgroundColor;
+    public int getToolbarBackgroundColor() {
+        if (toolbarBackgroundColor != INVALID_COLOR) {
+            return toolbarBackgroundColor;
         }
 
-        if (toolBarStyle == BarStyle.LightContent) {
+        if (toolbarStyle == BarStyle.LightContent) {
             return Color.BLACK;
         } else {
             return Color.WHITE;
@@ -122,20 +122,20 @@ public class Style implements Cloneable {
         return elevation;
     }
 
-    public void setToolBarTintColor(int color) {
-        toolBarTintColor = color;
+    public void setToolbarTintColor(int color) {
+        toolbarTintColor = color;
     }
 
-    public int getToolBarTintColor() {
-        if (toolBarTintColor != INVALID_COLOR) {
-            return toolBarTintColor;
+    public int getToolbarTintColor() {
+        if (toolbarTintColor != INVALID_COLOR) {
+            return toolbarTintColor;
         }
 
-        if (toolBarStyle == BarStyle.LightContent) {
+        if (toolbarStyle == BarStyle.LightContent) {
             return Color.WHITE;
         } else {
 
-            if (toolBarBackgroundColor == INVALID_COLOR) {
+            if (toolbarBackgroundColor == INVALID_COLOR) {
                 return Color.parseColor("#666666");
             }
 
@@ -152,7 +152,7 @@ public class Style implements Cloneable {
             return backIcon;
         }
         Drawable drawable = context.getResources().getDrawable(R.drawable.nav_ic_arrow_back);
-        drawable.setColorFilter(getToolBarButtonItemTintColor(), PorterDuff.Mode.SRC_ATOP);
+        drawable.setColorFilter(getToolbarButtonItemTintColor(), PorterDuff.Mode.SRC_ATOP);
         backIcon = drawable;
         return backIcon;
     }
@@ -166,7 +166,7 @@ public class Style implements Cloneable {
             return titleTextColor;
         }
 
-        return getToolBarTintColor();
+        return getToolbarTintColor();
     }
 
     public void setTitleTextSize(int dp) {
@@ -193,23 +193,23 @@ public class Style implements Cloneable {
         this.bottomBarShadow = drawable;
     }
 
-    public void setToolBarButtonItemTintColor(int color) {
-        toolBarButtonItemTintColor = color;
+    public void setToolbarButtonItemTintColor(int color) {
+        toolbarButtonItemTintColor = color;
     }
 
-    public int getToolBarButtonItemTintColor() {
-        if (toolBarButtonItemTintColor != INVALID_COLOR) {
-            return toolBarButtonItemTintColor;
+    public int getToolbarButtonItemTintColor() {
+        if (toolbarButtonItemTintColor != INVALID_COLOR) {
+            return toolbarButtonItemTintColor;
         }
-        return getToolBarTintColor();
+        return getToolbarTintColor();
     }
 
-    public void setToolBarButtonItemTextSize(int dp) {
-        toolBarButtonItemTextSize = dp;
+    public void setToolbarButtonItemTextSize(int dp) {
+        toolbarButtonItemTextSize = dp;
     }
 
-    public int getToolBarButtonItemTextSize() {
-        return toolBarButtonItemTextSize;
+    public int getToolbarButtonItemTextSize() {
+        return toolbarButtonItemTextSize;
     }
 
     public void setTitleGravity(int gravity) {

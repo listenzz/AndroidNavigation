@@ -25,13 +25,15 @@ public class ToolBarColorTransitionFragment extends AwesomeFragment {
     }
 
     @Override
-    protected void onCreateToolbar(Toolbar toolBar) {
-        toolBar.setBackgroundColor(Color.TRANSPARENT);
+    protected Toolbar onCreateToolbar(View parent) {
+        Toolbar toolbar =  super.onCreateToolbar(parent);
+        toolbar.setBackgroundColor(Color.TRANSPARENT);
+        return  toolbar;
     }
 
     @Override
     protected void onCustomStyle(Style style) {
-       style.setToolBarBackgroundColor(Color.parseColor("#EE6413"));
+       style.setToolbarBackgroundColor(Color.parseColor("#EE6413"));
     }
 
     @Nullable
@@ -45,7 +47,7 @@ public class ToolBarColorTransitionFragment extends AwesomeFragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int alpha = progress * 255 / 100;
                 Toolbar topBar = getToolbar();
-                int color = ColorUtils.setAlphaComponent(style.getToolBarBackgroundColor(), alpha);
+                int color = ColorUtils.setAlphaComponent(style.getToolbarBackgroundColor(), alpha);
                 topBar.setBackgroundColor(color);
             }
 

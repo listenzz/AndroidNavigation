@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.navigation.fragment.AwesomeFragment;
-import com.navigation.fragment.BarStyle;
 
 /**
  * Created by Listen on 2018/2/1.
@@ -22,19 +21,16 @@ import com.navigation.fragment.BarStyle;
 
 public class ViewPagerFragment extends AwesomeFragment {
 
+    Toolbar toolbar;
+
     @Override
     public boolean isParentFragment() {
         return true;
     }
 
     @Override
-    protected boolean shouldAutoCreateToolBar() {
-        return false;
-    }
-
-    @Override
-    protected BarStyle preferredStatusBarStyle() {
-        return BarStyle.DarkContent;
+    protected Toolbar onCreateToolbar(View parent) {
+        return toolbar;
     }
 
     @Nullable
@@ -46,12 +42,12 @@ public class ViewPagerFragment extends AwesomeFragment {
     }
 
     private void initView(View view) {
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
-        AppBarLayout appBarLayout = view.findViewById(R.id.appbar_layout);
-        // 很重要
-        appendStatusBarPaddingAndHeight(appBarLayout, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        toolbar.setTitle("自定义 ToolBar");
+        toolbar = view.findViewById(R.id.toolbar);
+        AppBarLayout appBarLayout = view.findViewById(R.id.appbar_layout);
+
+        // important
+        appendStatusBarPaddingAndHeight(appBarLayout, -2);
 
         TabLayout tabLayout =  view.findViewById(R.id.tab_layout);
         ViewPager viewPager =  view.findViewById(R.id.view_pager);
@@ -67,7 +63,7 @@ public class ViewPagerFragment extends AwesomeFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        setTitle("Toolbar In AppBar");
     }
 
     public class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -80,7 +76,8 @@ public class ViewPagerFragment extends AwesomeFragment {
 
         @Override
         public Fragment getItem(int position) {
-            return new PageFragment();
+            String[] titles = new String[] {"Android", "Awesome", "Navigation"};
+            return PageFragment.newInstance(titles[position]);
         }
 
         @Override

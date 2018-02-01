@@ -2,6 +2,7 @@ package com.navigation.fragment;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -64,6 +65,14 @@ public class AwesomeToolbar extends Toolbar {
             int height = (int) getContext().getResources().getDisplayMetrics().density;
             divider.setBounds(0, getHeight() - height, getWidth(), getHeight());
             divider.draw(canvas);
+        }
+    }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        super.setBackgroundColor(color);
+        if (color == Color.TRANSPARENT) {
+            hideShadow();
         }
     }
 

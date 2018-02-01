@@ -12,7 +12,7 @@ public class StatusBarColorFragment extends TestStatusBarFragment {
 
     @Override
     protected void onCustomStyle(Style style) {
-        style.setToolBarBackgroundColor(Color.DKGRAY);
+        style.setToolbarBackgroundColor(Color.DKGRAY);
     }
 
     @Override

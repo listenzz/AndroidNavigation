@@ -158,7 +158,7 @@ public class TestFragment extends AwesomeFragment {
 
     @Override
     protected void onCustomStyle(Style style) {
-        style.setToolBarStyle(BarStyle.DarkContent);
+        style.setToolbarStyle(BarStyle.DarkContent);
     }
 
 }

@@ -3,6 +3,7 @@ package com.navigation;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +17,11 @@ import com.navigation.fragment.AwesomeFragment;
 
 public class CoordinatorFragment extends AwesomeFragment {
 
+    Toolbar toolbar;
+
     @Override
-    protected boolean shouldAutoCreateToolBar() {
-        return false;
+    protected Toolbar onCreateToolbar(View parent) {
+        return toolbar;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class CoordinatorFragment extends AwesomeFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_coordinator, container, false);
 
-        Toolbar toolbar = root.findViewById(R.id.toolbar);
+        toolbar = root.findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.nav_ic_arrow_back);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,7 +43,8 @@ public class CoordinatorFragment extends AwesomeFragment {
             }
         });
 
-        appendStatusBarPaddingAndHeight(toolbar, getToolBarHeight());
+        // important
+        appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
 
         return root;
     }
@@ -48,6 +52,12 @@ public class CoordinatorFragment extends AwesomeFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setToolbarRightButton(ContextCompat.getDrawable(getContext(), android.R.drawable.stat_notify_chat), "Chat", true, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
 
