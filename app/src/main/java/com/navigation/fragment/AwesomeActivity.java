@@ -27,7 +27,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         onCustomStyle(style);
         setStatusBarTranslucent(true);
-        AndroidBug5497Workaround.assistActivity(findViewById(android.R.id.content));
         // Log.i(TAG, "onCreate");
     }
 
@@ -173,17 +172,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
             ViewCompat.requestApplyInsets(decorView);
         }
-    }
-
-    public int getStatusBarHeight() {
-        int statusBarHeight = -1;
-        //获取status_bar_height资源的ID
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            //根据资源ID获取响应的尺寸值
-            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
-        }
-        return statusBarHeight;
     }
 
     private void executePresentFragment(AwesomeFragment fragment) {

@@ -43,16 +43,6 @@ public class TestStatusBarFragment extends AwesomeFragment {
             }
         });
 
-        root.findViewById(R.id.toggle_drawer).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DrawerFragment drawerFragment = getDrawerFragment();
-                if (drawerFragment != null) {
-                    drawerFragment.toggleMenu();
-                }
-            }
-        });
-
         root.findViewById(R.id.status_bar_style).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,8 +77,15 @@ public class TestStatusBarFragment extends AwesomeFragment {
         root.findViewById(R.id.dialog).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TestDialogFragment dialog = new TestDialogFragment();
+                TopDialogFragment dialog = new TopDialogFragment();
                 dialog.show(getActivity().getSupportFragmentManager(), dialog.getSceneId());
+            }
+        });
+
+        root.findViewById(R.id.custom).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getNavigationFragment().pushFragment(new CustomStatusBarFragment());
             }
         });
 

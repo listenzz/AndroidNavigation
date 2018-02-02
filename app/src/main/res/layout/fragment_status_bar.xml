@@ -21,17 +21,7 @@
         android:gravity="center"
         android:text="popToRoot"
         android:textAllCaps="false" />
-
-    <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
-        android:id="@+id/toggle_drawer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="toggleDrawer"
-        android:textAllCaps="false" />
-
+    
     <Button
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
@@ -83,6 +73,16 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Dialog"
+        android:textAllCaps="false" />
+
+    <Button
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:id="@+id/custom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Custom StatusBar"
         android:textAllCaps="false" />
 
 

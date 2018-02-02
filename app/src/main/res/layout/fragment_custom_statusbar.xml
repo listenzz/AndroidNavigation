@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/panda" />
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            app:title="Toolbar"
+            app:titleTextColor="@android:color/white" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:orientation="vertical"
+        android:paddingBottom="16dp"
+        android:paddingLeft="64dp"
+        android:paddingTop="16dp">
+
+        <CheckBox
+            android:id="@+id/insets"
+            android:checked="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Apply window insets"
+            android:textSize="14sp" />
+
+        <CheckBox
+            android:checked="true"
+            android:id="@+id/tinting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="状态栏着色"
+            android:textSize="14sp" />
+
+
+        <CheckBox
+            android:id="@+id/dark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="深色状态栏"
+            android:textSize="14sp" />
+
+        <CheckBox
+            android:id="@+id/hidden"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="隐藏状态栏"
+            android:textSize="14sp" />
+
+        <CheckBox
+            android:id="@+id/adjust"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="调整 Toolbar 位置"
+            android:textSize="14sp" />
+
+
+    </LinearLayout>
+
+</LinearLayout>
