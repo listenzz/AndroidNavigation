@@ -1,5 +1,6 @@
 package com.navigation;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -31,6 +32,11 @@ public class ViewPagerFragment extends AwesomeFragment {
     @Override
     protected Toolbar onCreateToolbar(View parent) {
         return toolbar;
+    }
+
+    @Override
+    protected int preferredStatusBarColor() {
+        return Color.parseColor("#3F51B5");
     }
 
     @Nullable

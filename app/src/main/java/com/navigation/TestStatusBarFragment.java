@@ -83,26 +83,6 @@ public class TestStatusBarFragment extends AwesomeFragment {
             }
         });
 
-        root.findViewById(R.id.toolbar_color_transition).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new ToolBarColorTransitionFragment());
-            }
-        });
-
-        root.findViewById(R.id.view_pager).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new ViewPagerFragment());
-            }
-        });
-
-        root.findViewById(R.id.coordinator).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new CoordinatorFragment());
-            }
-        });
 
         return root;
     }

@@ -1,6 +1,7 @@
 package com.navigation;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 
 import com.navigation.fragment.AwesomeFragment;
 import com.navigation.fragment.BarStyle;
+import com.navigation.fragment.DrawableUtils;
+import com.navigation.fragment.DrawerFragment;
 import com.navigation.fragment.NavigationFragment;
 import com.navigation.fragment.Style;
 import com.navigation.fragment.TabBarFragment;
@@ -20,6 +23,10 @@ import com.navigation.fragment.TabBarFragment;
  */
 
 public class TestFragment extends AwesomeFragment {
+
+    public static String fromCharCode(int... codePoints) {
+        return new String(codePoints, 0, codePoints.length);
+    }
 
     private static final int REQUEST_CODE = 1;
 
@@ -136,6 +143,18 @@ public class TestFragment extends AwesomeFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setTitle("导航");
+        if (isNavigationRoot()) {
+            Drawable icon = DrawableUtils.fromFont(getContext(), "FontAwesome", fromCharCode(61641), 24, -1 );
+            setToolbarLeftButton(icon, "Menu", true, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DrawerFragment drawerFragment = getDrawerFragment();
+                    if (drawerFragment != null) {
+                        drawerFragment.toggleMenu();
+                    }
+                }
+            });
+        }
     }
 
     @Override

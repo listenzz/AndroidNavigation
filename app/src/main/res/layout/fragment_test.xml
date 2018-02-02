@@ -4,92 +4,101 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_marginTop="32dp"
-        android:id="@+id/tag"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:gravity="center"
-        android:textColor="#000000"
-        android:textSize="12dp" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/present"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:gravity="center"
-        android:text="present"
-        android:textColor="@color/touchable_opacity_font_color" />
+        <TextView
+            android:id="@+id/tag"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="32dp"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:textSize="12dp" />
 
-    <TextView
-        android:id="@+id/dismiss"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:gravity="center"
-        android:text="dismiss"
-        android:textColor="@color/touchable_opacity_font_color" />
+        <Button
+            android:id="@+id/present"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center"
+            android:text="present"
+            android:textAllCaps="false" />
 
-    <TextView
-        android:id="@+id/push"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:gravity="center"
-        android:text="push"
-        android:textColor="@color/touchable_opacity_font_color" />
+        <Button
+            android:id="@+id/dismiss"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center"
+            android:text="dismiss"
+            android:textAllCaps="false" />
 
-    <TextView
-        android:id="@+id/pop"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:gravity="center"
-        android:text="pop"
-        android:textColor="@color/touchable_opacity_font_color" />
+        <Button
+            android:id="@+id/push"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center"
+            android:text="push"
+            android:textAllCaps="false" />
 
-    <TextView
-        android:id="@+id/pop_to_root"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:gravity="center"
-        android:text="popToRoot"
-        android:textColor="@color/touchable_opacity_font_color" />
+        <Button
+            android:id="@+id/pop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center"
+            android:text="pop"
+            android:textAllCaps="false" />
 
-    <TextView
-        android:id="@+id/replace"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:gravity="center"
-        android:text="replace"
-        android:textColor="@color/touchable_opacity_font_color" />
+        <Button
+            android:id="@+id/pop_to_root"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center"
+            android:text="popToRoot"
+            android:textAllCaps="false" />
 
-    <TextView
-        android:id="@+id/replace_to_root"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:gravity="center"
-        android:text="replaceToRoot"
-        android:textColor="@color/touchable_opacity_font_color" />
+        <Button
+            android:id="@+id/replace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center"
+            android:text="replace"
+            android:textAllCaps="false" />
 
-    <TextView
-        android:id="@+id/toggle_tab_bar"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:gravity="center"
-        android:text="toggleTabBar"
-        android:textColor="@color/touchable_opacity_font_color" />
+        <Button
+            android:id="@+id/replace_to_root"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center"
+            android:text="replaceToRoot"
+            android:textAllCaps="false" />
 
-    <EditText
-        android:id="@+id/result"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_input"
-        android:hint="请输入要返回的结果"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:textSize="14dp" />
+        <Button
+            android:id="@+id/toggle_tab_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center"
+            android:text="toggleTabBar"
+            android:textAllCaps="false" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/result_text"
@@ -98,6 +107,20 @@
         android:gravity="center"
         android:textColor="#000000"
         android:textSize="13dp" />
+
+    <EditText
+        android:id="@+id/result"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_input"
+        android:hint="请输入要返回的结果"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:textSize="14dp" />
 
 
 </LinearLayout>

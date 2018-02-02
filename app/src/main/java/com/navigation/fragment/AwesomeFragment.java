@@ -872,16 +872,9 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
         }
 
         TypedValue typedValue = new TypedValue();
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            if (getContext().getTheme().resolveAttribute(R.attr.actionBarItemBackground, typedValue, true)) {
-                button.setBackgroundResource(typedValue.resourceId);
-            }
-        } else {
-            if (getContext().getTheme().resolveAttribute(R.attr.selectableItemBackgroundBorderless, typedValue, true)) {
-                button.setBackgroundResource(typedValue.resourceId);
-            }
+        if (getContext().getTheme().resolveAttribute(R.attr.actionBarItemBackground, typedValue, true)) {
+            button.setBackgroundResource(typedValue.resourceId);
         }
-
     }
 
     // ------ TabBarFragment -------
