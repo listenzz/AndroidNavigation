@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 
+import com.navigation.fragment.AndroidBug5497Workaround;
 import com.navigation.fragment.AwesomeActivity;
 import com.navigation.fragment.DrawerFragment;
 import com.navigation.fragment.NavigationFragment;
@@ -20,7 +21,7 @@ public class MainActivity extends AwesomeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // AndroidBug5497Workaround.assistActivity(findViewById(android.R.id.content));
+
 
         if (savedInstanceState == null) {
 

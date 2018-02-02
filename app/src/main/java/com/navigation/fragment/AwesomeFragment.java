@@ -140,6 +140,12 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
     }
 
     @Override
+    public void onDestroyView() {
+        hideSoftInput(getView());
+        super.onDestroyView();
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //Log.i(TAG, getDebugTag() + "#onActivityCreated");

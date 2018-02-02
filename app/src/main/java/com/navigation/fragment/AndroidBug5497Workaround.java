@@ -1,4 +1,4 @@
-package com.navigation;
+package com.navigation.fragment;
 
 import android.graphics.Rect;
 import android.view.View;

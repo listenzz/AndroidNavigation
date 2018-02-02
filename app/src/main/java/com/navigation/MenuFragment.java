@@ -49,6 +49,14 @@ public class MenuFragment extends AwesomeFragment {
             }
         });
 
+        root.findViewById(R.id.web).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDrawerFragment().closeMenu();
+                getNavigationFragment().pushFragment(new WebFragment());
+            }
+        });
+
         return root;
     }
 

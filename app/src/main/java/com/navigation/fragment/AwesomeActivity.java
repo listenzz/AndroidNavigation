@@ -26,8 +26,9 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         super.onCreate(savedInstanceState);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         onCustomStyle(style);
-        // Log.i(TAG, "onCreate");
         setStatusBarTranslucent(true);
+        AndroidBug5497Workaround.assistActivity(findViewById(android.R.id.content));
+        // Log.i(TAG, "onCreate");
     }
 
     @Override
