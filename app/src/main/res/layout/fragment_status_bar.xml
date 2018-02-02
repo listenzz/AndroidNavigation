@@ -75,4 +75,15 @@
         android:text="No Toolbar"
         android:textAllCaps="false" />
 
+    <Button
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:id="@+id/dialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Dialog"
+        android:textAllCaps="false" />
+
+
 </LinearLayout>

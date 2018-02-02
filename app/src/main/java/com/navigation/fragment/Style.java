@@ -32,8 +32,8 @@ public class Style implements Cloneable {
 
     private int titleGravity = Gravity.START;
 
-    private int toolbarButtonItemTintColor = INVALID_COLOR;
-    private int toolbarButtonItemTextSize = 15;
+    private int toolbarButtonTintColor = INVALID_COLOR;
+    private int toolbarButtonTextSize = 15;
 
     private String bottomBarBackgroundColor = "#FFFFFF";
     private String bottomBarActiveColor = null;
@@ -152,7 +152,7 @@ public class Style implements Cloneable {
             return backIcon;
         }
         Drawable drawable = context.getResources().getDrawable(R.drawable.nav_ic_arrow_back);
-        drawable.setColorFilter(getToolbarButtonItemTintColor(), PorterDuff.Mode.SRC_ATOP);
+        drawable.setColorFilter(getToolbarButtonTintColor(), PorterDuff.Mode.SRC_ATOP);
         backIcon = drawable;
         return backIcon;
     }
@@ -193,23 +193,23 @@ public class Style implements Cloneable {
         this.bottomBarShadow = drawable;
     }
 
-    public void setToolbarButtonItemTintColor(int color) {
-        toolbarButtonItemTintColor = color;
+    public void setToolbarButtonTintColor(int color) {
+        toolbarButtonTintColor = color;
     }
 
-    public int getToolbarButtonItemTintColor() {
-        if (toolbarButtonItemTintColor != INVALID_COLOR) {
-            return toolbarButtonItemTintColor;
+    public int getToolbarButtonTintColor() {
+        if (toolbarButtonTintColor != INVALID_COLOR) {
+            return toolbarButtonTintColor;
         }
         return getToolbarTintColor();
     }
 
-    public void setToolbarButtonItemTextSize(int dp) {
-        toolbarButtonItemTextSize = dp;
+    public void setToolbarButtonTextSize(int dp) {
+        toolbarButtonTextSize = dp;
     }
 
-    public int getToolbarButtonItemTextSize() {
-        return toolbarButtonItemTextSize;
+    public int getToolbarButtonTextSize() {
+        return toolbarButtonTextSize;
     }
 
     public void setTitleGravity(int gravity) {

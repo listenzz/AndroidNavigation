@@ -84,6 +84,15 @@ public class TestStatusBarFragment extends AwesomeFragment {
         });
 
 
+        root.findViewById(R.id.dialog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TestDialogFragment dialog = new TestDialogFragment();
+                dialog.show(getActivity().getSupportFragmentManager(), dialog.getSceneId());
+            }
+        });
+
+
         return root;
     }
 

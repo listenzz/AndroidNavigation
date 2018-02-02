@@ -15,6 +15,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -46,7 +47,7 @@ import java.util.UUID;
  * Created by Listen on 2018/1/11.
  */
 
-public abstract class AwesomeFragment extends Fragment implements FragmentManager.OnBackStackChangedListener {
+public abstract class AwesomeFragment extends DialogFragment implements FragmentManager.OnBackStackChangedListener {
 
     public static final String TAG = "Navigation";
 
@@ -84,6 +85,8 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
 
         presentableActivity = (PresentableActivity) activity;
         //Log.i(TAG, getDebugTag() + "#onAttach");
+
+
     }
 
     @Override
@@ -109,12 +112,14 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
 
-        try {
-            style = presentableActivity.getStyle().clone();
-            onCustomStyle(style);
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            style = presentableActivity.getStyle();
+        if (style == null) {
+            try {
+                style = presentableActivity.getStyle().clone();
+                onCustomStyle(style);
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+                style = presentableActivity.getStyle();
+            }
         }
 
         if (!isParentFragment()) {
@@ -152,8 +157,12 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
     }
 
     private void setBackgroundDrawable(View root, Drawable drawable) {
-        root.setBackground(drawable);
-        getWindow().setBackgroundDrawable(null);
+        if (getDialog() == null) {
+            root.setBackground(drawable);
+            getWindow().setBackgroundDrawable(null);
+        } else {
+            //getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
     }
 
     protected void onCustomStyle(Style style) {
@@ -550,10 +559,15 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
     }
 
     public Window getWindow() {
-        if (getActivity() == null) {
-            return null;
+        if (getDialog() != null) {
+            return getDialog().getWindow();
         }
-        return getActivity().getWindow();
+
+        if (getActivity() != null) {
+            return getActivity().getWindow();
+        }
+
+        return null;
     }
 
     protected void setStatusBarStyle(BarStyle style) {
@@ -590,21 +604,23 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
 
     protected void setStatusBarHidden(boolean hidden) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
             if (hidden) {
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             } else {
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                window.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             }
         }
     }
 
     protected void setStatusBarColor(int color, boolean animated) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             if (animated) {
-                int curColor = getWindow().getStatusBarColor();
+                int curColor = window.getStatusBarColor();
                 ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
 
                 colorAnimation.addUpdateListener(
@@ -612,14 +628,13 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
                             @TargetApi(21)
                             @Override
                             public void onAnimationUpdate(ValueAnimator animator) {
-                                getWindow()
-                                        .setStatusBarColor((Integer) animator.getAnimatedValue());
+                               getWindow().setStatusBarColor((Integer) animator.getAnimatedValue());
                             }
                         });
                 colorAnimation.setDuration(200).setStartDelay(0);
                 colorAnimation.start();
             } else {
-                getWindow().setStatusBarColor(color);
+                window.setStatusBarColor(color);
             }
         }
     }
@@ -855,7 +870,7 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
         button.setAlpha(1.0f);
         button.setVisibility(View.VISIBLE);
 
-        int color = style.getToolbarButtonItemTintColor();
+        int color = style.getToolbarButtonTintColor();
         if (!enabled) {
             color = DrawableUtils.generateGrayColor(color);
             button.setAlpha(0.3f);
@@ -874,7 +889,7 @@ public abstract class AwesomeFragment extends Fragment implements FragmentManage
             button.setPaddingRelative(padding, 0, padding, 0);
             button.setText(title);
             button.setTextColor(color);
-            button.setTextSize(style.getToolbarButtonItemTextSize());
+            button.setTextSize(style.getToolbarButtonTextSize());
         }
 
         TypedValue typedValue = new TypedValue();
