@@ -1,4 +1,4 @@
-package com.navigation;
+package com.navigation.statusbar;
 
 import android.graphics.Color;
 import android.os.Build;
@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.navigation.R;
 import com.navigation.library.AwesomeFragment;
 import com.navigation.library.BarStyle;
 

@@ -91,7 +91,6 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         presentableActivity = (PresentableActivity) activity;
         //Log.i(TAG, getDebugTag() + "#onAttach");
 
-
     }
 
     @Override

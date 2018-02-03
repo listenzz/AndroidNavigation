@@ -1,4 +1,4 @@
-package com.navigation;
+package com.navigation.statusbar;
 
 import android.graphics.Color;
 import android.os.Bundle;

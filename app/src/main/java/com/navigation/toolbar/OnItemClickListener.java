@@ -1,4 +1,4 @@
-package com.navigation;
+package com.navigation.toolbar;
 
 import android.view.View;
 

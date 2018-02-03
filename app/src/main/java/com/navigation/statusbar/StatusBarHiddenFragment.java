@@ -1,4 +1,4 @@
-package com.navigation;
+package com.navigation.statusbar;
 
 /**
  * Created by listen on 2018/1/13.

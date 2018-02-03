@@ -10,6 +10,7 @@ import com.navigation.library.NavigationFragment;
 import com.navigation.library.Style;
 import com.navigation.library.TabBarFragment;
 import com.navigation.library.TabBarItem;
+import com.navigation.statusbar.TestStatusBarFragment;
 
 public class MainActivity extends AwesomeActivity {
 
@@ -23,9 +24,9 @@ public class MainActivity extends AwesomeActivity {
 
         if (savedInstanceState == null) {
 
-            TestFragment testFragment = new TestFragment();
+            TestNavigationFragment testNavigationFragment = new TestNavigationFragment();
             NavigationFragment navigation = new NavigationFragment();
-            navigation.setRootFragment(testFragment);
+            navigation.setRootFragment(testNavigationFragment);
             String navigationIcon = "font://FontAwesome/" + fromCharCode(61732) + "/24";
             navigation.setTabBarItem(new TabBarItem(navigationIcon, "Navigation"));
 

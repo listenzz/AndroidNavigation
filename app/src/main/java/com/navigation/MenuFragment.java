@@ -7,7 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.navigation.dialog.DialogEntryFragment;
 import com.navigation.library.AwesomeFragment;
+import com.navigation.toolbar.CoordinatorFragment;
+import com.navigation.toolbar.ToolBarColorTransitionFragment;
+import com.navigation.toolbar.ViewPagerFragment;
 
 /**
  * Created by listen on 2018/1/13.

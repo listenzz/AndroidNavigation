@@ -1,4 +1,4 @@
-package com.navigation;
+package com.navigation.dialog;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
+import com.navigation.R;
 import com.navigation.library.AwesomeFragment;
 
 /**

@@ -22,7 +22,7 @@ import com.navigation.library.TabBarFragment;
  * Created by Listen on 2018/1/11.
  */
 
-public class TestFragment extends AwesomeFragment {
+public class TestNavigationFragment extends AwesomeFragment {
 
     public static String fromCharCode(int... codePoints) {
         return new String(codePoints, 0, codePoints.length);
@@ -49,7 +49,7 @@ public class TestFragment extends AwesomeFragment {
             @Override
             public void onClick(View v) {
                 NavigationFragment navigationFragment = new NavigationFragment();
-                navigationFragment.setRootFragment(new TestFragment());
+                navigationFragment.setRootFragment(new TestNavigationFragment());
                 presentFragment(navigationFragment, REQUEST_CODE);
             }
         });
@@ -69,7 +69,7 @@ public class TestFragment extends AwesomeFragment {
             public void onClick(View v) {
                 NavigationFragment navigationFragment = getNavigationFragment();
                 if (navigationFragment != null) {
-                    navigationFragment.pushFragment(new TestFragment());
+                    navigationFragment.pushFragment(new TestNavigationFragment());
                 }
             }
         });
@@ -105,7 +105,7 @@ public class TestFragment extends AwesomeFragment {
             public void onClick(View v) {
                 NavigationFragment navigationFragment = getNavigationFragment();
                 if (navigationFragment != null) {
-                    navigationFragment.replaceFragment(new TestFragment());
+                    navigationFragment.replaceFragment(new TestNavigationFragment());
                 }
             }
         });
@@ -115,7 +115,7 @@ public class TestFragment extends AwesomeFragment {
             public void onClick(View v) {
                 NavigationFragment navigationFragment = getNavigationFragment();
                 if (navigationFragment != null) {
-                    navigationFragment.replaceToRootFragment(new TestFragment());
+                    navigationFragment.replaceToRootFragment(new TestNavigationFragment());
                 }
             }
         });

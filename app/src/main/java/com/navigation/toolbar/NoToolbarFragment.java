@@ -1,8 +1,10 @@
-package com.navigation;
+package com.navigation.toolbar;
 
 import android.graphics.Color;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+
+import com.navigation.statusbar.TestStatusBarFragment;
 
 /**
  * Created by Listen on 2018/2/1.

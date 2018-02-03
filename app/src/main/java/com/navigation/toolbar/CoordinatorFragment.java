@@ -1,4 +1,4 @@
-package com.navigation;
+package com.navigation.toolbar;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.navigation.R;
 import com.navigation.library.AwesomeFragment;
 
 /**
