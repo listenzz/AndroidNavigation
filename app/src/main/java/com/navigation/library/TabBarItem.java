@@ -2,6 +2,7 @@ package com.navigation.library;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.DrawableRes;
 
 /**
  * Created by Listen on 2018/1/11.
@@ -11,10 +12,17 @@ public class TabBarItem implements Parcelable {
 
     public String title;
 
-    public String icon;
+    public String iconUri;
+
+    public int iconRes = -1;
+
+    public TabBarItem(@DrawableRes int iconRes, String title) {
+        this.iconRes = iconRes;
+        this.title = title;
+    }
 
     public TabBarItem(String iconUri, String title) {
-        this.icon = iconUri;
+        this.iconUri = iconUri;
         this.title = title;
     }
 
@@ -26,12 +34,14 @@ public class TabBarItem implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.title);
-        dest.writeString(this.icon);
+        dest.writeString(this.iconUri);
+        dest.writeInt(this.iconRes);
     }
 
     protected TabBarItem(Parcel in) {
         this.title = in.readString();
-        this.icon = in.readString();
+        this.iconUri = in.readString();
+        this.iconRes = in.readInt();
     }
 
     public static final Creator<TabBarItem> CREATOR = new Creator<TabBarItem>() {

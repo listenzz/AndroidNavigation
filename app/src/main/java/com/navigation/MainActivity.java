@@ -26,14 +26,13 @@ public class MainActivity extends AwesomeActivity {
             TestNavigationFragment testNavigationFragment = new TestNavigationFragment();
             NavigationFragment navigation = new NavigationFragment();
             navigation.setRootFragment(testNavigationFragment);
-            String navigationIcon = "font://FontAwesome/" + fromCharCode(61732) + "/24";
-            navigation.setTabBarItem(new TabBarItem(navigationIcon, "Navigation"));
+            String iconUri = "font://FontAwesome/" + fromCharCode(61732) + "/24";
+            navigation.setTabBarItem(new TabBarItem(iconUri, "Navigation"));
 
             TestStatusBarFragment testStatusBarFragment = new TestStatusBarFragment();
             NavigationFragment statusBar = new NavigationFragment();
             statusBar.setRootFragment(testStatusBarFragment);
-            String styleIcon = "flower";
-            statusBar.setTabBarItem(new TabBarItem(styleIcon, "Status"));
+            statusBar.setTabBarItem(new TabBarItem(R.drawable.flower, "Status"));
 
             TabBarFragment tabBarFragment = new TabBarFragment();
             tabBarFragment.setFragments(navigation, statusBar);

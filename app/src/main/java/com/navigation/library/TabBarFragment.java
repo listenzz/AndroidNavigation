@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -159,8 +160,10 @@ public class TabBarFragment extends AwesomeFragment {
             BottomNavigationItem bottomNavigationItem;
             if (tabBarItem != null) {
                 Drawable icon = new ColorDrawable();
-                if (tabBarItem.icon != null) {
-                    icon = DrawableUtils.fromUri(getContext(), tabBarItem.icon);
+                if (tabBarItem.iconRes != -1) {
+                    icon = ContextCompat.getDrawable(getContext(), tabBarItem.iconRes);
+                } else if (tabBarItem.iconUri != null) {
+                    icon = DrawableUtils.fromUri(getContext(), tabBarItem.iconUri);
                 }
                 bottomNavigationItem = new BottomNavigationItem(icon, tabBarItem.title);
             } else {

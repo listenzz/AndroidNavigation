@@ -151,7 +151,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         transaction.commit();
     }
 
-    private void setStatusBarTranslucent(boolean translucent) {
+    protected void setStatusBarTranslucent(boolean translucent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             View decorView = getWindow().getDecorView();
             if (translucent) {
