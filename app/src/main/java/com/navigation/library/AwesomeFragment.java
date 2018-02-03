@@ -176,7 +176,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     @Override
     public void onResume() {
         super.onResume();
-        if (!isParentFragment()) {
+        if (childFragmentForAppearance() == null) {
             //Log.w(TAG, getDebugTag() + "#onResume-");
             setNeedsStatusBarAppearanceUpdate();
         }
@@ -187,7 +187,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden && isAdded()) {
-            if (!isParentFragment()) {
+            if (childFragmentForAppearance() == null) {
                 //Log.w(TAG, getDebugTag() + "#onHiddenChanged:-");
                 setNeedsStatusBarAppearanceUpdate();
             }
