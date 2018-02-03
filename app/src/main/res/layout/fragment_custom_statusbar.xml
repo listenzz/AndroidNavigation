@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="全屏"
+            android:text="内容延伸到 StatusBar 底下（沉浸式）"
             android:textSize="14sp" />
 
         <CheckBox
@@ -54,7 +54,7 @@
             android:id="@+id/dark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="深色状态栏"
+            android:text="黑色状态栏"
             android:textSize="14sp" />
 
         <CheckBox

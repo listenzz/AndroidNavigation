@@ -47,7 +47,9 @@ public class WebFragment extends AwesomeFragment {
         webView.loadUrl("file:///android_asset/input_webview.html");
         setTitle("WebView");
 
-        AndroidBug5497Workaround.assist(getView());
+        if (isContentUnderStatusBar()) {
+            AndroidBug5497Workaround.assist(getView());
+        }
 
     }
 

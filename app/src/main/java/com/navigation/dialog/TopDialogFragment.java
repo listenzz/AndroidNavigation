@@ -22,6 +22,11 @@ public class TopDialogFragment extends AwesomeFragment {
     Toolbar toolbar;
 
     @Override
+    protected int preferredStatusBarColor() {
+        return Color.TRANSPARENT;
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.MyDialog);
@@ -41,8 +46,8 @@ public class TopDialogFragment extends AwesomeFragment {
 
         // import
         appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
-        setStatusBarTranslucent(true);
-        setStatusBarColor(Color.TRANSPARENT, false);
+        setContentUnderStatusBar(true);
+       // setStatusBarColor(Color.TRANSPARENT, false);
 
         getDialog().setCanceledOnTouchOutside(true);  //点击外部消失
         Window window = getWindow();

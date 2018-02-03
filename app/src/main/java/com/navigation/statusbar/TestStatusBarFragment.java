@@ -27,6 +27,11 @@ public class TestStatusBarFragment extends AwesomeFragment {
         return new String(codePoints, 0, codePoints.length);
     }
 
+    @Override
+    protected boolean preferredStatusBarColorAnimated() {
+        return true;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

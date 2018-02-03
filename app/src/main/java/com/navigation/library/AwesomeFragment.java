@@ -20,7 +20,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
@@ -28,7 +27,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -72,7 +70,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         }
 
         presentableActivity = (PresentableActivity) activity;
-        //Log.i(TAG, getDebugTag() + "#onAttach");
+        // Log.i(TAG, getDebugTag() + "#onAttach");
 
     }
 
@@ -86,7 +84,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getChildFragmentManager().addOnBackStackChangedListener(this);
-        //Log.i(TAG, getDebugTag() + "#onCreate");
+        // Log.i(TAG, getDebugTag() + "#onCreate");
     }
 
     @Override
@@ -128,7 +126,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
             }
             this.toolbar = toolbar;
         }
-        //Log.i(TAG, getDebugTag() + "#onViewCreated");
+        // Log.i(TAG, getDebugTag() + "#onViewCreated");
     }
 
     @Override
@@ -140,7 +138,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //Log.i(TAG, getDebugTag() + "#onActivityCreated");
+        // Log.i(TAG, getDebugTag() + "#onActivityCreated");
     }
 
     private void setBackgroundDrawable(View root, Drawable drawable) {
@@ -158,10 +156,10 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     public void onResume() {
         super.onResume();
         if (childFragmentForAppearance() == null) {
-            //Log.w(TAG, getDebugTag() + "#onResume-");
+            // Log.w(TAG, getDebugTag() + "#onResume-");
             setNeedsStatusBarAppearanceUpdate();
         }
-        //Log.w(TAG, getDebugTag() + "#onResume");
+        // Log.w(TAG, getDebugTag() + "#onResume");
     }
 
     @Override
@@ -169,7 +167,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         super.onHiddenChanged(hidden);
         if (!hidden && isAdded()) {
             if (childFragmentForAppearance() == null) {
-                //Log.w(TAG, getDebugTag() + "#onHiddenChanged:-");
+                // Log.w(TAG, getDebugTag() + "#onHiddenChanged:-");
                 setNeedsStatusBarAppearanceUpdate();
             }
         }
@@ -186,7 +184,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && isAdded()) {
-            //Log.w(TAG, getDebugTag() + "#isVisibleToUser:-");
+            // Log.w(TAG, getDebugTag() + "#isVisibleToUser:-");
             setNeedsStatusBarAppearanceUpdate();
         }
         //Log.w(TAG, getDebugTag() + "#isVisibleToUser:" + isVisibleToUser);
@@ -492,7 +490,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         if (childFragmentForStatusBarColor != null) {
             return childFragmentForStatusBarColor.preferredStatusBarColorAnimated();
         }
-        return true;
+        return false;
     }
 
     protected int preferredToolbarBackgroundColor() {
@@ -516,6 +514,8 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
             return;
         }
 
+        Log.i(TAG, getDebugTag() + " #setNeedsStatusBarAppearanceUpdate");
+
         AwesomeFragment parent = getParent();
         if (parent != null) {
             parent.setNeedsStatusBarAppearanceUpdate();
@@ -529,11 +529,18 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
                 setStatusBarStyle(preferredStatusBarStyle());
 
                 // statusBarColor
-                boolean xxx = preferredStatusBarColor() == Color.TRANSPARENT && preferredToolbarBackgroundColor() == Color.WHITE;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    xxx = xxx && preferredStatusBarStyle() == BarStyle.LightContent;
+                boolean shouldAdjustForWhiteStatusBar;
+                if (isContentUnderStatusBar()) {
+                    shouldAdjustForWhiteStatusBar = preferredStatusBarColor() == Color.TRANSPARENT && preferredToolbarBackgroundColor() == Color.WHITE;
+                } else {
+                    shouldAdjustForWhiteStatusBar = preferredStatusBarColor() == Color.WHITE;
                 }
-                if (xxx) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
+                }
+
+                if (shouldAdjustForWhiteStatusBar) {
                     int color = Color.parseColor("#666666");
                     setStatusBarColor(color, preferredStatusBarColorAnimated());
                 } else {
@@ -563,28 +570,33 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         }
     }
 
-    protected void setStatusBarTranslucent(boolean translucent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            View decorView = getWindow().getDecorView();
-            if (translucent) {
-                decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-                    @Override
-                    public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
-                        WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
-                        return defaultInsets.replaceSystemWindowInsets(
-                                defaultInsets.getSystemWindowInsetLeft(),
-                                0,
-                                defaultInsets.getSystemWindowInsetRight(),
-                                defaultInsets.getSystemWindowInsetBottom());
-                    }
-                });
-            } else {
-                decorView.setOnApplyWindowInsetsListener(null);
-            }
-
-            ViewCompat.requestApplyInsets(decorView);
+    protected void setContentUnderStatusBar(boolean under) {
+        if (getDialog() != null) {
+            AppUtils.setStatusBarTranslucent(getWindow(), under);
+        } else {
+            presentableActivity.setContentUnderStatusBar(under);
         }
+    }
+
+    protected void onContentUnderStatusBar(boolean under) {
+        Toolbar toolbar = getToolbar();
+        if (toolbar != null) {
+            if (under) {
+                appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+            } else {
+                removeStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+            }
+        }
+
+        List<AwesomeFragment> children = getAddedChildFragments();
+        for (int i = 0, size = children.size(); i < size; i++) {
+            AwesomeFragment child = children.get(i);
+            child.onContentUnderStatusBar(under);
+        }
+    }
+
+    protected boolean isContentUnderStatusBar() {
+        return presentableActivity.isContentUnderStatusBar();
     }
 
     protected void setStatusBarHidden(boolean hidden) {
@@ -749,7 +761,10 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
             throw new UnsupportedOperationException("NavigationFragment 还没适配 " + parent.getClass().getSimpleName());
         }
 
-        appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+        if (isContentUnderStatusBar()) {
+            appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+        }
+
         customAwesomeToolbar(toolbar);
 
         return toolbar;

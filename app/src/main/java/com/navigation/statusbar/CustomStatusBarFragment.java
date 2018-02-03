@@ -46,7 +46,10 @@ public class CustomStatusBarFragment extends AwesomeFragment implements Compound
 
         textView = root.findViewById(R.id.hint);
 
-        ((CheckBox)root.findViewById(R.id.insets)).setOnCheckedChangeListener(this);
+        CheckBox insetsCheckBox = root.findViewById(R.id.insets);
+        insetsCheckBox.setChecked(isContentUnderStatusBar());
+        insetsCheckBox.setOnCheckedChangeListener(this);
+
         ((CheckBox)root.findViewById(R.id.tinting)).setOnCheckedChangeListener(this);
         ((CheckBox)root.findViewById(R.id.dark)).setOnCheckedChangeListener(this);
         ((CheckBox)root.findViewById(R.id.hidden)).setOnCheckedChangeListener(this);
@@ -58,7 +61,6 @@ public class CustomStatusBarFragment extends AwesomeFragment implements Compound
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        setStatusBarTranslucent(true);
     }
 
     int statusBarColor = Color.MAGENTA;
@@ -86,22 +88,16 @@ public class CustomStatusBarFragment extends AwesomeFragment implements Compound
         switch (buttonView.getId()) {
             case R.id.insets: // 状态栏沉浸 5.0 以上生效
                 // 慎重，会影响整个 Activity
-                setStatusBarTranslucent(isChecked);
+                setContentUnderStatusBar(isChecked);
                 getWindow().getDecorView().requestLayout();
-
-                if (!isChecked) {
-                    textView.setText("将影响整个 Activity, 试试打开 Drawer");
-                }
-
+                textView.setText("将影响整个 Activity，打开 Drawer 看看");
                 break;
             case R.id.tinting: // 状态栏着色 5.0 以上生效
                 statusBarColor = isChecked ? Color.MAGENTA : Color.TRANSPARENT;
                 setNeedsStatusBarAppearanceUpdate();
-
                 if (statusBarHidden && isChecked) {
                     textView.setText("只有显示状态栏才能看到效果");
                 }
-
                 break;
             case R.id.dark: // 深色状态栏 6.0 以上生效
                 statusBarStyle = isChecked ? BarStyle.DarkContent : BarStyle.LightContent;

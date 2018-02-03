@@ -1,25 +1,27 @@
 package com.navigation.library;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.view.WindowInsets;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AwesomeActivity extends AppCompatActivity implements PresentableActivity, FragmentManager.OnBackStackChangedListener {
 
     public static final String TAG = "Navigation";
 
+    private static final String SAVED_STATE_CONTENT_UNDER_STATUS_BAR = "saved_state_content_under_status_bar";
+
     private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
 
     private Style style;
+
+    private boolean contentUnderStatusBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +29,19 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         style = new Style(this);
         onCustomStyle(style);
-        setStatusBarTranslucent(true);
-        // Log.i(TAG, "onCreate");
+
+        if (savedInstanceState != null) {
+            contentUnderStatusBar = savedInstanceState.getBoolean(SAVED_STATE_CONTENT_UNDER_STATUS_BAR);
+            AppUtils.setStatusBarTranslucent(getWindow(), contentUnderStatusBar);
+        }
+
+        //Log.i(TAG, "onCreate");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SAVED_STATE_CONTENT_UNDER_STATUS_BAR, contentUnderStatusBar);
     }
 
     @Override
@@ -151,28 +164,35 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         transaction.commit();
     }
 
-    protected void setStatusBarTranslucent(boolean translucent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            View decorView = getWindow().getDecorView();
-            if (translucent) {
-                decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-                    @Override
-                    public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
-                        WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
-                        return defaultInsets.replaceSystemWindowInsets(
-                                defaultInsets.getSystemWindowInsetLeft(),
-                                0,
-                                defaultInsets.getSystemWindowInsetRight(),
-                                defaultInsets.getSystemWindowInsetBottom());
-                    }
-                });
-            } else {
-                decorView.setOnApplyWindowInsetsListener(null);
-            }
-
-            ViewCompat.requestApplyInsets(decorView);
+    @Override
+    public void setContentUnderStatusBar(boolean under) {
+        if (contentUnderStatusBar != under) {
+            contentUnderStatusBar = under;
+            AppUtils.setStatusBarTranslucent(getWindow(), under);
+            onContentUnderStatusBar(under);
         }
+    }
+
+    @Override
+    public boolean isContentUnderStatusBar() {
+        return contentUnderStatusBar;
+    }
+
+    protected void onContentUnderStatusBar(boolean under) {
+        List<AwesomeFragment> children = getAddedChildFragments();
+        for (int i = 0, size = children.size(); i < size; i ++) {
+            AwesomeFragment child = children.get(i);
+            child.onContentUnderStatusBar(under);
+        }
+    }
+
+    protected List<AwesomeFragment> getAddedChildFragments() {
+        List<AwesomeFragment> children = new ArrayList<>();
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for (int i = 0, size = fragments.size(); i < size; i++) {
+            children.add((AwesomeFragment) fragments.get(i));
+        }
+        return children;
     }
 
     private void executePresentFragment(AwesomeFragment fragment) {

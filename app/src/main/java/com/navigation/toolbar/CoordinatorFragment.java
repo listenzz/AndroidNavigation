@@ -27,7 +27,11 @@ public class CoordinatorFragment extends AwesomeFragment {
 
     @Override
     protected int preferredStatusBarColor() {
-        return Color.TRANSPARENT;
+        if (isContentUnderStatusBar()) {
+            return Color.TRANSPARENT;
+        } else {
+            return super.preferredStatusBarColor();
+        }
     }
 
     @Nullable
@@ -36,16 +40,11 @@ public class CoordinatorFragment extends AwesomeFragment {
         View root = inflater.inflate(R.layout.fragment_coordinator, container, false);
 
         toolbar = root.findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.nav_ic_arrow_back);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().popFragment();
-            }
-        });
 
         // important
-        appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+        if (isContentUnderStatusBar()) {
+            appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+        }
 
         return root;
     }
@@ -53,6 +52,15 @@ public class CoordinatorFragment extends AwesomeFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        toolbar.setNavigationIcon(style.getBackIcon());
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getNavigationFragment().popFragment();
+            }
+        });
+
         setToolbarRightButton(ContextCompat.getDrawable(getContext(), android.R.drawable.stat_notify_chat), "Chat", true, new View.OnClickListener() {
             @Override
             public void onClick(View v) {

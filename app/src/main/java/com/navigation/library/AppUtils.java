@@ -1,10 +1,16 @@
 package com.navigation.library;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Point;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
@@ -80,6 +86,30 @@ public class AppUtils {
         InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    public static void setStatusBarTranslucent(@NonNull Window window, boolean translucent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            View decorView = window.getDecorView();
+            if (translucent) {
+                decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+                        WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
+                        return defaultInsets.replaceSystemWindowInsets(
+                                defaultInsets.getSystemWindowInsetLeft(),
+                                0,
+                                defaultInsets.getSystemWindowInsetRight(),
+                                defaultInsets.getSystemWindowInsetBottom());
+                    }
+                });
+            } else {
+                decorView.setOnApplyWindowInsetsListener(null);
+            }
+
+            ViewCompat.requestApplyInsets(decorView);
         }
     }
 

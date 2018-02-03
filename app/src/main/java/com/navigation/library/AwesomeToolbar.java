@@ -54,6 +54,7 @@ public class AwesomeToolbar extends Toolbar {
         addView(titleView, layoutParams);
 
         contentInset = getContentInsetStart();
+        // FIXME:why?
         setContentInsetStartWithNavigation(getContentInsetStartWithNavigation() - contentInset);
 
     }

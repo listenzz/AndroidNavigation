@@ -22,7 +22,11 @@ public class ToolBarColorTransitionFragment extends AwesomeFragment {
 
     @Override
     protected int preferredStatusBarColor() {
-        return Color.TRANSPARENT;
+        if (isContentUnderStatusBar()) {
+            return Color.TRANSPARENT;
+        } else {
+            return super.preferredStatusBarColor();
+        }
     }
 
     @Override

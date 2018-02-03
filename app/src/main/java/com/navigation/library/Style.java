@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 
 import com.navigation.R;
@@ -159,7 +160,7 @@ public class Style implements Cloneable {
         if (backIcon != null) {
             return backIcon;
         }
-        Drawable drawable = context.getResources().getDrawable(R.drawable.nav_ic_arrow_back);
+        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.nav_ic_arrow_back);
         drawable.setColorFilter(getToolbarButtonTintColor(), PorterDuff.Mode.SRC_ATOP);
         backIcon = drawable;
         return backIcon;

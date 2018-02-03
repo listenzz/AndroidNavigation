@@ -1,6 +1,5 @@
 package com.navigation.toolbar;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -35,11 +34,6 @@ public class ViewPagerFragment extends AwesomeFragment {
         return toolbar;
     }
 
-    @Override
-    protected int preferredStatusBarColor() {
-        return Color.parseColor("#3F51B5");
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -54,7 +48,9 @@ public class ViewPagerFragment extends AwesomeFragment {
         AppBarLayout appBarLayout = view.findViewById(R.id.appbar_layout);
 
         // important
-        appendStatusBarPaddingAndHeight(appBarLayout, -2);
+        if(isContentUnderStatusBar()) {
+            appendStatusBarPaddingAndHeight(appBarLayout, -2);
+        }
 
         TabLayout tabLayout =  view.findViewById(R.id.tab_layout);
         ViewPager viewPager =  view.findViewById(R.id.view_pager);

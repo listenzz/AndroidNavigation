@@ -23,13 +23,18 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
 
     @Override
     protected int preferredStatusBarColor() {
-        return Color.TRANSPARENT;
+        if (isContentUnderStatusBar()) {
+            return Color.TRANSPARENT;
+        } else {
+            return super.preferredStatusBarColor();
+        }
     }
 
     @Override
     protected void onCustomStyle(Style style) {
         super.onCustomStyle(style);
         style.setToolbarStyle(BarStyle.DarkContent);
+        style.setStatusBarColor(Color.WHITE);
         style.setToolbarBackgroundColor(Color.WHITE);
     }
 

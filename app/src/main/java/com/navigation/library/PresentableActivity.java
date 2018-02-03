@@ -16,4 +16,8 @@ public interface PresentableActivity {
 
     Style getStyle();
 
+    void setContentUnderStatusBar(boolean under);
+
+    boolean isContentUnderStatusBar();
+
 }

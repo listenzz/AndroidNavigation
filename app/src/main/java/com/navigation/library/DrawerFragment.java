@@ -26,6 +26,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     private AwesomeFragment contentFragment;
     private AwesomeFragment menuFragment;
 
+    private boolean isClosing;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,7 +67,11 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     protected boolean preferredStatusBarHidden() {
-        return isMenuOpened() || super.preferredStatusBarHidden();
+        if (isContentUnderStatusBar()) {
+            return isMenuOpened() || super.preferredStatusBarHidden();
+        } else {
+            return super.preferredStatusBarHidden();
+        }
     }
 
     @Override
@@ -136,7 +142,12 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-        setStatusBarHidden(slideOffset != 0 || super.preferredStatusBarHidden());
+        if (isContentUnderStatusBar()) {
+            if (!isClosing) {
+                setStatusBarHidden(slideOffset != 0 || super.preferredStatusBarHidden());
+            }
+            // Log.i(TAG, getDebugTag() + " onDrawerSlide");
+        }
     }
 
     @Override
@@ -153,7 +164,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     public void onDrawerStateChanged(int newState) {
-
+        // Log.i(TAG, getDebugTag() + " drawer state:" + newState);
     }
 
     public void setContentFragment(AwesomeFragment fragment) {
@@ -190,13 +201,17 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     public void openMenu() {
         if (drawerLayout != null) {
+            isClosing = false;
             drawerLayout.openDrawer(Gravity.START);
-            setStatusBarHidden(true);
+            if (isContentUnderStatusBar()) {
+                setStatusBarHidden(true);
+            }
         }
     }
 
     public void closeMenu() {
         if (drawerLayout != null) {
+            isClosing = true;
             drawerLayout.closeDrawer(Gravity.START);
         }
     }

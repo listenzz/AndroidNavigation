@@ -21,6 +21,9 @@ public class MainActivity extends AwesomeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // 开启沉浸式
+        setContentUnderStatusBar(true);
+
         if (savedInstanceState == null) {
 
             TestNavigationFragment testNavigationFragment = new TestNavigationFragment();
