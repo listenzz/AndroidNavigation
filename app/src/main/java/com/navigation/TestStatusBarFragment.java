@@ -73,21 +73,13 @@ public class TestStatusBarFragment extends AwesomeFragment {
             }
         });
 
-
-        root.findViewById(R.id.dialog).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TopDialogFragment dialog = new TopDialogFragment();
-                dialog.show(getActivity().getSupportFragmentManager(), dialog.getSceneId());
-            }
-        });
-
         root.findViewById(R.id.custom).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getNavigationFragment().pushFragment(new CustomStatusBarFragment());
             }
         });
+
 
 
         return root;

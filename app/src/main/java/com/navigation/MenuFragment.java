@@ -57,6 +57,14 @@ public class MenuFragment extends AwesomeFragment {
             }
         });
 
+        root.findViewById(R.id.dialog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDrawerFragment().closeMenu();
+                getNavigationFragment().pushFragment(new DialogEntryFragment());
+            }
+        });
+
         return root;
     }
 

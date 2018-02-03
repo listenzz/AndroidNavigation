@@ -29,22 +29,23 @@
         android:gravity="left"
         android:orientation="vertical"
         android:paddingBottom="16dp"
+        android:paddingRight="16dp"
         android:paddingLeft="64dp"
         android:paddingTop="16dp">
 
         <CheckBox
             android:id="@+id/insets"
-            android:checked="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apply window insets"
+            android:checked="true"
+            android:text="全屏"
             android:textSize="14sp" />
 
         <CheckBox
-            android:checked="true"
             android:id="@+id/tinting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checked="true"
             android:text="状态栏着色"
             android:textSize="14sp" />
 
@@ -69,6 +70,14 @@
             android:layout_height="wrap_content"
             android:text="调整 Toolbar 位置"
             android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/hint"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:textSize="16dp" />
 
 
     </LinearLayout>

@@ -67,6 +67,11 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         }
     }
 
+    public static int dpToPixel(Context context, float dp) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
+    }
+
     // ------- lifecycle methods -------
 
     private PresentableActivity presentableActivity;
