@@ -164,8 +164,6 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         if (getDialog() == null) {
             root.setBackground(drawable);
             getWindow().setBackgroundDrawable(null);
-        } else {
-            //getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
     }
 

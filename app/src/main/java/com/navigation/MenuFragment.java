@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.navigation.dialog.DialogEntryFragment;
 import com.navigation.library.AwesomeFragment;
+import com.navigation.sharedelement.GridFragment;
 import com.navigation.toolbar.CoordinatorFragment;
 import com.navigation.toolbar.ToolBarColorTransitionFragment;
 import com.navigation.toolbar.ViewPagerFragment;
@@ -50,6 +51,14 @@ public class MenuFragment extends AwesomeFragment {
             public void onClick(View v) {
                 getDrawerFragment().closeMenu();
                 getNavigationFragment().pushFragment(new ViewPagerFragment());
+            }
+        });
+
+        root.findViewById(R.id.shared_element).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDrawerFragment().closeMenu();
+                getNavigationFragment().pushFragment(new GridFragment());
             }
         });
 
