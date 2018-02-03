@@ -632,7 +632,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
                             @TargetApi(21)
                             @Override
                             public void onAnimationUpdate(ValueAnimator animator) {
-                               getWindow().setStatusBarColor((Integer) animator.getAnimatedValue());
+                                getWindow().setStatusBarColor((Integer) animator.getAnimatedValue());
                             }
                         });
                 colorAnimation.setDuration(200).setStartDelay(0);
@@ -724,24 +724,23 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
 
     void handleHideBottomBarWhenPushed(int transit, boolean enter, PresentAnimation animation) {
         // handle hidesBottomBarWhenPushed
-        if (!isParentFragment()) {
-            NavigationFragment navigationFragment = getNavigationFragment();
-            if (navigationFragment != null) {
-                TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
-                if (tabBarFragment != null) {
-                    int index = indexAtBackStack();
-                    if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
-                        if (enter) {
-                            if (index == 0) {
-                                tabBarFragment.getBottomBar().setVisibility(View.VISIBLE);
-                            } else if (index == 1 && shouldHideBottomBarWhenPushed()) {
-                                tabBarFragment.hideBottomNavigationBarAnimatedWhenPush(animation.exit);
-                            }
+        Fragment parent = getParentFragment();
+        if (parent != null && parent instanceof NavigationFragment) {
+            NavigationFragment navigationFragment = (NavigationFragment) parent;
+            TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
+            if (tabBarFragment != null) {
+                int index = indexAtBackStack();
+                if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
+                    if (enter) {
+                        if (index == 0) {
+                            tabBarFragment.getBottomBar().setVisibility(View.VISIBLE);
+                        } else if (index == 1 && shouldHideBottomBarWhenPushed()) {
+                            tabBarFragment.hideBottomNavigationBarAnimatedWhenPush(animation.exit);
                         }
-                    } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
-                        if (enter && index == 0 && shouldHideBottomBarWhenPushed()) {
-                            tabBarFragment.showBottomNavigationBarAnimatedWhenPop(animation.popEnter);
-                        }
+                    }
+                } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
+                    if (enter && index == 0 && shouldHideBottomBarWhenPushed()) {
+                        tabBarFragment.showBottomNavigationBarAnimatedWhenPop(animation.popEnter);
                     }
                 }
             }
