@@ -1,4 +1,4 @@
-package com.navigation.fragment;
+package com.navigation.library;
 
 import android.os.Parcel;
 import android.os.Parcelable;

@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-import com.navigation.fragment.AwesomeFragment;
-import com.navigation.fragment.BarStyle;
+import com.navigation.library.AwesomeFragment;
+import com.navigation.library.BarStyle;
 
 /**
  * Created by listen on 2018/2/2.

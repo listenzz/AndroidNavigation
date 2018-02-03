@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.navigation.fragment.AwesomeFragment;
+import com.navigation.library.AwesomeFragment;
 
 /**
  * Created by listen on 2018/1/13.

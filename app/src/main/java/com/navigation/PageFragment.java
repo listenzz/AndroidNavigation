@@ -10,8 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.navigation.fragment.AwesomeFragment;
-import com.navigation.fragment.FragmentHelper;
+import com.navigation.library.AwesomeFragment;
+import com.navigation.library.FragmentHelper;
 
 import java.util.ArrayList;
 import java.util.List;

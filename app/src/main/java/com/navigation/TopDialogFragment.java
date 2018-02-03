@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import com.navigation.fragment.AwesomeFragment;
+import com.navigation.library.AwesomeFragment;
 
 /**
  * Created by Listen on 2018/2/2.

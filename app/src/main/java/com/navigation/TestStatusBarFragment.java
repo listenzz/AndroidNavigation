@@ -8,12 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.navigation.fragment.AwesomeFragment;
-import com.navigation.fragment.BarStyle;
-import com.navigation.fragment.DrawableUtils;
-import com.navigation.fragment.DrawerFragment;
-import com.navigation.fragment.NavigationFragment;
-import com.navigation.fragment.Style;
+import com.navigation.library.AwesomeFragment;
+import com.navigation.library.BarStyle;
+import com.navigation.library.DrawableUtils;
+import com.navigation.library.DrawerFragment;
+import com.navigation.library.NavigationFragment;
+import com.navigation.library.Style;
 
 /**
  * Created by listen on 2018/1/12.

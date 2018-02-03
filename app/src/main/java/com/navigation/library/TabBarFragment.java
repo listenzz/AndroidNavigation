@@ -1,4 +1,4 @@
-package com.navigation.fragment;
+package com.navigation.library;
 
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;

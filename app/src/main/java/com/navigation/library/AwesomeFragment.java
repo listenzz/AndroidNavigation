@@ -1,4 +1,4 @@
-package com.navigation.fragment;
+package com.navigation.library;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;

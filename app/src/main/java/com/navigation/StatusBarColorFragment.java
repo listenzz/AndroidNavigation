@@ -2,7 +2,7 @@ package com.navigation;
 
 import android.graphics.Color;
 
-import com.navigation.fragment.Style;
+import com.navigation.library.Style;
 
 /**
  * Created by listen on 2018/1/13.

@@ -4,12 +4,12 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 
-import com.navigation.fragment.AwesomeActivity;
-import com.navigation.fragment.DrawerFragment;
-import com.navigation.fragment.NavigationFragment;
-import com.navigation.fragment.Style;
-import com.navigation.fragment.TabBarFragment;
-import com.navigation.fragment.TabBarItem;
+import com.navigation.library.AwesomeActivity;
+import com.navigation.library.DrawerFragment;
+import com.navigation.library.NavigationFragment;
+import com.navigation.library.Style;
+import com.navigation.library.TabBarFragment;
+import com.navigation.library.TabBarItem;
 
 public class MainActivity extends AwesomeActivity {
 

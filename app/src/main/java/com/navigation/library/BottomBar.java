@@ -1,4 +1,4 @@
-package com.navigation.fragment;
+package com.navigation.library;
 
 import android.content.Context;
 import android.graphics.Canvas;

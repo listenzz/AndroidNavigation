@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
       />
 
-    <com.navigation.fragment.BottomBar
+    <com.navigation.library.BottomBar
         android:layout_gravity="bottom"
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"

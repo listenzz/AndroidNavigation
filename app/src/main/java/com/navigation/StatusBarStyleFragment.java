@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 
-import com.navigation.fragment.BarStyle;
-import com.navigation.fragment.Style;
+import com.navigation.library.BarStyle;
+import com.navigation.library.Style;
 
 /**
  * Created by listen on 2018/1/13.

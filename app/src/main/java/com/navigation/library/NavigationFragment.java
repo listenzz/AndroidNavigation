@@ -1,4 +1,4 @@
-package com.navigation.fragment;
+package com.navigation.library;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
