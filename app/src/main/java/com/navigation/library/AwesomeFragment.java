@@ -514,7 +514,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
             return;
         }
 
-        Log.i(TAG, getDebugTag() + " #setNeedsStatusBarAppearanceUpdate");
+        // Log.i(TAG, getDebugTag() + " #setNeedsStatusBarAppearanceUpdate");
 
         AwesomeFragment parent = getParent();
         if (parent != null) {

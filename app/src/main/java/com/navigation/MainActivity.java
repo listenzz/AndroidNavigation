@@ -1,7 +1,6 @@
 package com.navigation;
 
 import android.os.Bundle;
-import android.view.Gravity;
 
 import com.navigation.library.AwesomeActivity;
 import com.navigation.library.DrawerFragment;
@@ -50,7 +49,7 @@ public class MainActivity extends AwesomeActivity {
 
     @Override
     protected void onCustomStyle(Style style) {
-        style.setTitleGravity(Gravity.CENTER);
+        // style.setTitleGravity(Gravity.CENTER);
         // style.setBottomBarBackgroundColor("#3F51B5");
     }
 }
