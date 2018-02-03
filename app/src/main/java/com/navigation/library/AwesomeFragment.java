@@ -32,7 +32,6 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -55,22 +54,6 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     public static final String ARGS_REQUEST_CODE = "requestCode";
     public static final String ARGS_ANIMATION = "animation";
     public static final String ARGS_TAB_BAR_ITEM = "tab_bar_item";
-
-    /**
-     * 隐藏软键盘
-     */
-    public static void hideSoftInput(View view) {
-        if (view == null || view.getContext() == null) return;
-        InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
-    public static int dpToPixel(Context context, float dp) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dp * scale + 0.5f);
-    }
 
     // ------- lifecycle methods -------
 
@@ -135,7 +118,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         if (shouldAutoCreateToolbar) {
             Toolbar toolbar = onCreateToolbar(getView());
             if (toolbar != null && !isNavigationRoot() && !shouldHideBackButton()) {
-                toolbar.setNavigationIcon(style.getBackIcon(getContext()));
+                toolbar.setNavigationIcon(style.getBackIcon());
                 toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -150,7 +133,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
 
     @Override
     public void onDestroyView() {
-        hideSoftInput(getView());
+        AppUtils.hideSoftInput(getView());
         super.onDestroyView();
     }
 
@@ -677,12 +660,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     }
 
     protected int getToolbarHeight() {
-        TypedValue typedValue = new TypedValue();
-        int height = 0;
-        if (getContext().getTheme().resolveAttribute(R.attr.actionBarSize, typedValue, true)) {
-            height = (int) TypedValue.complexToDimension(typedValue.data, getContext().getResources().getDisplayMetrics());
-        }
-        return height;
+        return AppUtils.fetchContextDimension(getContext(), R.attr.actionBarSize);
     }
 
     // ------ NavigationFragment -----
@@ -780,7 +758,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     private void customAwesomeToolbar(AwesomeToolbar toolbar) {
         toolbar.setBackgroundColor(style.getToolbarBackgroundColor());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.setElevation(style.getElevation(getContext().getApplicationContext()));
+            toolbar.setElevation(style.getElevation());
         } else {
             toolbar.setShadow(style.getShadow());
         }
@@ -795,11 +773,11 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         if (toolbar != null) {
             if (toolbar instanceof AwesomeToolbar) {
                 AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolbar;
-                TextView titleView = awesomeToolbar.getTitleView();
                 awesomeToolbar.setTitleGravity(style.getTitleGravity());
+                TextView titleView = awesomeToolbar.getTitleView();
+                titleView.setText(title);
                 titleView.setTextColor(style.getTitleTextColor());
                 titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, style.getTitleTextSize());
-                titleView.setText(title);
             } else {
                 toolbar.setTitle(title);
             }

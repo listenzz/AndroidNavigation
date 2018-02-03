@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.navigation.R;
+import com.navigation.library.AppUtils;
 import com.navigation.library.AwesomeFragment;
 
 /**
@@ -37,7 +38,7 @@ public class BottomSheetDialogFragment extends AwesomeFragment {
         super.onActivityCreated(savedInstanceState);
         BottomSheetBehavior behavior = BottomSheetBehavior.from((View) getView().getParent());
         behavior.setHideable(true);
-        behavior.setPeekHeight(dpToPixel(getContext(), 50));
+        behavior.setPeekHeight(AppUtils.dp2px(getContext(), 50));
         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);

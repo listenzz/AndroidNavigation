@@ -1,6 +1,5 @@
 package com.navigation;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 
@@ -49,8 +48,6 @@ public class MainActivity extends AwesomeActivity {
 
     @Override
     protected void onCustomStyle(Style style) {
-        style.setStatusBarColor(Color.parseColor("#303F9F"));
-        style.setToolbarBackgroundColor(Color.parseColor("#3F51B5"));
         style.setTitleGravity(Gravity.CENTER);
         // style.setBottomBarBackgroundColor("#3F51B5");
     }

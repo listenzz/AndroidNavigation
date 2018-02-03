@@ -40,6 +40,14 @@ public class Style implements Cloneable {
     private String bottomBarInActiveColor = null;
     private Drawable bottomBarShadow = defaultShadow;
 
+    private Context context;
+
+    protected Style (Context context) {
+        this.context = context;
+        statusBarColor = AppUtils.fetchContextColor(context, R.attr.colorPrimaryDark);
+        toolbarBackgroundColor = AppUtils.fetchContextColor(context, R.attr.colorPrimary);
+    }
+
     // ------ screen ------
 
     public void setScreenBackgroundColor(int color) {
@@ -110,15 +118,15 @@ public class Style implements Cloneable {
         }
     }
 
-    public void setElevation(Context context, float elevation) {
-        this.elevation = elevation * context.getResources().getDisplayMetrics().density;
+    public void setElevation(float elevation) {
+        this.elevation = elevation;
     }
 
-    public float getElevation(Context context) {
+    public float getElevation() {
         if (elevation != -1) {
             return elevation;
         }
-        elevation = 2 * context.getResources().getDisplayMetrics().density;
+        elevation = AppUtils.dp2px(context, 2);
         return elevation;
     }
 
@@ -147,7 +155,7 @@ public class Style implements Cloneable {
         backIcon = icon;
     }
 
-    public Drawable getBackIcon(Context context) {
+    public Drawable getBackIcon() {
         if (backIcon != null) {
             return backIcon;
         }
