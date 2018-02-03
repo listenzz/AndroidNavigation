@@ -1,21 +1,27 @@
 # AndroidNavigation
-Single Activity architecture component, inspired by iOS navigation system. A very powerful library that manage Fragment and StatusBar and ToolBar for You!
+A Library that manage Nested Fragment, StatusBar and Toolbar for You! 
 
+You could use it as a single Activity Architecture Component.
 
-6.0 screenshot:
+### 6.0 screenshot:
 
-![android-navigation](./screenshot/android-navigation.png)
+![android-navigation](./screenshot/screenshot-1.png) 
 
-<img src="./screenshot/drawer.gif" width="280px"/> <img src="./screenshot/status.gif" width="280px"/>
+![android-navigation](./screenshot/screenshot-2.png) 
+
+ 
+### Video
+ 
+<video width="360" height="640" controls>
+<source src="./screenshot/navigation.mp4">
+</video>
 
 ## 特性
 
 - 使用 Lifecycle 架构组件，解决了生命周期问题
-- 以 iOS 的导航系统为参照，因为 iOS 的导航系统设计得比较完善，支持 push, pop, popTo, popToRoot, present, dismiss, replace, replaceToRoot 等操作
-- 支持 StatusBar, ToolBar, BottomBar 的全局样式配置以及局部调整
-- 支持 vector fonts
-
-> 第三第四点尚未完全实现，仍在开发中
+- 以 iOS 的导航系统为参照，支持 push, pop, popTo, popToRoot, present, dismiss, replace, replaceToRoot 等操作
+- 支持 StatusBar, Toolbar, BottomBar 的全局样式配置以及局部调整
+- 支持 font icons
 
 ## Compare with iOS
 

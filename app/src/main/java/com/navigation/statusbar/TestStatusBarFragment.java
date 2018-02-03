@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.navigation.toolbar.NoToolbarFragment;
 import com.navigation.R;
 import com.navigation.library.AwesomeFragment;
 import com.navigation.library.BarStyle;
@@ -16,6 +15,7 @@ import com.navigation.library.DrawableUtils;
 import com.navigation.library.DrawerFragment;
 import com.navigation.library.NavigationFragment;
 import com.navigation.library.Style;
+import com.navigation.toolbar.NoToolbarFragment;
 
 /**
  * Created by listen on 2018/1/12.
@@ -29,6 +29,16 @@ public class TestStatusBarFragment extends AwesomeFragment {
 
     @Override
     protected boolean preferredStatusBarColorAnimated() {
+        return true;
+    }
+
+    @Override
+    protected void onCustomStyle(Style style) {
+        style.setToolbarStyle(BarStyle.LightContent);
+    }
+
+    @Override
+    protected boolean hidesBottomBarWhenPushed() {
         return true;
     }
 
@@ -108,16 +118,6 @@ public class TestStatusBarFragment extends AwesomeFragment {
                 }
             });
         }
-    }
-
-    @Override
-    protected void onCustomStyle(Style style) {
-        style.setToolbarStyle(BarStyle.LightContent);
-    }
-
-    @Override
-    protected boolean hidesBottomBarWhenPushed() {
-        return false;
     }
 
 }
