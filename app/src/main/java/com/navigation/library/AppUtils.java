@@ -1,11 +1,12 @@
 package com.navigation.library;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.util.TypedValue;
 import android.view.View;
@@ -89,7 +90,7 @@ public class AppUtils {
         }
     }
 
-    public static void setStatusBarTranslucent(@NonNull Window window, boolean translucent) {
+    public static void setStatusBarTranslucent(Window window, boolean translucent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             View decorView = window.getDecorView();
             if (translucent) {
@@ -112,5 +113,84 @@ public class AppUtils {
             ViewCompat.requestApplyInsets(decorView);
         }
     }
+
+    public static void setStatusBarColor(final Window window, int color, boolean animated) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            if (animated) {
+                int curColor = window.getStatusBarColor();
+                ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
+
+                colorAnimation.addUpdateListener(
+                        new ValueAnimator.AnimatorUpdateListener() {
+                            @TargetApi(21)
+                            @Override
+                            public void onAnimationUpdate(ValueAnimator animator) {
+                                window.setStatusBarColor((Integer) animator.getAnimatedValue());
+                            }
+                        });
+                colorAnimation.setDuration(200).setStartDelay(0);
+                colorAnimation.start();
+            } else {
+                window.setStatusBarColor(color);
+            }
+        }
+    }
+
+    public static void setStatusBarStyle(Window window, boolean dark) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decorView = window.getDecorView();
+            decorView.setSystemUiVisibility(
+                    dark ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
+        }
+    }
+
+    public static void setStatusBarHidden(Window window, boolean hidden) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (hidden) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            } else {
+                window.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            }
+        }
+    }
+
+    public static void appendStatusBarPadding(View view, int viewHeight) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (view != null) {
+                int statusBarHeight = getStatusBarHeight(view.getContext());
+                view.setPadding(view.getPaddingLeft(), statusBarHeight, view.getPaddingRight(), view.getPaddingBottom());
+                if (viewHeight > 0) {
+                    view.getLayoutParams().height = statusBarHeight + viewHeight;
+                } else {
+                    view.getLayoutParams().height = viewHeight;
+                }
+            }
+        }
+    }
+
+    public static void removeStatusBarPadding(View view, int viewHeight) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (view != null) {
+                view.setPadding(view.getPaddingLeft(), 0, view.getPaddingRight(),
+                        view.getPaddingBottom());
+                view.getLayoutParams().height = viewHeight;
+            }
+        }
+    }
+
+    public static int getStatusBarHeight(Context context) {
+        int statusBarHeight = -1;
+        //获取status_bar_height资源的ID
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            //根据资源ID获取响应的尺寸值
+            statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return statusBarHeight;
+    }
+
 
 }

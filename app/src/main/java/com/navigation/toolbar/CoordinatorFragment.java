@@ -43,7 +43,7 @@ public class CoordinatorFragment extends AwesomeFragment {
 
         // important
         if (isContentUnderStatusBar()) {
-            appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+            appendStatusBarPadding(toolbar, getToolbarHeight());
         }
 
         return root;

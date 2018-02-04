@@ -1,8 +1,5 @@
 package com.navigation.library;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -27,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
@@ -560,11 +556,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     }
 
     protected void setStatusBarStyle(BarStyle style) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decorView = getWindow().getDecorView();
-            decorView.setSystemUiVisibility(
-                    style == BarStyle.DarkContent ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
-        }
+        AppUtils.setStatusBarStyle(getWindow(), style == BarStyle.DarkContent);
     }
 
     protected void setContentUnderStatusBar(boolean under) {
@@ -579,9 +571,9 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         Toolbar toolbar = getToolbar();
         if (toolbar != null) {
             if (under) {
-                appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+                appendStatusBarPadding(toolbar, getToolbarHeight());
             } else {
-                removeStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+                removeStatusBarPadding(toolbar, getToolbarHeight());
             }
         }
 
@@ -597,75 +589,19 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     }
 
     protected void setStatusBarHidden(boolean hidden) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            if (hidden) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-            } else {
-                window.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            }
-        }
+        AppUtils.setStatusBarHidden(getWindow(), hidden);
     }
 
     protected void setStatusBarColor(int color, boolean animated) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            if (animated) {
-                int curColor = window.getStatusBarColor();
-                ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
-
-                colorAnimation.addUpdateListener(
-                        new ValueAnimator.AnimatorUpdateListener() {
-                            @TargetApi(21)
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animator) {
-                                getWindow().setStatusBarColor((Integer) animator.getAnimatedValue());
-                            }
-                        });
-                colorAnimation.setDuration(200).setStartDelay(0);
-                colorAnimation.start();
-            } else {
-                window.setStatusBarColor(color);
-            }
-        }
+        AppUtils.setStatusBarColor(getWindow(), color, animated);
     }
 
-    protected void appendStatusBarPaddingAndHeight(View view, int viewHeight) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (view != null) {
-                int statusBarHeight = getStatusBarHeight();
-                view.setPadding(view.getPaddingLeft(), statusBarHeight, view.getPaddingRight(), view.getPaddingBottom());
-                if (viewHeight > 0) {
-                    view.getLayoutParams().height = statusBarHeight + viewHeight;
-                } else {
-                    view.getLayoutParams().height = viewHeight;
-                }
-            }
-        }
+    protected void appendStatusBarPadding(View view, int viewHeight) {
+        AppUtils.appendStatusBarPadding(view, viewHeight);
     }
 
-    protected void removeStatusBarPaddingAndHeight(View view, int viewHeight) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (view != null) {
-                view.setPadding(view.getPaddingLeft(), 0, view.getPaddingRight(),
-                        view.getPaddingBottom());
-                view.getLayoutParams().height = viewHeight;
-            }
-        }
-    }
-
-    private int getStatusBarHeight() {
-        int statusBarHeight = -1;
-        //获取status_bar_height资源的ID
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            //根据资源ID获取响应的尺寸值
-            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
-        }
-        return statusBarHeight;
+    protected void removeStatusBarPadding(View view, int viewHeight) {
+        AppUtils.removeStatusBarPadding(view, viewHeight);
     }
 
     protected int getToolbarHeight() {
@@ -759,7 +695,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         }
 
         if (isContentUnderStatusBar()) {
-            appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+            appendStatusBarPadding(toolbar, getToolbarHeight());
         }
 
         customAwesomeToolbar(toolbar);

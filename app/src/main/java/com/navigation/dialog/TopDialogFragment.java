@@ -45,7 +45,7 @@ public class TopDialogFragment extends AwesomeFragment {
         super.onActivityCreated(savedInstanceState);
 
         // import
-        appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+        appendStatusBarPadding(toolbar, getToolbarHeight());
         setContentUnderStatusBar(true);
        // setStatusBarColor(Color.TRANSPARENT, false);
 

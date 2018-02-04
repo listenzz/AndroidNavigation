@@ -49,7 +49,7 @@ public class ViewPagerFragment extends AwesomeFragment {
 
         // important
         if(isContentUnderStatusBar()) {
-            appendStatusBarPaddingAndHeight(appBarLayout, -2);
+            appendStatusBarPadding(appBarLayout, -2);
         }
 
         TabLayout tabLayout =  view.findViewById(R.id.tab_layout);

@@ -118,9 +118,9 @@ public class CustomStatusBarFragment extends AwesomeFragment implements Compound
                 break;
             case R.id.adjust: //调整 Toolbar 位置 5.0 以上生效
                 if (isChecked) {
-                    appendStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+                    appendStatusBarPadding(toolbar, getToolbarHeight());
                 } else {
-                    removeStatusBarPaddingAndHeight(toolbar, getToolbarHeight());
+                    removeStatusBarPadding(toolbar, getToolbarHeight());
                 }
                 break;
         }
