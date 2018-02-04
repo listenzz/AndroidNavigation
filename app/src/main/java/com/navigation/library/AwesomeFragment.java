@@ -521,31 +521,28 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
             parent.setNeedsStatusBarAppearanceUpdate();
         } else {
             // statusBarHidden
-            boolean hidden = preferredStatusBarHidden();
-            setStatusBarHidden(hidden);
+            setStatusBarHidden(preferredStatusBarHidden());
 
-            if (!hidden) {
-                // statusBarStyle
-                setStatusBarStyle(preferredStatusBarStyle());
+            // statusBarStyle
+            setStatusBarStyle(preferredStatusBarStyle());
 
-                // statusBarColor
-                boolean shouldAdjustForWhiteStatusBar;
-                if (isContentUnderStatusBar()) {
-                    shouldAdjustForWhiteStatusBar = preferredStatusBarColor() == Color.TRANSPARENT && preferredToolbarBackgroundColor() == Color.WHITE;
-                } else {
-                    shouldAdjustForWhiteStatusBar = preferredStatusBarColor() == Color.WHITE;
-                }
+            // statusBarColor
+            boolean shouldAdjustForWhiteStatusBar;
+            if (isContentUnderStatusBar()) {
+                shouldAdjustForWhiteStatusBar = preferredStatusBarColor() == Color.TRANSPARENT && preferredToolbarBackgroundColor() == Color.WHITE;
+            } else {
+                shouldAdjustForWhiteStatusBar = preferredStatusBarColor() == Color.WHITE;
+            }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
+            }
 
-                if (shouldAdjustForWhiteStatusBar) {
-                    int color = Color.parseColor("#666666");
-                    setStatusBarColor(color, preferredStatusBarColorAnimated());
-                } else {
-                    setStatusBarColor(preferredStatusBarColor(), preferredStatusBarColorAnimated());
-                }
+            if (shouldAdjustForWhiteStatusBar) {
+                int color = Color.parseColor("#666666");
+                setStatusBarColor(color, preferredStatusBarColorAnimated());
+            } else {
+                setStatusBarColor(preferredStatusBarColor(), preferredStatusBarColorAnimated());
             }
         }
     }
