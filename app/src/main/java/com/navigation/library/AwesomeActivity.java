@@ -59,10 +59,10 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             AwesomeFragment fragment = (AwesomeFragment) fragmentManager.findFragmentByTag(entry.getName());
             if (!fragment.dispatchBackPressed()) {
                 if (count == 1) {
-                    Log.w(TAG, "finish activity");
+                    // Log.w(TAG, "finish activity");
                     ActivityCompat.finishAfterTransition(this);
                 } else {
-                    Log.i(TAG, "dismiss:");
+                    // Log.i(TAG, "dismiss:");
                     dismissFragment(fragment);
                 }
             }
@@ -230,7 +230,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     protected boolean isAtLeastCreated() {
-        return lifecycleDelegate.isAtLeatCreated();
+        return lifecycleDelegate.isAtLeastCreated();
     }
 
 }

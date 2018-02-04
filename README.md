@@ -1,44 +1,42 @@
-# AndroidNavigation
-A Library that manage Nested Fragment, StatusBar and Toolbar for You! 
+# AndroidNavigation 
 
-You could use it as a single Activity Architecture Component.
+A library managing nested Fragment, translucent StatusBar and Toolbar for you. 
 
-### 6.0 screenshot:
-
-![android-navigation](./screenshot/screenshot-1.png) 
-
-![android-navigation](./screenshot/screenshot-2.png) 
-
- 
-### Video
- 
-<video width="360" height="640" controls>
-<source src="./screenshot/navigation.mp4">
-</video>
+You could use it as a single Activity Architecture Component. 
 
 ## 特性
 
 - 使用 Lifecycle 架构组件，解决了生命周期问题
-- 以 iOS 的导航系统为参照，支持 push, pop, popTo, popToRoot, present, dismiss, replace, replaceToRoot 等操作
-- 支持 StatusBar, Toolbar, BottomBar 的全局样式配置以及局部调整
+- 以 iOS 的导航系统为参照，支持 present, dismiss, push, pop, popTo, popToRoot, replace, replaceToRoot 等操作
+- 支持 StatusBar, Toolbar, BottomNavigationBar 的全局样式配置以及局部调整
 - 支持 font icons
 
-## Compare with iOS
+### 6.0 screenshot:
 
-AndroidNavigation | iOS
-------|----
-AwesomeActivity | Window
-AwesomeActivity#setRootFragment | Window#rootViewController
-AwesomeFragment | UIViewController
-NavigationFragment | UINavigationController
-TabBarFragment | UITabBarController
-DrawerFragment | -
+![android-navigation](./screenshot/screenshot_1.png) 
 
-## Api
+![android-navigation](./screenshot/screenshot_2.png) 
 
-### AweseomActivity
+ 
+## Usage 
 
-你的 Acvitity 需要继承 AweseomActivity，然后设置 rootFragment
+#### [构建UI层级](#building-hierarchy)
+#### [导航](#navigation)
+#### [全局样式设置](#setting-style)
+#### [设置状态栏](#setting-statusbar)
+#### [设置 Toolbar](#setting-toolbar)
+#### [使用 font icons](#using-font-icons)
+#### [代码规范](#specification)
+
+--------
+<a name="building-hierarchy"></a>
+
+
+### 构建UI层级
+
+你的 Fragment 需要继承 AwesomeFragment。
+
+你的 Acvitity 需要继承 AwesomeActivity，然后设置 rootFragment。
 
 ```java
 public class MainActivity extends AwesomeActivity {
@@ -54,19 +52,198 @@ public class MainActivity extends AwesomeActivity {
     
 }
 ```
-你可以调用 setRootFragment 多次，根据不同的 App 状态展示不同的根页面。比如一开始你只需要展示个登录页面，登陆成功后将根页面设置成主页面。
+
+你可以调用 `setRootFragment` 多次，根据不同的 App 状态展示不同的根页面。比如一开始你只需要展示个登录页面，登陆成功后将根页面设置成主页面。
 
 你通常还需要另外一个 Activity 来做为闪屏页（Splash），这个页面则不必继承 AweseomActivity。
 
-### AwesomeFragment
+为了处理常见的 Fragment 嵌套问题，提供了 `NavigationFragment`、`TabBarFragment`、`DrawerFragment` 三个容器类。它们可以作为 Activity 的 rootFragment 使用。这三个容器为 Fragment 嵌套提供了非常便利的操作。
 
-这是个基类，大多数情况下，你总是继承这个类来完成你的页面。
+#### NavigationFragment
 
-这个类提供了两个基础的导航功能 present 和 dismiss
+NavigationFragment 以栈的形式管理它的子 Fragment，支持 push、pop 等操作，在初始化时，需要为它指定 rootFragment。
+
+```java
+public class MainActivity extends AwesomeActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState == null) {
+            TestFragment testFragment = new TestFragment();
+            NavigationFragment navigationFragment = new NavigationFragment();
+            // 把 TestFragment 设置为 NavigationFragment 的根
+            navigationFragment.setRootFragment(testFragment);
+            // 把 NavigationFragment 设置为 Activity 的根
+            setRootFragment(navigationFragment);
+        }
+    }
+    
+}
+```
+
+如果 TestFragment 的根布局是 LinearLayout 或 FrameLayout，会自动帮你创建 Toobar，当由 A 页面跳转到 B 页面时，会为 B 页面的 Toobar 添加返回按钮。更多关于 Toobar 的配置，请参考 [**设置 Toobar**](#setting-toolbar) 一章。
+
+在 TestFragment 中，我们可以通过 `getNavigationFragment` 来获取套在它外面的 NavigationFragment，然后通过 NavigationFragment 提供的 `pushFragment` 跳转到其它页面，或通过 `popFragment` 返回到前一个页面。关于导航的更多细节，请参考 [**导航**](#navigation) 一章。
+
+#### TabBarFragment
+
+这也是一个比较常见的容器，一般 APP 主界面底下都会有几个 tab，点击不同的 tab 就切换到不同的界面。
+
+```java
+public class MainActivity extends AwesomeActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState == null) {
+            
+            // 首页
+            HomeFragment homeFragment = new HomeFragment();
+            homeFragment.setTabBarItem(new TabBarItem(R.drawable.icon_home, "首页"));
+            
+            // 通讯录
+            ContactsFragment contactsFragment = new ContactsFragment();
+            contactsFragment.setTabBarItem(new TabBarItem(R.drawable.icon_contacts, "通讯录"));
+            
+            // 添加 tab 到 TabBarFragment
+            TabBarFragment tabBarFragment = new TabBarFragment(); 
+            tabBarFragment.setFragments(homeFragment, contactsFragment);
+            
+            // 把 TabBarFragment 设置为 Activity 的根
+            setRootFragment(tabBarFragment);
+        }
+    }
+    
+}
+```
+
+在 HomeFragment 或 ContactsFragment 中，可以通过 `getTabBarFragment` 来获取它们所属的 TabBarFragment.
+
+可以通过 TabBarFragment 的 `setSelectedIndex` 方法来动态切换 tab，通过 `setBadge` 来设置 badge，譬如未读消息数。
+
+如果 HomeFragment 或 ContactsFragment 需要有导航的能力，可以先把它们嵌套到 NavigationFragment 中。
+
+```java
+public class MainActivity extends AwesomeActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState == null) {
+            
+            // 首页
+            HomeFragment homeFragment = new HomeFragment();
+            NavigationFragment homeNavigatoinFragment = new NavigationFragment();
+            homeNavigationFraggment.setRootFragment(homeFragment);
+            homeNavigatoinFragment.setTabBarItem(new TabBarItem(R.drawable.icon_home, "首页"));
+            
+            // 通讯录
+            ContactsFragment contactsFragment = new ContactsFragment();
+            NavigationFragment contactsNavigationFragment = new NavigationFragment();
+            contactsNavigationFragment.setRootFragment(contactsFragment);
+            contactsNavigationFragment.setTabBarItem(new TabBarItem(R.drawable.icon_contacts, "通讯录"));
+            
+            // 添加 tab 到 TabBarFragment 
+            TabBarFragment tabBarFragment = new TabBarFragment();
+            tabBarFragment.setFragments(homeNavigatoinFragment, contactsNavigationFragment);
+            
+            // 把 TabBarFragment 设置为 Activity 的根
+            setRootFragment(tabBarFragment);
+        }
+    }
+    
+}
+```
+
+#### DrawerFragment
+
+这个容器内部封装了 DrawerLayout。使用时需要为它设置两个子 Fragment。
+
+```java
+public class MainActivity extends AwesomeActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState == null) {
+        
+            DrawerFragment drawerFragment = new DrawerFragment();
+            drawerFragment.setContentFragment(new ContentFragment());
+            drawerFragment.setMenuFragment(new MenuFragment());
+            
+            // 把 drawerFragment 设置为 Activity 的根
+            setRootFragment(drawerFragment);
+        }
+    }
+    
+}
+```
+
+在 ContentFragment 或 MenuFragment 中，我们可以通过 `getDrawerFragment` 来获取它们所属的 DrawerFragment。
+
+DrawerFragment 提供了 `toggleMenu`、`openMenu`、`closeMenu` 这几个方法来打开或关闭 Menu。
+
+可以通过 `getContentFragment`、`getMenuFragment` 来获取对应的 Fragment。
+
+contentFragment 可以是一个像 TabBarFragment 这样的容器。可以参考 demo 中 MainActivity 中的设置。
+
+#### 自定义容器
+
+如果以上容器都不能满足你的需求，你可以自定义容器。
+
+可以参考 demo 中 ViewPagerFragment 这个类，它就是个自定义容器。
+
+自定义容器，继承 AwesomeFragment 并重写下面这个方法。
+
+```java
+@Override
+public boolean isParentFragment() {
+    return true;
+}
+```
+
+因为 AwesomeFragment 会为非容器类 Fragment 的 root view 添加背景。如果容器不表明它是容器，也会为容器添加背景，这样就会导致不必要的 overdraw。
+
+可能需要有选择地重写以下方法
+
+```java
+@Override
+protected AwesomeFragment childFragmentForAppearance() {
+    // 这个方法用来控制当前的 statusbar 的样式是由哪个子 fragment 决定的    
+    // 如果不重写，则由容器类自身决定
+    // 可以参考 NavigationFragment、TabBarFragment
+    // 是如何决定让哪个子 fragment 来决定 statusbar 样式的
+    return 一个恰当的子 fragment;
+}
+```
+
+如何使不同 fragemnt 拥有不同的 statusbar 样式，请参考 [**设置状态栏**](#setting-statusbar) 一章
+
+
+<a name="navigation"></a>
+
+```java
+@Override
+protected boolean onBackPressed() {
+    // 这个方法用来控制当用户点击返回键时，到底要退出哪个界面
+    // 如果不重写，则销毁容器本身
+    // 可以参考 DrawerFragment 是如何处理返回键的
+    return super.onBackPressed();
+}
+```
+
+### 导航
+
+导航是指页面间的跳转和传值。
+
+#### present & dismiss
+
+AwesomeFragment 提供了两个基础的导航功能 present 和 dismiss
 
 - present
 
-	present 是一种模态交互模式，类似于 `startActivityForResult`，要求 presented 的页面给 presenting 的页面返回结果。
+	present 是一种模态交互方式，只有关闭被 present 的页面，才可以回到上一个页面，通常要求 presented 的页面给 presenting 的页面返回结果，类似于 `startActivityForResult`。
 	
 	比如 A 页面 present 出 B 页面
 	
@@ -141,17 +318,20 @@ public class MainActivity extends AwesomeActivity {
 
 	关闭 present 出来的 Fragment，可以在该 Fragment 的任意子 Fragment 中调用，请参看上面相册的例子。
 	
-### NavigationFragment
+> present 所使用的 FragmentManager 是 Activity 的 `getSupportFragmentManager`，因此 present 出来的 fragment 是属于 Activity 的，它不属于任何 fragment 的子 fragment，这样就确保了 present 出来的 fragment 是模态的。
 
-对标 iOS 的 UINavigationController，支持 push、pop、popTo、popToRoot 操作，并额外支持 replace 和 replaceToRoot 操作。
 
-NavigationFragment 是个容器，你可以在它的子 Fragment 中通过 `getNavigationFragment` 来获取它的引用。
+#### NavigationFragment
+
+NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 push、pop、popTo、popToRoot 操作，并额外支持 replace 和 replaceToRoot 操作。
+
+我们可以在它的子 Fragment 中（不必是直接子 fragment，可以是子 fragment 的子 fragment）通过 `getNavigationFragment` 来获取它的引用。
 
 在初始化 NavigationFragment 时，你必须调用 `setRootFragment` 来指定它的根页面。请参考上面相册那个例子的做法。`setRootFragment` 只能调用一次，如果想更换根页面，可以使用 `replaceToRootFragment` 这个方法。
 
 - push
 
-	由 A 页面跳转到 B 页面。
+    入栈，由 A 页面跳转到 B 页面。
 	
 	```java
 	// AFragment.java
@@ -160,7 +340,7 @@ NavigationFragment 是个容器，你可以在它的子 Fragment 中通过 `getN
 
 - pop
 
-	返回到前一个页面。比如你由 A 页面 push 到 B 页面，现在想返回到 A 页面。
+	出栈，返回到前一个页面。比如你由 A 页面 push 到 B 页面，现在想返回到 A 页面。
 	
 	```java
     // BFragment.java
@@ -169,7 +349,7 @@ NavigationFragment 是个容器，你可以在它的子 Fragment 中通过 `getN
 	
 - popToRoot
 
-	返回到当前导航栈根页面。比如 A 页面是根页面，你由 A 页面 push 到 B 页面，由 B 页面 push 到 C 页面，由 C 页面 push 到 D 页面，现在想返回到根部，也就是 A 页面。
+	出栈，返回到当前导航栈根页面。比如 A 页面是根页面，你由 A 页面 push 到 B 页面，由 B 页面 push 到 C 页面，由 C 页面 push 到 D 页面，现在想返回到根部，也就是 A 页面。
 	
 	```java
     // DFragment.java
@@ -178,7 +358,7 @@ NavigationFragment 是个容器，你可以在它的子 Fragment 中通过 `getN
 
 - popTo
 
-	返回到之前的指定页面。比如你由 A 页面 push 到 B 页面，由 B 页面 push 到 C 页面，由 C 页面 push到 D 页面，现在想返回 B 页面。你可以把 B 页面的 `sceneId` 一直传递到 D 页面，然后调用 `popToFragment("bSceneId")` 返回到 B 页面。
+	出栈，返回到之前的指定页面。比如你由 A 页面 push 到 B 页面，由 B 页面 push 到 C 页面，由 C 页面 push到 D 页面，现在想返回 B 页面。你可以把 B 页面的 `sceneId` 一直传递到 D 页面，然后调用 `popToFragment("bSceneId")` 返回到 B 页面。
 	
 	从 B 页面跳转到 C 页面时
 	
@@ -212,11 +392,11 @@ NavigationFragment 是个容器，你可以在它的子 Fragment 中通过 `getN
     getNavigationFragment().popToFragment(bFragment);
 	```
 	
-    > 你可能已经猜到，pop 和 popToRoot 都是通过 popTo 来实现的。
+    > 你可能已经猜到，pop 和 popToRoot 都是通过 popTo 来实现的。pop 的时候也可以通过 setResult 设置返回值，不过此时 requestCode 的值总是 0。
 
 - replace
 
-	用指定页面取代当前页面，比如当前页面是 A，想要替换成 B
+	出栈然后入栈，用指定页面取代当前页面，比如当前页面是 A，想要替换成 B
 	
 	```java
     // AFragment.java
@@ -226,7 +406,7 @@ NavigationFragment 是个容器，你可以在它的子 Fragment 中通过 `getN
 
 - replaceToRoot
 
-	把 NavigationFragment 的所有子 Fragment 替换成一个 Fragment。譬如 A 页面是根页面，然后 push 到 B、C、D 页面，此时 NavigationFragment 里有 A、B、C、D 四个页面。如果想要重置NavigationFragment ，把 E 页面设置成根页面。
+	出栈然后入栈，把 NavigationFragment 的所有子 Fragment 替换成一个 Fragment。譬如 A 页面是根页面，然后 push 到 B、C、D 页面，此时 NavigationFragment 里有 A、B、C、D 四个页面。如果想要重置NavigationFragment ，把 E 页面设置成根页面。
 	
 	```java
     // DFragment.java
@@ -236,32 +416,112 @@ NavigationFragment 是个容器，你可以在它的子 Fragment 中通过 `getN
 	
 	现在 NavigationFragment 里只有 EFragment 这么一个子 Fragment 了。
 
-### TabBarFragment
-
-coming soon
-
-### DrawerFragment
-
-coming soon
 
 
-### 配置页面的状态栏
+上面这些操作所使用的 FragmentManager，是 NavigationFragment 的 `getChildFragmentManager`，所有出栈或入栈的 fragment 都是 NavigationFragment 的子 fragment. 
 
-AwesomeFragment 中有几个模版方法是用来配置状态栏的，如果你希望某些页面的状态栏和其它页面不一样，你需要有选择性的重写这些方法。
+![navigation-stack](./screenshot/navigation_stack.png)
 
-目前尚未对 5.0 以下版本做兼容，以及兼容部分国产机。
+如上图，A fragment 嵌套在 NavigationFragment 中，A1 fragment 嵌套在 A fragment 中，当我们从 A1 push B fragment 时，B fragment 会成为 NavigationFragment 的子 fragment，而不是 A 的子 fragment，它和 A 是兄弟，它是 A1 的叔叔。
+
+#### 自定义导航
+
+虽然 AwesomeFragment 和 NavigationFragment 提供的导航操作已经能满足大部分需求，但有时我们可能需要自定义导航操作。
+
+需要注意几个点
+
+- 选择合适的 FragmentManager
+  
+  `Activity#getSupportFragmentManager` 会将 fragment 添加到 activity
+  
+  `Fragment#getFragmentManager` 拿到的是上一级的 fragmentManager, 通过它添加的 fragment 会成为当前 fragment 的兄弟。
+  
+  `Fragment#getChildFragmentManager` 会将 fragment 添加为当前 fragment 的子 fragment。
+
+- 设置正确的 tag
+
+  总是使用有三个参数的 add、replace 等方法，最后一个 tag 传入目标 fragment 的 `getSceneId` 的值。
+  
+- 正确使用 addToBackStack
+
+  如果需要添加到返回栈，tag 参数不能为 null, 必须和传递给 add 或 replace 的 tag 一致，也就是目标 fragment 的 `getSceneId` 的值。
+
+可以参考 demo 中 GridFragment 这个类，看如何实现自定义导航
+
+![](./screenshot/shared_element_transition.gif)
+<!--<img src="./screenshot/shared_element_transition.gif" width="280px"/>-->
+
+
+<a name="setting-style"></a>
+
+
+### 全局样式设置
+
+可以通过重写 AwesomeActivity 如下方法来定制该 activity 下所有 fragment 的样式
+
+```java
+@Override
+protected void onCustomStyle(Style style) {
+    
+}
+```
+
+可配置项如下：
+
+```javascript  
+{
+    screenBackgroundColor: int       // 页面背景，默认是白色
+    toolbarStyle: BarStyle           // 状态栏和 toobar 前景色，可选值有 DarkContent 和 LightContent
+    toolbarBackgroundColor: int      // toolbar 背景颜色，默认值是 colorPrimary
+    statusBarColor: String           // 状态栏背景色，仅对 5.0 以上版本生效， 默认值是 colorPrimaryDark
+    elevation: int                   // toolbar 阴影高度， 仅对 5.0 以上版本生效，默认值为 4 dp
+    shadow: Drawable                 // toolbar 阴影图片，仅对 4.4 以下版本生效 
+    backIcon: Drawable               // 返回按钮图标，默认是个箭头
+    toolbarTintColor: int            // toolbar 标题和按钮的颜色，默认根据 toolbarStyle 来推算
+    titleTextColor: int              // toolbar 标题颜色，默认取 toolbarTintColor 的值
+    titleTextSize: int               // toolbar 标题字体大小，默认是 17 dp
+    titleGravity: int                // toolbar 标题的位置，默认是 Gravity.START
+    toolbarButtonTintColor: int      // toolbar 按钮颜色，默认取 toolbarTintColor 的值
+    toolbarButtonTextSize: int       // toolbar 按钮字体大小，默认是 15 dp
+     
+    // BottomBar
+    bottomBarBackgroundColor: String // BottomNavigationBar 背景，默认值是 #FFFFFF
+    bottomBarShadow: Drawable        // BottomNavigationBar 阴影图片，仅对4.4 以下版本生效 
+    bottomBarActiveColor: String     // BottomNavigationTab 选中效果，默认取 colorAccent 的值
+    bottomBarInActiveColor: String   // BottomNavigationTab 未选中效果，默认是灰色
+}
+```
+
+所有的可配置项都是可选的。
+
+如果某个 fragment 与众不同，可以为该 fragment 单独设置样式，只要重写 fragment 的 `onCustomStyle` 方法，在其中设置那些不同的样式即可。
+
+<a name="setting-statusbar"></a>
+
+
+### 设置状态栏
+
+状态栏的设置只支持 5.0 以上系统。
+
+![](./screenshot/statusbar.gif)
+
+设置方式非常简单，只需要有选择地重写 AwesomeFragmet 中的方法即可。
 
 ```java
 // AwesomFragment.java
-protected String preferredStatusBarStyle();
-protected boolean prefersStatusBarHidden();
-protected int prefersStatusBarColor();
-protected boolean prefersStatusBarColorAnimated();
+protected BarStyle preferredStatusBarStyle();
+protected boolean preferredStatusBarHidden();
+protected int preferredStatusBarColor();
+protected boolean preferredStatusBarColorAnimated();
 ```	
 
 - preferredStatusBarStyle
 
-  默认的返回值是 light-content, 状态栏文字是白色，如果你想把状态栏文字变成黑色，你需要重写这个方法，把返回值改为 dark-content。
+  默认的返回值是全局样式的 `style.getToolbarStyle()`。
+  
+  BarStyle 是个枚举，有两个值。`LightContent` 表示状态栏文字是白色，如果你想把状态栏文字变成黑色，你需要使用 `DarkContent`。
+  
+  关于如何设置全局样式，请参考 [**全局样式设置**](#setting-style) 一章。
   
   > 仅对 6.0 以上版本生效
   
@@ -271,13 +531,112 @@ protected boolean prefersStatusBarColorAnimated();
  
 - prefersStatusBarColor
 
-  状态栏的颜色，默认是 `Color.TRANSPARENT`, 即透明色。如果这不满足你的需求，你只需要重写这个方法，返回你需要的颜色即可。
-  
+  状态栏的颜色，默认是全局样式 `style.getStatusBarColor()`，如果某个页面比较特殊，重写该方法，返回期待的颜色值即可。
+    
 - prefersStatusBarColorAnimated
 
   当状态栏的颜色由其它颜色转变成当前页面所期待的颜色时，需不需要对颜色做过渡动画，默认是 false，你可以返回 true，使得过渡更自然。
  
-如果你当前页面的状态栏样式不是固定的，需要根据 App 的不同状态展示不同的样式，你可以在上面这些方法中返回一个变量，当这个变量的值发生变化时，你需要手动调用 `setNeedsStatusBarAppearanceUpdate` 来通知框架更新状态栏样式。可以参考 DrawerFragment 是怎样实现侧边栏弹出时隐藏状态栏，侧边栏收起时显示状态栏的。
+如果你当前页面的状态栏样式不是固定的，需要根据 App 的不同状态展示不同的样式，你可以在上面这些方法中返回一个变量，当这个变量的值发生变化时，你需要手动调用 `setNeedsStatusBarAppearanceUpdate` 来通知框架更新状态栏样式。可以参考 demo 中CustomStatusBarFragment 这个类。
+
+#### 开启沉浸式 
+
+这里的沉浸式是指页面的内容延伸到 statusBar 底下
+
+只需要调用 `setContentUnderStatusBar(boolean under)` 即可开关沉浸式，AwesomeActivity 和 AwesomeFragment 都有这个方法，这个方法会影响整个 Activity 中所有的 Fragment，请慎重使用。
+
+AwesomeFragment 中有一个 `onContentUnderStatusBar(boolean under)` 方法，你可以在这里处理开关沉浸式所要做的适配工作。
+
+你也可以通过 `isContentUnderStatusBar` 来判断是否开启了沉浸式。
+
+我们的 demo 在 MainActivity 中开启了沉浸式，你可以在 CustomStatusBarFragment 这个界面开关沉浸式
+
+![statusbar_custom](./screenshot/statusbar_custom.gif)
 
 
+<a name="setting-toolbar"></a>
+
+### 设置 Toolbar
+
+
+当 fragment 的 parent fragment 是一个 NavigationFragemnt 时，会自动为该 fragment 创建 Toolbar。
+
+你可以调用 AwesomeFragment 的以下方法来设置 Toolbar
+
+- setTitle
+
+  设置 Toobar 标题
+
+- setToolbarLeftButton
+
+  设置 Toobar 左侧按钮
+  
+- setToolbarRightButton
+
+  设置 Toobar 右侧按钮，如果你需要更多按钮，请在 `onActivityCreated` 中
+  
+  ```java
+    Menu menu = getToobar().getMenu();
+    MenuItem menuItem = menu.add(title);
+    menuItem.setIcon(icon);
+    menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+    menuItem.setOnMenuItemClickListener();
+  ```
+  
+Toobar 的创建时机是在 Fragment `onViewCreated` 这个生命周期函数中，在此之前之前，调用 getToolbar 得到的返回值为 null。
+
+如果当前 fragment 不是 NavigationFragment 的 rootFragment，会自动在 Toolbar 上创建返回按钮。如果你不希望当前页面有返回按钮，可以重写以下方法。
+
+```java
+protected boolean shouldHideBackButton() {
+    return true;
+}
+```
+
+因为当前页面没有返回按钮，因此用户也不能通过返回键（物理的或虚拟的）返回。
+
+你也可以通过重写以下方法来禁止自动创建 Toolbar 这一行为
+
+```java
+protected Toolbar onCreateToolbar(View parent) { 
+    return null;
+}
+```
+
+这样就不会为你创建 Toolbar 了，通过这种方式，你可以使用自定义的 Toolbar。
+
+demo 中，CoordinatorFragment 和 ViewPagerFragment 就使用了自定义的 Toolbar。
+
+如果你开启了沉浸式，那么你需要使用 `appendStatusBarPaddingAndHeight` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
+
+<a name="using-font-icons"></a>
+
+### 使用 font icons
+
+
+把你的 font icon 文件放到 assets/fonts 目录中，就像 demo 所做的那样。每个图标会有一个可读的 name， 以及一个 code point，我们通常通过 name 来查询 code point，当然也可以人肉查好后直接使用 code point，demo 中就是这样。
+
+以下方法可以通过 code point 获取 glyph（字形）
+
+```java
+public static String fromCharCode(int... codePoints) {
+    return new String(codePoints, 0, codePoints.length);
+}
+```
+
+获取 glyph 后构建如下格式的 uri
+
+```
+font://fontName/glyph/size/color
+```
+
+其中 fontName 就是你放在 aseets/fonts 文件夹中的字体文件名，但不包括后缀。size 是字体大小，如 24，color 是字体颜色，可选，只支持 RRGGBB 格式。
+
+可以参考 demo 中 MainActivity 怎样把 font 转换成 drawable
+
+<a name="specification"></a>
+
+### 代码规范
+
+在 `onActivityCreated` 中配置和 UI 相关的东西，譬如 Toolbar。
 

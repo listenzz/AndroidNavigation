@@ -97,8 +97,6 @@ public class TestStatusBarFragment extends AwesomeFragment {
             }
         });
 
-
-
         return root;
     }
 

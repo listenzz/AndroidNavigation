@@ -69,7 +69,7 @@ public class LifecycleDelegate implements LifecycleObserver {
         return isActiveState(getLifecycle().getCurrentState());
     }
 
-    boolean isAtLeatCreated() {
+    boolean isAtLeastCreated() {
         return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.CREATED);
     }
 

@@ -248,12 +248,4 @@ public class NavigationFragment extends AwesomeFragment {
         }
     }
 
-    public boolean isTopBarHidden() {
-        return false;
-    }
-
-    public AwesomeToolbar getToolbar() {
-        return null;
-    }
-
 }

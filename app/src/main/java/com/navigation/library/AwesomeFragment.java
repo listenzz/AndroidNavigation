@@ -235,7 +235,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     }
 
     protected boolean isAtLeastCreated() {
-        return lifecycleDelegate.isAtLeatCreated();
+        return lifecycleDelegate.isAtLeastCreated();
     }
 
     // ------- navigation ------
