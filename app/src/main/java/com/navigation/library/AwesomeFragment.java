@@ -555,8 +555,29 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         return null;
     }
 
-    protected void setStatusBarStyle(BarStyle style) {
-        AppUtils.setStatusBarStyle(getWindow(), style == BarStyle.DarkContent);
+    protected void setStatusBarStyle(BarStyle barStyle) {
+        if (AppUtils.isMiuiV6()) {
+            MiuiOSStatusBarColorUtils.setStatusBarDarkMode(barStyle == BarStyle.DarkContent, getWindow());
+        } else if (AppUtils.isFlymeV4()) {
+            AwesomeFragment childFragmentForBarStyle = childFragmentForAppearance();
+            Style style = this.style;
+            while (childFragmentForBarStyle != null) {
+                style = childFragmentForBarStyle.style;
+                Log.w(TAG, childFragmentForBarStyle.getDebugTag() + " color:" + style.getToolbarTintColor());
+                childFragmentForBarStyle = childFragmentForBarStyle.childFragmentForAppearance();
+            }
+
+            style.setToolbarStyle(barStyle);
+
+            if (getDialog() == null) {
+                FlymeOSStatusBarColorUtils.setStatusBarDarkIcon(getActivity(), style.getToolbarTintColor());
+            } else {
+                FlymeOSStatusBarColorUtils.setStatusBarDarkIcon(getWindow(), style.getToolbarTintColor());
+            }
+
+        } else {
+            AppUtils.setStatusBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
+        }
     }
 
     protected void setContentUnderStatusBar(boolean under) {
