@@ -565,15 +565,15 @@ AwesomeFragment 中有一个 `onContentUnderStatusBar(boolean under)` 方法，�
 
 - setTitle
 
-  设置 Toobar 标题
+  设置 Toolbar 标题
 
 - setToolbarLeftButton
 
-  设置 Toobar 左侧按钮
+  设置 Toolbar 左侧按钮
   
 - setToolbarRightButton
 
-  设置 Toobar 右侧按钮，如果你需要更多按钮，请在 `onActivityCreated` 中
+  设置 Toolbar 右侧按钮，如果你需要更多按钮，请在 `onActivityCreated` 中
   
   ```java
     Menu menu = getToobar().getMenu();
@@ -583,7 +583,7 @@ AwesomeFragment 中有一个 `onContentUnderStatusBar(boolean under)` 方法，�
     menuItem.setOnMenuItemClickListener();
   ```
   
-Toobar 的创建时机是在 Fragment `onViewCreated` 这个生命周期函数中，在此之前之前，调用 getToolbar 得到的返回值为 null。
+Toolbar 的创建时机是在 Fragment `onViewCreated` 这个生命周期函数中，在此之前之前，调用 getToolbar 得到的返回值为 null。
 
 如果当前 fragment 不是 NavigationFragment 的 rootFragment，会自动在 Toolbar 上创建返回按钮。如果你不希望当前页面有返回按钮，可以重写以下方法。
 
@@ -607,7 +607,7 @@ protected Toolbar onCreateToolbar(View parent) {
 
 demo 中，CoordinatorFragment 和 ViewPagerFragment 就使用了自定义的 Toolbar。
 
-如果你开启了沉浸式，那么你需要使用 `appendStatusBarPaddingAndHeight` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
+如果你开启了沉浸式，那么你需要使用 `appendStatusBarPadding` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
 
 <a name="using-font-icons"></a>
 
