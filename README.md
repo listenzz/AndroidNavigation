@@ -576,7 +576,7 @@ AwesomeFragment 中有一个 `onContentUnderStatusBar(boolean under)` 方法，�
   设置 Toolbar 右侧按钮，如果你需要更多按钮，请在 `onActivityCreated` 中
   
   ```java
-    Menu menu = getToobar().getMenu();
+    Menu menu = getToolbar().getMenu();
     MenuItem menuItem = menu.add(title);
     menuItem.setIcon(icon);
     menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
@@ -632,7 +632,9 @@ font://fontName/glyph/size/color
 
 其中 fontName 就是你放在 aseets/fonts 文件夹中的字体文件名，但不包括后缀。size 是字体大小，如 24，color 是字体颜色，可选，只支持 RRGGBB 格式。
 
-可以参考 demo 中 MainActivity 怎样把 font 转换成 drawable
+可以参考 demo 中 MainActivity 中是怎样构建一个 fontUri 的。
+
+可以参考 demo 中 TestNavigationFragment 怎样利用 `DrawableUtils.fromFont` 把 font 转换成 drawable 的。
 
 <a name="specification"></a>
 
