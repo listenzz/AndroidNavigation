@@ -501,7 +501,7 @@ protected void onCustomStyle(Style style) {
 
 ### 设置状态栏
 
-状态栏的设置只支持 5.0 以上系统。
+状态栏的设置支持 4.4 以上系统。
 
 ![](./screenshot/statusbar.gif)
 

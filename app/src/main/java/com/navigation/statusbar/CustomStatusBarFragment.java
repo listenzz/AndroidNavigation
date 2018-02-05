@@ -86,13 +86,13 @@ public class CustomStatusBarFragment extends AwesomeFragment implements Compound
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         textView.setText("");
         switch (buttonView.getId()) {
-            case R.id.insets: // 状态栏沉浸 5.0 以上生效
+            case R.id.insets:
                 // 慎重，会影响整个 Activity
                 setContentUnderStatusBar(isChecked);
                 getWindow().getDecorView().requestLayout();
                 textView.setText("将影响整个 Activity，打开 Drawer 看看");
                 break;
-            case R.id.tinting: // 状态栏着色 5.0 以上生效
+            case R.id.tinting:
                 statusBarColor = isChecked ? Color.MAGENTA : Color.TRANSPARENT;
                 setNeedsStatusBarAppearanceUpdate();
                 if (statusBarHidden && isChecked) {
@@ -112,11 +112,11 @@ public class CustomStatusBarFragment extends AwesomeFragment implements Compound
                 }
 
                 break;
-            case R.id.hidden: // 隐藏状态栏 5.0 以上生效
+            case R.id.hidden:
                 statusBarHidden = isChecked;
                 setNeedsStatusBarAppearanceUpdate();
                 break;
-            case R.id.adjust: //调整 Toolbar 位置 5.0 以上生效
+            case R.id.adjust:
                 if (isChecked) {
                     appendStatusBarPadding(toolbar, getToolbarHeight());
                 } else {

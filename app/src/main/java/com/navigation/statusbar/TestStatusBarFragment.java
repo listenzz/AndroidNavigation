@@ -39,7 +39,7 @@ public class TestStatusBarFragment extends AwesomeFragment {
 
     @Override
     protected boolean hidesBottomBarWhenPushed() {
-        return true;
+        return false;
     }
 
     @Nullable

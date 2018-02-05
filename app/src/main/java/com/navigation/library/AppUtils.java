@@ -1,19 +1,25 @@
 package com.navigation.library;
 
 import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 
 /**
  * Created by listen on 2018/2/3.
@@ -21,7 +27,8 @@ import android.view.inputmethod.InputMethodManager;
 
 public class AppUtils {
 
-    private AppUtils() {}
+    private AppUtils() {
+    }
 
     /**
      * @param context used to get system services
@@ -52,7 +59,7 @@ public class AppUtils {
         return color;
     }
 
-    public static int fetchContextDimension (Context context, int androidAttribute) {
+    public static int fetchContextDimension(Context context, int androidAttribute) {
         TypedValue typedValue = new TypedValue();
         TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[]{androidAttribute});
         int dimension = a.getDimensionPixelOffset(0, 0);
@@ -111,6 +118,13 @@ public class AppUtils {
             }
 
             ViewCompat.requestApplyInsets(decorView);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (translucent) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            }
+            ViewCompat.requestApplyInsets(window.getDecorView());
         }
     }
 
@@ -134,6 +148,45 @@ public class AppUtils {
             } else {
                 window.setStatusBarColor(color);
             }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            ViewGroup decorViewGroup = (ViewGroup) window.getDecorView();
+            View statusBarView = decorViewGroup.findViewWithTag("custom_status_bar_tag");
+            if (statusBarView == null) {
+                statusBarView = new View(window.getContext());
+                statusBarView.setTag("custom_status_bar_tag");
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT, getStatusBarHeight(window.getContext()));
+                params.gravity = Gravity.TOP;
+                statusBarView.setLayoutParams(params);
+                decorViewGroup.addView(statusBarView);
+            }
+
+            if (animated) {
+                Drawable drawable = statusBarView.getBackground();
+                int curColor = Integer.MAX_VALUE;
+                if (drawable != null && drawable instanceof ColorDrawable) {
+                    ColorDrawable colorDrawable = (ColorDrawable) drawable;
+                    curColor = colorDrawable.getColor();
+                }
+                if (curColor != Integer.MAX_VALUE) {
+                    final View barView = statusBarView;
+                    ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
+                    colorAnimation.addUpdateListener(
+                            new ValueAnimator.AnimatorUpdateListener() {
+                                @TargetApi(21)
+                                @Override
+                                public void onAnimationUpdate(ValueAnimator animator) {
+                                    barView.setBackground(new ColorDrawable((Integer) animator.getAnimatedValue()));
+                                }
+                            });
+                    colorAnimation.setDuration(200).setStartDelay(0);
+                    colorAnimation.start();
+                } else {
+                    statusBarView.setBackground(new ColorDrawable(color));
+                }
+            } else {
+                statusBarView.setBackground(new ColorDrawable(color));
+            }
         }
     }
 
@@ -146,7 +199,7 @@ public class AppUtils {
     }
 
     public static void setStatusBarHidden(Window window, boolean hidden) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (hidden) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
@@ -155,10 +208,35 @@ public class AppUtils {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             }
         }
+
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            ViewGroup decorViewGroup = (ViewGroup) window.getDecorView();
+            final View statusBarView = decorViewGroup.findViewWithTag("custom_status_bar_tag");
+
+            if (statusBarView != null) {
+                boolean hiding = statusBarView.isClickable();
+                if (hiding == hidden) {
+                    return;
+                }
+
+                if (hidden) {
+                    statusBarView.setClickable(true);
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(statusBarView, "y", -getStatusBarHeight(window.getContext()));
+                    animator.setDuration(200);
+                    animator.setStartDelay(200);
+                    animator.start();
+                } else {
+                    statusBarView.setClickable(false);
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(statusBarView, "y", 0);
+                    animator.setDuration(200);
+                    animator.start();
+                }
+            }
+        }
     }
 
     public static void appendStatusBarPadding(View view, int viewHeight) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (view != null) {
                 int statusBarHeight = getStatusBarHeight(view.getContext());
                 view.setPadding(view.getPaddingLeft(), statusBarHeight, view.getPaddingRight(), view.getPaddingBottom());
@@ -172,7 +250,7 @@ public class AppUtils {
     }
 
     public static void removeStatusBarPadding(View view, int viewHeight) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (view != null) {
                 view.setPadding(view.getPaddingLeft(), 0, view.getPaddingRight(),
                         view.getPaddingBottom());

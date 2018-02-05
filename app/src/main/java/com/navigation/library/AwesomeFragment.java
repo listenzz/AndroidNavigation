@@ -506,7 +506,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     }
 
     public void setNeedsStatusBarAppearanceUpdate() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             return;
         }
 
@@ -535,7 +535,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
             }
 
             if (shouldAdjustForWhiteStatusBar) {
-                int color = Color.parseColor("#666666");
+                int color = Color.parseColor("#B0B0B0");
                 setStatusBarColor(color, preferredStatusBarColorAnimated());
             } else {
                 setStatusBarColor(preferredStatusBarColor(), preferredStatusBarColorAnimated());
