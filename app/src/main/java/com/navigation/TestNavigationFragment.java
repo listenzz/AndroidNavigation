@@ -10,14 +10,15 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.navigation.library.AppUtils;
-import com.navigation.library.AwesomeFragment;
-import com.navigation.library.BarStyle;
-import com.navigation.library.DrawableUtils;
-import com.navigation.library.DrawerFragment;
-import com.navigation.library.NavigationFragment;
-import com.navigation.library.Style;
-import com.navigation.library.TabBarFragment;
+import me.listenzz.navigation.AppUtils;
+import me.listenzz.navigation.AwesomeFragment;
+import me.listenzz.navigation.BarStyle;
+import me.listenzz.navigation.DrawableUtils;
+import me.listenzz.navigation.DrawerFragment;
+import me.listenzz.navigation.NavigationFragment;
+import me.listenzz.navigation.Style;
+import me.listenzz.navigation.TabBarFragment;
+
 
 /**
  * Created by Listen on 2018/1/11.

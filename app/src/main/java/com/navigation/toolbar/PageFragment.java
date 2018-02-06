@@ -11,11 +11,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.navigation.R;
-import com.navigation.library.AwesomeFragment;
-import com.navigation.library.FragmentHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import me.listenzz.navigation.AwesomeFragment;
+import me.listenzz.navigation.FragmentHelper;
 
 /**
  * Created by Listen on 2018/2/1.

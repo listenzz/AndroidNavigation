@@ -2,13 +2,14 @@ package com.navigation;
 
 import android.os.Bundle;
 
-import com.navigation.library.AwesomeActivity;
-import com.navigation.library.DrawerFragment;
-import com.navigation.library.NavigationFragment;
-import com.navigation.library.Style;
-import com.navigation.library.TabBarFragment;
-import com.navigation.library.TabBarItem;
 import com.navigation.statusbar.TestStatusBarFragment;
+
+import me.listenzz.navigation.AwesomeActivity;
+import me.listenzz.navigation.DrawerFragment;
+import me.listenzz.navigation.NavigationFragment;
+import me.listenzz.navigation.Style;
+import me.listenzz.navigation.TabBarFragment;
+import me.listenzz.navigation.TabBarItem;
 
 public class MainActivity extends AwesomeActivity {
 

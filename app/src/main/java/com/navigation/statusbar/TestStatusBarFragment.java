@@ -9,13 +9,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.navigation.R;
-import com.navigation.library.AwesomeFragment;
-import com.navigation.library.BarStyle;
-import com.navigation.library.DrawableUtils;
-import com.navigation.library.DrawerFragment;
-import com.navigation.library.NavigationFragment;
-import com.navigation.library.Style;
 import com.navigation.toolbar.NoToolbarFragment;
+
+import me.listenzz.navigation.AwesomeFragment;
+import me.listenzz.navigation.BarStyle;
+import me.listenzz.navigation.DrawableUtils;
+import me.listenzz.navigation.DrawerFragment;
+import me.listenzz.navigation.NavigationFragment;
+import me.listenzz.navigation.Style;
 
 /**
  * Created by listen on 2018/1/12.

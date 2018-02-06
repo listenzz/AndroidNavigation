@@ -11,8 +11,10 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 
 import com.navigation.R;
-import com.navigation.library.AwesomeFragment;
-import com.navigation.library.Style;
+
+import me.listenzz.navigation.AwesomeFragment;
+import me.listenzz.navigation.Style;
+
 
 /**
  * Created by Listen on 2018/2/1.

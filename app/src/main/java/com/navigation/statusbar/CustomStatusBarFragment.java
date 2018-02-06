@@ -13,8 +13,10 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.navigation.R;
-import com.navigation.library.AwesomeFragment;
-import com.navigation.library.BarStyle;
+
+import me.listenzz.navigation.AwesomeFragment;
+import me.listenzz.navigation.BarStyle;
+
 
 /**
  * Created by listen on 2018/2/2.

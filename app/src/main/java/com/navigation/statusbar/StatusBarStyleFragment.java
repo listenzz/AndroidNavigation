@@ -5,8 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 
-import com.navigation.library.BarStyle;
-import com.navigation.library.Style;
+import me.listenzz.navigation.BarStyle;
+import me.listenzz.navigation.Style;
+
 
 /**
  * Created by listen on 2018/1/13.

@@ -14,7 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.navigation.R;
-import com.navigation.library.AwesomeFragment;
+
+import me.listenzz.navigation.AwesomeFragment;
+
 
 /**
  * Created by Listen on 2018/2/1.

@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.navigation.R;
-import com.navigation.library.AwesomeFragment;
+
+import me.listenzz.navigation.AwesomeFragment;
+
 
 /**
  * Created by listen on 2018/2/3.

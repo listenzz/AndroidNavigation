@@ -9,7 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.navigation.R;
-import com.navigation.library.AwesomeFragment;
+
+import me.listenzz.navigation.AwesomeFragment;
 
 
 /**
