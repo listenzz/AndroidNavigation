@@ -6,9 +6,11 @@ You could use it as a single Activity Architecture Component.
 
 ## 特性
 
-- 使用 Lifecycle 架构组件，解决了生命周期问题
-- 以 iOS 的导航系统为参照，支持 present, dismiss, push, pop, popTo, popToRoot, replace, replaceToRoot 等操作
-- 支持 StatusBar, Toolbar, BottomNavigationBar 的全局样式配置以及局部调整
+- 一行代码实现 Fragment 嵌套，一次性构建好嵌套层级
+- 一行代码实现 Fragment 跳转，不再需要写一大堆操作 fragment 的代码了，不用担心用错 FragmentManager 了
+- 一行代码开关沉浸式状态栏，兼容到 Android 4.4 并解决了相关 BUG
+- 自动为你创建 Toolbar，一行代码设置标题、按钮，支持关闭自动创建功能以实现定制
+- 一处设置全局样式，到处使用，并且支持不同页面个性化
 - 支持 font icons
 
 ### 6.0 screenshot:
@@ -211,7 +213,7 @@ public boolean isParentFragment() {
 @Override
 protected AwesomeFragment childFragmentForAppearance() {
     // 这个方法用来控制当前的 statusbar 的样式是由哪个子 fragment 决定的    
-    // 如果不重写，则由容器类自身决定
+    // 如果不重写，则由容器自身决定
     // 可以参考 NavigationFragment、TabBarFragment
     // 是如何决定让哪个子 fragment 来决定 statusbar 样式的
     return 一个恰当的子 fragment;
@@ -226,8 +228,8 @@ protected AwesomeFragment childFragmentForAppearance() {
 ```java
 @Override
 protected boolean onBackPressed() {
-    // 这个方法用来控制当用户点击返回键时，到底要退出哪个界面
-    // 如果不重写，则销毁容器本身
+    // 这个方法用来控制当用户点击返回键时，到底要退出哪个子 fragment
+    // 如果不重写，则退出容器本身
     // 可以参考 DrawerFragment 是如何处理返回键的
     return super.onBackPressed();
 }
