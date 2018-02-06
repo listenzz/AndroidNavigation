@@ -23,6 +23,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -31,6 +32,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.navigation.R;
+import com.navigation.library.adapter.FlymeOSStatusBarColorUtils;
+import com.navigation.library.adapter.MiuiOSStatusBarColorUtils;
+import com.navigation.library.adapter.SoftInputLayoutListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -602,6 +606,28 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         for (int i = 0, size = children.size(); i < size; i++) {
             AwesomeFragment child = children.get(i);
             child.onContentUnderStatusBar(under);
+        }
+    }
+
+    private ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
+
+    public void fixKeyboardBug(View root, boolean isContentUnderStatusBar) {
+        if (isContentUnderStatusBar) {
+            if (globalLayoutListener == null) {
+                globalLayoutListener = new SoftInputLayoutListener(root);
+                root.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+            }
+        } else {
+            if (globalLayoutListener != null) {
+                root.getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);
+                globalLayoutListener = null;
+            }
+        }
+    }
+
+    public void fixKeyboardBugAtKitkat(View root, boolean isContentUnderStatusBar) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            fixKeyboardBug(root, isContentUnderStatusBar);
         }
     }
 

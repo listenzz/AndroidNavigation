@@ -1,4 +1,4 @@
-package com.navigation.library;
+package com.navigation.library.adapter;
 
 import android.view.Window;
 

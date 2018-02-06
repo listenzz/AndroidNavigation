@@ -52,7 +52,7 @@ public class BottomSheetDialogFragment extends AwesomeFragment {
         behavior.setPeekHeight(AppUtils.dp2px(getContext(), 50));
         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
     }
 }
