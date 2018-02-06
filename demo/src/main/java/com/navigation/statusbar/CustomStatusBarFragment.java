@@ -38,13 +38,7 @@ public class CustomStatusBarFragment extends AwesomeFragment implements Compound
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_custom_statusbar, container, false);
         toolbar = root.findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.nav_ic_arrow_back);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().popFragment();
-            }
-        });
+
 
         textView = root.findViewById(R.id.hint);
 
@@ -63,6 +57,18 @@ public class CustomStatusBarFragment extends AwesomeFragment implements Compound
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        toolbar.setNavigationIcon(style.getBackIcon());
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getNavigationFragment().popFragment();
+            }
+        });
     }
 
     int statusBarColor = Color.MAGENTA;

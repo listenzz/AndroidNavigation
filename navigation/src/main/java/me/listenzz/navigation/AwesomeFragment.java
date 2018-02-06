@@ -23,7 +23,6 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -606,14 +605,19 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
             }
         }
 
+        if (getView() != null) {
+            fixKeyboardBugAtKitkat(getView(), under);
+        }
+
         List<AwesomeFragment> children = getAddedChildFragments();
         for (int i = 0, size = children.size(); i < size; i++) {
             AwesomeFragment child = children.get(i);
             child.onContentUnderStatusBar(under);
         }
+
     }
 
-    private ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
+    private SoftInputLayoutListener globalLayoutListener;
 
     public void fixKeyboardBug(View root, boolean isContentUnderStatusBar) {
         if (isContentUnderStatusBar) {
@@ -624,12 +628,14 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         } else {
             if (globalLayoutListener != null) {
                 root.getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);
+                root.getLayoutParams().height = globalLayoutListener.getInitialHeight();
+                root.requestLayout();
                 globalLayoutListener = null;
             }
         }
     }
 
-    public void fixKeyboardBugAtKitkat(View root, boolean isContentUnderStatusBar) {
+    private void fixKeyboardBugAtKitkat(View root, boolean isContentUnderStatusBar) {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             fixKeyboardBug(root, isContentUnderStatusBar);
         }
@@ -747,6 +753,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
 
         if (isContentUnderStatusBar()) {
             appendStatusBarPadding(toolbar, getToolbarHeight());
+            fixKeyboardBugAtKitkat(parent, isContentUnderStatusBar());
         }
 
         customAwesomeToolbar(toolbar);

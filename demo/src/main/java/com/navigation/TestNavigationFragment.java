@@ -158,8 +158,6 @@ public class TestNavigationFragment extends AwesomeFragment {
             });
         }
 
-        fixKeyboardBugAtKitkat(getView(), isContentUnderStatusBar());
-
     }
 
     @Override

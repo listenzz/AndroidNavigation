@@ -15,8 +15,15 @@ public class SoftInputLayoutListener implements ViewTreeObserver.OnGlobalLayoutL
 
     private int usableHeightPrevious;
 
+    private final int initialHeight;
+
     public SoftInputLayoutListener(@NonNull View rootView) {
         this.rootView = rootView;
+        this.initialHeight = rootView.getLayoutParams().height;
+    }
+
+    public int getInitialHeight() {
+        return initialHeight;
     }
 
     @Override
