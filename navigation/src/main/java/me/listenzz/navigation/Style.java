@@ -160,7 +160,7 @@ public class Style implements Cloneable {
         }
         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.nav_ic_arrow_back);
         drawable.setColorFilter(getToolbarButtonTintColor(), PorterDuff.Mode.SRC_ATOP);
-        backIcon = drawable;
+        backIcon = drawable.mutate();
         return backIcon;
     }
 
