@@ -195,7 +195,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
 
         handleHideBottomBarWhenPushed(transit, enter, animation);
         // ---------
-        Log.d(TAG, getDebugTag() + "  " + animation.name() + " transit:" + transit + " enter:" + enter);
+        Log.d(TAG, getDebugTag() + "  " + animation.name() + " transit:" + transit + " enter:" + enter + " nextAnim:" + nextAnim);
 
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
@@ -208,6 +208,11 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
                 return AnimationUtils.loadAnimation(getContext(), animation.popEnter);
             } else {
                 return AnimationUtils.loadAnimation(getContext(), animation.popExit);
+            }
+        } else if (transit == FragmentTransaction.TRANSIT_NONE) {
+            AwesomeFragment parent = getParent();
+            if (parent != null && parent.isRemoving() && !enter) {
+                return AnimationUtils.loadAnimation(getContext(), R.anim.delay);
             }
         }
         return super.onCreateAnimation(transit, enter, nextAnim);
