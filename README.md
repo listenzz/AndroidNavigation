@@ -520,10 +520,8 @@ protected boolean preferredStatusBarColorAnimated();
   默认的返回值是全局样式的 `style.getToolbarStyle()`。
   
   BarStyle 是个枚举，有两个值。`LightContent` 表示状态栏文字是白色，如果你想把状态栏文字变成黑色，你需要使用 `DarkContent`。
-  
-  关于如何设置全局样式，请参考 [**全局样式设置**](#setting-style) 一章。
-  
-  > 仅对 6.0 以上版本生效
+ 
+  > 仅对 6.0 以上版本以及小米、魅族生效
   
 - prefersStatusBarHidden
 
