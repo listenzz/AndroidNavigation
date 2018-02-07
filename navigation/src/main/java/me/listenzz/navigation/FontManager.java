@@ -72,15 +72,6 @@ public class FontManager {
         return typeface;
     }
 
-    /**
-     * Add additional font family, or replace the exist one in the font memory cache.
-     *
-     * @param style
-     * @see {@link Typeface#DEFAULT}
-     * @see {@link Typeface#BOLD}
-     * @see {@link Typeface#ITALIC}
-     * @see {@link Typeface#BOLD_ITALIC}
-     */
     public void setTypeface(String fontFamilyName, int style, Typeface typeface) {
         if (typeface != null) {
             FontFamily fontFamily = mFontCache.get(fontFamilyName);

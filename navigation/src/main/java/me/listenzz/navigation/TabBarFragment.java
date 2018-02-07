@@ -49,7 +49,7 @@ public class TabBarFragment extends AwesomeFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_tabbar, container, false);
+        View root = inflater.inflate(R.layout.nav_fragment_tabbar, container, false);
         bottomBar = root.findViewById(R.id.bottom_bar);
         return root;
     }

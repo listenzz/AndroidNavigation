@@ -8,11 +8,11 @@ import android.support.annotation.AnimRes;
 
 public enum PresentAnimation {
 
-    Push(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right),
-    Modal(R.anim.slide_up, R.anim.delay, R.anim.delay, R.anim.slide_down),
-    Delay(R.anim.delay, R.anim.delay, R.anim.delay, R.anim.delay),
-    Fade(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out),
-    None(R.anim.node, R.anim.node, R.anim.node, R.anim.node);
+    Push(R.anim.nav_slide_in_right, R.anim.nav_slide_out_left, R.anim.nav_slide_in_left, R.anim.nav_slide_out_right),
+    Modal(R.anim.nav_slide_up, R.anim.nav_delay, R.anim.nav_delay, R.anim.nav_slide_down),
+    Delay(R.anim.nav_delay, R.anim.nav_delay, R.anim.nav_delay, R.anim.nav_delay),
+    Fade(R.anim.nav_fade_in, R.anim.nav_fade_out, R.anim.nav_fade_in, R.anim.nav_fade_out),
+    None(R.anim.nav_none, R.anim.nav_none, R.anim.nav_none, R.anim.nav_none);
 
     @AnimRes int enter;
     @AnimRes int exit;

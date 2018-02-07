@@ -211,7 +211,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         } else if (transit == FragmentTransaction.TRANSIT_NONE) {
             AwesomeFragment parent = getParent();
             if (parent != null && parent.isRemoving() && !enter) {
-                return AnimationUtils.loadAnimation(getContext(), R.anim.delay);
+                return AnimationUtils.loadAnimation(getContext(), R.anim.nav_delay);
             }
         }
         return super.onCreateAnimation(transit, enter, nextAnim);
@@ -493,7 +493,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         if (childFragmentForStatusBarColor != null) {
             return childFragmentForStatusBarColor.preferredStatusBarColorAnimated();
         }
-        return false;
+        return true;
     }
 
     protected int preferredToolbarBackgroundColor() {
@@ -517,12 +517,11 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
             return;
         }
 
-        // Log.i(TAG, getDebugTag() + " #setNeedsStatusBarAppearanceUpdate");
-
         AwesomeFragment parent = getParent();
         if (parent != null) {
             parent.setNeedsStatusBarAppearanceUpdate();
         } else {
+
             // statusBarHidden
             setStatusBarHidden(preferredStatusBarHidden());
 
@@ -532,7 +531,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
             // statusBarColor
             boolean shouldAdjustForWhiteStatusBar;
             if (isContentUnderStatusBar()) {
-                shouldAdjustForWhiteStatusBar = preferredStatusBarColor() == Color.TRANSPARENT && preferredToolbarBackgroundColor() == Color.WHITE;
+                shouldAdjustForWhiteStatusBar = (preferredStatusBarColor() == Color.TRANSPARENT || preferredStatusBarColor() == Color.WHITE) && preferredToolbarBackgroundColor() == Color.WHITE;
             } else {
                 shouldAdjustForWhiteStatusBar = preferredStatusBarColor() == Color.WHITE;
             }
@@ -678,7 +677,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         return null;
     }
 
-    protected boolean isNavigationRoot() {
+    public boolean isNavigationRoot() {
         NavigationFragment navigationFragment = getNavigationFragment();
         if (navigationFragment != null) {
             AwesomeFragment awesomeFragment = navigationFragment.getRootFragment();
@@ -770,7 +769,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         }
     }
 
-    protected void setTitle(@StringRes int resId) {
+    public void setTitle(@StringRes int resId) {
         setTitle(getContext().getText(resId));
     }
 
@@ -790,11 +789,11 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         }
     }
 
-    protected void setToolbarLeftButton(@DrawableRes int icon, @StringRes int title, boolean enabled, final View.OnClickListener onClickListener) {
+    public void setToolbarLeftButton(@DrawableRes int icon, @StringRes int title, boolean enabled, final View.OnClickListener onClickListener) {
         setToolbarLeftButton(ContextCompat.getDrawable(getContext(), icon), getContext().getString(title), enabled, onClickListener);
     }
 
-    protected void setToolbarLeftButton(Drawable icon, String title, boolean enabled, final View.OnClickListener onClickListener) {
+    public void setToolbarLeftButton(Drawable icon, String title, boolean enabled, final View.OnClickListener onClickListener) {
         Toolbar toolbar = getToolbar();
         if (toolbar != null) {
             if (toolbar instanceof AwesomeToolbar) {
@@ -817,11 +816,11 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         }
     }
 
-    protected void setToolbarRightButton(@DrawableRes int icon, @StringRes int title, boolean enabled, final View.OnClickListener onClickListener) {
+    public void setToolbarRightButton(@DrawableRes int icon, @StringRes int title, boolean enabled, final View.OnClickListener onClickListener) {
         setToolbarRightButton(ContextCompat.getDrawable(getContext(), icon), getContext().getString(title), enabled, onClickListener);
     }
 
-    protected void setToolbarRightButton(Drawable icon, String title, boolean enabled, final View.OnClickListener onClickListener) {
+    public void setToolbarRightButton(Drawable icon, String title, boolean enabled, final View.OnClickListener onClickListener) {
         Toolbar toolbar = getToolbar();
         if (toolbar != null) {
             if (toolbar instanceof AwesomeToolbar) {

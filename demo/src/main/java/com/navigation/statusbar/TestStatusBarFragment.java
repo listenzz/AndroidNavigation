@@ -29,11 +29,6 @@ public class TestStatusBarFragment extends AwesomeFragment {
     }
 
     @Override
-    protected boolean preferredStatusBarColorAnimated() {
-        return true;
-    }
-
-    @Override
     protected void onCustomStyle(Style style) {
         style.setToolbarStyle(BarStyle.LightContent);
     }

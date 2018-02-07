@@ -138,9 +138,6 @@ public class AppUtils {
         return Math.round(px);
     }
 
-    /**
-     * 隐藏软键盘
-     */
     public static void hideSoftInput(View view) {
         if (view == null || view.getContext() == null) return;
         InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);

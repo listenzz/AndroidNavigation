@@ -26,7 +26,7 @@ public class Style implements Cloneable {
     private int toolbarTintColor = INVALID_COLOR;
     private int titleTextColor = INVALID_COLOR;
     private int titleTextSize = 17;
-    private float elevation = -1;
+    private int elevation = -1;
     private Drawable shadow = defaultShadow;
 
     private int titleGravity = Gravity.START;
@@ -117,15 +117,15 @@ public class Style implements Cloneable {
         }
     }
 
-    public void setElevation(float elevation) {
-        this.elevation = elevation;
+    public void setElevation(int dp) {
+        this.elevation = AppUtils.dp2px(context, dp);
     }
 
-    public float getElevation() {
+    public int getElevation() {
         if (elevation != -1) {
             return elevation;
         }
-        elevation = AppUtils.dp2px(context, 2);
+        elevation = AppUtils.dp2px(context, 4);
         return elevation;
     }
 

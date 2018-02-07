@@ -30,6 +30,11 @@ public class BottomSheetDialogFragment extends AwesomeFragment {
         return Color.TRANSPARENT;
     }
 
+    @Override
+    protected boolean preferredStatusBarColorAnimated() {
+        return false;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

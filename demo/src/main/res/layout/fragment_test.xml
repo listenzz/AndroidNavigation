@@ -4,101 +4,109 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/tag"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="32dp"
-            android:gravity="center"
-            android:textColor="#000000"
-            android:textSize="12dp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/present"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:gravity="center"
-            android:text="present"
-            android:textAllCaps="false" />
+            <TextView
+                android:id="@+id/tag"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="32dp"
+                android:gravity="center"
+                android:textColor="#000000"
+                android:textSize="12dp" />
 
-        <Button
-            android:id="@+id/dismiss"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:gravity="center"
-            android:text="dismiss"
-            android:textAllCaps="false" />
+            <Button
+                android:id="@+id/present"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="present"
+                android:textAllCaps="false" />
 
-        <Button
-            android:id="@+id/push"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:gravity="center"
-            android:text="push"
-            android:textAllCaps="false" />
+            <Button
+                android:id="@+id/dismiss"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="dismiss"
+                android:textAllCaps="false" />
 
-        <Button
-            android:id="@+id/pop"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:gravity="center"
-            android:text="pop"
-            android:textAllCaps="false" />
+            <Button
+                android:id="@+id/push"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="push"
+                android:textAllCaps="false" />
 
-        <Button
-            android:id="@+id/pop_to_root"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:gravity="center"
-            android:text="popToRoot"
-            android:textAllCaps="false" />
+            <Button
+                android:id="@+id/pop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="pop"
+                android:textAllCaps="false" />
 
-        <Button
-            android:id="@+id/replace"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:gravity="center"
-            android:text="replace"
-            android:textAllCaps="false" />
+            <Button
+                android:id="@+id/pop_to_root"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="popToRoot"
+                android:textAllCaps="false" />
 
-        <Button
-            android:id="@+id/replace_to_root"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:gravity="center"
-            android:text="replaceToRoot"
-            android:textAllCaps="false" />
+            <Button
+                android:id="@+id/replace"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="replace"
+                android:textAllCaps="false" />
 
-        <Button
-            android:id="@+id/toggle_tab_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:gravity="center"
-            android:text="toggleTabBar"
-            android:textAllCaps="false" />
-    </LinearLayout>
+            <Button
+                android:id="@+id/replace_to_root"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="replaceToRoot"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/toggle_tab_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="toggleTabBar"
+                android:textAllCaps="false" />
+        </LinearLayout>
+
+
+    </ScrollView>
+
 
     <TextView
         android:id="@+id/result_text"

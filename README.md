@@ -475,7 +475,7 @@ protected void onCustomStyle(Style style) {
     screenBackgroundColor: int       // 页面背景，默认是白色
     toolbarStyle: BarStyle           // 状态栏和 toobar 前景色，可选值有 DarkContent 和 LightContent
     toolbarBackgroundColor: int      // toolbar 背景颜色，默认值是 colorPrimary
-    statusBarColor: String           // 状态栏背景色，仅对 5.0 以上版本生效， 默认值是 colorPrimaryDark
+    statusBarColor: String           // 状态栏背景色，仅对 4.4 以上版本生效， 默认值是 colorPrimaryDark
     elevation: int                   // toolbar 阴影高度， 仅对 5.0 以上版本生效，默认值为 4 dp
     shadow: Drawable                 // toolbar 阴影图片，仅对 4.4 以下版本生效 
     backIcon: Drawable               // 返回按钮图标，默认是个箭头
@@ -535,7 +535,7 @@ protected boolean preferredStatusBarColorAnimated();
     
 - prefersStatusBarColorAnimated
 
-  当状态栏的颜色由其它颜色转变成当前页面所期待的颜色时，需不需要对颜色做过渡动画，默认是 false，你可以返回 true，使得过渡更自然。
+  当状态栏的颜色由其它颜色转变成当前页面所期待的颜色时，需不需要对颜色做过渡动画，默认是 true，使得过渡更自然。如果某个界面状态栏出现闪烁，你需要关闭它。
  
 如果你当前页面的状态栏样式不是固定的，需要根据 App 的不同状态展示不同的样式，你可以在上面这些方法中返回一个变量，当这个变量的值发生变化时，你需要手动调用 `setNeedsStatusBarAppearanceUpdate` 来通知框架更新状态栏样式。可以参考 demo 中CustomStatusBarFragment 这个类。
 

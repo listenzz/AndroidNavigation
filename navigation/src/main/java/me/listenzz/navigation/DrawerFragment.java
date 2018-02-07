@@ -29,7 +29,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_drawer, container, false);
+        View root = inflater.inflate(R.layout.nav_fragment_drawer, container, false);
         drawerLayout = root.findViewById(R.id.drawer);
         drawerLayout.addDrawerListener(this);
         return root;
