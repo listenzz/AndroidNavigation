@@ -1,4 +1,4 @@
-package me.listenzz.navigation.adapter;
+package me.listenzz.navigation;
 
 import android.graphics.Rect;
 import android.support.annotation.NonNull;

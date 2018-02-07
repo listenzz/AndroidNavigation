@@ -34,10 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import me.listenzz.navigation.adapter.FlymeOSStatusBarColorUtils;
-import me.listenzz.navigation.adapter.MiuiOSStatusBarColorUtils;
-import me.listenzz.navigation.adapter.SoftInputLayoutListener;
-
 /**
  * Created by Listen on 2018/1/11.
  */
@@ -496,18 +492,6 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         return true;
     }
 
-    protected int preferredToolbarBackgroundColor() {
-        AwesomeFragment childFragmentForAppearance = childFragmentForAppearance();
-        if (childFragmentForAppearance != null) {
-            return childFragmentForAppearance.preferredToolbarBackgroundColor();
-        }
-        if (toolbar == null) {
-            return Color.TRANSPARENT;
-        } else {
-            return style.getToolbarBackgroundColor();
-        }
-    }
-
     protected AwesomeFragment childFragmentForAppearance() {
         return null;
     }
@@ -529,14 +513,8 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
             setStatusBarStyle(preferredStatusBarStyle());
 
             // statusBarColor
-            boolean shouldAdjustForWhiteStatusBar;
-            if (isContentUnderStatusBar()) {
-                shouldAdjustForWhiteStatusBar = (preferredStatusBarColor() == Color.TRANSPARENT || preferredStatusBarColor() == Color.WHITE) && preferredToolbarBackgroundColor() == Color.WHITE;
-            } else {
-                shouldAdjustForWhiteStatusBar = preferredStatusBarColor() == Color.WHITE;
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !AppUtils.isMiuiV6()) {
                 shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
             }
 
@@ -562,28 +540,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
     }
 
     protected void setStatusBarStyle(BarStyle barStyle) {
-        if (AppUtils.isMiuiV6()) {
-            MiuiOSStatusBarColorUtils.setStatusBarDarkMode(barStyle == BarStyle.DarkContent, getWindow());
-        } else if (AppUtils.isFlymeV4()) {
-            AwesomeFragment childFragmentForBarStyle = childFragmentForAppearance();
-            Style style = this.style;
-            while (childFragmentForBarStyle != null) {
-                style = childFragmentForBarStyle.style;
-                Log.w(TAG, childFragmentForBarStyle.getDebugTag() + " color:" + style.getToolbarTintColor());
-                childFragmentForBarStyle = childFragmentForBarStyle.childFragmentForAppearance();
-            }
-
-            style.setToolbarStyle(barStyle);
-
-            if (getDialog() == null) {
-                FlymeOSStatusBarColorUtils.setStatusBarDarkIcon(getActivity(), style.getToolbarTintColor());
-            } else {
-                FlymeOSStatusBarColorUtils.setStatusBarDarkIcon(getWindow(), style.getToolbarTintColor());
-            }
-
-        } else {
-            AppUtils.setStatusBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
-        }
+        AppUtils.setStatusBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
     }
 
     protected void setContentUnderStatusBar(boolean under) {

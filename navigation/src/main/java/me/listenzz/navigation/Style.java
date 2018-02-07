@@ -140,14 +140,14 @@ public class Style implements Cloneable {
 
         if (toolbarStyle == BarStyle.LightContent) {
             return Color.WHITE;
-        } else {
-
-            if (toolbarBackgroundColor == INVALID_COLOR) {
-                return Color.parseColor("#666666");
-            }
-
-            return Color.BLACK;
         }
+
+        if (toolbarBackgroundColor == INVALID_COLOR) {
+            return Color.parseColor("#666666");
+        }
+
+        return Color.BLACK;
+
     }
 
     public void setBackIcon(Drawable icon) {

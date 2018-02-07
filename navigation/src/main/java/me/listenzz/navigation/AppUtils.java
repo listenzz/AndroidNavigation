@@ -35,8 +35,6 @@ public class AppUtils {
 
     private static boolean sIsMiuiV6;
 
-    private static boolean sIsFlymeV4;
-
     static {
         try {
             Class<?> sysClass = Class.forName("android.os.SystemProperties");
@@ -55,32 +53,35 @@ public class AppUtils {
         }
     }
 
-    static {
-        try {
-            Class<?> sysClass = Class.forName("android.os.SystemProperties");
-            Method getStringMethod = sysClass.getDeclaredMethod("get", String.class);
-            String version = (String) getStringMethod.invoke(sysClass, "ro.build.display.id");
-            if (!TextUtils.isEmpty(version)) {
-                int num;
-                if (version.toLowerCase().contains("os")) {
-                    num = Integer.valueOf(version.substring(9, 10));
-                } else {
-                    num = Integer.valueOf(version.substring(6, 7));
-                }
-                sIsFlymeV4 = num >= 4;
-            }
-        } catch (Exception e) {
-            // ignore
-        }
-    }
-
     public static boolean isMiuiV6() {
         return sIsMiuiV6;
     }
 
-    public static boolean isFlymeV4() {
-        return sIsFlymeV4;
+    /**
+     * 判断颜色是否偏黑色
+     *
+     * @param color 颜色
+     * @param level 级别
+     * @return
+     */
+    public static boolean isBlackColor(int color, int level) {
+        int grey = toGrey(color);
+        return grey < level;
     }
+
+    /**
+     * 颜色转换成灰度值
+     *
+     * @param rgb 颜色
+     * @return　灰度值
+     */
+    public static int toGrey(int rgb) {
+        int blue = rgb & 0x000000FF;
+        int green = (rgb & 0x0000FF00) >> 8;
+        int red = (rgb & 0x00FF0000) >> 16;
+        return (red * 38 + green * 75 + blue * 15) >> 7;
+    }
+
 
     /**
      * @param context used to get system services

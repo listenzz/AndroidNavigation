@@ -1,6 +1,6 @@
 # AndroidNavigation 
 
-A library managing nested Fragment, translucent StatusBar and Toolbar for you. 
+A library managing nested Fragment, translucent Statusbar and Toolbar for you. 
 
 You could use it as a single Activity Architecture Component. 
 
