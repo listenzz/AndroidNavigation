@@ -11,7 +11,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AwesomeActivity extends AppCompatActivity implements PresentableActivity, FragmentManager.OnBackStackChangedListener {
+public abstract class AwesomeActivity extends AppCompatActivity implements PresentableActivity {
 
     public static final String TAG = "Navigation";
 
@@ -26,7 +26,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportFragmentManager().addOnBackStackChangedListener(this);
         style = new Style(this);
         onCustomStyle(style);
 
@@ -42,12 +41,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SAVED_STATE_CONTENT_UNDER_STATUS_BAR, contentUnderStatusBar);
-    }
-
-    @Override
-    protected void onDestroy() {
-        getSupportFragmentManager().removeOnBackStackChangedListener(this);
-        super.onDestroy();
     }
 
     @Override
@@ -68,16 +61,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             }
         } else {
             super.onBackPressed();
-        }
-    }
-
-    @Override
-    public void onBackStackChanged() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        for (int i = 0; i < count; i++) {
-            FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(i);
-            Log.d(TAG, getClass().getSimpleName() + " Entry index:" + entry.getId() + " tag:" + entry.getName());
         }
     }
 
@@ -204,9 +187,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         AwesomeFragment top = (AwesomeFragment) getSupportFragmentManager().findFragmentById(android.R.id.content);
         AwesomeFragment presenting = getPresentingFragment(fragment);
 
-
         top.setAnimation(PresentAnimation.Modal);
-        top.getInnermostFragment().setAnimation(PresentAnimation.Modal);
 
         if (presenting != null) {
             presenting.setAnimation(PresentAnimation.Modal);

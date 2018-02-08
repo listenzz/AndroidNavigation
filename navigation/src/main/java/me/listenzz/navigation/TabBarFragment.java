@@ -213,8 +213,9 @@ public class TabBarFragment extends AwesomeFragment {
                 transaction.show(current);
                 transaction.commit();
 
-                if (current.getNavigationFragment() != null && current.shouldHideBottomBarWhenPushed()) {
-                    if (current.getChildFragmentCountAtBackStack() <= 1) {
+                NavigationFragment navigationFragment = current.getNavigationFragment();
+                if (navigationFragment != null && navigationFragment.shouldHideBottomBarWhenPushed()) {
+                    if (navigationFragment.getChildFragmentCountAtBackStack() <= 1) {
                         bottomBar.setVisibility(View.VISIBLE);
                     } else {
                         bottomBar.setVisibility(View.GONE);

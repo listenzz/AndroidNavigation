@@ -38,7 +38,7 @@ import java.util.UUID;
  * Created by Listen on 2018/1/11.
  */
 
-public abstract class AwesomeFragment extends DialogFragment implements FragmentManager.OnBackStackChangedListener {
+public abstract class AwesomeFragment extends DialogFragment {
 
     public static final String TAG = "Navigation";
 
@@ -65,26 +65,12 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
 
         presentableActivity = (PresentableActivity) activity;
         // Log.i(TAG, getDebugTag() + "#onAttach");
-
     }
 
     @Override
     public void onDetach() {
         presentableActivity = null;
         super.onDetach();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getChildFragmentManager().addOnBackStackChangedListener(this);
-        // Log.i(TAG, getDebugTag() + "#onCreate");
-    }
-
-    @Override
-    public void onDestroy() {
-        getChildFragmentManager().removeOnBackStackChangedListener(this);
-        super.onDestroy();
     }
 
     @Override
@@ -129,11 +115,6 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         super.onDestroyView();
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        // Log.i(TAG, getDebugTag() + "#onActivityCreated");
-    }
 
     private void setBackgroundDrawable(View root, Drawable drawable) {
         if (getDialog() == null) {
@@ -192,6 +173,11 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         // ---------
         Log.d(TAG, getDebugTag() + "  " + animation.name() + " transit:" + transit + " enter:" + enter + " nextAnim:" + nextAnim);
 
+        AwesomeFragment parent = getParent();
+        if (parent != null && parent.isRemoving()) {
+            return AnimationUtils.loadAnimation(getContext(), R.anim.nav_delay);
+        }
+
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
                 return AnimationUtils.loadAnimation(getContext(), animation.enter);
@@ -204,23 +190,9 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
             } else {
                 return AnimationUtils.loadAnimation(getContext(), animation.popExit);
             }
-        } else if (transit == FragmentTransaction.TRANSIT_NONE) {
-            AwesomeFragment parent = getParent();
-            if (parent != null && parent.isRemoving() && !enter) {
-                return AnimationUtils.loadAnimation(getContext(), R.anim.nav_delay);
-            }
         }
-        return super.onCreateAnimation(transit, enter, nextAnim);
-    }
 
-    @Override
-    public void onBackStackChanged() {
-        FragmentManager fragmentManager = getChildFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        for (int i = 0; i < count; i++) {
-            FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(i);
-            Log.d(TAG, getClass().getSimpleName() + " Entry index:" + entry.getId() + " tag:" + entry.getName());
-        }
+        return super.onCreateAnimation(transit, enter, nextAnim);
     }
 
     // ------ lifecycle arch -------
@@ -373,30 +345,15 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         return presentableActivity.getPresentingFragment(this);
     }
 
-    public AwesomeFragment getInnermostFragment() {
-        FragmentManager fragmentManager = getChildFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
-        if (fragment != null) {
-            AwesomeFragment child = (AwesomeFragment) fragment;
-            return child.getInnermostFragment();
-        } else if (count > 0) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count - 1);
-            AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-            return child.getInnermostFragment();
-        }
-        return this;
-    }
-
     public String getDebugTag() {
         if (getActivity() == null) {
             return null;
         }
         AwesomeFragment parent = getParent();
         if (parent == null) {
-            return "#" + indexInAddedList() + "-" + getClass().getSimpleName();
+            return "#" + indexAtAddedList() + "-" + getClass().getSimpleName();
         } else {
-            return parent.getDebugTag() + "#" + indexInAddedList() + "-" + getClass().getSimpleName();
+            return parent.getDebugTag() + "#" + indexAtAddedList() + "-" + getClass().getSimpleName();
         }
     }
 
@@ -409,7 +366,7 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
         return fragmentManager.getBackStackEntryCount();
     }
 
-    protected int indexInAddedList() {
+    protected int indexAtAddedList() {
         List<Fragment> fragments = getFragmentManager().getFragments();
         return fragments.indexOf(this);
     }
