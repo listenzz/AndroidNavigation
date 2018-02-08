@@ -32,9 +32,9 @@ import java.util.List;
 
 public class TabBarFragment extends AwesomeFragment {
 
-    private static final String SAVED_FRAGMENT_TAGS = "fragment_tags";
-    private static final String SAVED_POSITION = "position";
-    private static final String SAVED_BOTTOM_BAR_HIDDEN = "bottom_bar_hidden";
+    private static final String SAVED_FRAGMENT_TAGS = "nav_fragment_tags";
+    private static final String SAVED_POSITION = "nav_position";
+    private static final String SAVED_BOTTOM_BAR_HIDDEN = "nav_bottom_bar_hidden";
 
     private BottomBar bottomBar;
 

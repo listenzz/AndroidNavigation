@@ -42,10 +42,10 @@ public abstract class AwesomeFragment extends DialogFragment implements Fragment
 
     public static final String TAG = "Navigation";
 
-    public static final String ARGS_SCENE_ID = "sceneId";
-    public static final String ARGS_REQUEST_CODE = "requestCode";
-    public static final String ARGS_ANIMATION = "animation";
-    public static final String ARGS_TAB_BAR_ITEM = "tab_bar_item";
+    private static final String ARGS_SCENE_ID = "nav_scene_id";
+    private static final String ARGS_REQUEST_CODE = "nav_request_code";
+    private static final String ARGS_ANIMATION = "nav_animation";
+    private static final String ARGS_TAB_BAR_ITEM = "nav_tab_bar_item";
 
     // ------- lifecycle methods -------
 
