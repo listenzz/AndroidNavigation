@@ -16,21 +16,10 @@ import java.util.List;
 
 public class NavigationFragment extends AwesomeFragment {
 
-    private AwesomeFragment rootFragment;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.nav_fragment_navigation, container, false);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState == null && rootFragment != null) {
-            addRootFragment(rootFragment);
-            rootFragment = null;
-        }
     }
 
     @Override
@@ -67,12 +56,13 @@ public class NavigationFragment extends AwesomeFragment {
         }
     }
 
-    public void setRootFragment(AwesomeFragment fragment) {
-        if (isAtLeastCreated()) {
-            addRootFragment(fragment);
-        } else {
-            rootFragment = fragment;
-        }
+    public void setRootFragment(final AwesomeFragment fragment) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                addRootFragment(fragment);
+            }
+        });
     }
 
     private void addRootFragment(AwesomeFragment fragment) {
@@ -94,21 +84,16 @@ public class NavigationFragment extends AwesomeFragment {
         if (count == 0) {
             throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
         }
-
-        addFragment(R.id.navigation_content, fragment, PresentAnimation.Push);
+        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Push);
     }
 
     public void popToFragment(final AwesomeFragment fragment) {
-        if (isAtLeastStarted()) {
-            executePopToFragment(fragment);
-        } else {
-            scheduleTaskAtStarted(new Runnable() {
-                @Override
-                public void run() {
-                    executePopToFragment(fragment);
-                }
-            });
-        }
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                executePopToFragment(fragment);
+            }
+        });
     }
 
     private void executePopToFragment(AwesomeFragment fragment) {
@@ -145,16 +130,12 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     public void replaceFragment(final AwesomeFragment fragment) {
-        if (isAtLeastStarted()) {
-            executeReplaceFragment(fragment);
-        } else {
-            scheduleTaskAtStarted(new Runnable() {
-                @Override
-                public void run() {
-                    executeReplaceFragment(fragment);
-                }
-            });
-        }
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                executeReplaceFragment(fragment);
+            }
+        });
     }
 
     private void executeReplaceFragment(AwesomeFragment fragment) {
@@ -187,16 +168,12 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     public void replaceToRootFragment(final AwesomeFragment fragment) {
-        if (isAtLeastStarted()) {
-            executeReplaceRootFragment(fragment);
-        } else {
-            scheduleTaskAtStarted(new Runnable() {
-                @Override
-                public void run() {
-                    executeReplaceRootFragment(fragment);
-                }
-            });
-        }
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                executeReplaceRootFragment(fragment);
+            }
+        });
     }
 
     private void executeReplaceRootFragment(AwesomeFragment fragment) {

@@ -48,7 +48,7 @@ public class WebFragment extends AwesomeFragment {
         webView.loadUrl("file:///android_asset/input_webview.html");
         setTitle("WebView");
 
-        fixKeyboardBug(getView(), isContentUnderStatusBar());
+        fixKeyboardBug(getView(), isStatusBarTranslucent());
 
     }
 

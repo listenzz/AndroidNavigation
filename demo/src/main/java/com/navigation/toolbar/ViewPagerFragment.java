@@ -50,7 +50,7 @@ public class ViewPagerFragment extends AwesomeFragment {
         AppBarLayout appBarLayout = view.findViewById(R.id.appbar_layout);
 
         // important
-        if(isContentUnderStatusBar()) {
+        if(isStatusBarTranslucent()) {
             appendStatusBarPadding(appBarLayout, -2);
         }
 

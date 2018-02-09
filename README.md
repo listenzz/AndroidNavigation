@@ -543,11 +543,11 @@ protected boolean preferredStatusBarColorAnimated();
 
 这里的沉浸式是指页面的内容延伸到 statusBar 底下
 
-只需要调用 `setContentUnderStatusBar(boolean under)` 即可开关沉浸式，AwesomeActivity 和 AwesomeFragment 都有这个方法，这个方法会影响整个 Activity 中所有的 Fragment，请慎重使用。
+只需要调用 `setStatusBarTranslucent(boolean translucent)` 即可开关沉浸式，AwesomeActivity 和 AwesomeFragment 都有这个方法，这个方法会影响整个 Activity 中所有的 Fragment，请慎重使用。
 
-AwesomeFragment 中有一个 `onContentUnderStatusBar(boolean under)` 方法，你可以在这里处理开关沉浸式所要做的适配工作。
+AwesomeFragment 中有一个 `onStatusBarTranslucentChanged(boolean translucent)` 方法，你可以在这里处理开关沉浸式所要做的适配工作。
 
-你也可以通过 `isContentUnderStatusBar` 来判断是否开启了沉浸式。
+你也可以通过 `isStatusBarTranslucent` 来判断是否开启了沉浸式。
 
 我们的 demo 在 MainActivity 中开启了沉浸式，你可以在 CustomStatusBarFragment 这个界面开关沉浸式
 

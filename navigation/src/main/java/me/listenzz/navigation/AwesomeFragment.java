@@ -147,7 +147,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             }
         }
 
-        List<AwesomeFragment> fragments = getAddedChildFragments();
+        List<AwesomeFragment> fragments = getChildFragmentsAtAddedList();
         for (AwesomeFragment fragment : fragments) {
             fragment.onHiddenChanged(hidden);
         }
@@ -199,14 +199,6 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     protected void scheduleTaskAtStarted(Runnable runnable) {
         lifecycleDelegate.scheduleTaskAtStarted(runnable);
-    }
-
-    protected boolean isAtLeastStarted() {
-        return lifecycleDelegate.isAtLeastStarted();
-    }
-
-    protected boolean isAtLeastCreated() {
-        return lifecycleDelegate.isAtLeastCreated();
     }
 
     // ------- navigation ------
@@ -285,28 +277,11 @@ public abstract class AwesomeFragment extends DialogFragment {
             AwesomeFragment child = ((DrawerFragment) this).getContentFragment();
             child.onFragmentResult(requestCode, resultCode, data);
         } else {
-            List<AwesomeFragment> fragments = getAddedChildFragments();
+            List<AwesomeFragment> fragments = getChildFragmentsAtAddedList();
             for (AwesomeFragment child : fragments) {
                 child.onFragmentResult(requestCode, resultCode, data);
             }
         }
-    }
-
-    public void addFragment(final int containerId, final AwesomeFragment fragment, final PresentAnimation animation) {
-        if (isAtLeastStarted()) {
-            executeAddFragment(containerId, fragment, animation);
-        } else {
-            scheduleTaskAtStarted(new Runnable() {
-                @Override
-                public void run() {
-                    executeAddFragment(containerId, fragment, animation);
-                }
-            });
-        }
-    }
-
-    private void executeAddFragment(int containerId, AwesomeFragment fragment, PresentAnimation animation) {
-        FragmentHelper.addFragment(getChildFragmentManager(), containerId, fragment, animation);
     }
 
     boolean dispatchBackPressed() {
@@ -351,14 +326,10 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
         AwesomeFragment parent = getParent();
         if (parent == null) {
-            return "#" + indexAtAddedList() + "-" + getClass().getSimpleName();
+            return "#" + getIndexAtAddedList() + "-" + getClass().getSimpleName();
         } else {
-            return parent.getDebugTag() + "#" + indexAtAddedList() + "-" + getClass().getSimpleName();
+            return parent.getDebugTag() + "#" + getIndexAtAddedList() + "-" + getClass().getSimpleName();
         }
-    }
-
-    protected int indexAtBackStack() {
-        return FragmentHelper.findIndexAtBackStack(getFragmentManager(), this);
     }
 
     protected int getChildFragmentCountAtBackStack() {
@@ -366,20 +337,16 @@ public abstract class AwesomeFragment extends DialogFragment {
         return fragmentManager.getBackStackEntryCount();
     }
 
-    protected int indexAtAddedList() {
+    protected int getIndexAtBackStack() {
+        return FragmentHelper.findIndexAtBackStack(getFragmentManager(), this);
+    }
+
+    protected int getIndexAtAddedList() {
         List<Fragment> fragments = getFragmentManager().getFragments();
         return fragments.indexOf(this);
     }
 
-    protected AwesomeFragment getParent() {
-        Fragment fragment = getParentFragment();
-        if (fragment != null && fragment instanceof AwesomeFragment) {
-            return (AwesomeFragment) fragment;
-        }
-        return null;
-    }
-
-    protected List<AwesomeFragment> getAddedChildFragments() {
+    protected List<AwesomeFragment> getChildFragmentsAtAddedList() {
         List<AwesomeFragment> children = new ArrayList<>();
         if (isAdded()) {
             List<Fragment> fragments = getChildFragmentManager().getFragments();
@@ -388,6 +355,14 @@ public abstract class AwesomeFragment extends DialogFragment {
             }
         }
         return children;
+    }
+
+    protected AwesomeFragment getParent() {
+        Fragment fragment = getParentFragment();
+        if (fragment != null && fragment instanceof AwesomeFragment) {
+            return (AwesomeFragment) fragment;
+        }
+        return null;
     }
 
     private PresentAnimation animation = null;
@@ -418,6 +393,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     // ------- statusBar --------
 
     protected BarStyle preferredStatusBarStyle() {
+        // Log.w(TAG, getDebugTag() + " #preferredStatusBarStyle");
         AwesomeFragment childFragmentForStatusBarStyle = childFragmentForAppearance();
         if (childFragmentForStatusBarStyle != null) {
             return childFragmentForStatusBarStyle.preferredStatusBarStyle();
@@ -457,7 +433,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             return;
         }
-
+        // Log.w(TAG, getDebugTag() + "#setNeedsStatusBarAppearanceUpdate");
         AwesomeFragment parent = getParent();
         if (parent != null) {
             parent.setNeedsStatusBarAppearanceUpdate();
@@ -500,18 +476,18 @@ public abstract class AwesomeFragment extends DialogFragment {
         AppUtils.setStatusBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
     }
 
-    protected void setContentUnderStatusBar(boolean under) {
+    protected void setStatusBarTranslucent(boolean translucent) {
         if (getDialog() != null) {
-            AppUtils.setStatusBarTranslucent(getWindow(), under);
+            AppUtils.setStatusBarTranslucent(getWindow(), translucent);
         } else {
-            presentableActivity.setContentUnderStatusBar(under);
+            presentableActivity.setStatusBarTranslucent(translucent);
         }
     }
 
-    protected void onContentUnderStatusBar(boolean under) {
+    protected void onStatusBarTranslucentChanged(boolean translucent) {
         Toolbar toolbar = getToolbar();
         if (toolbar != null) {
-            if (under) {
+            if (translucent) {
                 appendStatusBarPadding(toolbar, getToolbarHeight());
             } else {
                 removeStatusBarPadding(toolbar, getToolbarHeight());
@@ -519,21 +495,21 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
 
         if (getView() != null) {
-            fixKeyboardBugAtKitkat(getView(), under);
+            fixKeyboardBugAtKitkat(getView(), translucent);
         }
 
-        List<AwesomeFragment> children = getAddedChildFragments();
+        List<AwesomeFragment> children = getChildFragmentsAtAddedList();
         for (int i = 0, size = children.size(); i < size; i++) {
             AwesomeFragment child = children.get(i);
-            child.onContentUnderStatusBar(under);
+            child.onStatusBarTranslucentChanged(translucent);
         }
 
     }
 
     private SoftInputLayoutListener globalLayoutListener;
 
-    public void fixKeyboardBug(View root, boolean isContentUnderStatusBar) {
-        if (isContentUnderStatusBar) {
+    public void fixKeyboardBug(View root, boolean isStatusBarTranslucent) {
+        if (isStatusBarTranslucent) {
             if (globalLayoutListener == null) {
                 globalLayoutListener = new SoftInputLayoutListener(root);
                 root.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
@@ -548,14 +524,14 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
-    private void fixKeyboardBugAtKitkat(View root, boolean isContentUnderStatusBar) {
+    private void fixKeyboardBugAtKitkat(View root, boolean isStatusBarTranslucent) {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-            fixKeyboardBug(root, isContentUnderStatusBar);
+            fixKeyboardBug(root, isStatusBarTranslucent);
         }
     }
 
-    protected boolean isContentUnderStatusBar() {
-        return presentableActivity.isContentUnderStatusBar();
+    protected boolean isStatusBarTranslucent() {
+        return presentableActivity.isStatusBarTranslucent();
     }
 
     protected void setStatusBarHidden(boolean hidden) {
@@ -620,7 +596,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             NavigationFragment navigationFragment = (NavigationFragment) parent;
             TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
             if (tabBarFragment != null) {
-                int index = indexAtBackStack();
+                int index = getIndexAtBackStack();
                 if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
                     if (enter) {
                         if (index == 0) {
@@ -664,9 +640,9 @@ public abstract class AwesomeFragment extends DialogFragment {
             throw new UnsupportedOperationException("NavigationFragment 还没适配 " + parent.getClass().getSimpleName());
         }
 
-        if (isContentUnderStatusBar()) {
+        if (isStatusBarTranslucent()) {
             appendStatusBarPadding(toolbar, getToolbarHeight());
-            fixKeyboardBugAtKitkat(parent, isContentUnderStatusBar());
+            fixKeyboardBugAtKitkat(parent, isStatusBarTranslucent());
         }
 
         customAwesomeToolbar(toolbar);

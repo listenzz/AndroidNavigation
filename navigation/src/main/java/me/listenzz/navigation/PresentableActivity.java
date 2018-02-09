@@ -16,8 +16,8 @@ public interface PresentableActivity {
 
     Style getStyle();
 
-    void setContentUnderStatusBar(boolean under);
+    void setStatusBarTranslucent(boolean under);
 
-    boolean isContentUnderStatusBar();
+    boolean isStatusBarTranslucent();
 
 }

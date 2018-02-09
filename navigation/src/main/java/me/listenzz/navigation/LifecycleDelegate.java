@@ -34,7 +34,6 @@ public class LifecycleDelegate implements LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onStateChange() {
         if (getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
-            // 清空队列
             tasks.clear();
             getLifecycle().removeObserver(this);
         } else {
@@ -53,10 +52,6 @@ public class LifecycleDelegate implements LifecycleObserver {
 
     boolean isAtLeastStarted() {
         return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED);
-    }
-
-    boolean isAtLeastCreated() {
-        return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.CREATED);
     }
 
     private Lifecycle getLifecycle() {

@@ -20,10 +20,6 @@ import java.util.List;
 public class DrawerFragment extends AwesomeFragment implements DrawerLayout.DrawerListener {
 
     private DrawerLayout drawerLayout;
-
-    private AwesomeFragment contentFragment;
-    private AwesomeFragment menuFragment;
-
     private boolean isClosing;
 
     @Nullable
@@ -42,18 +38,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState == null && contentFragment != null && menuFragment != null) {
-            addFragment(R.id.drawer_menu, menuFragment, PresentAnimation.None);
-            addFragment(R.id.drawer_content, contentFragment, PresentAnimation.None);
-        } else {
-            contentFragment = (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_content);
-            menuFragment = (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_menu);
-        }
-    }
-
-    @Override
     public boolean isParentFragment() {
         return true;
     }
@@ -65,7 +49,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     protected boolean preferredStatusBarHidden() {
-        if (isContentUnderStatusBar()) {
+        if (isStatusBarTranslucent()) {
             return isMenuOpened() || super.preferredStatusBarHidden();
         } else {
             return super.preferredStatusBarHidden();
@@ -79,15 +63,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             return true;
         }
         return super.onBackPressed();
-    }
-
-    @Override
-    public void addFragment(int containerId, AwesomeFragment fragment, PresentAnimation animation) {
-        FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(containerId, fragment, fragment.getSceneId());
-        transaction.setPrimaryNavigationFragment(fragment);
-        transaction.commit();
     }
 
     @Override
@@ -107,7 +82,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         if (primary != null) {
             return findClosestNavigationFragment(primary);
         }
-        List<AwesomeFragment> children = fragment.getAddedChildFragments();
+        List<AwesomeFragment> children = fragment.getChildFragmentsAtAddedList();
         if (children != null && children.size() > 0) {
             return findClosestNavigationFragment(children.get(children.size() - 1));
         }
@@ -131,7 +106,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         if (primary != null) {
             return findClosestTabBarFragment(primary);
         }
-        List<AwesomeFragment> children = fragment.getAddedChildFragments();
+        List<AwesomeFragment> children = fragment.getChildFragmentsAtAddedList();
         if (children != null && children.size() > 0) {
             return findClosestTabBarFragment(children.get(children.size() - 1));
         }
@@ -140,7 +115,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-        if (isContentUnderStatusBar()) {
+        if (isStatusBarTranslucent()) {
             if (!isClosing) {
                 setStatusBarHidden(slideOffset != 0 || super.preferredStatusBarHidden());
             }
@@ -165,11 +140,17 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         // Log.i(TAG, getDebugTag() + " drawer state:" + newState);
     }
 
-    public void setContentFragment(AwesomeFragment fragment) {
-        this.contentFragment = fragment;
-        if (isAtLeastCreated()) {
-            addFragment(R.id.drawer_content, contentFragment, PresentAnimation.None);
-        }
+    public void setContentFragment(final AwesomeFragment fragment) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager fragmentManager = getChildFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.add(R.id.drawer_content, fragment, fragment.getSceneId());
+                transaction.setPrimaryNavigationFragment(fragment); // primary
+                transaction.commit();
+            }
+        });
     }
 
     public AwesomeFragment getContentFragment() {
@@ -179,15 +160,16 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_content);
     }
 
-    public void setMenuFragment(AwesomeFragment fragment) {
-        this.menuFragment = fragment;
-        if (isAtLeastCreated()) {
-            addFragment(R.id.drawer_menu, menuFragment, PresentAnimation.None);
-            AwesomeFragment content = getContentFragment();
-            if (content != null) {
-                getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(content).commit();
+    public void setMenuFragment(final AwesomeFragment fragment) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager fragmentManager = getChildFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.add(R.id.drawer_menu, fragment, fragment.getSceneId());
+                transaction.commit();
             }
-        }
+        });
     }
 
     public AwesomeFragment getMenuFragment() {
@@ -201,7 +183,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         if (drawerLayout != null) {
             isClosing = false;
             drawerLayout.openDrawer(Gravity.START);
-            if (isContentUnderStatusBar()) {
+            if (isStatusBarTranslucent()) {
                 setStatusBarHidden(true);
             }
         }

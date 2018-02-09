@@ -52,7 +52,7 @@ public class BottomSheetDialogFragment extends AwesomeFragment {
         super.onActivityCreated(savedInstanceState);
 
         // 开启沉浸式
-        setContentUnderStatusBar(true);
+        setStatusBarTranslucent(true);
 
         BottomSheetBehavior behavior = BottomSheetBehavior.from((View) getView().getParent());
         behavior.setHideable(true);

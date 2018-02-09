@@ -67,11 +67,6 @@ public class TabBarFragment extends AwesomeFragment {
                 fragments.add((AwesomeFragment) fragmentManager.findFragmentByTag(fragmentTags.get(i)));
             }
             initBottomNavigationBar(fragments);
-        } else {
-            if (fragments != null) {
-                addFragments(fragments);
-                initBottomNavigationBar(fragments);
-            }
         }
 
         // bottomBar
@@ -107,11 +102,14 @@ public class TabBarFragment extends AwesomeFragment {
         setFragments(Arrays.asList(fragments));
     }
 
-    public void setFragments(List<AwesomeFragment> fragments) {
-        if (isAtLeastCreated()) {
-            addFragments(fragments);
-            initBottomNavigationBar(fragments);
-        }
+    public void setFragments(final List<AwesomeFragment> fragments) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                addFragments(fragments);
+                initBottomNavigationBar(fragments);
+            }
+        });
         this.fragments = fragments;
     }
 
@@ -191,7 +189,11 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     public AwesomeFragment getSelectedFragment() {
-        return fragments.get(getSelectedIndex());
+        AwesomeFragment selectedFragment = fragments.get(getSelectedIndex());
+        if (selectedFragment.isAdded()) {
+            return selectedFragment;
+        }
+        return null;
     }
 
     public int getSelectedIndex() {

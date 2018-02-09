@@ -15,13 +15,13 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     public static final String TAG = "Navigation";
 
-    private static final String SAVED_STATE_CONTENT_UNDER_STATUS_BAR = "saved_state_content_under_status_bar";
+    private static final String SAVED_STATE_STATUS_BAR_TRANSLUCENT = "saved_state_status_bar_translucent";
 
     private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
 
     private Style style;
 
-    private boolean contentUnderStatusBar;
+    private boolean statusBarTranslucent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +30,8 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         onCustomStyle(style);
 
         if (savedInstanceState != null) {
-            contentUnderStatusBar = savedInstanceState.getBoolean(SAVED_STATE_CONTENT_UNDER_STATUS_BAR);
-            AppUtils.setStatusBarTranslucent(getWindow(), contentUnderStatusBar);
+            statusBarTranslucent = savedInstanceState.getBoolean(SAVED_STATE_STATUS_BAR_TRANSLUCENT);
+            AppUtils.setStatusBarTranslucent(getWindow(), statusBarTranslucent);
         }
 
         //Log.i(TAG, "onCreate");
@@ -40,7 +40,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(SAVED_STATE_CONTENT_UNDER_STATUS_BAR, contentUnderStatusBar);
+        outState.putBoolean(SAVED_STATE_STATUS_BAR_TRANSLUCENT, statusBarTranslucent);
     }
 
     @Override
@@ -66,32 +66,24 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     @Override
     public void presentFragment(final AwesomeFragment fragment) {
-        if (isAtLeastStarted()) {
-            executePresentFragment(fragment);
-        } else {
-            Log.i(TAG, "schedule present");
-            scheduleTaskAtStarted(new Runnable() {
-                @Override
-                public void run() {
-                    executePresentFragment(fragment);
-                }
-            });
-        }
+        Log.i(TAG, "schedule present");
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                executePresentFragment(fragment);
+            }
+        });
     }
 
     @Override
     public void dismissFragment(final AwesomeFragment fragment) {
-        if (isAtLeastStarted()) {
-            executeDismissFragment(fragment);
-        } else {
-            Log.i(TAG, "schedule dismiss");
-            scheduleTaskAtStarted(new Runnable() {
-                @Override
-                public void run() {
-                    executeDismissFragment(fragment);
-                }
-            });
-        }
+        Log.i(TAG, "schedule dismiss");
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                executeDismissFragment(fragment);
+            }
+        });
     }
 
     @Override
@@ -114,26 +106,18 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     public void setRootFragment(final AwesomeFragment fragment) {
-        Fragment f = getSupportFragmentManager().findFragmentById(android.R.id.content);
-        if (f != null) {
-            scheduleTaskAtStarted(new Runnable() {
-                @Override
-                public void run() {
-                    setRootFragmentInternal(fragment);
-                }
-            });
-        } else {
-            setRootFragmentInternal(fragment);
-        }
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                setRootFragmentInternal(fragment);
+            }
+        });
     }
 
     private void setRootFragmentInternal(AwesomeFragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 0) {
-            AwesomeFragment top = (AwesomeFragment) fragmentManager.findFragmentByTag(fragmentManager.getBackStackEntryAt(count - 1).getName());
-            top.getNavigationFragment().setAnimation(PresentAnimation.None);
-
             String tag = fragmentManager.getBackStackEntryAt(0).getName();
             fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
@@ -148,24 +132,24 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     @Override
-    public void setContentUnderStatusBar(boolean under) {
-        if (contentUnderStatusBar != under) {
-            contentUnderStatusBar = under;
-            AppUtils.setStatusBarTranslucent(getWindow(), under);
-            onContentUnderStatusBar(under);
+    public void setStatusBarTranslucent(boolean translucent) {
+        if (statusBarTranslucent != translucent) {
+            statusBarTranslucent = translucent;
+            AppUtils.setStatusBarTranslucent(getWindow(), translucent);
+            onStatusBarTranslucentChanged(translucent);
         }
     }
 
     @Override
-    public boolean isContentUnderStatusBar() {
-        return contentUnderStatusBar;
+    public boolean isStatusBarTranslucent() {
+        return statusBarTranslucent;
     }
 
-    protected void onContentUnderStatusBar(boolean under) {
+    protected void onStatusBarTranslucentChanged(boolean translucent) {
         List<AwesomeFragment> children = getAddedChildFragments();
         for (int i = 0, size = children.size(); i < size; i ++) {
             AwesomeFragment child = children.get(i);
-            child.onContentUnderStatusBar(under);
+            child.onStatusBarTranslucentChanged(translucent);
         }
     }
 
@@ -179,7 +163,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     private void executePresentFragment(AwesomeFragment fragment) {
-        FragmentHelper.addFragment(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.Modal);
+        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.Modal);
     }
 
     private void executeDismissFragment(AwesomeFragment fragment) {
@@ -204,14 +188,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     protected void scheduleTaskAtStarted(Runnable runnable) {
         lifecycleDelegate.scheduleTaskAtStarted(runnable);
-    }
-
-    protected boolean isAtLeastStarted() {
-        return lifecycleDelegate.isAtLeastStarted();
-    }
-
-    protected boolean isAtLeastCreated() {
-        return lifecycleDelegate.isAtLeastCreated();
     }
 
 }

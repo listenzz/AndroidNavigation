@@ -22,7 +22,7 @@ public class MainActivity extends AwesomeActivity {
         super.onCreate(savedInstanceState);
 
         // 开启沉浸式
-        setContentUnderStatusBar(true);
+        setStatusBarTranslucent(true);
 
         if (savedInstanceState == null) {
 
@@ -41,8 +41,8 @@ public class MainActivity extends AwesomeActivity {
             tabBarFragment.setFragments(navigation, statusBar);
 
             DrawerFragment drawerFragment = new DrawerFragment();
-            drawerFragment.setContentFragment(tabBarFragment);
             drawerFragment.setMenuFragment(new MenuFragment());
+            drawerFragment.setContentFragment(tabBarFragment);
 
             setRootFragment(drawerFragment);
         }

@@ -52,7 +52,7 @@ public class TopDialogFragment extends AwesomeFragment {
 
         // import
         appendStatusBarPadding(toolbar, getToolbarHeight());
-        setContentUnderStatusBar(true);
+        setStatusBarTranslucent(true);
 
         getDialog().setCanceledOnTouchOutside(true);  //点击外部消失
         Window window = getWindow();

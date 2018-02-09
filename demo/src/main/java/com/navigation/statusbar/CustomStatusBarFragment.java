@@ -43,7 +43,7 @@ public class CustomStatusBarFragment extends AwesomeFragment implements Compound
         textView = root.findViewById(R.id.hint);
 
         CheckBox insetsCheckBox = root.findViewById(R.id.insets);
-        insetsCheckBox.setChecked(isContentUnderStatusBar());
+        insetsCheckBox.setChecked(isStatusBarTranslucent());
         insetsCheckBox.setOnCheckedChangeListener(this);
 
         ((CheckBox)root.findViewById(R.id.tinting)).setOnCheckedChangeListener(this);
@@ -96,7 +96,7 @@ public class CustomStatusBarFragment extends AwesomeFragment implements Compound
         switch (buttonView.getId()) {
             case R.id.insets:
                 // 慎重，会影响整个 Activity
-                setContentUnderStatusBar(isChecked);
+                setStatusBarTranslucent(isChecked);
                 getWindow().getDecorView().requestLayout();
                 textView.setText("将影响整个 Activity，打开 Drawer 看看");
                 break;

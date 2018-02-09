@@ -29,7 +29,7 @@ public class CoordinatorFragment extends AwesomeFragment {
 
     @Override
     protected int preferredStatusBarColor() {
-        if (isContentUnderStatusBar()) {
+        if (isStatusBarTranslucent()) {
             return Color.TRANSPARENT;
         } else {
             return super.preferredStatusBarColor();
@@ -44,7 +44,7 @@ public class CoordinatorFragment extends AwesomeFragment {
         toolbar = root.findViewById(R.id.toolbar);
 
         // important
-        if (isContentUnderStatusBar()) {
+        if (isStatusBarTranslucent()) {
             appendStatusBarPadding(toolbar, getToolbarHeight());
         }
 
