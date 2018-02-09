@@ -41,12 +41,12 @@ public class AwesomeToolbar extends Toolbar {
     private void init(Context context) {
         leftButton = new TextView(context);
         leftButton.setGravity(Gravity.CENTER);
-        LayoutParams layoutParams = new LayoutParams(-2, -1, Gravity.CENTER_VERTICAL | Gravity.LEFT);
+        LayoutParams layoutParams = new LayoutParams(-2, -1, Gravity.CENTER_VERTICAL | Gravity.START);
         addView(leftButton, layoutParams);
 
         rightButton = new TextView(context);
         rightButton.setGravity(Gravity.CENTER);
-        layoutParams = new LayoutParams(-2, -1, Gravity.CENTER_VERTICAL | Gravity.RIGHT);
+        layoutParams = new LayoutParams(-2, -1, Gravity.CENTER_VERTICAL | Gravity.END);
         addView(rightButton, layoutParams);
 
         contentInset = getContentInsetStart();
@@ -106,7 +106,7 @@ public class AwesomeToolbar extends Toolbar {
     protected TextView getTitleView() {
         if (titleView == null) {
             titleView = new TextView(getContext());
-            LayoutParams layoutParams = new LayoutParams(-2, -2, Gravity.CENTER_VERTICAL | Gravity.LEFT);
+            LayoutParams layoutParams = new LayoutParams(-2, -2, Gravity.CENTER_VERTICAL | Gravity.START);
             layoutParams.leftMargin = getContentInset();
             addView(titleView, layoutParams);
         }

@@ -1,8 +1,10 @@
 # AndroidNavigation 
 
-A library managing nested Fragment, translucent Statusbar and Toolbar for you. 
+A library managing nested Fragment, translucent StatusBar and Toolbar for Android. 
 
 You could use it as a single Activity Architecture Component. 
+
+This project is also the subproject of [react-native-navigation-hybrid](https://github.com/listenzz/react-native-navigation-hybrid).
 
 ## 特性
 

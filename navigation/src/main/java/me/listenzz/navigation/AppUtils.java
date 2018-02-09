@@ -308,8 +308,12 @@ public class AppUtils {
         }
     }
 
+    private static int statusBarHeight = -1;
     public static int getStatusBarHeight(Context context) {
-        int statusBarHeight = -1;
+        if (statusBarHeight != -1) {
+            return statusBarHeight;
+        }
+
         //获取status_bar_height资源的ID
         int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
