@@ -70,7 +70,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             executePresentFragment(fragment);
         } else {
             Log.i(TAG, "schedule present");
-            scheduleTask(new Runnable() {
+            scheduleTaskAtStarted(new Runnable() {
                 @Override
                 public void run() {
                     executePresentFragment(fragment);
@@ -85,7 +85,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             executeDismissFragment(fragment);
         } else {
             Log.i(TAG, "schedule dismiss");
-            scheduleTask(new Runnable() {
+            scheduleTaskAtStarted(new Runnable() {
                 @Override
                 public void run() {
                     executeDismissFragment(fragment);
@@ -116,7 +116,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     public void setRootFragment(final AwesomeFragment fragment) {
         Fragment f = getSupportFragmentManager().findFragmentById(android.R.id.content);
         if (f != null) {
-            scheduleTask(new Runnable() {
+            scheduleTaskAtStarted(new Runnable() {
                 @Override
                 public void run() {
                     setRootFragmentInternal(fragment);
@@ -202,8 +202,8 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     }
 
-    protected void scheduleTask(Runnable runnable) {
-        lifecycleDelegate.scheduleTask(runnable);
+    protected void scheduleTaskAtStarted(Runnable runnable) {
+        lifecycleDelegate.scheduleTaskAtStarted(runnable);
     }
 
     protected boolean isAtLeastStarted() {

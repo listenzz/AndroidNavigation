@@ -200,7 +200,7 @@ public class TabBarFragment extends AwesomeFragment {
 
     public void setSelectedIndex(final int index) {
         bottomBar.selectTab(index, false);
-        scheduleTask(new Runnable() {
+        scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
                 position = index;
@@ -251,7 +251,7 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     public void setBadge(final int index, final String text) {
-        scheduleTask(new Runnable() {
+        scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
                 TextBadgeItem textBadgeItem = badges.get(index);

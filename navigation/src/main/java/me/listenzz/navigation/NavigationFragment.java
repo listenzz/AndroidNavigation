@@ -102,7 +102,7 @@ public class NavigationFragment extends AwesomeFragment {
         if (isAtLeastStarted()) {
             executePopToFragment(fragment);
         } else {
-            scheduleTask(new Runnable() {
+            scheduleTaskAtStarted(new Runnable() {
                 @Override
                 public void run() {
                     executePopToFragment(fragment);
@@ -148,7 +148,7 @@ public class NavigationFragment extends AwesomeFragment {
         if (isAtLeastStarted()) {
             executeReplaceFragment(fragment);
         } else {
-            scheduleTask(new Runnable() {
+            scheduleTaskAtStarted(new Runnable() {
                 @Override
                 public void run() {
                     executeReplaceFragment(fragment);
@@ -190,7 +190,7 @@ public class NavigationFragment extends AwesomeFragment {
         if (isAtLeastStarted()) {
             executeReplaceRootFragment(fragment);
         } else {
-            scheduleTask(new Runnable() {
+            scheduleTaskAtStarted(new Runnable() {
                 @Override
                 public void run() {
                     executeReplaceRootFragment(fragment);

@@ -197,8 +197,8 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     // ------ lifecycle arch -------
 
-    protected void scheduleTask(Runnable runnable) {
-        lifecycleDelegate.scheduleTask(runnable);
+    protected void scheduleTaskAtStarted(Runnable runnable) {
+        lifecycleDelegate.scheduleTaskAtStarted(runnable);
     }
 
     protected boolean isAtLeastStarted() {
@@ -296,7 +296,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (isAtLeastStarted()) {
             executeAddFragment(containerId, fragment, animation);
         } else {
-            scheduleTask(new Runnable() {
+            scheduleTaskAtStarted(new Runnable() {
                 @Override
                 public void run() {
                     executeAddFragment(containerId, fragment, animation);
