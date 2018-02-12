@@ -92,8 +92,9 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
 
         AwesomeFragment parent = getParent();
-        boolean shouldAutoCreateToolbar = parent != null && (parent instanceof NavigationFragment);
-        if (shouldAutoCreateToolbar) {
+        boolean hasNavigationParent = parent != null && (parent instanceof NavigationFragment);
+        if (hasNavigationParent) {
+            // create toolbar if needed
             Toolbar toolbar = onCreateToolbar(getView());
             if (toolbar != null && !isNavigationRoot() && !shouldHideBackButton()) {
                 toolbar.setNavigationIcon(style.getBackIcon());
@@ -105,8 +106,27 @@ public abstract class AwesomeFragment extends DialogFragment {
                 });
             }
             this.toolbar = toolbar;
+
+            final View rootView = root;
+            // adjust margin bottom if needed
+            root.post(new Runnable() {
+                @Override
+                public void run() {
+                    adjustBottomPaddingIfNeeded(rootView);
+                }
+            });
         }
         // Log.i(TAG, getDebugTag() + "#onViewCreated");
+    }
+
+    private void adjustBottomPaddingIfNeeded(View root) {
+        int index = getIndexAtBackStack();
+        if (index == 0 || !shouldHideBottomBarWhenPushed()) {
+            TabBarFragment tabBarFragment = getTabBarFragment();
+            if (tabBarFragment != null) {
+                root.setPadding(0, 0, 0, tabBarFragment.getBottomBar().getHeight());
+            }
+        }
     }
 
     @Override
@@ -114,7 +134,6 @@ public abstract class AwesomeFragment extends DialogFragment {
         AppUtils.hideSoftInput(getView());
         super.onDestroyView();
     }
-
 
     private void setBackgroundDrawable(View root, Drawable drawable) {
         if (getDialog() == null) {
