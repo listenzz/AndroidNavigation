@@ -595,22 +595,23 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (parent != null && parent instanceof NavigationFragment) {
             NavigationFragment navigationFragment = (NavigationFragment) parent;
             TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
-            if (tabBarFragment != null) {
-                int index = getIndexAtBackStack();
-                if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
-                    if (enter) {
-                        if (index == 0) {
-                            tabBarFragment.getBottomBar().setVisibility(View.VISIBLE);
-                        } else if (index == 1 && shouldHideBottomBarWhenPushed()) {
-                            tabBarFragment.hideBottomNavigationBarAnimatedWhenPush(animation.exit);
-                        }
-                    }
-                } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
-                    if (enter && index == 0 && shouldHideBottomBarWhenPushed()) {
-                        tabBarFragment.showBottomNavigationBarAnimatedWhenPop(animation.popEnter);
-                    }
+            if (tabBarFragment == null || !enter) {
+                return;
+            }
+
+            int index = getIndexAtBackStack();
+            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
+                if (index == 0) {
+                    tabBarFragment.getBottomBar().setVisibility(View.VISIBLE);
+                } else if (index == 1 && shouldHideBottomBarWhenPushed()) {
+                    tabBarFragment.hideBottomNavigationBarAnimatedWhenPush(animation.exit);
+                }
+            } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
+                if (index == 0 && shouldHideBottomBarWhenPushed()) {
+                    tabBarFragment.showBottomNavigationBarAnimatedWhenPop(animation.popEnter);
                 }
             }
+
         }
     }
 
@@ -637,7 +638,8 @@ public abstract class AwesomeFragment extends DialogFragment {
             FrameLayout frameLayout = (FrameLayout) parent;
             frameLayout.addView(toolbar, new FrameLayout.LayoutParams(-1, height));
         } else {
-            throw new UnsupportedOperationException("NavigationFragment 还没适配 " + parent.getClass().getSimpleName());
+            throw new UnsupportedOperationException("AwesomeFragment 无法为 " + parent.getClass().getSimpleName()
+                    + " 添加 Toolbar. 请重写 onCreateToolbar 并返回 null, 这样你就可以自行添加 Toolbar 了。");
         }
 
         if (isStatusBarTranslucent()) {
