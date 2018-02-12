@@ -8,6 +8,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 
@@ -52,4 +55,15 @@ public class BottomBar extends BottomNavigationBar {
         }
     }
 
+    @Override
+    public void initialise() {
+        super.initialise();
+        LinearLayout itemContainer = findViewById(R.id.bottom_navigation_bar_item_container);
+        int count = itemContainer.getChildCount();
+        for (int i = 0; i < count; i++) {
+            View itemLayout =  itemContainer.getChildAt(i);
+            ImageView iconView = itemLayout.findViewById(R.id.fixed_bottom_navigation_icon);
+            iconView.setScaleType(ImageView.ScaleType.CENTER);
+        }
+    }
 }

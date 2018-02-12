@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="fixed_height_bottom_padding">8dp</dimen>
+    <dimen name="fixed_height_top_padding_active">0dp</dimen>
+    <dimen name="fixed_height_top_padding_inactive">0dp</dimen>
+    <dimen name="fixed_icon_grid">24dp</dimen>
+    <dimen name="fixed_label_active">12sp</dimen>
+    <dimen name="fixed_label_inactive">12sp</dimen>
+    <item name="fixed_label_active_to_inactive_ratio" format="float" type="dimen">1</item>
+
+</resources>
