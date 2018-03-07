@@ -20,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -74,9 +75,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(root, savedInstanceState);
-
+    public LayoutInflater onGetLayoutInflater(Bundle savedInstanceState) {
         if (style == null) {
             try {
                 style = presentableActivity.getStyle().clone();
@@ -86,6 +85,12 @@ public abstract class AwesomeFragment extends DialogFragment {
                 style = presentableActivity.getStyle();
             }
         }
+        return super.onGetLayoutInflater(savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(root, savedInstanceState);
 
         if (!isParentFragment()) {
             setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
