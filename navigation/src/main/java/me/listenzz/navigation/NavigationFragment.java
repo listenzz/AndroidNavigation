@@ -47,7 +47,7 @@ public class NavigationFragment extends AwesomeFragment {
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 1) {
             AwesomeFragment topFragment = getTopFragment();
-            if (!topFragment.shouldHideBackButton()) {
+            if (topFragment.backInteractive() || !topFragment.shouldHideBackButton()) {
                 popFragment();
             }
             return true;

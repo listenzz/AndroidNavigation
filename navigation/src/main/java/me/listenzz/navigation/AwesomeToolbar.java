@@ -3,6 +3,7 @@ package me.listenzz.navigation;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -51,6 +52,7 @@ public class AwesomeToolbar extends Toolbar {
 
         contentInset = getContentInsetStart();
         setContentInsetStartWithNavigation(getContentInsetStartWithNavigation() - contentInset);
+        setContentInsetsRelative(0, 0);
     }
 
     @Override
@@ -65,10 +67,22 @@ public class AwesomeToolbar extends Toolbar {
 
     @Override
     public void setBackgroundColor(int color) {
-        super.setBackgroundColor(color);
+        setBackground(new ColorDrawable(color));
         if (color == Color.TRANSPARENT) {
             hideShadow();
         }
+    }
+
+    @Override
+    public void setAlpha(float alpha) {
+        Drawable drawable = getBackground();
+        drawable.setAlpha((int)(alpha * 255));
+        setBackground(drawable);
+    }
+
+    @Override
+    public void setBackground(Drawable background) {
+        super.setBackground(background);
     }
 
     public void setShadow(@Nullable Drawable drawable) {

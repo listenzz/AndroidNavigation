@@ -436,6 +436,14 @@ public abstract class AwesomeFragment extends DialogFragment {
         return style.getStatusBarColor();
     }
 
+    private int preferredToolbarColor() {
+        AwesomeFragment childFragmentForToolbarColor = childFragmentForAppearance();
+        if (childFragmentForToolbarColor != null) {
+            return childFragmentForToolbarColor.preferredToolbarColor();
+        }
+        return style.getToolbarBackgroundColor();
+    }
+
     protected boolean preferredStatusBarColorAnimated() {
         AwesomeFragment childFragmentForStatusBarColor = childFragmentForAppearance();
         if (childFragmentForStatusBarColor != null) {
@@ -465,7 +473,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             setStatusBarStyle(preferredStatusBarStyle());
 
             // statusBarColor
-            boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
+            boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor() == Color.TRANSPARENT ? preferredToolbarColor(): preferredStatusBarColor(), 176);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !AppUtils.isMiuiV6()) {
                 shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
             }
@@ -599,6 +607,10 @@ public abstract class AwesomeFragment extends DialogFragment {
         return false;
     }
 
+    protected boolean backInteractive() {
+        return false;
+    }
+
     protected boolean hidesBottomBarWhenPushed() {
         return true;
     }
@@ -710,7 +722,6 @@ public abstract class AwesomeFragment extends DialogFragment {
             if (toolbar instanceof AwesomeToolbar) {
                 AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolbar;
                 TextView leftButton = awesomeToolbar.getLeftButton();
-                toolbar.setContentInsetsRelative(0, toolbar.getContentInsetEnd());
                 toolbar.setNavigationIcon(null);
                 toolbar.setNavigationOnClickListener(null);
                 setAwesomeToolbarButton(awesomeToolbar, leftButton, icon, title, enabled);
@@ -737,7 +748,6 @@ public abstract class AwesomeFragment extends DialogFragment {
             if (toolbar instanceof AwesomeToolbar) {
                 AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolbar;
                 TextView rightButton = awesomeToolbar.getRightButton();
-                toolbar.setContentInsetsRelative(toolbar.getContentInsetStart(), 0);
                 setAwesomeToolbarButton(awesomeToolbar, rightButton, icon, title, enabled);
                 rightButton.setOnClickListener(onClickListener);
             } else {
