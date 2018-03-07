@@ -98,9 +98,6 @@ public class Style implements Cloneable {
     }
 
     public int getStatusBarColor() {
-        if (statusBarColor == toolbarBackgroundColor) {
-            return Color.TRANSPARENT;
-        }
         return statusBarColor;
     }
 

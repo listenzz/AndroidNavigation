@@ -433,7 +433,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (childFragmentForStatusBarColor != null) {
             return childFragmentForStatusBarColor.preferredStatusBarColor();
         }
-        return style.getStatusBarColor();
+        return style.getStatusBarColor() == style.getToolbarBackgroundColor() ? Color.TRANSPARENT : style.getStatusBarColor();
     }
 
     private int preferredToolbarColor() {
