@@ -239,6 +239,7 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     protected void onBottomBarInitialise(BottomBar bottomBar) {
+        Style style = getStyle();
         bottomBar.setBarBackgroundColor(style.getBottomBarBackgroundColor());
 
         if (style.getBottomBarActiveColor() != null) {

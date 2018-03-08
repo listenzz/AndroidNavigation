@@ -1,5 +1,6 @@
 package com.navigation.toolbar;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -26,9 +27,17 @@ public class ViewPagerFragment extends AwesomeFragment {
 
     Toolbar toolbar;
 
+    int location;
+
     @Override
     public boolean isParentFragment() {
         return true;
+    }
+
+    @Override
+    protected int preferredStatusBarColor() {
+        int[] colors = new int[] {Color.RED, Color.GREEN, Color.BLUE};
+        return colors[location];
     }
 
     @Override
@@ -62,6 +71,13 @@ public class ViewPagerFragment extends AwesomeFragment {
         tabLayout.addTab(tabLayout.newTab().setText("Three"));
 
         viewPager.setAdapter(new ViewPagerAdapter(getChildFragmentManager(), "One", "Tow", "Three"));
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+            @Override
+            public void onPageSelected(int position) {
+                location = position;
+                setNeedsStatusBarAppearanceUpdate();
+            }
+        });
         tabLayout.setupWithViewPager(viewPager);
     }
 

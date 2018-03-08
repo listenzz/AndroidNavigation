@@ -55,7 +55,7 @@ public class CoordinatorFragment extends AwesomeFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        toolbar.setNavigationIcon(style.getBackIcon());
+        toolbar.setNavigationIcon(getStyle().getBackIcon());
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

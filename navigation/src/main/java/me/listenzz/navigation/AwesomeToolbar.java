@@ -80,11 +80,6 @@ public class AwesomeToolbar extends Toolbar {
         setBackground(drawable);
     }
 
-    @Override
-    public void setBackground(Drawable background) {
-        super.setBackground(background);
-    }
-
     public void setShadow(@Nullable Drawable drawable) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             divider = drawable;

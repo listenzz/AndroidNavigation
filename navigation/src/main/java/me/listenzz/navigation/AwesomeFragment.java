@@ -54,7 +54,11 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
 
-    protected Style style;
+    private Style style;
+
+    public Style getStyle() {
+        return style;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -76,6 +80,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     @Override
     public LayoutInflater onGetLayoutInflater(Bundle savedInstanceState) {
+        LayoutInflater layoutInflater = super.onGetLayoutInflater(savedInstanceState);
         if (style == null) {
             try {
                 style = presentableActivity.getStyle().clone();
@@ -85,7 +90,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                 style = presentableActivity.getStyle();
             }
         }
-        return super.onGetLayoutInflater(savedInstanceState);
+        return layoutInflater;
     }
 
     @Override
@@ -504,7 +509,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         return null;
     }
 
-    protected void setStatusBarStyle(BarStyle barStyle) {
+    public void setStatusBarStyle(BarStyle barStyle) {
         AppUtils.setStatusBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
     }
 
@@ -566,19 +571,19 @@ public abstract class AwesomeFragment extends DialogFragment {
         return presentableActivity.isStatusBarTranslucent();
     }
 
-    protected void setStatusBarHidden(boolean hidden) {
+    public void setStatusBarHidden(boolean hidden) {
         AppUtils.setStatusBarHidden(getWindow(), hidden);
     }
 
-    protected void setStatusBarColor(int color, boolean animated) {
+    public void setStatusBarColor(int color, boolean animated) {
         AppUtils.setStatusBarColor(getWindow(), color, animated);
     }
 
-    protected void appendStatusBarPadding(View view, int viewHeight) {
+    public void appendStatusBarPadding(View view, int viewHeight) {
         AppUtils.appendStatusBarPadding(view, viewHeight);
     }
 
-    protected void removeStatusBarPadding(View view, int viewHeight) {
+    public void removeStatusBarPadding(View view, int viewHeight) {
         AppUtils.removeStatusBarPadding(view, viewHeight);
     }
 
