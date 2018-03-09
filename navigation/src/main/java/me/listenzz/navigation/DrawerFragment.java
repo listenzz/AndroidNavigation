@@ -127,12 +127,14 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     public void onDrawerOpened(@NonNull View drawerView) {
         setNeedsStatusBarAppearanceUpdate();
         getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
+        getMenuFragment().setUserVisibleHint(true);
     }
 
     @Override
     public void onDrawerClosed(@NonNull View drawerView) {
         setNeedsStatusBarAppearanceUpdate();
         getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
+        getMenuFragment().setUserVisibleHint(false);
     }
 
     @Override
@@ -164,6 +166,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
+                fragment.setUserVisibleHint(false);
                 FragmentManager fragmentManager = getChildFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.add(R.id.drawer_menu, fragment, fragment.getSceneId());

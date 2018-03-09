@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -136,7 +135,7 @@ public class TabBarFragment extends AwesomeFragment {
         bottomBar.setTabSelectedListener(new BottomNavigationBar.OnTabSelectedListener() {
             @Override
             public void onTabSelected(int position) {
-                Log.i(TAG, "tab position:" + position);
+                // Log.i(TAG, "tab position:" + position);
                 setSelectedIndex(position);
             }
 
@@ -208,9 +207,9 @@ public class TabBarFragment extends AwesomeFragment {
                 position = index;
                 FragmentManager fragmentManager = getChildFragmentManager();
                 Fragment previous = fragmentManager.getPrimaryNavigationFragment();
+                AwesomeFragment current = fragments.get(index);
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.hide(previous);
-                AwesomeFragment current = fragments.get(index);
                 transaction.setPrimaryNavigationFragment(current);
                 transaction.show(current);
                 transaction.commit();
@@ -225,7 +224,6 @@ public class TabBarFragment extends AwesomeFragment {
                 } else {
                     bottomBar.setVisibility(View.VISIBLE);
                 }
-
             }
         });
     }
@@ -315,6 +313,4 @@ public class TabBarFragment extends AwesomeFragment {
 
         }
     }
-
-
 }

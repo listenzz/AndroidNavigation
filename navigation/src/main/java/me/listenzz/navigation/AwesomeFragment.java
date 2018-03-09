@@ -156,42 +156,92 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     }
 
+    private boolean viewAppear;
+    private void notifyViewAppear(boolean appear) {
+        if (viewAppear != appear) {
+            viewAppear = appear;
+            if (appear) {
+                onViewAppear();
+            } else {
+                onViewDisappear();
+            }
+        }
+    }
+
+    protected void onViewAppear() {
+        // Log.i(TAG, getDebugTag() + "#onViewAppear");
+        if (childFragmentForAppearance() == null) {
+            setNeedsStatusBarAppearanceUpdate();
+        }
+    }
+
+    protected void onViewDisappear() {
+        // Log.i(TAG, getDebugTag() + "#onViewDisappear");
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        if (childFragmentForAppearance() == null) {
-            // Log.w(TAG, getDebugTag() + "#onResume-");
-            setNeedsStatusBarAppearanceUpdate();
+        // Log.i(TAG, getDebugTag() + "#onResume");
+        if (getUserVisibleHint() && !isFragmentHidden()) {
+            notifyViewAppear(true);
         }
-        // Log.w(TAG, getDebugTag() + "#onResume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(TAG, getDebugTag() + "#onPause");
+        if (getUserVisibleHint() && !isFragmentHidden()) {
+            notifyViewAppear(false);
+        }
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if (!hidden && isAdded()) {
-            if (childFragmentForAppearance() == null) {
-                // Log.w(TAG, getDebugTag() + "#onHiddenChanged:-");
-                setNeedsStatusBarAppearanceUpdate();
-            }
+        // Log.i(TAG, getDebugTag() + "#onHiddenChanged:" + hidden);
+        if (isResumed() && getUserVisibleHint()) {
+            notifyViewAppear(!hidden);
         }
 
         List<AwesomeFragment> fragments = getChildFragmentsAtAddedList();
         for (AwesomeFragment fragment : fragments) {
             fragment.onHiddenChanged(hidden);
         }
-
-        //Log.w(TAG, getDebugTag() + "#onHiddenChanged:" + hidden);
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && isAdded()) {
-            // Log.w(TAG, getDebugTag() + "#isVisibleToUser:-");
-            setNeedsStatusBarAppearanceUpdate();
+        // Log.i(TAG, getDebugTag() + "#isVisibleToUser:" + isVisibleToUser);
+        if (isResumed() && !isFragmentHidden()) {
+            notifyViewAppear(isVisibleToUser);
         }
-        //Log.w(TAG, getDebugTag() + "#isVisibleToUser:" + isVisibleToUser);
+
+        List<AwesomeFragment> fragments = getChildFragmentsAtAddedList();
+        for (AwesomeFragment fragment : fragments) {
+            fragment.setUserVisibleHint(isVisibleToUser);
+        }
+    }
+
+    public boolean isFragmentHidden() {
+        boolean hidden = super.isHidden();
+        if (hidden) {
+            return true;
+        }
+        AwesomeFragment parent = getParent();
+        return parent!= null &&  parent.isFragmentHidden();
+    }
+
+    @Override
+    public boolean getUserVisibleHint() {
+        boolean isVisibleToUser = super.getUserVisibleHint();
+        if (!isVisibleToUser) {
+            return false;
+        }
+        AwesomeFragment parent = getParent();
+        return parent == null || parent.getUserVisibleHint();
     }
 
     @Override
@@ -200,7 +250,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
         handleHideBottomBarWhenPushed(transit, enter, animation);
         // ---------
-        Log.d(TAG, getDebugTag() + "  " + animation.name() + " transit:" + transit + " enter:" + enter + " nextAnim:" + nextAnim);
+        // Log.d(TAG, getDebugTag() + "  " + animation.name() + " transit:" + transit + " enter:" + enter + " nextAnim:" + nextAnim);
 
         AwesomeFragment parent = getParent();
         if (parent != null && parent.isRemoving()) {
