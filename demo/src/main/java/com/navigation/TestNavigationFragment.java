@@ -145,19 +145,28 @@ public class TestNavigationFragment extends AwesomeFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setTitle("导航");
-        if (isNavigationRoot()) {
-            Drawable icon = DrawableUtils.fromFont(getContext(), "FontAwesome", fromCharCode(61641), 24, -1 );
-            setToolbarLeftButton(icon, "Menu", true, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    DrawerFragment drawerFragment = getDrawerFragment();
-                    if (drawerFragment != null) {
-                        drawerFragment.toggleMenu();
-                    }
-                }
-            });
-        }
 
+        if (isNavigationRoot()) {
+            if (getPresentingFragment() == null) {
+                Drawable icon = DrawableUtils.fromFont(getContext(), "FontAwesome", fromCharCode(61641), 24, -1);
+                setToolbarLeftButton(icon, "Menu", true, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        DrawerFragment drawerFragment = getDrawerFragment();
+                        if (drawerFragment != null) {
+                            drawerFragment.toggleMenu();
+                        }
+                    }
+                });
+            } else {
+                setToolbarLeftButton(null, "关闭", true, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismissFragment();
+                    }
+                });
+            }
+        }
     }
 
     @Override
