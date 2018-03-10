@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -168,6 +169,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
+    @CallSuper
     protected void onViewAppear() {
         // Log.i(TAG, getDebugTag() + "#onViewAppear");
         if (childFragmentForAppearance() == null) {
@@ -175,6 +177,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
+    @CallSuper
     protected void onViewDisappear() {
         // Log.i(TAG, getDebugTag() + "#onViewDisappear");
     }
@@ -276,7 +279,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     // ------ lifecycle arch -------
 
-    protected void scheduleTaskAtStarted(Runnable runnable) {
+    public void scheduleTaskAtStarted(Runnable runnable) {
         lifecycleDelegate.scheduleTaskAtStarted(runnable);
     }
 
@@ -411,21 +414,21 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
-    protected int getChildFragmentCountAtBackStack() {
+    public int getChildFragmentCountAtBackStack() {
         FragmentManager fragmentManager = getChildFragmentManager();
         return fragmentManager.getBackStackEntryCount();
     }
 
-    protected int getIndexAtBackStack() {
+    public int getIndexAtBackStack() {
         return FragmentHelper.findIndexAtBackStack(getFragmentManager(), this);
     }
 
-    protected int getIndexAtAddedList() {
+    public int getIndexAtAddedList() {
         List<Fragment> fragments = getFragmentManager().getFragments();
         return fragments.indexOf(this);
     }
 
-    protected List<AwesomeFragment> getChildFragmentsAtAddedList() {
+    public List<AwesomeFragment> getChildFragmentsAtAddedList() {
         List<AwesomeFragment> children = new ArrayList<>();
         if (isAdded()) {
             List<Fragment> fragments = getChildFragmentManager().getFragments();
@@ -436,7 +439,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         return children;
     }
 
-    protected AwesomeFragment getParent() {
+    public AwesomeFragment getParent() {
         Fragment fragment = getParentFragment();
         if (fragment != null && fragment instanceof AwesomeFragment) {
             return (AwesomeFragment) fragment;
@@ -465,7 +468,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         return animation;
     }
 
-    protected boolean isParentFragment() {
+    public boolean isParentFragment() {
         return false;
     }
 
@@ -563,7 +566,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         AppUtils.setStatusBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
     }
 
-    protected void setStatusBarTranslucent(boolean translucent) {
+    public void setStatusBarTranslucent(boolean translucent) {
         if (getDialog() != null) {
             AppUtils.setStatusBarTranslucent(getWindow(), translucent);
         } else {
@@ -571,6 +574,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
+    @CallSuper
     protected void onStatusBarTranslucentChanged(boolean translucent) {
         Toolbar toolbar = getToolbar();
         if (toolbar != null) {
@@ -617,7 +621,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
-    protected boolean isStatusBarTranslucent() {
+    public boolean isStatusBarTranslucent() {
         return presentableActivity.isStatusBarTranslucent();
     }
 
@@ -637,7 +641,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         AppUtils.removeStatusBarPadding(view, viewHeight);
     }
 
-    protected int getToolbarHeight() {
+    public int getToolbarHeight() {
         return AppUtils.fetchContextDimension(getContext(), R.attr.actionBarSize);
     }
 
