@@ -161,7 +161,14 @@ public class TabBarFragment extends AwesomeFragment {
                 } else if (tabBarItem.iconUri != null) {
                     icon = DrawableUtils.fromUri(getContext(), tabBarItem.iconUri);
                 }
+
                 bottomNavigationItem = new BottomNavigationItem(icon, tabBarItem.title);
+
+                if (tabBarItem.inactiveIconRes != -1) {
+                    bottomNavigationItem.setInactiveIconResource(tabBarItem.inactiveIconRes);
+                } else if (tabBarItem.inactiveIconUri != null) {
+                    bottomNavigationItem.setInactiveIcon(DrawableUtils.fromUri(getContext(), tabBarItem.inactiveIconUri));
+                }
             } else {
                 bottomNavigationItem = new BottomNavigationItem(new ColorDrawable(), "Tab");
             }
