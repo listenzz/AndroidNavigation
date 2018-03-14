@@ -151,16 +151,15 @@ public class Style implements Cloneable {
     }
 
     public void setBackIcon(Drawable icon) {
-        backIcon = icon;
+        backIcon = icon.mutate();
     }
 
     public Drawable getBackIcon() {
-        if (backIcon != null) {
-            return backIcon;
+        if (backIcon == null) {
+            Drawable drawable = ContextCompat.getDrawable(context, R.drawable.nav_ic_arrow_back);
+            backIcon = drawable.mutate();
         }
-        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.nav_ic_arrow_back);
-        drawable.setColorFilter(getToolbarButtonTintColor(), PorterDuff.Mode.SRC_ATOP);
-        backIcon = drawable.mutate();
+        backIcon.setColorFilter(getToolbarButtonTintColor(), PorterDuff.Mode.SRC_ATOP);
         return backIcon;
     }
 
