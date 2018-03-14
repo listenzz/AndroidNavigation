@@ -633,7 +633,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     protected boolean backInteractive() {
-        return false;
+        return true;
     }
 
     protected boolean hidesBottomBarWhenPushed() {
