@@ -30,7 +30,7 @@ public class TestStatusBarFragment extends AwesomeFragment {
 
     @Override
     protected void onCustomStyle(Style style) {
-        style.setToolbarStyle(BarStyle.LightContent);
+        style.setStatusBarStyle(BarStyle.LightContent);
     }
 
     @Override

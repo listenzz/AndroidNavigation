@@ -189,7 +189,7 @@ public class TestNavigationFragment extends AwesomeFragment {
 
     @Override
     protected void onCustomStyle(Style style) {
-        style.setToolbarStyle(BarStyle.DarkContent);
+        style.setStatusBarStyle(BarStyle.DarkContent);
     }
 
 }

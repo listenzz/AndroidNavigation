@@ -25,7 +25,7 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
     @Override
     protected void onCustomStyle(Style style) {
         super.onCustomStyle(style);
-        style.setToolbarStyle(BarStyle.DarkContent);
+        style.setStatusBarStyle(BarStyle.DarkContent);
         style.setStatusBarColor(Color.WHITE);
         style.setToolbarBackgroundColor(Color.WHITE);
     }

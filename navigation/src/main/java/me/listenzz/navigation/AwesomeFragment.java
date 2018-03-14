@@ -445,7 +445,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (childFragmentForStatusBarStyle != null) {
             return childFragmentForStatusBarStyle.preferredStatusBarStyle();
         }
-        return style.getToolbarStyle();
+        return style.getStatusBarStyle();
     }
 
     protected boolean preferredStatusBarHidden() {

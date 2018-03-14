@@ -475,9 +475,9 @@ protected void onCustomStyle(Style style) {
 ```javascript  
 {
     screenBackgroundColor: int       // 页面背景，默认是白色
-    toolbarStyle: BarStyle           // 状态栏和 toobar 前景色，可选值有 DarkContent 和 LightContent
-    toolbarBackgroundColor: int      // toolbar 背景颜色，默认值是 colorPrimary
+    statusBarStyle: BarStyle         // 状态栏和 toobar 前景色，可选值有 DarkContent 和 LightContent
     statusBarColor: String           // 状态栏背景色，仅对 4.4 以上版本生效， 默认值是 colorPrimaryDark
+    toolbarBackgroundColor: int      // toolbar 背景颜色，默认值是 colorPrimary
     elevation: int                   // toolbar 阴影高度， 仅对 5.0 以上版本生效，默认值为 4 dp
     shadow: Drawable                 // toolbar 阴影图片，仅对 4.4 以下版本生效 
     backIcon: Drawable               // 返回按钮图标，默认是个箭头
@@ -492,7 +492,7 @@ protected void onCustomStyle(Style style) {
     bottomBarBackgroundColor: String // BottomNavigationBar 背景，默认值是 #FFFFFF
     bottomBarShadow: Drawable        // BottomNavigationBar 阴影图片，仅对4.4 以下版本生效 
     bottomBarActiveColor: String     // BottomNavigationTab 选中效果，默认取 colorAccent 的值
-    bottomBarInActiveColor: String   // BottomNavigationTab 未选中效果，默认是灰色
+    bottomBarInactiveColor: String   // BottomNavigationTab 未选中效果，默认是灰色
 }
 ```
 

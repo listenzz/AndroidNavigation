@@ -19,7 +19,7 @@ public class Style implements Cloneable {
 
     private int screenBackgroundColor = Color.WHITE;
 
-    private BarStyle toolbarStyle = BarStyle.LightContent;
+    private BarStyle statusBarStyle = BarStyle.LightContent;
     private Drawable backIcon;
     private int statusBarColor = Color.TRANSPARENT;
     private int toolbarBackgroundColor = INVALID_COLOR;
@@ -36,7 +36,7 @@ public class Style implements Cloneable {
 
     private String bottomBarBackgroundColor = "#FFFFFF";
     private String bottomBarActiveColor = null;
-    private String bottomBarInActiveColor = null;
+    private String bottomBarInactiveColor = null;
     private Drawable bottomBarShadow = defaultShadow;
 
     private Context context;
@@ -75,22 +75,22 @@ public class Style implements Cloneable {
         return bottomBarActiveColor;
     }
 
-    public String getBottomBarInActiveColor() {
-        return bottomBarInActiveColor;
+    public String getBottomBarInactiveColor() {
+        return bottomBarInactiveColor;
     }
 
-    public void setBottomBarInActiveColor(String bottomBarInActiveColor) {
-        this.bottomBarInActiveColor = bottomBarInActiveColor;
+    public void setBottomBarInactiveColor(String bottomBarInactiveColor) {
+        this.bottomBarInactiveColor = bottomBarInactiveColor;
     }
 
     // ------- toolBar ---------
 
-    public void setToolbarStyle(BarStyle barStyle) {
-        toolbarStyle = barStyle;
+    public void setStatusBarStyle(BarStyle barStyle) {
+        statusBarStyle = barStyle;
     }
 
-    public BarStyle getToolbarStyle() {
-        return toolbarStyle;
+    public BarStyle getStatusBarStyle() {
+        return statusBarStyle;
     }
 
     public void setStatusBarColor(int color) {
@@ -110,7 +110,7 @@ public class Style implements Cloneable {
             return toolbarBackgroundColor;
         }
 
-        if (toolbarStyle == BarStyle.LightContent) {
+        if (statusBarStyle == BarStyle.LightContent) {
             return Color.BLACK;
         } else {
             return Color.WHITE;
@@ -138,7 +138,7 @@ public class Style implements Cloneable {
             return toolbarTintColor;
         }
 
-        if (toolbarStyle == BarStyle.LightContent) {
+        if (statusBarStyle == BarStyle.LightContent) {
             return Color.WHITE;
         }
 

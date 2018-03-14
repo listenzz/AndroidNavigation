@@ -251,8 +251,8 @@ public class TabBarFragment extends AwesomeFragment {
             bottomBar.setActiveColor(style.getBottomBarActiveColor());
         }
 
-        if (style.getBottomBarInActiveColor() != null) {
-            bottomBar.setInActiveColor(style.getBottomBarInActiveColor());
+        if (style.getBottomBarInactiveColor() != null) {
+            bottomBar.setInActiveColor(style.getBottomBarInactiveColor());
         }
 
         bottomBar.setShadow(style.getBottomBarShadow());
