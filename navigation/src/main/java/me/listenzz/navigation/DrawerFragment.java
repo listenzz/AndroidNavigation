@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import java.util.List;
 
@@ -21,6 +22,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     private DrawerLayout drawerLayout;
     private boolean isClosing;
+    private int minDrawerMargin = 64; // dp
+    private int maxDrawerWidth; // dp
 
     @Nullable
     @Override
@@ -28,6 +31,23 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         View root = inflater.inflate(R.layout.nav_fragment_drawer, container, false);
         drawerLayout = root.findViewById(R.id.drawer);
         drawerLayout.addDrawerListener(this);
+
+        FrameLayout menuLayout = drawerLayout.findViewById(R.id.drawer_menu);
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) menuLayout.getLayoutParams();
+        int screenWidth = AppUtils.getScreenWidth(getContext());
+        int margin1 = AppUtils.dp2px(getContext(), minDrawerMargin);
+        if (margin1 > screenWidth) {
+            margin1 = screenWidth;
+        } else if (margin1 < 0) {
+            margin1 = 0;
+        }
+        if (maxDrawerWidth <= 0 || maxDrawerWidth > screenWidth) {
+            maxDrawerWidth = screenWidth;
+        }
+        int margin2 = screenWidth - AppUtils.dp2px(getContext(), maxDrawerWidth);
+        int margin = Math.max(margin1, margin2);
+        layoutParams.rightMargin = margin - AppUtils.dp2px(getContext(), 64);
+
         return root;
     }
 
@@ -180,6 +200,14 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             return null;
         }
         return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_menu);
+    }
+
+    public void setMinDrawerMargin(int dp) {
+        this.minDrawerMargin = dp;
+    }
+
+    public void setMaxDrawerWidth(int dp) {
+        this.maxDrawerWidth = dp;
     }
 
     public void openMenu() {
