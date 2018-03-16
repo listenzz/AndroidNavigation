@@ -845,8 +845,8 @@ public abstract class AwesomeFragment extends DialogFragment {
 
         int color = style.getToolbarButtonTintColor();
         if (!enabled) {
-            color = DrawableUtils.generateGrayColor(color);
-            button.setAlpha(0.3f);
+            color = AppUtils.toGrey(color);
+            button.setAlpha(0.6f);
         }
         button.setEnabled(enabled);
 

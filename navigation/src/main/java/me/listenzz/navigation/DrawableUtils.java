@@ -149,12 +149,4 @@ public class DrawableUtils {
         return null;
     }
 
-    public static int generateGrayColor(int color) {
-        int red = Color.red(color);
-        int green = Color.green(color);
-        int blue = Color.blue(color);
-        int gray = Math.max(Math.max(red, green), blue);
-        return Color.rgb( gray, gray, gray);
-    }
-
 }
