@@ -78,6 +78,9 @@ public class AwesomeToolbar extends Toolbar {
         Drawable drawable = getBackground();
         drawable.setAlpha((int)(alpha * 255));
         setBackground(drawable);
+        if (divider != null) {
+            divider.setAlpha((int)(alpha * 255));
+        }
     }
 
     public void setShadow(@Nullable Drawable drawable) {
