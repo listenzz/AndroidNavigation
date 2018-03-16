@@ -4,7 +4,7 @@ A library managing nested Fragment, translucent StatusBar and Toolbar for Androi
 
 You could use it as a single Activity Architecture Component. 
 
-This project is also the subproject of [react-native-navigation-hybrid](https://github.com/listenzz/react-native-navigation-hybrid).
+This is also the subproject of [react-native-navigation-hybrid](https://github.com/listenzz/react-native-navigation-hybrid).
 
 ## 特性
 
@@ -189,6 +189,8 @@ public class MainActivity extends AwesomeActivity {
 DrawerFragment 提供了 `toggleMenu`、`openMenu`、`closeMenu` 这几个方法来打开或关闭 Menu。
 
 可以通过 `getContentFragment`、`getMenuFragment` 来获取对应的 Fragment。
+
+可以通过 `setMinDrawerMargin` 或 `setMaxDrawerWidth` 来设置 menu 的宽度
 
 contentFragment 可以是一个像 TabBarFragment 这样的容器。可以参考 demo 中 MainActivity 中的设置。
 
@@ -521,21 +523,21 @@ protected boolean preferredStatusBarColorAnimated();
 
 - preferredStatusBarStyle
 
-  默认的返回值是全局样式的 `style.getToolbarStyle()`。
+  默认的返回值是全局样式的 `style.getStatusBarStyle()`。
   
   BarStyle 是个枚举，有两个值。`LightContent` 表示状态栏文字是白色，如果你想把状态栏文字变成黑色，你需要使用 `DarkContent`。
  
   > 仅对 6.0 以上版本以及小米、魅族生效
   
-- prefersStatusBarHidden
+- preferredStatusBarHidden
 
   状态栏是否隐藏，默认是不隐藏。如果你需要隐藏状态栏，重写这个方法，把返回值改为 true 即可。
  
-- prefersStatusBarColor
+- preferredStatusBarColor
 
   状态栏的颜色，默认是全局样式 `style.getStatusBarColor()`，如果某个页面比较特殊，重写该方法，返回期待的颜色值即可。
     
-- prefersStatusBarColorAnimated
+- preferredStatusBarColorAnimated
 
   当状态栏的颜色由其它颜色转变成当前页面所期待的颜色时，需不需要对颜色做过渡动画，默认是 true，使得过渡更自然。如果某个界面状态栏出现闪烁，你需要关闭它。
  
@@ -595,9 +597,15 @@ protected boolean shouldHideBackButton() {
 }
 ```
 
-因为当前页面没有返回按钮，因此用户也不能通过返回键（物理的或虚拟的）返回。
+如果你希望禁止用户通过返回键（物理的或虚拟的）退出当前页面，你可以重写以下方法，并返回 false。
 
-你也可以通过重写以下方法来禁止自动创建 Toolbar 这一行为
+```java
+protected boolean backInteractive() {
+    return false;
+}
+```
+
+如果你不希望自动为你创建 Toolbar, 你可以重写以下方法，并返回 null。
 
 ```java
 protected Toolbar onCreateToolbar(View parent) { 
