@@ -708,15 +708,19 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     private void adjustBottomPaddingIfNeeded(final View root) {
         int index = getIndexAtBackStack();
+
         if (index == 0 || !shouldHideBottomBarWhenPushed()) {
-            final TabBarFragment tabBarFragment = getTabBarFragment();
-            if (tabBarFragment != null) {
-                root.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        root.setPadding(0, 0, 0, tabBarFragment.getBottomBar().getHeight());
-                    }
-                });
+            int color = Color.parseColor(style.getBottomBarBackgroundColor());
+            if (Color.alpha(color) == 255) {
+                final TabBarFragment tabBarFragment = getTabBarFragment();
+                if (tabBarFragment != null) {
+                    root.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            root.setPadding(0, 0, 0, tabBarFragment.getBottomBar().getHeight());
+                        }
+                    });
+                }
             }
         }
     }

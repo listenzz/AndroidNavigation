@@ -54,5 +54,6 @@ public class MainActivity extends AwesomeActivity {
     protected void onCustomStyle(Style style) {
         // style.setTitleGravity(Gravity.CENTER);
         // style.setBottomBarBackgroundColor("#3F51B5");
+        // style.setBottomBarBackgroundColor("#FDFFFFFF");
     }
 }
