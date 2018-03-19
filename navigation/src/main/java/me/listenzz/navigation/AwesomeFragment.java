@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -846,7 +847,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         int color = style.getToolbarButtonTintColor();
         if (!enabled) {
             color = AppUtils.toGrey(color);
-            button.setAlpha(0.6f);
+            color = ColorUtils.blendARGB(color, style.getToolbarBackgroundColor(), 0.75f);
         }
         button.setEnabled(enabled);
 
