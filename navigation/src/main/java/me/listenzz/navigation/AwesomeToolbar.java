@@ -67,9 +67,10 @@ public class AwesomeToolbar extends Toolbar {
 
     @Override
     public void setBackgroundColor(int color) {
-        int alpha = Color.alpha(color);
-        setBackground(new ColorDrawable(Color.rgb(Color.red(color), Color.green(color), Color.blue(color))));
-        setAlpha(alpha * 1.0f / 255);
+        setBackground(new ColorDrawable(color));
+        if (color == Color.TRANSPARENT) {
+            hideShadow();
+        }
     }
 
     @Override
