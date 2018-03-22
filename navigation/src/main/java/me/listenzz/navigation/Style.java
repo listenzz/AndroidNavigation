@@ -20,9 +20,15 @@ public class Style implements Cloneable {
     private int screenBackgroundColor = Color.WHITE;
 
     private BarStyle statusBarStyle = BarStyle.LightContent;
-    private Drawable backIcon;
     private int statusBarColor = Color.TRANSPARENT;
+
+
+
+    private boolean statusBarColorAnimated = true;
+    private boolean statusBarHidden = false;
+
     private int toolbarBackgroundColor = INVALID_COLOR;
+    private Drawable backIcon;
     private int toolbarTintColor = INVALID_COLOR;
     private int titleTextColor = INVALID_COLOR;
     private int titleTextSize = 17;
@@ -41,7 +47,7 @@ public class Style implements Cloneable {
 
     private Context context;
 
-    protected Style (Context context) {
+    protected Style(Context context) {
         this.context = context;
         statusBarColor = AppUtils.fetchContextColor(context, R.attr.colorPrimaryDark);
         toolbarBackgroundColor = AppUtils.fetchContextColor(context, R.attr.colorPrimary);
@@ -83,7 +89,7 @@ public class Style implements Cloneable {
         this.bottomBarInactiveColor = bottomBarInactiveColor;
     }
 
-    // ------- toolBar ---------
+    // ------- toolbar ---------
 
     public void setStatusBarStyle(BarStyle barStyle) {
         statusBarStyle = barStyle;
@@ -101,7 +107,26 @@ public class Style implements Cloneable {
         return statusBarColor;
     }
 
+    public boolean isStatusBarColorAnimated() {
+        return statusBarColorAnimated;
+    }
+
+    public void setStatusBarColorAnimated(boolean statusBarColorAnimated) {
+        this.statusBarColorAnimated = statusBarColorAnimated;
+    }
+
+    public boolean isStatusBarHidden() {
+        return statusBarHidden;
+    }
+
+    public void setStatusBarHidden(boolean statusBarHidden) {
+        this.statusBarHidden = statusBarHidden;
+    }
+
     public void setToolbarBackgroundColor(int color) {
+        if (toolbarBackgroundColor == statusBarColor) {
+            statusBarColor = color;
+        }
         toolbarBackgroundColor = color;
     }
 

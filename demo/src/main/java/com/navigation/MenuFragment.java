@@ -21,7 +21,6 @@ import me.listenzz.navigation.AwesomeFragment;
 
 public class MenuFragment extends AwesomeFragment {
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
