@@ -55,11 +55,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
 
-    private Style style;
-
-    public Style getStyle() {
-        return style;
-    }
+    protected Style style;
 
     @Override
     public void onAttach(Context context) {
@@ -94,6 +90,10 @@ public abstract class AwesomeFragment extends DialogFragment {
         return layoutInflater;
     }
 
+    protected void onCustomStyle(Style style) {
+
+    }
+
     @Override
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
@@ -117,10 +117,6 @@ public abstract class AwesomeFragment extends DialogFragment {
             root.setBackground(drawable);
             getWindow().setBackgroundDrawable(null);
         }
-    }
-
-    protected void onCustomStyle(Style style) {
-
     }
 
     private boolean viewAppear;
@@ -670,10 +666,6 @@ public abstract class AwesomeFragment extends DialogFragment {
         return toolbar;
     }
 
-    public int getToolbarHeight() {
-        return AppUtils.fetchContextDimension(getContext(), R.attr.actionBarSize);
-    }
-
     private void handleNavigationFragmentStuff(@NonNull View root) {
         AwesomeFragment parent = getParentAwesomeFragment();
         boolean hasNavigationParent = parent != null && (parent instanceof NavigationFragment);
@@ -746,6 +738,10 @@ public abstract class AwesomeFragment extends DialogFragment {
         customAwesomeToolbar(toolbar);
 
         return toolbar;
+    }
+
+    public int getToolbarHeight() {
+        return AppUtils.fetchContextDimension(getContext(), R.attr.actionBarSize);
     }
 
     private void customAwesomeToolbar(AwesomeToolbar toolbar) {

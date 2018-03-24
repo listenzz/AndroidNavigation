@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.navigation.dialog.DialogEntryFragment;
 import com.navigation.sharedelement.GridFragment;
 import com.navigation.toolbar.CoordinatorFragment;
-import com.navigation.toolbar.ToolBarColorTransitionFragment;
+import com.navigation.toolbar.ToolbarColorTransitionFragment;
 import com.navigation.toolbar.ViewPagerFragment;
 
 import me.listenzz.navigation.AwesomeFragment;
@@ -33,7 +33,7 @@ public class MenuFragment extends AwesomeFragment {
             @Override
             public void onClick(View v) {
                 getDrawerFragment().closeMenu();
-                getNavigationFragment().pushFragment(new ToolBarColorTransitionFragment());
+                getNavigationFragment().pushFragment(new ToolbarColorTransitionFragment());
 
             }
         });

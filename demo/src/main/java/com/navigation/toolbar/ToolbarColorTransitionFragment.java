@@ -20,7 +20,7 @@ import me.listenzz.navigation.Style;
  * Created by Listen on 2018/2/1.
  */
 
-public class ToolBarColorTransitionFragment extends AwesomeFragment {
+public class ToolbarColorTransitionFragment extends AwesomeFragment {
 
     @Override
     protected int preferredStatusBarColor() {
@@ -53,9 +53,9 @@ public class ToolBarColorTransitionFragment extends AwesomeFragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int alpha = progress * 255 / 100;
-                Toolbar topBar = getToolbar();
-                int color = ColorUtils.setAlphaComponent(getStyle().getToolbarBackgroundColor(), alpha);
-                topBar.setBackgroundColor(color);
+                int color = ColorUtils.setAlphaComponent(style.getToolbarBackgroundColor(), alpha);
+                style.setToolbarBackgroundColor(color);
+                setNeedsToolbarAppearanceUpdate();
             }
 
             @Override
