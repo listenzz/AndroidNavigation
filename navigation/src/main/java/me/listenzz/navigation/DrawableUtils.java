@@ -76,7 +76,6 @@ public class DrawableUtils {
         }
 
         return drawable;
-
     }
 
     public static int fromResourceDrawableId(Context context, @Nullable String name) {

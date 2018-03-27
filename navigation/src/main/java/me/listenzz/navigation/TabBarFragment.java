@@ -272,7 +272,7 @@ public class TabBarFragment extends AwesomeFragment {
         });
     }
 
-    protected BottomNavigationBar getBottomBar() {
+    public BottomBar getBottomBar() {
         return bottomBar;
     }
 
