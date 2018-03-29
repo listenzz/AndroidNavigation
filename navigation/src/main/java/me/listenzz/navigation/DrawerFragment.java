@@ -20,6 +20,9 @@ import java.util.List;
 
 public class DrawerFragment extends AwesomeFragment implements DrawerLayout.DrawerListener {
 
+    private static final String MIN_DRAWER_MARGIN_KEY = "MIN_DRAWER_MARGIN_KEY";
+    private static final String MAX_DRAWER_WIDTH_KEY = "MAX_DRAWER_WIDTH_KEY";
+
     private DrawerLayout drawerLayout;
     private boolean isClosing;
     private int minDrawerMargin = 64; // dp
@@ -31,6 +34,11 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         View root = inflater.inflate(R.layout.nav_fragment_drawer, container, false);
         drawerLayout = root.findViewById(R.id.drawer);
         drawerLayout.addDrawerListener(this);
+
+        if (savedInstanceState != null) {
+            minDrawerMargin = savedInstanceState.getInt(MIN_DRAWER_MARGIN_KEY, 64);
+            maxDrawerWidth = savedInstanceState.getInt(MAX_DRAWER_WIDTH_KEY);
+        }
 
         FrameLayout menuLayout = drawerLayout.findViewById(R.id.drawer_menu);
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) menuLayout.getLayoutParams();
@@ -49,6 +57,13 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         layoutParams.rightMargin = margin - AppUtils.dp2px(getContext(), 64);
 
         return root;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(MIN_DRAWER_MARGIN_KEY, minDrawerMargin);
+        outState.putInt(MAX_DRAWER_WIDTH_KEY, maxDrawerWidth);
     }
 
     @Override
