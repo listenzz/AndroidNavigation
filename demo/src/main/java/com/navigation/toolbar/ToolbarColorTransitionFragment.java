@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.SeekBar;
 import com.navigation.R;
 
 import me.listenzz.navigation.AwesomeFragment;
+import me.listenzz.navigation.AwesomeToolbar;
 import me.listenzz.navigation.Style;
 
 
@@ -32,10 +32,10 @@ public class ToolbarColorTransitionFragment extends AwesomeFragment {
     }
 
     @Override
-    protected Toolbar onCreateToolbar(View parent) {
-        Toolbar toolbar =  super.onCreateToolbar(parent);
+    protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
+        AwesomeToolbar toolbar = super.onCreateAwesomeToolbar(parent);
         toolbar.setBackgroundColor(Color.TRANSPARENT);
-        return  toolbar;
+        return toolbar;
     }
 
     @Override

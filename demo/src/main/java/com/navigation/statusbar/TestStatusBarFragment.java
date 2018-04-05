@@ -1,6 +1,5 @@
 package com.navigation.statusbar;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -13,10 +12,10 @@ import com.navigation.toolbar.NoToolbarFragment;
 
 import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.BarStyle;
-import me.listenzz.navigation.DrawableUtils;
 import me.listenzz.navigation.DrawerFragment;
 import me.listenzz.navigation.NavigationFragment;
 import me.listenzz.navigation.Style;
+import me.listenzz.navigation.ToolbarButtonItem;
 
 /**
  * Created by listen on 2018/1/12.
@@ -101,16 +100,16 @@ public class TestStatusBarFragment extends AwesomeFragment {
         super.onActivityCreated(savedInstanceState);
         setTitle("状态栏");
         if (isNavigationRoot()) {
-            Drawable icon = DrawableUtils.fromFont(getContext(), "FontAwesome", fromCharCode(61641), 24, -1 );
-            setToolbarLeftButton(icon, "Menu", true, new View.OnClickListener() {
+            String iconUri = "font://FontAwesome/" + fromCharCode(61641) + "/24";
+            setLeftBarButtonItem(new ToolbarButtonItem(iconUri, "Menu", true, new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(View view) {
                     DrawerFragment drawerFragment = getDrawerFragment();
                     if (drawerFragment != null) {
                         drawerFragment.toggleMenu();
                     }
                 }
-            });
+            }));
         }
     }
 

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.navigation.R;
 
 import me.listenzz.navigation.AwesomeFragment;
+import me.listenzz.navigation.AwesomeToolbar;
 import me.listenzz.navigation.BarStyle;
 
 
@@ -29,7 +30,7 @@ public class CustomStatusBarFragment extends AwesomeFragment implements Compound
     TextView textView;
 
     @Override
-    protected Toolbar onCreateToolbar(View parent) {
+    protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
         return null; // 自定义 Toolbar
     }
 

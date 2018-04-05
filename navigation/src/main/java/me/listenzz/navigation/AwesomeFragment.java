@@ -3,13 +3,11 @@ package me.listenzz.navigation;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -17,20 +15,15 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.ColorUtils;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -542,7 +535,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     @CallSuper
     protected void onStatusBarTranslucentChanged(boolean translucent) {
-        Toolbar toolbar = getToolbar();
+        AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
             if (translucent) {
                 appendStatusBarPadding(toolbar, getToolbarHeight());
@@ -660,9 +653,9 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
-    private volatile Toolbar toolbar;
+    private volatile AwesomeToolbar toolbar;
 
-    public Toolbar getToolbar() {
+    public AwesomeToolbar getAwesomeToolbar() {
         return toolbar;
     }
 
@@ -677,7 +670,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     private void createToolbarIfNeeded(@NonNull View root) {
-        Toolbar toolbar = onCreateToolbar(root);
+        AwesomeToolbar toolbar = onCreateAwesomeToolbar(root);
         if (toolbar != null && !isNavigationRoot() && !shouldHideBackButton()) {
             toolbar.setNavigationIcon(style.getBackIcon());
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -709,7 +702,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
-    protected Toolbar onCreateToolbar(View parent) {
+    protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
         if (getView() == null || getContext() == null) return null;
 
         TypedValue typedValue = new TypedValue();
@@ -727,7 +720,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             frameLayout.addView(toolbar, new FrameLayout.LayoutParams(-1, height));
         } else {
             throw new UnsupportedOperationException("AwesomeFragment 无法为 " + parent.getClass().getSimpleName()
-                    + " 添加 Toolbar. 请重写 onCreateToolbar 并返回 null, 这样你就可以自行添加 Toolbar 了。");
+                    + " 添加 Toolbar. 请重写 onCreateAwesomeToolbar 并返回 null, 这样你就可以自行添加 Toolbar 了。");
         }
 
         if (isStatusBarTranslucent()) {
@@ -746,6 +739,11 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     private void customAwesomeToolbar(AwesomeToolbar toolbar) {
         toolbar.setBackgroundColor(preferredToolbarColor());
+        toolbar.setButtonTintColor(style.getToolbarButtonTintColor());
+        toolbar.setButtonTextSize(style.getToolbarButtonTextSize());
+        toolbar.setTitleTextColor(style.getTitleTextColor());
+        toolbar.setTitleTextSize(style.getTitleTextSize());
+        toolbar.setTitleGravity(style.getTitleGravity());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(style.getElevation());
         } else {
@@ -762,121 +760,108 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     public void setNeedsToolbarAppearanceUpdate() {
-        Toolbar toolbar = getToolbar();
+        AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
             toolbar.setBackgroundColor(preferredToolbarColor());
         }
     }
 
     public void setTitle(@StringRes int resId) {
-        setTitle(getContext().getText(resId));
+        if (getContext() != null) {
+            setTitle(getContext().getText(resId));
+        }
     }
 
     public void setTitle(CharSequence title) {
-        Toolbar toolbar = getToolbar();
+        AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
-            if (toolbar instanceof AwesomeToolbar) {
-                AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolbar;
-                awesomeToolbar.setTitleGravity(style.getTitleGravity());
-                TextView titleView = awesomeToolbar.getTitleView();
-                titleView.setText(title);
-                titleView.setTextColor(style.getTitleTextColor());
-                titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, style.getTitleTextSize());
-            } else {
-                toolbar.setTitle(title);
-            }
+            toolbar.setTitle(title);
         }
     }
 
-    public void setToolbarLeftButton(@DrawableRes int icon, @StringRes int title, boolean enabled, final View.OnClickListener onClickListener) {
-        setToolbarLeftButton(ContextCompat.getDrawable(getContext(), icon), getContext().getString(title), enabled, onClickListener);
-    }
-
-    public void setToolbarLeftButton(Drawable icon, String title, boolean enabled, final View.OnClickListener onClickListener) {
-        Toolbar toolbar = getToolbar();
+    public void setLeftBarButtonItems(ToolbarButtonItem[] barButtonItems) {
+        AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
-            if (toolbar instanceof AwesomeToolbar) {
-                AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolbar;
-                TextView leftButton = awesomeToolbar.getLeftButton();
-                toolbar.setNavigationIcon(null);
-                toolbar.setNavigationOnClickListener(null);
-                setAwesomeToolbarButton(awesomeToolbar, leftButton, icon, title, enabled);
-                leftButton.setOnClickListener(onClickListener);
-            } else {
-                toolbar.setNavigationIcon(icon);
+            toolbar.clearLeftButtons();
+            if (barButtonItems == null && !isNavigationRoot() && !shouldHideBackButton()) {
+                toolbar.setNavigationIcon(style.getBackIcon());
                 toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        onClickListener.onClick(v);
+                    public void onClick(View view) {
+                        getNavigationFragment().popFragment();
                     }
                 });
+                return;
+            }
+
+            for (ToolbarButtonItem barButtonItem: barButtonItems) {
+                Drawable drawable = drawableFromBarButtonItem(barButtonItem);
+                toolbar.addLeftButton(drawable, barButtonItem.title, barButtonItem.enabled, barButtonItem.onClickListener);
             }
         }
     }
 
-    public void setToolbarRightButton(@DrawableRes int icon, @StringRes int title, boolean enabled, final View.OnClickListener onClickListener) {
-        setToolbarRightButton(ContextCompat.getDrawable(getContext(), icon), getContext().getString(title), enabled, onClickListener);
-    }
-
-    public void setToolbarRightButton(Drawable icon, String title, boolean enabled, final View.OnClickListener onClickListener) {
-        Toolbar toolbar = getToolbar();
+    public void setRightBarButtonItems(ToolbarButtonItem[] barButtonItems) {
+        AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
-            if (toolbar instanceof AwesomeToolbar) {
-                AwesomeToolbar awesomeToolbar = (AwesomeToolbar) toolbar;
-                TextView rightButton = awesomeToolbar.getRightButton();
-                setAwesomeToolbarButton(awesomeToolbar, rightButton, icon, title, enabled);
-                rightButton.setOnClickListener(onClickListener);
-            } else {
-                Menu menu = toolbar.getMenu();
-                MenuItem menuItem = menu.add(title);
-                menuItem.setIcon(icon);
-                menuItem.setEnabled(enabled);
-                menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-                menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        onClickListener.onClick(null);
-                        return true;
-                    }
-                });
+            toolbar.clearRightButtons();
+            if (barButtonItems == null) {
+                return;
+            }
+            for (ToolbarButtonItem barButtonItem: barButtonItems) {
+                Drawable drawable = drawableFromBarButtonItem(barButtonItem);
+                toolbar.addRightButton(drawable, barButtonItem.title, barButtonItem.enabled, barButtonItem.onClickListener);
             }
         }
     }
 
-    private void setAwesomeToolbarButton(AwesomeToolbar toolbar, TextView button, Drawable icon, String title, boolean enabled) {
-        button.setOnClickListener(null);
-        button.setText(null);
-        button.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-        button.setMaxWidth(Integer.MAX_VALUE);
-        button.setAlpha(1.0f);
-        button.setVisibility(View.VISIBLE);
-
-        int color = style.getToolbarButtonTintColor();
-        if (!enabled) {
-            color = AppUtils.toGrey(color);
-            color = ColorUtils.blendARGB(color, style.getToolbarBackgroundColor(), 0.75f);
+    public void setLeftBarButtonItem(ToolbarButtonItem barButtonItem) {
+        AwesomeToolbar toolbar = getAwesomeToolbar();
+        if (toolbar != null) {
+            if (barButtonItem == null) {
+                toolbar.clearLeftButtons();
+                if (!isNavigationRoot() && !shouldHideBackButton()) {
+                    toolbar.setNavigationIcon(style.getBackIcon());
+                    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            getNavigationFragment().popFragment();
+                        }
+                    });
+                }
+                return;
+            }
+            Drawable drawable = drawableFromBarButtonItem(barButtonItem);
+            toolbar.setLeftButton(drawable, barButtonItem.title, barButtonItem.enabled, barButtonItem.onClickListener);
         }
-        button.setEnabled(enabled);
+    }
 
-        if (icon != null) {
-            icon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
-            button.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
-            int width = toolbar.getContentInsetStartWithNavigation();
-            int padding = (width - icon.getIntrinsicWidth()) / 2;
-            button.setMaxWidth(width);
-            button.setPaddingRelative(padding, 0, padding, 0);
-        } else {
-            int padding = toolbar.getContentInset();
-            button.setPaddingRelative(padding, 0, padding, 0);
-            button.setText(title);
-            button.setTextColor(color);
-            button.setTextSize(style.getToolbarButtonTextSize());
+    public void setRightBarButtonItem(ToolbarButtonItem barButtonItem) {
+        AwesomeToolbar toolbar = getAwesomeToolbar();
+        if (toolbar != null) {
+            if (barButtonItem == null) {
+                toolbar.clearRightButtons();
+                return;
+            }
+            Drawable drawable = drawableFromBarButtonItem(barButtonItem);
+            toolbar.setRightButton(drawable, barButtonItem.title, barButtonItem.enabled, barButtonItem.onClickListener);
         }
+    }
 
-        TypedValue typedValue = new TypedValue();
-        if (getContext().getTheme().resolveAttribute(R.attr.actionBarItemBackground, typedValue, true)) {
-            button.setBackgroundResource(typedValue.resourceId);
+    private Drawable drawableFromBarButtonItem(ToolbarButtonItem barButtonItem) {
+        if (getContext() == null) {
+            return null;
         }
+        Drawable drawable = null;
+        if (barButtonItem.iconUri != null) {
+            drawable = DrawableUtils.fromUri(getContext(), barButtonItem.iconUri);
+        } else if (barButtonItem.iconRes != 0) {
+            drawable = getContext().getResources().getDrawable(barButtonItem.iconRes);
+        }
+        if (drawable != null) {
+            drawable = DrawableCompat.wrap(drawable);
+        }
+        return drawable;
     }
 
     // ------ TabBarFragment -------

@@ -38,7 +38,7 @@ public class MainActivity extends AwesomeActivity {
             statusBar.setTabBarItem(new TabBarItem(R.drawable.flower, "Status"));
 
             TabBarFragment tabBarFragment = new TabBarFragment();
-            tabBarFragment.setFragments(navigation, statusBar);
+            tabBarFragment.setChildFragments(navigation, statusBar);
 
             DrawerFragment drawerFragment = new DrawerFragment();
             drawerFragment.setMenuFragment(new MenuFragment());

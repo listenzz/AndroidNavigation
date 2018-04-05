@@ -97,11 +97,11 @@ public class TabBarFragment extends AwesomeFragment {
         return getSelectedFragment();
     }
 
-    public void setFragments(AwesomeFragment... fragments) {
-        setFragments(Arrays.asList(fragments));
+    public void setChildFragments(AwesomeFragment... fragments) {
+        setChildFragments(Arrays.asList(fragments));
     }
 
-    public void setFragments(final List<AwesomeFragment> fragments) {
+    public void setChildFragments(final List<AwesomeFragment> fragments) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
@@ -110,6 +110,10 @@ public class TabBarFragment extends AwesomeFragment {
             }
         });
         this.fragments = fragments;
+    }
+
+    public List<AwesomeFragment> getChildFragments() {
+        return fragments;
     }
 
     private void addFragments(List<AwesomeFragment> fragments) {

@@ -7,6 +7,7 @@ import android.view.View;
 
 import me.listenzz.navigation.BarStyle;
 import me.listenzz.navigation.Style;
+import me.listenzz.navigation.ToolbarButtonItem;
 
 
 /**
@@ -34,9 +35,9 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setToolbarRightButton(null, "切换", true, new View.OnClickListener() {
+        setRightBarButtonItem(new ToolbarButtonItem(null, "切换", true, new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 if (preferredStatusBarStyle() == BarStyle.DarkContent) {
                     barStyle = BarStyle.LightContent;
                 } else {
@@ -44,10 +45,7 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
                 }
                 setNeedsStatusBarAppearanceUpdate();
             }
-        });
-
+        }));
     }
-
-
 
 }

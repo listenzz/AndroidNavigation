@@ -569,25 +569,37 @@ AwesomeFragment 中有一个 `onStatusBarTranslucentChanged(boolean translucent)
 
 - setTitle
 
-  设置 Toolbar 标题
+    设置 Toolbar 标题
 
-- setToolbarLeftButton
+- setLeftBarButtonItem
 
-  设置 Toolbar 左侧按钮
+    设置 Toolbar 左侧按钮
   
-- setToolbarRightButton
+- setLeftBarButtonItems
 
-  设置 Toolbar 右侧按钮，如果你需要更多按钮，请在 `onActivityCreated` 中
+    为左侧设置多个按钮时，使用此方法
   
-  ```java
+- setRightBarButtonItem
+
+    设置 Toolbar 右侧按钮，
+  
+- setRightBarButtonItems
+
+    为右侧设置多个按钮时，使用此方法
+  
+    当然，你也可以设置 Menu
+  
+    ```java
     Menu menu = getToolbar().getMenu();
     MenuItem menuItem = menu.add(title);
     menuItem.setIcon(icon);
     menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
     menuItem.setOnMenuItemClickListener();
-  ```
+    ```
   
-Toolbar 的创建时机是在 Fragment `onViewCreated` 这个生命周期函数中，在此之前之前，调用 getToolbar 得到的返回值为 null。
+> 请在 `onActivityCreated` 中调用上面这些方法
+
+Toolbar 的创建时机是在 Fragment `onViewCreated` 这个生命周期函数中，在此之前之前，调用 getAwesomeToolbar 得到的返回值为 null。
 
 如果当前 fragment 不是 NavigationFragment 的 rootFragment，会自动在 Toolbar 上创建返回按钮。如果你不希望当前页面有返回按钮，可以重写以下方法。
 
@@ -608,7 +620,7 @@ protected boolean backInteractive() {
 如果你不希望自动为你创建 Toolbar, 你可以重写以下方法，并返回 null。
 
 ```java
-protected Toolbar onCreateToolbar(View parent) { 
+protected AwesomeToolbar onCreateAwesomeToolbar(View parent) { 
     return null;
 }
 ```
@@ -622,7 +634,6 @@ demo 中，CoordinatorFragment 和 ViewPagerFragment 就使用了自定义的 To
 <a name="using-font-icons"></a>
 
 ### 使用 font icons
-
 
 把你的 font icon 文件放到 assets/fonts 目录中，就像 demo 所做的那样。每个图标会有一个可读的 name， 以及一个 code point，我们通常通过 name 来查询 code point，当然也可以人肉查好后直接使用 code point，demo 中就是这样。
 
@@ -643,8 +654,6 @@ font://fontName/glyph/size/color
 其中 fontName 就是你放在 aseets/fonts 文件夹中的字体文件名，但不包括后缀。size 是字体大小，如 24，color 是字体颜色，可选，只支持 RRGGBB 格式。
 
 可以参考 demo 中 MainActivity 中是怎样构建一个 fontUri 的。
-
-可以参考 demo 中 TestNavigationFragment 怎样利用 `DrawableUtils.fromFont` 把 font 转换成 drawable 的。
 
 <a name="specification"></a>
 
