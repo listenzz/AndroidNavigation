@@ -14,6 +14,9 @@ import com.navigation.toolbar.ToolbarColorTransitionFragment;
 import com.navigation.toolbar.ViewPagerFragment;
 
 import me.listenzz.navigation.AwesomeFragment;
+import me.listenzz.navigation.DrawerFragment;
+import me.listenzz.navigation.NavigationFragment;
+import me.listenzz.navigation.TabBarFragment;
 
 /**
  * Created by listen on 2018/1/13.
@@ -34,7 +37,6 @@ public class MenuFragment extends AwesomeFragment {
             public void onClick(View v) {
                 getDrawerFragment().closeMenu();
                 getNavigationFragment().pushFragment(new ToolbarColorTransitionFragment());
-
             }
         });
 
@@ -86,5 +88,16 @@ public class MenuFragment extends AwesomeFragment {
         super.onActivityCreated(savedInstanceState);
     }
 
-
+    @Override
+    public NavigationFragment getNavigationFragment() {
+        DrawerFragment drawerFragment = getDrawerFragment();
+        if (drawerFragment != null) {
+            TabBarFragment tabBarFragment = drawerFragment.getContentFragment().getTabBarFragment();
+            if (tabBarFragment != null) {
+                return tabBarFragment.getSelectedFragment().getNavigationFragment();
+            }
+            return drawerFragment.getContentFragment().getNavigationFragment();
+        }
+        return super.getNavigationFragment();
+    }
 }

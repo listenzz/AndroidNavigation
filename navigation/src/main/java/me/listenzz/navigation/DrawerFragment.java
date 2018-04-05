@@ -12,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import java.util.List;
-
 /**
  * Created by Listen on 2018/1/11.
  */
@@ -98,54 +96,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             return true;
         }
         return super.onBackPressed();
-    }
-
-    @Override
-    public NavigationFragment getNavigationFragment() {
-        NavigationFragment navigationFragment = super.getNavigationFragment();
-        if (navigationFragment == null && getContentFragment() != null) {
-            return findClosestNavigationFragment(getContentFragment());
-        }
-        return null;
-    }
-
-    private NavigationFragment findClosestNavigationFragment(AwesomeFragment fragment) {
-        if (fragment instanceof NavigationFragment) {
-            return (NavigationFragment) fragment;
-        }
-        AwesomeFragment primary = (AwesomeFragment) fragment.getChildFragmentManager().getPrimaryNavigationFragment();
-        if (primary != null) {
-            return findClosestNavigationFragment(primary);
-        }
-        List<AwesomeFragment> children = fragment.getChildFragmentsAtAddedList();
-        if (children != null && children.size() > 0) {
-            return findClosestNavigationFragment(children.get(children.size() - 1));
-        }
-        return null;
-    }
-
-    @Override
-    public TabBarFragment getTabBarFragment() {
-        TabBarFragment tabBarFragment = super.getTabBarFragment();
-        if (tabBarFragment == null && getContentFragment() != null) {
-            return findClosestTabBarFragment(getContentFragment());
-        }
-        return null;
-    }
-
-    private TabBarFragment findClosestTabBarFragment(AwesomeFragment fragment) {
-        if (fragment instanceof TabBarFragment) {
-            return (TabBarFragment) fragment;
-        }
-        AwesomeFragment primary = (AwesomeFragment) fragment.getChildFragmentManager().getPrimaryNavigationFragment();
-        if (primary != null) {
-            return findClosestTabBarFragment(primary);
-        }
-        List<AwesomeFragment> children = fragment.getChildFragmentsAtAddedList();
-        if (children != null && children.size() > 0) {
-            return findClosestTabBarFragment(children.get(children.size() - 1));
-        }
-        return null;
     }
 
     @Override
