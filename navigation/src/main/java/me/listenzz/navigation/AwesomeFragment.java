@@ -783,14 +783,16 @@ public abstract class AwesomeFragment extends DialogFragment {
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
             toolbar.clearLeftButtons();
-            if (barButtonItems == null && !isNavigationRoot() && !shouldHideBackButton()) {
-                toolbar.setNavigationIcon(style.getBackIcon());
-                toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        getNavigationFragment().popFragment();
-                    }
-                });
+            if (barButtonItems == null) {
+                if (!isNavigationRoot() && !shouldHideBackButton()) {
+                    toolbar.setNavigationIcon(style.getBackIcon());
+                    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            getNavigationFragment().popFragment();
+                        }
+                    });
+                }
                 return;
             }
 
@@ -819,7 +821,6 @@ public abstract class AwesomeFragment extends DialogFragment {
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
             if (barButtonItem == null) {
-                toolbar.clearLeftButtons();
                 if (!isNavigationRoot() && !shouldHideBackButton()) {
                     toolbar.setNavigationIcon(style.getBackIcon());
                     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -840,7 +841,6 @@ public abstract class AwesomeFragment extends DialogFragment {
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
             if (barButtonItem == null) {
-                toolbar.clearRightButtons();
                 return;
             }
             Drawable drawable = drawableFromBarButtonItem(barButtonItem);

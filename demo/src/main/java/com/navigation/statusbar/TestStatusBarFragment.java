@@ -101,7 +101,7 @@ public class TestStatusBarFragment extends AwesomeFragment {
         setTitle("状态栏");
         if (isNavigationRoot()) {
             String iconUri = "font://FontAwesome/" + fromCharCode(61641) + "/24";
-            setLeftBarButtonItem(new ToolbarButtonItem(iconUri, "Menu", true, new View.OnClickListener() {
+            ToolbarButtonItem item = new ToolbarButtonItem(iconUri, "Menu", true, new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     DrawerFragment drawerFragment = getDrawerFragment();
@@ -109,7 +109,8 @@ public class TestStatusBarFragment extends AwesomeFragment {
                         drawerFragment.toggleMenu();
                     }
                 }
-            }));
+            });
+            setLeftBarButtonItem(item);
         }
     }
 

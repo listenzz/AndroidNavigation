@@ -40,7 +40,6 @@ public class FragmentHelper {
 
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
-
     }
 
     public static AwesomeFragment getLatterFragment(FragmentManager fragmentManager, AwesomeFragment fragment) {
