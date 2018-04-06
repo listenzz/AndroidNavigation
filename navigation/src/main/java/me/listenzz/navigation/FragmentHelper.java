@@ -26,18 +26,15 @@ public class FragmentHelper {
     public static void addFragmentToBackStack(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment, PresentAnimation animation) {
         fragment.setAnimation(animation);
         AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentById(containerId);
-
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(containerId, fragment, fragment.getSceneId());
-        transaction.setPrimaryNavigationFragment(fragment);
-
         if (topFragment != null) {
             topFragment.setAnimation(animation);
             transaction.hide(topFragment);
         }
-
+        transaction.add(containerId, fragment, fragment.getSceneId());
+        transaction.setPrimaryNavigationFragment(fragment);
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
     }

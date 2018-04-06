@@ -105,7 +105,7 @@ public class TabBarFragment extends AwesomeFragment {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                addFragments(fragments);
+                executeSetChildFragments(fragments);
                 initBottomNavigationBar(fragments);
             }
         });
@@ -116,10 +116,10 @@ public class TabBarFragment extends AwesomeFragment {
         return fragments;
     }
 
-    private void addFragments(List<AwesomeFragment> fragments) {
+    private void executeSetChildFragments(List<AwesomeFragment> fragments) {
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setReorderingAllowed(true);
+        // transaction.setReorderingAllowed(true);
         for (int i = 0, size = fragments.size(); i < size; i++) {
             AwesomeFragment fragment = fragments.get(i);
             fragmentTags.add(fragment.getSceneId());
@@ -220,8 +220,8 @@ public class TabBarFragment extends AwesomeFragment {
                 Fragment previous = fragmentManager.getPrimaryNavigationFragment();
                 AwesomeFragment current = fragments.get(index);
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.hide(previous);
                 transaction.setPrimaryNavigationFragment(current);
+                transaction.hide(previous);
                 transaction.show(current);
                 transaction.commit();
 

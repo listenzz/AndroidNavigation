@@ -113,6 +113,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     private boolean viewAppear;
+
     private void notifyViewAppear(boolean appear) {
         if (viewAppear != appear) {
             viewAppear = appear;
@@ -126,7 +127,9 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     @CallSuper
     protected void onViewAppear() {
-        // Log.i(TAG, getDebugTag() + "#onViewAppear");
+        if (!isParentFragment()) {
+            //Log.i(TAG, getDebugTag() + "#onViewAppear");
+        }
         if (childFragmentForAppearance() == null) {
             setNeedsStatusBarAppearanceUpdate();
         }
@@ -134,14 +137,15 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     @CallSuper
     protected void onViewDisappear() {
-        // Log.i(TAG, getDebugTag() + "#onViewDisappear");
+        if (!isParentFragment()) {
+            //Log.i(TAG, getDebugTag() + "#onViewDisappear");
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // Log.i(TAG, getDebugTag() + "#onResume");
-        if (getUserVisibleHint() && !isFragmentHidden()) {
+        if (isPrimary()) {
             notifyViewAppear(true);
         }
     }
@@ -149,57 +153,47 @@ public abstract class AwesomeFragment extends DialogFragment {
     @Override
     public void onPause() {
         super.onPause();
-        // Log.i(TAG, getDebugTag() + "#onPause");
-        if (getUserVisibleHint() && !isFragmentHidden()) {
-            notifyViewAppear(false);
-        }
+        notifyViewAppear(false);
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        // Log.i(TAG, getDebugTag() + "#onHiddenChanged:" + hidden);
-        if (isResumed() && getUserVisibleHint()) {
-            notifyViewAppear(!hidden);
+        if (!hidden) {
+            if(isPrimary()) {
+                notifyViewAppear(true);
+            }
+        } else {
+            notifyViewAppear(false);
         }
 
-        List<AwesomeFragment> fragments = getChildFragmentsAtAddedList();
-        for (AwesomeFragment fragment : fragments) {
-            fragment.onHiddenChanged(hidden);
+        List<AwesomeFragment> children = getChildFragmentsAtAddedList();
+        for (int i = 0; i < children.size(); i++) {
+            AwesomeFragment child = children.get(i);
+            child.onHiddenChanged(hidden);
         }
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        // Log.i(TAG, getDebugTag() + "#isVisibleToUser:" + isVisibleToUser);
-        if (isResumed() && !isFragmentHidden()) {
-            notifyViewAppear(isVisibleToUser);
-        }
-
-        List<AwesomeFragment> fragments = getChildFragmentsAtAddedList();
-        for (AwesomeFragment fragment : fragments) {
-            fragment.setUserVisibleHint(isVisibleToUser);
-        }
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                notifyViewAppear(isVisibleToUser);
+            }
+        });
     }
 
-    public boolean isFragmentHidden() {
-        boolean hidden = super.isHidden();
-        if (hidden) {
-            return true;
+    protected boolean isPrimary() {
+        boolean primary = getFragmentManager() != null && getFragmentManager().getPrimaryNavigationFragment() == this;
+        if (primary) {
+            AwesomeFragment parent = getParentAwesomeFragment();
+            if (parent != null) {
+                return parent.isPrimary();
+            }
         }
-        AwesomeFragment parent = getParentAwesomeFragment();
-        return parent!= null &&  parent.isFragmentHidden();
-    }
-
-    @Override
-    public boolean getUserVisibleHint() {
-        boolean isVisibleToUser = super.getUserVisibleHint();
-        if (!isVisibleToUser) {
-            return false;
-        }
-        AwesomeFragment parent = getParentAwesomeFragment();
-        return parent == null || parent.getUserVisibleHint();
+        return primary;
     }
 
     @Override
@@ -402,6 +396,10 @@ public abstract class AwesomeFragment extends DialogFragment {
         return null;
     }
 
+    public boolean isParentFragment() {
+        return false;
+    }
+
     private PresentAnimation animation = null;
 
     public void setAnimation(PresentAnimation animation) {
@@ -421,10 +419,6 @@ public abstract class AwesomeFragment extends DialogFragment {
             }
         }
         return animation;
-    }
-
-    public boolean isParentFragment() {
-        return false;
     }
 
     // ------- statusBar --------
@@ -483,7 +477,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             setStatusBarStyle(preferredStatusBarStyle());
 
             // statusBarColor
-            boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor() == Color.TRANSPARENT ? preferredToolbarColor(): preferredStatusBarColor(), 176);
+            boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor() == Color.TRANSPARENT ? preferredToolbarColor() : preferredStatusBarColor(), 176);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !AppUtils.isMiuiV6()) {
                 shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
             }
@@ -796,7 +790,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                 return;
             }
 
-            for (ToolbarButtonItem barButtonItem: barButtonItems) {
+            for (ToolbarButtonItem barButtonItem : barButtonItems) {
                 Drawable drawable = drawableFromBarButtonItem(barButtonItem);
                 toolbar.addLeftButton(drawable, barButtonItem.title, barButtonItem.enabled, barButtonItem.onClickListener);
             }
@@ -810,7 +804,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             if (barButtonItems == null) {
                 return;
             }
-            for (ToolbarButtonItem barButtonItem: barButtonItems) {
+            for (ToolbarButtonItem barButtonItem : barButtonItems) {
                 Drawable drawable = drawableFromBarButtonItem(barButtonItem);
                 toolbar.addRightButton(drawable, barButtonItem.title, barButtonItem.enabled, barButtonItem.onClickListener);
             }

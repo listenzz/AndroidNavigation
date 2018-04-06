@@ -23,15 +23,6 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        AwesomeFragment top = getTopFragment();
-        if (top != null) {
-            setUserVisibleHint(!hidden);
-        }
-    }
-
-    @Override
     public boolean isParentFragment() {
         return true;
     }
@@ -60,12 +51,12 @@ public class NavigationFragment extends AwesomeFragment {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                addRootFragment(fragment);
+                executeSetRootFragment(fragment);
             }
         });
     }
 
-    private void addRootFragment(AwesomeFragment fragment) {
+    private void executeSetRootFragment(AwesomeFragment fragment) {
         AwesomeFragment root =  getRootFragment();
         if (root != null) {
             throw new IllegalStateException("不可以重复设置 rootFragment");
@@ -75,11 +66,21 @@ public class NavigationFragment extends AwesomeFragment {
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
+        transaction.setPrimaryNavigationFragment(fragment);
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
     }
 
-    public void pushFragment(AwesomeFragment fragment) {
+    public void pushFragment(final AwesomeFragment fragment) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                executePushFragment(fragment);
+            }
+        });
+    }
+
+    private void executePushFragment(AwesomeFragment fragment) {
         int count = getChildFragmentCountAtBackStack();
         if (count == 0) {
             throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
@@ -109,7 +110,6 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     public void popFragment() {
-
         AwesomeFragment after = FragmentHelper.getLatterFragment(getChildFragmentManager(), getTopFragment());
         if (after != null) {
             popToFragment(this);
@@ -154,15 +154,14 @@ public class NavigationFragment extends AwesomeFragment {
         }
 
         fragmentManager.popBackStack();
-
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
-
         if (aheadFragment != null) {
             transaction.hide(aheadFragment);
         }
+        transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
+        transaction.setPrimaryNavigationFragment(fragment);
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
     }
@@ -193,6 +192,7 @@ public class NavigationFragment extends AwesomeFragment {
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
+        transaction.setPrimaryNavigationFragment(fragment);
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
     }

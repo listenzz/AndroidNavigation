@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +65,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     @Override
     public void presentFragment(final AwesomeFragment fragment) {
-        Log.i(TAG, "schedule present");
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
@@ -77,7 +75,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     @Override
     public void dismissFragment(final AwesomeFragment fragment) {
-        Log.i(TAG, "schedule dismiss");
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
@@ -127,6 +124,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(android.R.id.content, fragment, fragment.getSceneId());
+        transaction.setPrimaryNavigationFragment(fragment);
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
     }
