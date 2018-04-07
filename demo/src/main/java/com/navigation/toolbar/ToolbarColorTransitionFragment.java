@@ -3,7 +3,6 @@ package com.navigation.toolbar;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.graphics.ColorUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import android.widget.SeekBar;
 import com.navigation.R;
 
 import me.listenzz.navigation.AwesomeFragment;
-import me.listenzz.navigation.AwesomeToolbar;
 import me.listenzz.navigation.Style;
 
 
@@ -37,15 +35,8 @@ public class ToolbarColorTransitionFragment extends AwesomeFragment {
     }
 
     @Override
-    protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
-        AwesomeToolbar toolbar = super.onCreateAwesomeToolbar(parent);
-        toolbar.setBackgroundColor(Color.TRANSPARENT);
-        return toolbar;
-    }
-
-    @Override
     protected void onCustomStyle(Style style) {
-       style.setToolbarBackgroundColor(Color.parseColor("#EE6413"));
+        style.setToolbarBackgroundColor(Color.parseColor("#EE6413"));
     }
 
     @Nullable
@@ -57,10 +48,7 @@ public class ToolbarColorTransitionFragment extends AwesomeFragment {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int alpha = progress * 255 / 100;
-                int color = ColorUtils.setAlphaComponent(style.getToolbarBackgroundColor(), alpha);
-                style.setToolbarBackgroundColor(color);
-                setNeedsToolbarAppearanceUpdate();
+                getAwesomeToolbar().setAlpha(progress / 100.0f);
             }
 
             @Override
@@ -77,4 +65,9 @@ public class ToolbarColorTransitionFragment extends AwesomeFragment {
         return root;
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getAwesomeToolbar().setAlpha(0);
+    }
 }

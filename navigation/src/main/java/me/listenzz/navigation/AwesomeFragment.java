@@ -93,6 +93,9 @@ public abstract class AwesomeFragment extends DialogFragment {
 
         if (!isParentFragment()) {
             setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
+            if (getDialog() == null) {
+                fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
+            }
         }
 
         handleNavigationFragmentStuff(root);
@@ -160,7 +163,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            if(isPrimary()) {
+            if (isPrimary()) {
                 notifyViewAppear(true);
             }
         } else {
@@ -665,21 +668,14 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     private void createToolbarIfNeeded(@NonNull View root) {
         AwesomeToolbar toolbar = onCreateAwesomeToolbar(root);
-        if (toolbar != null && !isNavigationRoot() && !shouldHideBackButton()) {
-            toolbar.setNavigationIcon(style.getBackIcon());
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    getNavigationFragment().popFragment();
-                }
-            });
+        if (toolbar != null) {
+            customAwesomeToolbar(toolbar);
         }
         this.toolbar = toolbar;
     }
 
     private void adjustBottomPaddingIfNeeded(final View root) {
         int index = getIndexAtBackStack();
-
         if (index == 0 || !shouldHideBottomBarWhenPushed()) {
             int color = Color.parseColor(style.getBottomBarBackgroundColor());
             if (Color.alpha(color) == 255) {
@@ -719,10 +715,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
         if (isStatusBarTranslucent()) {
             appendStatusBarPadding(toolbar, getToolbarHeight());
-            fixKeyboardBugAtKitkat(parent, isStatusBarTranslucent());
         }
-
-        customAwesomeToolbar(toolbar);
 
         return toolbar;
     }
@@ -742,6 +735,15 @@ public abstract class AwesomeFragment extends DialogFragment {
             toolbar.setElevation(style.getElevation());
         } else {
             toolbar.setShadow(style.getShadow());
+        }
+        if (!isNavigationRoot() && !shouldHideBackButton()) {
+            toolbar.setNavigationIcon(style.getBackIcon());
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    getNavigationFragment().popFragment();
+                }
+            });
         }
     }
 

@@ -46,15 +46,20 @@ public class AwesomeToolbar extends Toolbar {
 
     public AwesomeToolbar(Context context) {
         super(context);
-        init(context);
+        init();
     }
 
     public AwesomeToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init();
     }
 
-    private void init(Context context) {
+    public AwesomeToolbar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
         contentInset = getContentInsetStart();
         setContentInsetStartWithNavigation(getContentInsetStartWithNavigation() - contentInset);
         setContentInsetsRelative(0, 0);
@@ -90,10 +95,10 @@ public class AwesomeToolbar extends Toolbar {
     @Override
     public void setAlpha(float alpha) {
         Drawable drawable = getBackground();
-        drawable.setAlpha((int)(alpha * 255 + 0.5));
+        drawable.setAlpha((int) (alpha * 255 + 0.5));
         setBackground(drawable);
         if (divider != null) {
-            divider.setAlpha((int)(alpha * 255 + 0.5));
+            divider.setAlpha((int) (alpha * 255 + 0.5));
         }
     }
 
@@ -184,7 +189,7 @@ public class AwesomeToolbar extends Toolbar {
             removeView(leftButton);
         }
         if (leftButtons != null) {
-            for (TextView button: leftButtons) {
+            for (TextView button : leftButtons) {
                 removeView(button);
             }
             leftButtons.clear();
@@ -198,7 +203,7 @@ public class AwesomeToolbar extends Toolbar {
             removeView(rightButton);
         }
         if (rightButtons != null) {
-            for (TextView button: rightButtons) {
+            for (TextView button : rightButtons) {
                 removeView(button);
             }
             rightButtons.clear();
@@ -270,7 +275,7 @@ public class AwesomeToolbar extends Toolbar {
         }
     }
 
-    private void setButton(TextView button, Drawable icon, String title, boolean enabled,View.OnClickListener onClickListener ) {
+    private void setButton(TextView button, Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
         button.setOnClickListener(onClickListener);
         button.setText(null);
         button.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
