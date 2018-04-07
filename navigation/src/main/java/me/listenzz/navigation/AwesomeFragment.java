@@ -90,16 +90,13 @@ public abstract class AwesomeFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
-
         if (!isParentFragment()) {
             setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
             if (getDialog() == null) {
                 fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
             }
         }
-
         handleNavigationFragmentStuff(root);
-        // Log.i(TAG, getDebugTag() + "#onViewCreated");
     }
 
     @Override
@@ -131,7 +128,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     @CallSuper
     protected void onViewAppear() {
 //        if (!isParentFragment()) {
-//             Log.i(TAG, getDebugTag() + "#onViewAppear");
+//            Log.i(TAG, getDebugTag() + "#onViewAppear");
 //        }
         if (childFragmentForAppearance() == null) {
             setNeedsStatusBarAppearanceUpdate();
@@ -141,14 +138,14 @@ public abstract class AwesomeFragment extends DialogFragment {
     @CallSuper
     protected void onViewDisappear() {
 //        if (!isParentFragment()) {
-//           Log.i(TAG, getDebugTag() + "#onViewDisappear");
+//            Log.i(TAG, getDebugTag() + "#onViewDisappear");
 //        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (isPrimary()) {
+        if (getUserVisibleHint() && !isFragmentHidden()) {
             notifyViewAppear(true);
         }
     }
@@ -157,46 +154,60 @@ public abstract class AwesomeFragment extends DialogFragment {
     public void onPause() {
         super.onPause();
         notifyViewAppear(false);
+
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if (!hidden) {
-            if (isPrimary()) {
+        if (!isFragmentHidden()) {
+            if (isResumed() && getUserVisibleHint()) {
                 notifyViewAppear(true);
             }
         } else {
             notifyViewAppear(false);
         }
 
-        List<AwesomeFragment> children = getChildFragmentsAtAddedList();
-        for (int i = 0; i < children.size(); i++) {
-            AwesomeFragment child = children.get(i);
-            child.onHiddenChanged(hidden);
+        List<AwesomeFragment> fragments = getChildFragmentsAtAddedList();
+        for (AwesomeFragment fragment : fragments) {
+            fragment.onHiddenChanged(hidden);
         }
     }
 
     @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
+    public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                notifyViewAppear(isVisibleToUser);
+        if (isVisibleToUser) {
+            if (isResumed() && !isFragmentHidden()) {
+                notifyViewAppear(true);
             }
-        });
+        } else {
+            notifyViewAppear(false);
+        }
+
+        List<AwesomeFragment> fragments = getChildFragmentsAtAddedList();
+        for (AwesomeFragment fragment : fragments) {
+            fragment.setUserVisibleHint(isVisibleToUser);
+        }
     }
 
-    protected boolean isPrimary() {
-        boolean primary = getFragmentManager() != null && getFragmentManager().getPrimaryNavigationFragment() == this;
-        if (primary) {
-            AwesomeFragment parent = getParentAwesomeFragment();
-            if (parent != null) {
-                return parent.isPrimary();
-            }
+    public boolean isFragmentHidden() {
+        boolean hidden = super.isHidden();
+        if (hidden) {
+            return true;
         }
-        return primary;
+        AwesomeFragment parent = getParentAwesomeFragment();
+        return parent != null && parent.isFragmentHidden();
+    }
+
+    @Override
+    public boolean getUserVisibleHint() {
+        boolean isVisibleToUser = super.getUserVisibleHint();
+        if (!isVisibleToUser) {
+            return false;
+        }
+        AwesomeFragment parent = getParentAwesomeFragment();
+        return parent == null || parent.getUserVisibleHint();
     }
 
     @Override
@@ -399,10 +410,6 @@ public abstract class AwesomeFragment extends DialogFragment {
         return null;
     }
 
-    public boolean isParentFragment() {
-        return false;
-    }
-
     private PresentAnimation animation = null;
 
     public void setAnimation(PresentAnimation animation) {
@@ -422,6 +429,10 @@ public abstract class AwesomeFragment extends DialogFragment {
             }
         }
         return animation;
+    }
+
+    public boolean isParentFragment() {
+        return false;
     }
 
     // ------- statusBar --------

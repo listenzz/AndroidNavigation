@@ -40,8 +40,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
         FrameLayout menuLayout = drawerLayout.findViewById(R.id.drawer_menu);
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) menuLayout.getLayoutParams();
-        int screenWidth = AppUtils.getScreenWidth(inflater.getContext());
-        int margin1 = AppUtils.dp2px(inflater.getContext(), minDrawerMargin);
+        int screenWidth = AppUtils.getScreenWidth(getContext());
+        int margin1 = AppUtils.dp2px(getContext(), minDrawerMargin);
         if (margin1 > screenWidth) {
             margin1 = screenWidth;
         } else if (margin1 < 0) {
@@ -110,30 +110,16 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     public void onDrawerOpened(@NonNull View drawerView) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
-                getChildFragmentManager().executePendingTransactions();
-                getContentFragment().onHiddenChanged(true);
-                getMenuFragment().onHiddenChanged(false);
-            }
-        });
-
+        setNeedsStatusBarAppearanceUpdate();
+        getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
+        getMenuFragment().setUserVisibleHint(true);
     }
 
     @Override
     public void onDrawerClosed(@NonNull View drawerView) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
-                getChildFragmentManager().executePendingTransactions();
-                getMenuFragment().onHiddenChanged(true);
-                getContentFragment().onHiddenChanged(false);
-            }
-        });
-
+        setNeedsStatusBarAppearanceUpdate();
+        getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
+        getMenuFragment().setUserVisibleHint(false);
     }
 
     @Override
