@@ -36,6 +36,11 @@ public class CoordinatorFragment extends AwesomeFragment {
         }
     }
 
+    @Override
+    protected boolean preferredStatusBarColorAnimated() {
+        return false;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

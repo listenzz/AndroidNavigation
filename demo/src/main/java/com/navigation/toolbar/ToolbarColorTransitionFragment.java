@@ -32,6 +32,11 @@ public class ToolbarColorTransitionFragment extends AwesomeFragment {
     }
 
     @Override
+    protected boolean preferredStatusBarColorAnimated() {
+        return false;
+    }
+
+    @Override
     protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
         AwesomeToolbar toolbar = super.onCreateAwesomeToolbar(parent);
         toolbar.setBackgroundColor(Color.TRANSPARENT);

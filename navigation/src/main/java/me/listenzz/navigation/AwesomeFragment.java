@@ -127,9 +127,9 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     @CallSuper
     protected void onViewAppear() {
-        if (!isParentFragment()) {
-            //Log.i(TAG, getDebugTag() + "#onViewAppear");
-        }
+//        if (!isParentFragment()) {
+//             Log.i(TAG, getDebugTag() + "#onViewAppear");
+//        }
         if (childFragmentForAppearance() == null) {
             setNeedsStatusBarAppearanceUpdate();
         }
@@ -137,9 +137,9 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     @CallSuper
     protected void onViewDisappear() {
-        if (!isParentFragment()) {
-            //Log.i(TAG, getDebugTag() + "#onViewDisappear");
-        }
+//        if (!isParentFragment()) {
+//           Log.i(TAG, getDebugTag() + "#onViewDisappear");
+//        }
     }
 
     @Override
@@ -369,11 +369,11 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     public int getIndexAtBackStack() {
-        return FragmentHelper.findIndexAtBackStack(getFragmentManager(), this);
+        return FragmentHelper.findIndexAtBackStack(requireFragmentManager(), this);
     }
 
     public int getIndexAtAddedList() {
-        List<Fragment> fragments = getFragmentManager().getFragments();
+        List<Fragment> fragments = requireFragmentManager().getFragments();
         return fragments.indexOf(this);
     }
 
@@ -464,7 +464,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             return;
         }
-        // Log.w(TAG, getDebugTag() + "#setNeedsStatusBarAppearanceUpdate");
+        // Log.i(TAG, getDebugTag() + "#setNeedsStatusBarAppearanceUpdate");
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             parent.setNeedsStatusBarAppearanceUpdate();
@@ -728,7 +728,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     public int getToolbarHeight() {
-        return AppUtils.fetchContextDimension(getContext(), R.attr.actionBarSize);
+        return AppUtils.fetchContextDimension(requireContext(), R.attr.actionBarSize);
     }
 
     private void customAwesomeToolbar(AwesomeToolbar toolbar) {
