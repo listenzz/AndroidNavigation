@@ -3,12 +3,12 @@ package me.listenzz.navigation;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -285,7 +285,8 @@ public class AwesomeToolbar extends Toolbar {
         button.setEnabled(enabled);
 
         if (icon != null) {
-            icon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+            icon = DrawableCompat.wrap(icon);
+            DrawableCompat.setTint(icon, color);
             button.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
             int width = getContentInsetStartWithNavigation();
             int padding = (width - icon.getIntrinsicWidth()) / 2;
