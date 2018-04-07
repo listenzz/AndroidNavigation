@@ -69,7 +69,6 @@ NavigationFragment 以栈的形式管理它的子 Fragment，支持 push、pop �
 
 ```java
 public class MainActivity extends AwesomeActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,11 +81,10 @@ public class MainActivity extends AwesomeActivity {
             setRootFragment(navigationFragment);
         }
     }
-    
 }
 ```
 
-如果 TestFragment 的根布局是 LinearLayout 或 FrameLayout，会自动帮你创建 Toobar，当由 A 页面跳转到 B 页面时，会为 B 页面的 Toobar 添加返回按钮。更多关于 Toobar 的配置，请参考 [**设置 Toobar**](#setting-toolbar) 一章。
+如果 TestFragment 的根布局是 LinearLayout 或 FrameLayout，会自动帮你创建 Toolbar，当由 A 页面跳转到 B 页面时，会为 B 页面的 Toolbar 添加返回按钮。更多关于 Toobar 的配置，请参考 [**设置 Toolbar**](#setting-toolbar) 一章。
 
 在 TestFragment 中，我们可以通过 `getNavigationFragment` 来获取套在它外面的 NavigationFragment，然后通过 NavigationFragment 提供的 `pushFragment` 跳转到其它页面，或通过 `popFragment` 返回到前一个页面。关于导航的更多细节，请参考 [**导航**](#navigation) 一章。
 
@@ -245,7 +243,7 @@ protected boolean onBackPressed() {
 
 #### present & dismiss
 
-AwesomeFragment 提供了两个基础的导航功能 present 和 dismiss
+AwesomeActivity 和 AwesomeFragment 提供了两个基础的导航功能 present 和 dismiss
 
 - present
 
@@ -451,6 +449,16 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 - 正确使用 addToBackStack
 
   如果需要添加到返回栈，tag 参数不能为 null, 必须和传递给 add 或 replace 的 tag 一致，也就是目标 fragment 的 `getSceneId` 的值。
+  
+- 如有必要，将目标 fragment 设置为 primaryNavigationFragment
+
+    ```
+    getFragmentManager().setPrimaryNavigationFragment(fragment);
+    ```
+    
+    这会让新的 fragment 在适当时机触发 onViewAppear 和 onViewDisappear 这两个附加的生命周期函数
+    
+    > 可以使用 onViewAppear 来实现懒加载
 
 可以参考 demo 中 GridFragment 这个类，看如何实现自定义导航
 
@@ -477,7 +485,7 @@ protected void onCustomStyle(Style style) {
 ```javascript  
 {
     screenBackgroundColor: int       // 页面背景，默认是白色
-    statusBarStyle: BarStyle         // 状态栏和 toobar 前景色，可选值有 DarkContent 和 LightContent
+    statusBarStyle: BarStyle         // 状态栏和 toolbar 前景色，可选值有 DarkContent 和 LightContent
     statusBarColor: String           // 状态栏背景色，仅对 4.4 以上版本生效， 默认值是 colorPrimaryDark
     toolbarBackgroundColor: int      // toolbar 背景颜色，默认值是 colorPrimary
     elevation: int                   // toolbar 阴影高度， 仅对 5.0 以上版本生效，默认值为 4 dp
@@ -539,9 +547,9 @@ protected boolean preferredStatusBarColorAnimated();
     
 - preferredStatusBarColorAnimated
 
-  当状态栏的颜色由其它颜色转变成当前页面所期待的颜色时，需不需要对颜色做过渡动画，默认是 true，使得过渡更自然。如果某个界面状态栏出现闪烁，你需要关闭它。
+  当状态栏的颜色由其它颜色转变成当前页面所期待的颜色时，需不需要对颜色做过渡动画，默认是 true，使得过渡更自然。如果过渡到某个界面状态栏出现闪烁，你需要在目标页面关闭它。参考 demo 中 CoordinatorFragment 这个类。
  
-如果你当前页面的状态栏样式不是固定的，需要根据 App 的不同状态展示不同的样式，你可以在上面这些方法中返回一个变量，当这个变量的值发生变化时，你需要手动调用 `setNeedsStatusBarAppearanceUpdate` 来通知框架更新状态栏样式。可以参考 demo 中CustomStatusBarFragment 这个类。
+如果你当前页面的状态栏样式不是固定的，需要根据 App 的不同状态展示不同的样式，你可以在上面这些方法中返回一个变量，当这个变量的值发生变化时，你需要手动调用 `setNeedsStatusBarAppearanceUpdate` 来通知框架更新状态栏样式。可以参考 demo 中 ViewPagerFragment 这个类。
 
 #### 开启沉浸式 
 
@@ -629,7 +637,7 @@ protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
 
 demo 中，CoordinatorFragment 和 ViewPagerFragment 就使用了自定义的 Toolbar。
 
-如果你开启了沉浸式，那么你需要使用 `appendStatusBarPadding` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
+如果开启了沉浸式，那么需要使用 `appendStatusBarPadding` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
 
 <a name="using-font-icons"></a>
 
