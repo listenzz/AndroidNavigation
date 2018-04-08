@@ -48,7 +48,7 @@ public class DrawableUtils {
             } catch (Exception e) {
                 Log.e(TAG, e.toString());
             }
-        } else if (uri.startsWith("file")){
+        } else if (uri.startsWith("file")) {
             Bitmap bitmap = BitmapFactory.decodeFile(Uri.parse(uri).getPath());
             drawable = new BitmapDrawable(context.getResources(), bitmap);
         } else if (uri.startsWith("font")) {
@@ -69,10 +69,10 @@ public class DrawableUtils {
             }
 
             Log.d(TAG, "fontFamily: " + u.getHost() + " glyph:" + glyph + " fontSize:" + fontSize + " color:" + color);
-            drawable = fromFont(context, fontFamily, glyph, fontSize, color );
+            drawable = fromFont(context, fontFamily, glyph, fontSize, color);
         } else {
             int resId = fromResourceDrawableId(context, uri);
-            drawable =  resId > 0 ? context.getResources().getDrawable(resId) : null;
+            drawable = resId > 0 ? context.getResources().getDrawable(resId) : null;
         }
 
         return drawable;
@@ -82,11 +82,10 @@ public class DrawableUtils {
         if (name == null || name.isEmpty()) {
             return 0;
         }
-        int id = context.getResources().getIdentifier(
+        return context.getResources().getIdentifier(
                 name,
                 "drawable",
                 context.getPackageName());
-        return id;
     }
 
     public static Drawable fromFont(Context context, String fontFamily, String glyph, Integer fontSize, Integer color) {
@@ -95,14 +94,14 @@ public class DrawableUtils {
 
         float scale = context.getResources().getDisplayMetrics().density;
         String scaleSuffix = "@" + (scale == (int) scale ? Integer.toString((int) scale) : Float.toString(scale)) + "x";
-        int size = Math.round(fontSize*scale);
+        int size = Math.round(fontSize * scale);
         String cacheKey = fontFamily + ":" + glyph + ":" + color;
         String hash = Integer.toString(cacheKey.hashCode(), 32);
         String cacheFilePath = cacheFolderPath + hash + "_" + Integer.toString(fontSize) + scaleSuffix + ".png";
         String cacheFileUrl = "file://" + cacheFilePath;
         File cacheFile = new File(cacheFilePath);
 
-        if(cacheFile.exists()) {
+        if (cacheFile.exists()) {
             Bitmap bitmap = BitmapFactory.decodeFile(Uri.parse(cacheFileUrl).getPath());
             return new BitmapDrawable(context.getResources(), bitmap);
 
@@ -132,20 +131,16 @@ public class DrawableUtils {
                 Log.e(TAG, "", e);
             } catch (IOException e) {
                 Log.e(TAG, "", e);
-            }
-            finally {
+            } finally {
                 if (fos != null) {
                     try {
                         fos.close();
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
         }
-
         return null;
     }
-
 }

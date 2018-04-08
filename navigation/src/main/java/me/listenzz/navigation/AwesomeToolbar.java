@@ -32,6 +32,7 @@ public class AwesomeToolbar extends Toolbar {
     private TextView leftButton;
     private TextView rightButton;
     private Drawable divider;
+    private int dividerAlpha = 255;
     private int contentInset;
 
     private int backgroundColor;
@@ -71,7 +72,9 @@ public class AwesomeToolbar extends Toolbar {
         if (divider != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             int height = (int) getContext().getResources().getDisplayMetrics().density;
             divider.setBounds(0, getHeight() - height, getWidth(), getHeight());
+            divider.setAlpha(dividerAlpha);
             divider.draw(canvas);
+            divider.setAlpha(255);
         }
     }
 
@@ -98,7 +101,8 @@ public class AwesomeToolbar extends Toolbar {
         drawable.setAlpha((int) (alpha * 255 + 0.5));
         setBackground(drawable);
         if (divider != null) {
-            divider.setAlpha((int) (alpha * 255 + 0.5));
+            dividerAlpha = (int) (alpha * 255 + 0.5);
+            invalidate();
         }
     }
 
@@ -140,7 +144,6 @@ public class AwesomeToolbar extends Toolbar {
     @Override
     public void setTitle(CharSequence title) {
         TextView titleView = getTitleView();
-
         titleView.setText(title);
         titleView.setTextColor(titleTextColor);
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, titleTextSize);

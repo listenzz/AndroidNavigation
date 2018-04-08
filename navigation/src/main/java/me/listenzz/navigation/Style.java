@@ -2,10 +2,9 @@ package me.listenzz.navigation;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.Gravity;
 
 /**
@@ -172,7 +171,6 @@ public class Style implements Cloneable {
         }
 
         return Color.BLACK;
-
     }
 
     public void setBackIcon(Drawable icon) {
@@ -181,10 +179,10 @@ public class Style implements Cloneable {
 
     public Drawable getBackIcon() {
         if (backIcon == null) {
-            Drawable drawable = ContextCompat.getDrawable(context, R.drawable.nav_ic_arrow_back);
-            backIcon = drawable.mutate();
+            Drawable drawable = context.getResources().getDrawable(R.drawable.nav_ic_arrow_back);
+            backIcon = DrawableCompat.wrap(drawable).mutate();
         }
-        backIcon.setColorFilter(getToolbarButtonTintColor(), PorterDuff.Mode.SRC_ATOP);
+        DrawableCompat.setTint(backIcon, getToolbarButtonTintColor());
         return backIcon;
     }
 
