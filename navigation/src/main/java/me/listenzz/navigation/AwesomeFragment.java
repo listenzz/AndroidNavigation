@@ -127,9 +127,6 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     @CallSuper
     protected void onViewAppear() {
-//        if (!isParentFragment()) {
-//            Log.i(TAG, getDebugTag() + "#onViewAppear");
-//        }
         if (childFragmentForAppearance() == null) {
             setNeedsStatusBarAppearanceUpdate();
         }
@@ -137,9 +134,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     @CallSuper
     protected void onViewDisappear() {
-//        if (!isParentFragment()) {
-//            Log.i(TAG, getDebugTag() + "#onViewDisappear");
-//        }
+
     }
 
     @Override
@@ -154,7 +149,6 @@ public abstract class AwesomeFragment extends DialogFragment {
     public void onPause() {
         super.onPause();
         notifyViewAppear(false);
-
     }
 
     @Override

@@ -19,23 +19,18 @@ public class Style implements Cloneable {
     private int screenBackgroundColor = Color.WHITE;
 
     private BarStyle statusBarStyle = BarStyle.LightContent;
-    private int statusBarColor = Color.TRANSPARENT;
-
-
-
+    private int statusBarColor;
     private boolean statusBarColorAnimated = true;
     private boolean statusBarHidden = false;
 
-    private int toolbarBackgroundColor = INVALID_COLOR;
+    private int toolbarBackgroundColor;
     private Drawable backIcon;
     private int toolbarTintColor = INVALID_COLOR;
     private int titleTextColor = INVALID_COLOR;
     private int titleTextSize = 17;
     private int elevation = -1;
     private Drawable shadow = defaultShadow;
-
     private int titleGravity = Gravity.START;
-
     private int toolbarButtonTintColor = INVALID_COLOR;
     private int toolbarButtonTextSize = 15;
 

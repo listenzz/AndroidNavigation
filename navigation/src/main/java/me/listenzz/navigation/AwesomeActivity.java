@@ -145,7 +145,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     protected void onStatusBarTranslucentChanged(boolean translucent) {
         List<AwesomeFragment> children = getChildFragmentsAtAddedList();
-        for (int i = 0, size = children.size(); i < size; i ++) {
+        for (int i = 0, size = children.size(); i < size; i++) {
             AwesomeFragment child = children.get(i);
             child.onStatusBarTranslucentChanged(translucent);
         }

@@ -57,7 +57,7 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     private void executeSetRootFragment(AwesomeFragment fragment) {
-        AwesomeFragment root =  getRootFragment();
+        AwesomeFragment root = getRootFragment();
         if (root != null) {
             throw new IllegalStateException("不可以重复设置 rootFragment");
         }

@@ -309,6 +309,7 @@ public class AppUtils {
     }
 
     private static int statusBarHeight = -1;
+
     public static int getStatusBarHeight(Context context) {
         if (statusBarHeight != -1) {
             return statusBarHeight;

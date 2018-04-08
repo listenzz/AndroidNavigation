@@ -14,10 +14,14 @@ public enum PresentAnimation {
     Fade(R.anim.nav_fade_in, R.anim.nav_fade_out, R.anim.nav_fade_in, R.anim.nav_fade_out),
     None(R.anim.nav_none, R.anim.nav_none, R.anim.nav_none, R.anim.nav_none);
 
-    @AnimRes int enter;
-    @AnimRes int exit;
-    @AnimRes int popEnter;
-    @AnimRes int popExit;
+    @AnimRes
+    int enter;
+    @AnimRes
+    int exit;
+    @AnimRes
+    int popEnter;
+    @AnimRes
+    int popExit;
 
     PresentAnimation(int enter, int exit, int popEnter, int popExit) {
         this.enter = enter;

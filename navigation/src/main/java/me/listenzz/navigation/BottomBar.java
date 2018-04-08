@@ -69,7 +69,7 @@ public class BottomBar extends BottomNavigationBar {
         int count = itemContainer.getChildCount();
         imageViews.clear();
         for (int i = 0; i < count; i++) {
-            View itemLayout =  itemContainer.getChildAt(i);
+            View itemLayout = itemContainer.getChildAt(i);
             ImageView iconView = itemLayout.findViewById(R.id.fixed_bottom_navigation_icon);
             iconView.setScaleType(ImageView.ScaleType.CENTER);
             imageViews.add(iconView);
