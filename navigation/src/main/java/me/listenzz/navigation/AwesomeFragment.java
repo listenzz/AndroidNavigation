@@ -92,9 +92,9 @@ public abstract class AwesomeFragment extends DialogFragment {
         super.onViewCreated(root, savedInstanceState);
         if (!isParentFragment()) {
             setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
-            if (getDialog() == null) {
-                fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
-            }
+        }
+        if (getDialog() == null) {
+            fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
         }
         handleNavigationFragmentStuff(root);
     }
@@ -568,25 +568,21 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     private SoftInputLayoutListener globalLayoutListener;
 
-    public void fixKeyboardBug(View root, boolean isStatusBarTranslucent) {
-        if (isStatusBarTranslucent) {
-            if (globalLayoutListener == null) {
-                globalLayoutListener = new SoftInputLayoutListener(root);
-                root.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
-            }
-        } else {
-            if (globalLayoutListener != null) {
-                root.getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);
-                root.getLayoutParams().height = globalLayoutListener.getInitialHeight();
-                root.requestLayout();
-                globalLayoutListener = null;
-            }
-        }
-    }
-
     private void fixKeyboardBugAtKitkat(View root, boolean isStatusBarTranslucent) {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-            fixKeyboardBug(root, isStatusBarTranslucent);
+            if (isStatusBarTranslucent) {
+                if (globalLayoutListener == null) {
+                    globalLayoutListener = new SoftInputLayoutListener(root);
+                    root.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+                }
+            } else {
+                if (globalLayoutListener != null) {
+                    root.getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);
+                    root.getLayoutParams().height = globalLayoutListener.getInitialHeight();
+                    root.requestLayout();
+                    globalLayoutListener = null;
+                }
+            }
         }
     }
 

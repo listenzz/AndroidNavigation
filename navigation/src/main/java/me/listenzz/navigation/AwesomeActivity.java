@@ -124,7 +124,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(android.R.id.content, fragment, fragment.getSceneId());
-        transaction.setPrimaryNavigationFragment(fragment);
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
     }

@@ -34,7 +34,6 @@ public class FragmentHelper {
             transaction.hide(topFragment);
         }
         transaction.add(containerId, fragment, fragment.getSceneId());
-        transaction.setPrimaryNavigationFragment(fragment);
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
     }

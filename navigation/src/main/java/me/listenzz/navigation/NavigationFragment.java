@@ -66,7 +66,6 @@ public class NavigationFragment extends AwesomeFragment {
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
-        transaction.setPrimaryNavigationFragment(fragment);
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
     }
@@ -161,7 +160,6 @@ public class NavigationFragment extends AwesomeFragment {
             transaction.hide(aheadFragment);
         }
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
-        transaction.setPrimaryNavigationFragment(fragment);
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
     }
@@ -192,7 +190,6 @@ public class NavigationFragment extends AwesomeFragment {
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
-        transaction.setPrimaryNavigationFragment(fragment);
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
     }

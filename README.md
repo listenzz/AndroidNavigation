@@ -15,13 +15,13 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 - 一处设置全局样式，到处使用，并且支持不同页面个性化
 - 支持 font icons
 
+[下载 apk 体验](https://raw.githubusercontent.com/listenzz/AndroidNavigation/master/screenshot/demo-release.apk)
+
 ### 6.0 screenshot:
 
 ![android-navigation](./screenshot/screenshot_1.png) 
 
 ![android-navigation](./screenshot/screenshot_2.png) 
-
-[下载 apk 体验](./screenshot/demo-release.apk)
 
 ## Usage 
 

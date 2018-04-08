@@ -56,7 +56,6 @@ public class GridFragment extends AwesomeFragment implements KittenClickListener
                 .beginTransaction()
                 .addSharedElement(holder.image, "kittenImage")
                 .replace(R.id.navigation_content, kittenDetails, kittenDetails.getSceneId()/*important*/)
-                .setPrimaryNavigationFragment(kittenDetails)/*important*/
                 .addToBackStack(kittenDetails.getSceneId()/*important*/)
                 .commit();
     }
