@@ -22,7 +22,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     private static final String MAX_DRAWER_WIDTH_KEY = "MAX_DRAWER_WIDTH_KEY";
 
     private DrawerLayout drawerLayout;
-    private boolean isClosing;
+    private boolean closing;
     private int minDrawerMargin = 64; // dp
     private int maxDrawerWidth; // dp
 
@@ -101,7 +101,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     @Override
     public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
         if (isStatusBarTranslucent()) {
-            if (!isClosing) {
+            if (!closing) {
                 setStatusBarHidden(slideOffset != 0 || super.preferredStatusBarHidden());
             }
             // Log.i(TAG, getDebugTag() + " onDrawerSlide");
@@ -110,6 +110,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     public void onDrawerOpened(@NonNull View drawerView) {
+        closing = false;
         setNeedsStatusBarAppearanceUpdate();
         getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
         getMenuFragment().setUserVisibleHint(true);
@@ -117,6 +118,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     public void onDrawerClosed(@NonNull View drawerView) {
+        closing = false;
         setNeedsStatusBarAppearanceUpdate();
         getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
         getMenuFragment().setUserVisibleHint(false);
@@ -177,7 +179,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     public void openMenu() {
         if (drawerLayout != null) {
-            isClosing = false;
             drawerLayout.openDrawer(Gravity.START);
             if (isStatusBarTranslucent()) {
                 setStatusBarHidden(true);
@@ -187,7 +188,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     public void closeMenu() {
         if (drawerLayout != null) {
-            isClosing = true;
+            closing = true;
             drawerLayout.closeDrawer(Gravity.START);
         }
     }
