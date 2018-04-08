@@ -26,6 +26,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 
 #### [构建UI层级](#building-hierarchy)
 #### [导航](#navigation)
+#### [懒加载](#lazy-load)
 #### [全局样式设置](#setting-style)
 #### [设置状态栏](#setting-statusbar)
 #### [设置 Toolbar](#setting-toolbar)
@@ -450,20 +451,32 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 
   如果需要添加到返回栈，tag 参数不能为 null, 必须和传递给 add 或 replace 的 tag 一致，也就是目标 fragment 的 `getSceneId` 的值。
   
-- 如有必要，将目标 fragment 设置为 primaryNavigationFragment
+- 如果不通过栈的形式来管理子 fragment 时，必须将当前子 fragment 设置为 primaryNavigationFragment
+
+    参考 TabBarFragment 和 DrawerFragment，它们就不是用栈的形式管理子 fragment.
 
     ```
     getFragmentManager().setPrimaryNavigationFragment(fragment);
     ```
     
-    这会让新的 fragment 在适当时机触发 onViewAppear 和 onViewDisappear 这两个附加的生命周期函数
-    
-    > 可以使用 onViewAppear 来实现懒加载
-
 可以参考 demo 中 GridFragment 这个类，看如何实现自定义导航
 
 ![](./screenshot/shared_element_transition.gif)
 <!--<img src="./screenshot/shared_element_transition.gif" width="280px"/>-->
+
+
+<a name="lazy-load"></a>
+
+### 懒加载
+
+AwesomeFragment 提供了两个额外的生命周期回调
+
+```java
+    protected void onViewAppear();
+    protected void onViewDisappear();
+```
+
+可以通过它们实现懒加载
 
 
 <a name="setting-style"></a>
