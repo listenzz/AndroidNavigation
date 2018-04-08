@@ -41,14 +41,13 @@ public abstract class AwesomeFragment extends DialogFragment {
     private static final String ARGS_REQUEST_CODE = "nav_request_code";
     private static final String ARGS_ANIMATION = "nav_animation";
     private static final String ARGS_TAB_BAR_ITEM = "nav_tab_bar_item";
+    private static final String SAVED_STATE_BOTTOM_PADDING_KEY = "bottom_padding";
 
     // ------- lifecycle methods -------
-
     private PresentableActivity presentableActivity;
-
     private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
-
     protected Style style;
+    private int bottomPadding;
 
     @Override
     public void onAttach(Context context) {
@@ -57,7 +56,6 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (!(activity instanceof PresentableActivity)) {
             throw new IllegalArgumentException("Activity must implements PresentableActivity!");
         }
-
         presentableActivity = (PresentableActivity) activity;
         // Log.i(TAG, getDebugTag() + "#onAttach");
     }
@@ -66,6 +64,20 @@ public abstract class AwesomeFragment extends DialogFragment {
     public void onDetach() {
         presentableActivity = null;
         super.onDetach();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            bottomPadding = savedInstanceState.getInt(SAVED_STATE_BOTTOM_PADDING_KEY);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SAVED_STATE_BOTTOM_PADDING_KEY, bottomPadding);
     }
 
     @Override
@@ -685,7 +697,12 @@ public abstract class AwesomeFragment extends DialogFragment {
                     root.post(new Runnable() {
                         @Override
                         public void run() {
-                            root.setPadding(0, 0, 0, tabBarFragment.getBottomBar().getHeight());
+                            if (tabBarFragment.getBottomBar().getHeight() != 0) {
+                                bottomPadding = tabBarFragment.getBottomBar().getHeight();
+                                root.setPadding(0, 0, 0, bottomPadding);
+                            } else {
+                                root.setPadding(0,0,0, bottomPadding);
+                            }
                         }
                     });
                 }
