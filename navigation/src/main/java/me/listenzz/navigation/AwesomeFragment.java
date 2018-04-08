@@ -93,7 +93,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (!isParentFragment()) {
             setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
         }
-        if (getDialog() == null) {
+        if (getDialog() == null && getParentAwesomeFragment() == null) {
             fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
         }
         handleNavigationFragmentStuff(root);
