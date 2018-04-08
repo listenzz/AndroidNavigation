@@ -472,8 +472,8 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 AwesomeFragment 提供了两个额外的生命周期回调
 
 ```java
-    protected void onViewAppear();
-    protected void onViewDisappear();
+protected void onViewAppear();
+protected void onViewDisappear();
 ```
 
 可以通过它们实现懒加载
