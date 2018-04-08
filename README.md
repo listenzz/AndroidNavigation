@@ -21,7 +21,8 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 
 ![android-navigation](./screenshot/screenshot_2.png) 
 
- 
+[下载 apk 体验](./screenshot/demo-release.apk)
+
 ## Usage 
 
 #### [构建UI层级](#building-hierarchy)
