@@ -30,11 +30,6 @@ public class ToolbarColorTransitionFragment extends AwesomeFragment {
     }
 
     @Override
-    protected boolean preferredStatusBarColorAnimated() {
-        return false;
-    }
-
-    @Override
     protected void onCustomStyle(Style style) {
         style.setToolbarBackgroundColor(Color.parseColor("#EE6413"));
     }

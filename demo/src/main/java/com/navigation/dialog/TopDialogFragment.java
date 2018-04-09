@@ -50,7 +50,7 @@ public class TopDialogFragment extends AwesomeFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // import
+        // important
         appendStatusBarPadding(toolbar, getToolbarHeight());
         setStatusBarTranslucent(true);
 

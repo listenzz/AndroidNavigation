@@ -567,7 +567,6 @@ public abstract class AwesomeFragment extends DialogFragment {
             AwesomeFragment child = children.get(i);
             child.onStatusBarTranslucentChanged(translucent);
         }
-
     }
 
     public void appendStatusBarPadding(View view, int viewHeight) {
@@ -659,7 +658,6 @@ public abstract class AwesomeFragment extends DialogFragment {
                     tabBarFragment.showBottomNavigationBarAnimatedWhenPop(animation.popEnter);
                 }
             }
-
         }
     }
 

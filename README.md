@@ -23,6 +23,12 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 
 ![android-navigation](./screenshot/screenshot_2.png) 
 
+## Installation
+
+```groovy
+implementation 'me.listenzz:navigation:1.0.0'
+```
+
 ## Usage 
 
 #### [构建UI层级](#building-hierarchy)
@@ -224,7 +230,7 @@ protected AwesomeFragment childFragmentForAppearance() {
 }
 ```
 
-如何使不同 fragemnt 拥有不同的 statusbar 样式，请参考 [**设置状态栏**](#setting-statusbar) 一章
+如何使不同 fragment 拥有不同的 statusbar 样式，请参考 [**设置状态栏**](#setting-statusbar) 一章
 
 
 <a name="navigation"></a>
@@ -382,10 +388,9 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 	```java
     // CFragment.java
     DFragment dFragment = new DFragment();
-    Bundle args = new Bundle();
+    Bundle args = FragmentHelper.getArguments(dFragment);
     // 把 bSceneId 传递给 D 页面
     args.putString("bSceneId", getArguments().getString("bSceneId"));
-    dFragment.setArguments(args);
     getNavigationFragment().pushFragment(dFragment);
 	```
 	
@@ -561,7 +566,7 @@ protected boolean preferredStatusBarColorAnimated();
     
 - preferredStatusBarColorAnimated
 
-  当状态栏的颜色由其它颜色转变成当前页面所期待的颜色时，需不需要对颜色做过渡动画，默认是 true，使得过渡更自然。如果过渡到某个界面状态栏出现闪烁，你需要在目标页面关闭它。参考 demo 中 CoordinatorFragment 这个类。
+  当状态栏的颜色由其它颜色转变成当前页面所期待的颜色时，需不需要对颜色做过渡动画，默认是 true，使得过渡更自然。如果过渡到某个界面状态栏出现闪烁，你需要在目标页面关闭它。参考 demo 中 TopDialogFragment 这个类。
  
 如果你当前页面的状态栏样式不是固定的，需要根据 App 的不同状态展示不同的样式，你可以在上面这些方法中返回一个变量，当这个变量的值发生变化时，你需要手动调用 `setNeedsStatusBarAppearanceUpdate` 来通知框架更新状态栏样式。可以参考 demo 中 ViewPagerFragment 这个类。
 
@@ -681,5 +686,11 @@ font://fontName/glyph/size/color
 
 ### 代码规范
 
-在 `onActivityCreated` 中配置和 UI 相关的东西，譬如 Toolbar。
+- 在 `onActivityCreated` 中配置和 UI 相关的东西，譬如 Toolbar。
+
+- 永远通过以下方式来获取 arguments, 否则后果很严重
+    
+    ```java
+    Bundle args = FragmentHelper.getArguments(fragment);
+    ```
 

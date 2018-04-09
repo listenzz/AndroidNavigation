@@ -24,7 +24,6 @@ import me.listenzz.navigation.AwesomeFragment;
 
 public class BottomSheetDialogFragment extends AwesomeFragment {
 
-
     @Override
     protected int preferredStatusBarColor() {
         return Color.TRANSPARENT;
@@ -38,7 +37,7 @@ public class BottomSheetDialogFragment extends AwesomeFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new BottomSheetDialog(getContext(), getTheme());
+        return new BottomSheetDialog(requireContext(), getTheme());
     }
 
     @Nullable
@@ -56,7 +55,7 @@ public class BottomSheetDialogFragment extends AwesomeFragment {
 
         BottomSheetBehavior behavior = BottomSheetBehavior.from((View) getView().getParent());
         behavior.setHideable(true);
-        behavior.setPeekHeight(AppUtils.dp2px(getContext(), 50));
+        behavior.setPeekHeight(AppUtils.dp2px(requireContext(), 50));
         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
