@@ -377,9 +377,9 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 	```java
     // BFragment.java
     CFragment cFragment = new CFragment();
-    Bundle args = new Bundle();
+    Bundle args = FragmentHelper.getArguments(cFragment);
+    // 把 bSceneId 传递给 C 页面
     args.putString("bSceneId", getSceneId());
-    cFragment.setArguments(args);
     getNavigationFragment().pushFragment(cFragment);
 	```
 	
@@ -686,7 +686,7 @@ font://fontName/glyph/size/color
 
 ### 代码规范
 
-- 在 `onActivityCreated` 中配置和 UI 相关的东西，譬如 Toolbar。
+- 在 `onActivityCreated` 中配置和 Toolbar 相关的东西，比如设置标题、按钮。
 
 - 永远通过以下方式来获取 arguments, 否则后果很严重
     
