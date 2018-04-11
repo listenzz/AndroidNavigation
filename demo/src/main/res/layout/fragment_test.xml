@@ -30,8 +30,8 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:gravity="center"
-                android:text="present   ☝︎︎"
-                android:textAllCaps="false" />
+                android:textAllCaps="false"
+                android:text="present  ⬆︎" />
 
             <Button
                 android:id="@+id/dismiss"
@@ -40,7 +40,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:gravity="center"
-                android:text="dismiss  ☟"
+                android:text="dismiss  ⬇︎"
                 android:textAllCaps="false" />
 
             <Button
@@ -70,7 +70,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:gravity="center"
-                android:text="popToRoot   ☚☚"
+                android:text="popToRoot   ☜☜"
                 android:textAllCaps="false" />
 
             <Button

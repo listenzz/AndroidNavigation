@@ -690,7 +690,17 @@ font://fontName/glyph/size/color
 
 - 永远通过以下方式来获取 arguments, 否则后果很严重
     
+    获取
+    
     ```java
     Bundle args = FragmentHelper.getArguments(fragment);
     ```
 
+    设置
+    
+    ```java
+    TargetFragemnt target = new TargetFragemnt();
+    Bundle args = FragmentHelper.getArguments(target);
+    args.putInt("id", 1);
+    getNavigationFragment().pushFragment(target);
+    ```

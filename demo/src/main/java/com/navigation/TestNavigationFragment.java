@@ -140,6 +140,10 @@ public class TestNavigationFragment extends AwesomeFragment {
             root.findViewById(R.id.toggle_tab_bar).setEnabled(false);
         }
 
+        if (getPresentingFragment() == null) {
+            root.findViewById(R.id.dismiss).setEnabled(false);
+        }
+
         return root;
     }
 
