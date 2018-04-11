@@ -180,6 +180,15 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
+    public boolean isFragmentHidden() {
+        boolean hidden = super.isHidden();
+        if (hidden) {
+            return true;
+        }
+        AwesomeFragment parent = getParentAwesomeFragment();
+        return parent != null && parent.isFragmentHidden();
+    }
+
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -195,15 +204,6 @@ public abstract class AwesomeFragment extends DialogFragment {
         for (AwesomeFragment fragment : fragments) {
             fragment.setUserVisibleHint(isVisibleToUser);
         }
-    }
-
-    public boolean isFragmentHidden() {
-        boolean hidden = super.isHidden();
-        if (hidden) {
-            return true;
-        }
-        AwesomeFragment parent = getParentAwesomeFragment();
-        return parent != null && parent.isFragmentHidden();
     }
 
     @Override

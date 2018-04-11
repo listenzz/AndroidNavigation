@@ -10,14 +10,10 @@ import android.view.View;
 public class ToolbarButtonItem {
 
     public final String title;
-
     public final String iconUri;
-
     @DrawableRes
     public final int iconRes;
-
     public final boolean enabled;
-
     public final View.OnClickListener onClickListener;
 
     public ToolbarButtonItem(String iconUri, String title, boolean enabled, View.OnClickListener onClickListener) {

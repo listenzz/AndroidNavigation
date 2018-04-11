@@ -131,6 +131,15 @@ public class TestNavigationFragment extends AwesomeFragment {
             }
         });
 
+        if (isNavigationRoot()) {
+            root.findViewById(R.id.pop).setEnabled(false);
+            root.findViewById(R.id.pop_to_root).setEnabled(false);
+        }
+
+        if (!isNavigationRoot() || getPresentingFragment() != null) {
+            root.findViewById(R.id.toggle_tab_bar).setEnabled(false);
+        }
+
         return root;
     }
 

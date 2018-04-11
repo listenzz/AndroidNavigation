@@ -6,6 +6,8 @@ You could use it as a single Activity Architecture Component.
 
 This is also the subproject of [react-native-navigation-hybrid](https://github.com/listenzz/react-native-navigation-hybrid).
 
+[**Download demo apk**](https://raw.githubusercontent.com/listenzz/AndroidNavigation/master/screenshot/demo-release.apk)
+
 ## 特性
 
 - 一行代码实现 Fragment 嵌套，一次性构建好嵌套层级
@@ -14,8 +16,6 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 - 自动为你创建 Toolbar，一行代码设置标题、按钮，支持关闭自动创建功能以实现定制
 - 一处设置全局样式，到处使用，并且支持不同页面个性化
 - 支持 font icons
-
-[下载 apk 体验](https://raw.githubusercontent.com/listenzz/AndroidNavigation/master/screenshot/demo-release.apk)
 
 ### 6.0 screenshot:
 

@@ -40,8 +40,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
         FrameLayout menuLayout = drawerLayout.findViewById(R.id.drawer_menu);
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) menuLayout.getLayoutParams();
-        int screenWidth = AppUtils.getScreenWidth(getContext());
-        int margin1 = AppUtils.dp2px(getContext(), minDrawerMargin);
+        int screenWidth = AppUtils.getScreenWidth(requireContext());
+        int margin1 = AppUtils.dp2px(requireContext(), minDrawerMargin);
         if (margin1 > screenWidth) {
             margin1 = screenWidth;
         } else if (margin1 < 0) {
@@ -50,9 +50,9 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         if (maxDrawerWidth <= 0 || maxDrawerWidth > screenWidth) {
             maxDrawerWidth = screenWidth;
         }
-        int margin2 = screenWidth - AppUtils.dp2px(getContext(), maxDrawerWidth);
+        int margin2 = screenWidth - AppUtils.dp2px(requireContext(), maxDrawerWidth);
         int margin = Math.max(margin1, margin2);
-        layoutParams.rightMargin = margin - AppUtils.dp2px(getContext(), 64);
+        layoutParams.rightMargin = margin - AppUtils.dp2px(requireContext(), 64);
 
         return root;
     }

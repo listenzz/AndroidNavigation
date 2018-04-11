@@ -92,6 +92,10 @@ public class TestStatusBarFragment extends AwesomeFragment {
             }
         });
 
+        if (isNavigationRoot()) {
+            root.findViewById(R.id.pop_to_root).setEnabled(false);
+        }
+
         return root;
     }
 

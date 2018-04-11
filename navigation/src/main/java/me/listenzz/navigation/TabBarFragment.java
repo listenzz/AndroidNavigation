@@ -161,9 +161,9 @@ public class TabBarFragment extends AwesomeFragment {
             if (tabBarItem != null) {
                 Drawable icon = new ColorDrawable();
                 if (tabBarItem.iconRes != -1) {
-                    icon = ContextCompat.getDrawable(getContext(), tabBarItem.iconRes);
+                    icon = ContextCompat.getDrawable(requireContext(), tabBarItem.iconRes);
                 } else if (tabBarItem.iconUri != null) {
-                    icon = DrawableUtils.fromUri(getContext(), tabBarItem.iconUri);
+                    icon = DrawableUtils.fromUri(requireContext(), tabBarItem.iconUri);
                 }
 
                 bottomNavigationItem = new BottomNavigationItem(icon, tabBarItem.title);
@@ -171,7 +171,7 @@ public class TabBarFragment extends AwesomeFragment {
                 if (tabBarItem.inactiveIconRes != -1) {
                     bottomNavigationItem.setInactiveIconResource(tabBarItem.inactiveIconRes);
                 } else if (tabBarItem.inactiveIconUri != null) {
-                    bottomNavigationItem.setInactiveIcon(DrawableUtils.fromUri(getContext(), tabBarItem.inactiveIconUri));
+                    bottomNavigationItem.setInactiveIcon(DrawableUtils.fromUri(requireContext(), tabBarItem.inactiveIconUri));
                 }
             } else {
                 bottomNavigationItem = new BottomNavigationItem(new ColorDrawable(), "Tab");

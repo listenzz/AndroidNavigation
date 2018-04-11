@@ -11,14 +11,10 @@ import android.support.annotation.DrawableRes;
 public class TabBarItem implements Parcelable {
 
     public String title;
-
     public String iconUri;
-
     public String inactiveIconUri;
-
     @DrawableRes
     public int iconRes = -1;
-
     @DrawableRes
     public int inactiveIconRes = -1;
 

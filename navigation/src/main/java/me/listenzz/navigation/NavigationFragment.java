@@ -1,6 +1,7 @@
 package me.listenzz.navigation;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -18,7 +19,7 @@ public class NavigationFragment extends AwesomeFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.nav_fragment_navigation, container, false);
     }
 
@@ -194,7 +195,7 @@ public class NavigationFragment extends AwesomeFragment {
         transaction.commit();
     }
 
-    public void setFragments(List<AwesomeFragment> fragments) {
+    public void setChildFragments(List<AwesomeFragment> fragments) {
 
         // TODO
         // 弹出所有旧的 fragment
