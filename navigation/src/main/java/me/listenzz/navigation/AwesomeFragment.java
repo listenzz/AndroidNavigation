@@ -465,7 +465,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (childFragmentForStatusBarColor != null) {
             return childFragmentForStatusBarColor.preferredStatusBarColor();
         }
-        return style.getStatusBarColor() == style.getToolbarBackgroundColor() ? Color.TRANSPARENT : style.getStatusBarColor();
+        return style.getStatusBarColor();
     }
 
     protected boolean preferredStatusBarColorAnimated() {
@@ -497,17 +497,19 @@ public abstract class AwesomeFragment extends DialogFragment {
             setStatusBarStyle(preferredStatusBarStyle());
 
             // statusBarColor
-            boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor() == Color.TRANSPARENT ? preferredToolbarColor() : preferredStatusBarColor(), 176);
+            boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !AppUtils.isMiuiV6()) {
                 shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
             }
-
+            int color = preferredStatusBarColor();
             if (shouldAdjustForWhiteStatusBar) {
-                int color = Color.parseColor("#B0B0B0");
-                setStatusBarColor(color, preferredStatusBarColorAnimated());
-            } else {
-                setStatusBarColor(preferredStatusBarColor(), preferredStatusBarColorAnimated());
+                color = Color.parseColor("#B0B0B0");
             }
+            if (isStatusBarTranslucent() && color == preferredToolbarColor()) {
+                color = Color.TRANSPARENT;
+            }
+            setStatusBarColor(color, preferredStatusBarColorAnimated());
+
         }
     }
 
