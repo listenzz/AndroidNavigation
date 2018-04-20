@@ -100,6 +100,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     @Override
+    @CallSuper
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
         if (!isParentFragment()) {
@@ -113,7 +114,9 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     @Override
     public void onDestroyView() {
-        AppUtils.hideSoftInput(getView());
+        if (getView() != null && getDialog() == null) {
+            AppUtils.hideSoftInput(getView());
+        }
         super.onDestroyView();
     }
 
@@ -402,7 +405,10 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (isAdded()) {
             List<Fragment> fragments = getChildFragmentManager().getFragments();
             for (int i = 0, size = fragments.size(); i < size; i++) {
-                children.add((AwesomeFragment) fragments.get(i));
+                Fragment fragment = fragments.get(i);
+                if (fragment instanceof AwesomeFragment) {
+                    children.add((AwesomeFragment) fragment);
+                }
             }
         }
         return children;
@@ -701,7 +707,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                                 bottomPadding = tabBarFragment.getBottomBar().getHeight();
                                 root.setPadding(0, 0, 0, bottomPadding);
                             } else {
-                                root.setPadding(0,0,0, bottomPadding);
+                                root.setPadding(0, 0, 0, bottomPadding);
                             }
                         }
                     });

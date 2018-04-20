@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import me.listenzz.navigation.AppUtils;
 import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.BarStyle;
 import me.listenzz.navigation.DrawerFragment;
@@ -145,12 +144,6 @@ public class TestNavigationFragment extends AwesomeFragment {
         }
 
         return root;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        AppUtils.hideSoftInput(resultEditText);
     }
 
     @Override
