@@ -153,6 +153,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     @Override
+    @CallSuper
     public void onResume() {
         super.onResume();
         if (getUserVisibleHint() && !isFragmentHidden()) {
@@ -161,12 +162,14 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     @Override
+    @CallSuper
     public void onPause() {
         super.onPause();
         notifyViewAppear(false);
     }
 
     @Override
+    @CallSuper
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!isFragmentHidden()) {
@@ -220,6 +223,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     @Override
+    @CallSuper
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
         PresentAnimation animation = getAnimation();
 

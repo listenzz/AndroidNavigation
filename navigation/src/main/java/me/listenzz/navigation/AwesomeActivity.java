@@ -154,7 +154,10 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         List<AwesomeFragment> children = new ArrayList<>();
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         for (int i = 0, size = fragments.size(); i < size; i++) {
-            children.add((AwesomeFragment) fragments.get(i));
+            Fragment fragment = fragments.get(i);
+            if (fragment instanceof AwesomeFragment) {
+                children.add((AwesomeFragment) fragment);
+            }
         }
         return children;
     }
