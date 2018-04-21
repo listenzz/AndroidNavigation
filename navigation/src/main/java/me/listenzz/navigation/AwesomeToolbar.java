@@ -9,6 +9,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -125,7 +126,6 @@ public class AwesomeToolbar extends Toolbar {
         titleGravity = gravity;
     }
 
-
     public void setTitleTextSize(int titleTextSize) {
         this.titleTextSize = titleTextSize;
     }
@@ -136,20 +136,16 @@ public class AwesomeToolbar extends Toolbar {
         super.setTitleTextColor(titleTextColor);
     }
 
-    @Override
-    public void setTitle(int resId) {
-        setTitle(getContext().getText(resId));
+    public void setAwesomeTitle(int resId) {
+        setAwesomeTitle(getContext().getText(resId));
     }
 
-    @Override
-    public void setTitle(CharSequence title) {
+    public void setAwesomeTitle(CharSequence title) {
         TextView titleView = getTitleView();
         titleView.setText(title);
-        titleView.setTextColor(titleTextColor);
-        titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, titleTextSize);
     }
 
-    protected TextView getTitleView() {
+    public TextView getTitleView() {
         if (titleView == null) {
             titleView = new TextView(getContext());
             LayoutParams layoutParams = new LayoutParams(-2, -2, Gravity.CENTER_VERTICAL | titleGravity);
@@ -158,6 +154,8 @@ public class AwesomeToolbar extends Toolbar {
             }
             titleView.setMaxLines(1);
             titleView.setEllipsize(TextUtils.TruncateAt.END);
+            titleView.setTextColor(titleTextColor);
+            titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, titleTextSize);
             addView(titleView, layoutParams);
         }
         return titleView;
@@ -278,6 +276,21 @@ public class AwesomeToolbar extends Toolbar {
         }
     }
 
+    @Override
+    public void setNavigationIcon(@Nullable Drawable icon) {
+        super.setNavigationIcon(icon);
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+            int count = getChildCount();
+            for (int i = 0; i < count; i++) {
+                View child = getChildAt(i);
+                if (child instanceof AppCompatImageButton) {
+                    AppCompatImageButton button = (AppCompatImageButton) child;
+                    button.setBackgroundResource(R.drawable.nav_toolbar_button_item_background);
+                }
+            }
+        }
+    }
+
     private void setButton(TextView button, Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
         button.setOnClickListener(onClickListener);
         button.setText(null);
@@ -309,8 +322,12 @@ public class AwesomeToolbar extends Toolbar {
         }
 
         TypedValue typedValue = new TypedValue();
-        if (getContext().getTheme().resolveAttribute(R.attr.actionBarItemBackground, typedValue, true)) {
-            button.setBackgroundResource(typedValue.resourceId);
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+            button.setBackgroundResource(R.drawable.nav_toolbar_button_item_background);
+        } else {
+            if (getContext().getTheme().resolveAttribute(R.attr.actionBarItemBackground, typedValue, true)) {
+                button.setBackgroundResource(typedValue.resourceId);
+            }
         }
     }
 

@@ -3,7 +3,6 @@ package com.navigation.toolbar;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,7 @@ import com.navigation.R;
 
 import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.AwesomeToolbar;
+import me.listenzz.navigation.Style;
 
 
 /**
@@ -20,11 +20,17 @@ import me.listenzz.navigation.AwesomeToolbar;
 
 public class CoordinatorFragment extends AwesomeFragment {
 
-    Toolbar toolbar;
+    AwesomeToolbar toolbar;
 
     @Override
     protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
-        return null;
+        return toolbar;
+    }
+
+    @Override
+    protected void onCustomStyle(Style style) {
+        style.setShadow(null);
+        style.setToolbarBackgroundColor(Color.TRANSPARENT);
     }
 
     @Override
@@ -42,13 +48,6 @@ public class CoordinatorFragment extends AwesomeFragment {
         View root = inflater.inflate(R.layout.fragment_coordinator, container, false);
 
         toolbar = root.findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(style.getBackIcon());
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getNavigationFragment().popFragment();
-            }
-        });
 
         // important
         if (isStatusBarTranslucent()) {

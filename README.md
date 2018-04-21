@@ -644,7 +644,7 @@ protected boolean backInteractive() {
 }
 ```
 
-如果你不希望自动为你创建 Toolbar, 你可以重写以下方法，并返回 null。
+如果你不希望自动为你创建 toolbar, 或者自动创建的 toolbar 所在 UI 层级不合适，你可以重写以下方法，返回 null 或者自定义的 toolbar。
 
 ```java
 protected AwesomeToolbar onCreateAwesomeToolbar(View parent) { 
@@ -652,9 +652,7 @@ protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
 }
 ```
 
-这样就不会为你创建 Toolbar 了，通过这种方式，你可以使用自定义的 Toolbar。
-
-demo 中，CoordinatorFragment 和 ViewPagerFragment 就使用了自定义的 Toolbar。
+demo 中，NoToolbarFragment 返回 null， 表示不需要创建 toolbar。如果需要自定义 toolbar，请优先考虑基于 AwesomeToolbar 进行自定义，并在 onCreateAwesomeToolbar 返回自定义的 toolbar，就像 CoordinatorFragment 和 ViewPagerFragment 所做的那样，你可能还需要重写 onCustomStyle 这个方法，来修改 toolbar 的样式。
 
 如果开启了沉浸式，那么需要使用 `appendStatusBarPadding` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
 

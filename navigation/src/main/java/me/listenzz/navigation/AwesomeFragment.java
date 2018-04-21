@@ -799,7 +799,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     public void setTitle(CharSequence title) {
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
-            toolbar.setTitle(title);
+            toolbar.setAwesomeTitle(title);
         }
     }
 

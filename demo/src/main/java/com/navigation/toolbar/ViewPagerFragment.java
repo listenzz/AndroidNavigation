@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import com.navigation.R;
 
 import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.AwesomeToolbar;
+import me.listenzz.navigation.Style;
 
 
 /**
@@ -26,7 +26,7 @@ import me.listenzz.navigation.AwesomeToolbar;
 
 public class ViewPagerFragment extends AwesomeFragment {
 
-    Toolbar toolbar;
+    AwesomeToolbar toolbar;
 
     int location;
 
@@ -43,7 +43,14 @@ public class ViewPagerFragment extends AwesomeFragment {
 
     @Override
     protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
-        return null;
+        return toolbar;
+    }
+
+    @Override
+    protected void onCustomStyle(Style style) {
+        super.onCustomStyle(style);
+        style.setShadow(null);
+        style.setElevation(0);
     }
 
     @Nullable
@@ -57,13 +64,6 @@ public class ViewPagerFragment extends AwesomeFragment {
     private void initView(View view) {
 
         toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(style.getBackIcon());
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getNavigationFragment().popFragment();
-            }
-        });
 
         AppBarLayout appBarLayout = view.findViewById(R.id.appbar_layout);
 
@@ -93,7 +93,7 @@ public class ViewPagerFragment extends AwesomeFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        toolbar.setTitle("Toolbar In AppBar");
+        setTitle("Toolbar In AppBar");
     }
 
     public class ViewPagerAdapter extends FragmentPagerAdapter {
