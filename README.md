@@ -26,7 +26,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 ## Installation
 
 ```groovy
-implementation 'me.listenzz:navigation:1.1.0'
+implementation 'me.listenzz:navigation:1.2.0'
 ```
 
 ## Usage 
@@ -58,14 +58,16 @@ public class MainActivity extends AwesomeActivity {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
             TestFragment testFragment = new TestFragment();
-            setRootFragment(testFragment);
+            setActivityRootFragment(testFragment);
         }
     }
     
 }
 ```
 
-你可以调用 `setRootFragment` 多次，根据不同的 App 状态展示不同的根页面。比如一开始你只需要展示个登录页面，登陆成功后将根页面设置成主页面。
+你可以调用 `setActivityRootFragment` 多次，根据不同的 App 状态展示不同的根页面。比如一开始你只需要展示个登录页面，登陆成功后将根页面设置成主页面。
+
+AwesomeFragment 同样部署了 setActivityRootFragment 接口，方便你随时随地切换 activity 的根。
 
 你通常还需要另外一个 Activity 来做为闪屏页（Splash），这个页面则不必继承 AweseomActivity。
 
@@ -86,7 +88,7 @@ public class MainActivity extends AwesomeActivity {
             // 把 TestFragment 设置为 NavigationFragment 的根
             navigationFragment.setRootFragment(testFragment);
             // 把 NavigationFragment 设置为 Activity 的根
-            setRootFragment(navigationFragment);
+            setActivityRootFragment(navigationFragment);
         }
     }
 }
@@ -121,7 +123,7 @@ public class MainActivity extends AwesomeActivity {
             tabBarFragment.setFragments(homeFragment, contactsFragment);
             
             // 把 TabBarFragment 设置为 Activity 的根
-            setRootFragment(tabBarFragment);
+            setActivityRootFragment(tabBarFragment);
         }
     }
     
@@ -159,7 +161,7 @@ public class MainActivity extends AwesomeActivity {
             tabBarFragment.setFragments(homeNavigatoinFragment, contactsNavigationFragment);
             
             // 把 TabBarFragment 设置为 Activity 的根
-            setRootFragment(tabBarFragment);
+            setActivityRootFragment(tabBarFragment);
         }
     }
     
@@ -183,7 +185,7 @@ public class MainActivity extends AwesomeActivity {
             drawerFragment.setMenuFragment(new MenuFragment());
             
             // 把 drawerFragment 设置为 Activity 的根
-            setRootFragment(drawerFragment);
+            setActivityRootFragment(drawerFragment);
         }
     }
     
