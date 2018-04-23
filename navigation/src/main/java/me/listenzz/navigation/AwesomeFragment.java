@@ -16,7 +16,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -723,12 +722,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
         if (getView() == null || getContext() == null) return null;
 
-        TypedValue typedValue = new TypedValue();
-        int height = 0;
-        if (getContext().getTheme().resolveAttribute(R.attr.actionBarSize, typedValue, true)) {
-            height = (int) TypedValue.complexToDimension(typedValue.data, getContext().getResources().getDisplayMetrics());
-        }
-
+        int height = getToolbarHeight();
         AwesomeToolbar toolbar = new AwesomeToolbar(getContext());
         if (parent instanceof LinearLayout) {
             LinearLayout linearLayout = (LinearLayout) parent;
