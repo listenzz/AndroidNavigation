@@ -313,6 +313,10 @@ public abstract class AwesomeFragment extends DialogFragment {
         return presentableActivity.getPresentingFragment(this);
     }
 
+    public void setActivityRootFragment(AwesomeFragment root) {
+        presentableActivity.setActivityRootFragment(root);
+    }
+
     private int requestCode;
     private int resultCode;
     private Bundle result;

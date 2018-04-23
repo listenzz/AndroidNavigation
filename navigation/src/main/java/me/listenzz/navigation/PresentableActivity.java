@@ -14,6 +14,8 @@ public interface PresentableActivity {
 
     AwesomeFragment getPresentingFragment(AwesomeFragment fragment);
 
+    void setActivityRootFragment(AwesomeFragment root);
+
     Style getStyle();
 
     void setStatusBarTranslucent(boolean under);
