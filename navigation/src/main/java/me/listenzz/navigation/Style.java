@@ -18,6 +18,8 @@ public class Style implements Cloneable {
 
     private int screenBackgroundColor = Color.WHITE;
 
+    private int toolbarHeight = 56; //dp
+
     private BarStyle statusBarStyle = BarStyle.LightContent;
     private int statusBarColor;
     private boolean statusBarColorAnimated = true;
@@ -58,6 +60,14 @@ public class Style implements Cloneable {
     }
 
     // ----- tabBar  -----
+
+    public int getToolbarHeight() {
+        return toolbarHeight;
+    }
+
+    public void setToolbarHeight(int toolbarHeight) {
+        this.toolbarHeight = toolbarHeight;
+    }
 
     public void setBottomBarBackgroundColor(String bottomBarBackgroundColor) {
         this.bottomBarBackgroundColor = bottomBarBackgroundColor;

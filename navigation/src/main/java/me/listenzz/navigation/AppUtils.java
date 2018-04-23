@@ -136,7 +136,7 @@ public class AppUtils {
      */
     public static int dp2px(Context context, float dp) {
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
-        return Math.round(px);
+        return (int)px;
     }
 
     public static void hideSoftInput(View view) {

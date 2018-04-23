@@ -74,7 +74,6 @@ public class DrawableUtils {
             int resId = fromResourceDrawableId(context, uri);
             drawable = resId > 0 ? context.getResources().getDrawable(resId) : null;
         }
-
         return drawable;
     }
 

@@ -747,7 +747,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     public int getToolbarHeight() {
-        return AppUtils.fetchContextDimension(requireContext(), R.attr.actionBarSize);
+        return  AppUtils.dp2px(requireContext(), style.getToolbarHeight());
     }
 
     private void customAwesomeToolbar(AwesomeToolbar toolbar) {
