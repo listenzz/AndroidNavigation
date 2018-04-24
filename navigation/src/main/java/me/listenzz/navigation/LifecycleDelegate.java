@@ -7,6 +7,7 @@ import android.arch.lifecycle.OnLifecycleEvent;
 import android.os.Looper;
 
 import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Created by Listen on 2018/1/31.
@@ -14,7 +15,7 @@ import java.util.LinkedList;
 
 public class LifecycleDelegate implements LifecycleObserver {
 
-    private LinkedList<Runnable> tasks = new LinkedList<>();
+    private Queue<Runnable> tasks = new LinkedList<>();
 
     private final LifecycleOwner lifecycleOwner;
 
@@ -41,12 +42,17 @@ public class LifecycleDelegate implements LifecycleObserver {
         }
     }
 
+    private boolean executing;
+
     void considerExecute() {
-        if (isAtLeastStarted()) {
-            for (Runnable task : tasks) {
-                task.run();
+        if (isAtLeastStarted() && !executing) {
+            executing = true;
+            Runnable runnable = tasks.poll();
+            while (runnable != null) {
+                runnable.run();
+                runnable = tasks.poll();
             }
-            tasks.clear();
+            executing = false;
         }
     }
 
