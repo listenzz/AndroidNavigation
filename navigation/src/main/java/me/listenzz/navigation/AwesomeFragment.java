@@ -747,7 +747,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     public int getToolbarHeight() {
-        return  AppUtils.dp2px(requireContext(), style.getToolbarHeight());
+        return  style.getToolbarHeight();
     }
 
     private void customAwesomeToolbar(AwesomeToolbar toolbar) {

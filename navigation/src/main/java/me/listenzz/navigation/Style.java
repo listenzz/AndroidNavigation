@@ -18,7 +18,7 @@ public class Style implements Cloneable {
 
     private int screenBackgroundColor = Color.WHITE;
 
-    private int toolbarHeight = 56; //dp
+    private int toolbarHeight;
 
     private BarStyle statusBarStyle = BarStyle.LightContent;
     private int statusBarColor;
@@ -47,6 +47,7 @@ public class Style implements Cloneable {
         this.context = context;
         statusBarColor = AppUtils.fetchContextColor(context, R.attr.colorPrimaryDark);
         toolbarBackgroundColor = AppUtils.fetchContextColor(context, R.attr.colorPrimary);
+        toolbarHeight = AppUtils.fetchContextDimension(context, R.attr.actionBarSize);
     }
 
     // ------ screen ------
