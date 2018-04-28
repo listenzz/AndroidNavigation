@@ -839,10 +839,14 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
+    private ToolbarButtonItem leftToolbarButtonItem;
+
     public void setLeftBarButtonItem(ToolbarButtonItem barButtonItem) {
+        leftToolbarButtonItem = barButtonItem;
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
             if (barButtonItem == null) {
+                toolbar.clearLeftButton();
                 if (!isNavigationRoot() && !shouldHideBackButton()) {
                     toolbar.setNavigationIcon(style.getBackIcon());
                     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -856,18 +860,32 @@ public abstract class AwesomeFragment extends DialogFragment {
             }
             Drawable drawable = drawableFromBarButtonItem(barButtonItem);
             toolbar.setLeftButton(drawable, barButtonItem.title, barButtonItem.enabled, barButtonItem.onClickListener);
+            barButtonItem.attach(toolbar.getLeftButton());
         }
     }
 
+    public ToolbarButtonItem getLeftToolbarButtonItem() {
+        return leftToolbarButtonItem;
+    }
+
+    private ToolbarButtonItem rightToolbarButtonItem;
+
     public void setRightBarButtonItem(ToolbarButtonItem barButtonItem) {
+        rightToolbarButtonItem = barButtonItem;
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
             if (barButtonItem == null) {
+                toolbar.clearRightButton();
                 return;
             }
             Drawable drawable = drawableFromBarButtonItem(barButtonItem);
             toolbar.setRightButton(drawable, barButtonItem.title, barButtonItem.enabled, barButtonItem.onClickListener);
+            barButtonItem.attach(toolbar.getRightButton());
         }
+    }
+
+    public ToolbarButtonItem getRightToolbarButtonItem() {
+        return rightToolbarButtonItem;
     }
 
     private Drawable drawableFromBarButtonItem(ToolbarButtonItem barButtonItem) {

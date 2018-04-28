@@ -2,6 +2,7 @@ package me.listenzz.navigation;
 
 import android.support.annotation.DrawableRes;
 import android.view.View;
+import android.widget.TextView;
 
 /**
  * Created by listen on 2018/4/5.
@@ -30,6 +31,24 @@ public class ToolbarButtonItem {
         this.title = title;
         this.enabled = enabled;
         this.onClickListener = onClickListener;
+    }
+
+    TextView button;
+
+    public void setEnabled(boolean enabled) {
+        if (button != null) {
+            button.setEnabled(enabled);
+        }
+    }
+
+    public void setTextColor(int color) {
+        if (button != null) {
+            button.setTextColor(color);
+        }
+    }
+
+    void attach(TextView button) {
+        this.button = button;
     }
 
 }

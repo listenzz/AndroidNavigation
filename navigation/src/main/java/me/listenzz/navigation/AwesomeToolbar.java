@@ -185,10 +185,15 @@ public class AwesomeToolbar extends Toolbar {
         return this.contentInset;
     }
 
-    public void clearLeftButtons() {
+    public void clearLeftButton() {
         if (leftButton != null) {
             removeView(leftButton);
+            leftButton = null;
         }
+    }
+
+    public void clearLeftButtons() {
+        clearLeftButton();
         if (leftButtons != null) {
             for (TextView button : leftButtons) {
                 removeView(button);
@@ -199,10 +204,15 @@ public class AwesomeToolbar extends Toolbar {
         setNavigationOnClickListener(null);
     }
 
-    public void clearRightButtons() {
+    public void clearRightButton() {
         if (rightButton != null) {
             removeView(rightButton);
+            rightButton = null;
         }
+    }
+
+    public void clearRightButtons() {
+        clearLeftButton();
         if (rightButtons != null) {
             for (TextView button : rightButtons) {
                 removeView(button);
