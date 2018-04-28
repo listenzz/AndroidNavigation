@@ -241,7 +241,7 @@ protected AwesomeFragment childFragmentForAppearance() {
 @Override
 protected boolean onBackPressed() {
     // 这个方法用来控制当用户点击返回键时，到底要退出哪个子 fragment
-    // 如果不重写，则退出容器本身
+    // 返回 true 表示容器消费了此事件，否则会退出容器本身
     // 可以参考 DrawerFragment 是如何处理返回键的
     return super.onBackPressed();
 }

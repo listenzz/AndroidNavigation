@@ -361,7 +361,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
-    boolean dispatchBackPressed() {
+    protected boolean dispatchBackPressed() {
         FragmentManager fragmentManager = getChildFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
@@ -767,7 +767,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    getNavigationFragment().popFragment();
+                    getNavigationFragment().dispatchBackPressed();
                 }
             });
         }
@@ -848,7 +848,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            getNavigationFragment().popFragment();
+                            getNavigationFragment().dispatchBackPressed();
                         }
                     });
                 }
