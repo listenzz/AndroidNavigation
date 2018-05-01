@@ -223,7 +223,7 @@ public class AwesomeToolbar extends Toolbar {
         menu.clear();
     }
 
-    public void addLeftButton(Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
+    public void addLeftButton(Drawable icon, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
         if (leftButton != null) {
             removeView(leftButton);
         }
@@ -234,12 +234,12 @@ public class AwesomeToolbar extends Toolbar {
         button.setGravity(Gravity.CENTER);
         LayoutParams layoutParams = new LayoutParams(-2, -1, Gravity.CENTER_VERTICAL | Gravity.START);
         addView(button, layoutParams);
-        setButton(button, icon, title, enabled, onClickListener);
+        setButton(button, icon, title, tintColor, enabled, onClickListener);
         leftButtons.add(button);
         bringTitleViewToFront();
     }
 
-    public void addRightButton(Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
+    public void addRightButton(Drawable icon, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
         if (rightButton != null) {
             removeView(rightButton);
         }
@@ -251,28 +251,28 @@ public class AwesomeToolbar extends Toolbar {
         button.setGravity(Gravity.CENTER);
         LayoutParams layoutParams = new LayoutParams(-2, -1, Gravity.CENTER_VERTICAL | Gravity.END);
         addView(button, layoutParams);
-        setButton(button, icon, title, enabled, onClickListener);
+        setButton(button, icon, title, tintColor, enabled, onClickListener);
         rightButtons.add(button);
         bringTitleViewToFront();
     }
 
-    public void setLeftButton(Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
+    public void setLeftButton(Drawable icon, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
         if (leftButtons != null && leftButtons.size() > 0) {
             return;
         }
         setNavigationIcon(null);
         setNavigationOnClickListener(null);
         TextView leftButton = getLeftButton();
-        setButton(leftButton, icon, title, enabled, onClickListener);
+        setButton(leftButton, icon, title, tintColor, enabled, onClickListener);
         bringTitleViewToFront();
     }
 
-    public void setRightButton(Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
+    public void setRightButton(Drawable icon, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
         if (rightButtons != null && rightButtons.size() > 0) {
             return;
         }
         TextView rightButton = getRightButton();
-        setButton(rightButton, icon, title, enabled, onClickListener);
+        setButton(rightButton, icon, title, tintColor, enabled, onClickListener);
         bringTitleViewToFront();
     }
 
@@ -301,14 +301,14 @@ public class AwesomeToolbar extends Toolbar {
         }
     }
 
-    private void setButton(TextView button, Drawable icon, String title, boolean enabled, View.OnClickListener onClickListener) {
+    private void setButton(TextView button, Drawable icon, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
         button.setOnClickListener(onClickListener);
         button.setText(null);
         button.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         button.setMaxWidth(Integer.MAX_VALUE);
         button.setVisibility(View.VISIBLE);
 
-        int color = buttonTintColor;
+        int color = tintColor != 0 ? tintColor : buttonTintColor;
         if (!enabled) {
             color = AppUtils.toGrey(color);
             color = ColorUtils.blendARGB(color, backgroundColor, 0.75f);

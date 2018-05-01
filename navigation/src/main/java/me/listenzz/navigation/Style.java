@@ -33,7 +33,6 @@ public class Style implements Cloneable {
     private int elevation = -1;
     private Drawable shadow = defaultShadow;
     private int titleGravity = Gravity.START;
-    private int toolbarButtonTintColor = INVALID_COLOR;
     private int toolbarButtonTextSize = 15;
 
     private String bottomBarBackgroundColor = "#FFFFFF";
@@ -188,7 +187,7 @@ public class Style implements Cloneable {
             Drawable drawable = context.getResources().getDrawable(R.drawable.nav_ic_arrow_back);
             backIcon = DrawableCompat.wrap(drawable).mutate();
         }
-        DrawableCompat.setTint(backIcon, getToolbarButtonTintColor());
+        DrawableCompat.setTint(backIcon, getToolbarTintColor());
         return backIcon;
     }
 
@@ -201,7 +200,15 @@ public class Style implements Cloneable {
             return titleTextColor;
         }
 
-        return getToolbarTintColor();
+        if (statusBarStyle == BarStyle.LightContent) {
+            return Color.WHITE;
+        }
+
+        if (toolbarBackgroundColor == INVALID_COLOR) {
+            return Color.parseColor("#666666");
+        }
+
+        return Color.BLACK;
     }
 
     public void setTitleTextSize(int dp) {
@@ -226,17 +233,6 @@ public class Style implements Cloneable {
 
     public void setBottomBarShadow(Drawable drawable) {
         this.bottomBarShadow = drawable;
-    }
-
-    public void setToolbarButtonTintColor(int color) {
-        toolbarButtonTintColor = color;
-    }
-
-    public int getToolbarButtonTintColor() {
-        if (toolbarButtonTintColor != INVALID_COLOR) {
-            return toolbarButtonTintColor;
-        }
-        return getToolbarTintColor();
     }
 
     public void setToolbarButtonTextSize(int dp) {

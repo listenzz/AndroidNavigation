@@ -512,11 +512,10 @@ protected void onCustomStyle(Style style) {
     elevation: int                   // toolbar 阴影高度， 仅对 5.0 以上版本生效，默认值为 4 dp
     shadow: Drawable                 // toolbar 阴影图片，仅对 4.4 以下版本生效 
     backIcon: Drawable               // 返回按钮图标，默认是个箭头
-    toolbarTintColor: int            // toolbar 标题和按钮的颜色，默认根据 toolbarStyle 来推算
-    titleTextColor: int              // toolbar 标题颜色，默认取 toolbarTintColor 的值
+    toolbarTintColor: int            // toolbar 按钮的颜色，默认根据 statusBarStyle 来推算
+    titleTextColor: int              // toolbar 标题颜色，默认根据 statusBarStyle 来推算
     titleTextSize: int               // toolbar 标题字体大小，默认是 17 dp
     titleGravity: int                // toolbar 标题的位置，默认是 Gravity.START
-    toolbarButtonTintColor: int      // toolbar 按钮颜色，默认取 toolbarTintColor 的值
     toolbarButtonTextSize: int       // toolbar 按钮字体大小，默认是 15 dp
      
     // BottomBar

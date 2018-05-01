@@ -747,12 +747,12 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     public int getToolbarHeight() {
-        return  style.getToolbarHeight();
+        return style.getToolbarHeight();
     }
 
     private void customAwesomeToolbar(AwesomeToolbar toolbar) {
         toolbar.setBackgroundColor(preferredToolbarColor());
-        toolbar.setButtonTintColor(style.getToolbarButtonTintColor());
+        toolbar.setButtonTintColor(style.getToolbarTintColor());
         toolbar.setButtonTextSize(style.getToolbarButtonTextSize());
         toolbar.setTitleTextColor(style.getTitleTextColor());
         toolbar.setTitleTextSize(style.getTitleTextSize());
@@ -820,7 +820,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
             for (ToolbarButtonItem barButtonItem : barButtonItems) {
                 Drawable drawable = drawableFromBarButtonItem(barButtonItem);
-                toolbar.addLeftButton(drawable, barButtonItem.title, barButtonItem.enabled, barButtonItem.onClickListener);
+                toolbar.addLeftButton(drawable, barButtonItem.title, barButtonItem.tintColor, barButtonItem.enabled, barButtonItem.onClickListener);
             }
         }
     }
@@ -834,7 +834,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             }
             for (ToolbarButtonItem barButtonItem : barButtonItems) {
                 Drawable drawable = drawableFromBarButtonItem(barButtonItem);
-                toolbar.addRightButton(drawable, barButtonItem.title, barButtonItem.enabled, barButtonItem.onClickListener);
+                toolbar.addRightButton(drawable, barButtonItem.title, barButtonItem.tintColor, barButtonItem.enabled, barButtonItem.onClickListener);
             }
         }
     }
@@ -859,7 +859,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                 return;
             }
             Drawable drawable = drawableFromBarButtonItem(barButtonItem);
-            toolbar.setLeftButton(drawable, barButtonItem.title, barButtonItem.enabled, barButtonItem.onClickListener);
+            toolbar.setLeftButton(drawable, barButtonItem.title, barButtonItem.tintColor, barButtonItem.enabled, barButtonItem.onClickListener);
             barButtonItem.attach(toolbar.getLeftButton());
         }
     }
@@ -879,7 +879,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                 return;
             }
             Drawable drawable = drawableFromBarButtonItem(barButtonItem);
-            toolbar.setRightButton(drawable, barButtonItem.title, barButtonItem.enabled, barButtonItem.onClickListener);
+            toolbar.setRightButton(drawable, barButtonItem.title, barButtonItem.tintColor, barButtonItem.enabled, barButtonItem.onClickListener);
             barButtonItem.attach(toolbar.getRightButton());
         }
     }

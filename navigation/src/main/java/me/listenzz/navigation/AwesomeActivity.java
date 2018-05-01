@@ -102,14 +102,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     }
 
-    /**
-     * Use #setActivityRootFragment instead
-     */
-    @Deprecated
-    public void setRootFragment(final AwesomeFragment fragment) {
-        setActivityRootFragment(fragment);
-    }
-
     @Override
     public void setActivityRootFragment(final AwesomeFragment root) {
         scheduleTaskAtStarted(new Runnable() {
