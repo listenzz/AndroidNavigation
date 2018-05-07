@@ -277,7 +277,10 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     public void presentFragment(AwesomeFragment fragment, int requestCode) {
-        if (presentableActivity != null) {
+        AwesomeFragment parent = getParentAwesomeFragment();
+        if (parent != null) {
+            parent.presentFragment(fragment, requestCode);
+        } else if (presentableActivity != null) {
             Bundle args = FragmentHelper.getArguments(fragment);
             args.putInt(ARGS_REQUEST_CODE, requestCode);
             presentableActivity.presentFragment(fragment);
