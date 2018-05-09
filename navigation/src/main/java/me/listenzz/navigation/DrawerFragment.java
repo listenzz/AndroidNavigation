@@ -3,8 +3,6 @@ package me.listenzz.navigation;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -133,11 +131,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                FragmentManager fragmentManager = getChildFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.add(R.id.drawer_content, fragment, fragment.getSceneId());
-                transaction.setPrimaryNavigationFragment(fragment); // primary
-                transaction.commit();
+                FragmentHelper.addFragmentToAddedList(getChildFragmentManager(), R.id.drawer_content, fragment);
             }
         });
     }
@@ -154,10 +148,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             @Override
             public void run() {
                 fragment.setUserVisibleHint(false);
-                FragmentManager fragmentManager = getChildFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.add(R.id.drawer_menu, fragment, fragment.getSceneId());
-                transaction.commit();
+                FragmentHelper.addFragmentToAddedList(getChildFragmentManager(), R.id.drawer_menu, fragment, false);
             }
         });
     }

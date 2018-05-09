@@ -38,6 +38,19 @@ public class FragmentHelper {
         transaction.commit();
     }
 
+    public static void addFragmentToAddedList(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment) {
+        addFragmentToAddedList(fragmentManager, containerId, fragment, true);
+    }
+
+    public static void addFragmentToAddedList(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment, boolean primary) {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(containerId, fragment, fragment.getSceneId());
+        if (primary) {
+            transaction.setPrimaryNavigationFragment(fragment); // primary
+        }
+        transaction.commit();
+    }
+
     public static AwesomeFragment getLatterFragment(FragmentManager fragmentManager, AwesomeFragment fragment) {
         int count = fragmentManager.getBackStackEntryCount();
         int index = findIndexAtBackStack(fragmentManager, fragment);

@@ -119,7 +119,6 @@ public class TabBarFragment extends AwesomeFragment {
     private void executeSetChildFragments(List<AwesomeFragment> fragments) {
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        // transaction.setReorderingAllowed(true);
         for (int i = 0, size = fragments.size(); i < size; i++) {
             AwesomeFragment fragment = fragments.get(i);
             fragmentTags.add(fragment.getSceneId());
