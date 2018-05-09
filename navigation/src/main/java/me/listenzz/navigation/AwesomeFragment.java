@@ -564,6 +564,29 @@ public abstract class AwesomeFragment extends DialogFragment {
         return null;
     }
 
+    /**
+     * @deprecated  call {@link #dismissDialog()} instead of this method.
+     */
+    @Deprecated
+    @Override
+    public void dismiss() {
+        if (getDialog() == null) {
+            throw new IllegalStateException("Can't find dialog, do you mean `dismissFragment`?");
+        } else {
+            super.dismiss();
+        }
+    }
+
+    /**
+     * Dismiss the fragment and its dialog.  If the fragment was added to the
+     * back stack, all back stack state up to and including this entry will
+     * be popped.  Otherwise, a new transaction will be committed to remove
+     * the fragment.
+     */
+    public void dismissDialog() {
+        super.dismiss();
+    }
+
     public void setStatusBarTranslucent(boolean translucent) {
         if (getDialog() != null) {
             AppUtils.setStatusBarTranslucent(getWindow(), translucent);
