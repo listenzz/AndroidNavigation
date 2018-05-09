@@ -26,7 +26,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 ## Installation
 
 ```groovy
-implementation 'me.listenzz:navigation:1.2.0'
+implementation 'me.listenzz:navigation:1.3.5'
 ```
 
 ## Usage 
@@ -206,6 +206,8 @@ contentFragment 可以是一个像 TabBarFragment 这样的容器。可以参考
 
 如果以上容器都不能满足你的需求，你可以自定义容器。
 
+> 容器在添加子 fragment 时一定要注意判断 savedInstanceState 是否为 null, 会不会在生命周期重启时，重复添加 fragment。
+
 可以参考 demo 中 ViewPagerFragment 这个类，它就是个自定义容器。
 
 自定义容器，继承 AwesomeFragment 并重写下面这个方法。
@@ -241,11 +243,13 @@ protected AwesomeFragment childFragmentForAppearance() {
 @Override
 protected boolean onBackPressed() {
     // 这个方法用来控制当用户点击返回键时，到底要退出哪个子 fragment
-    // 返回 true 表示容器消费了此事件，否则会退出容器本身
-    // 可以参考 DrawerFragment 是如何处理返回键的
+    // 返回 true 表示当前容器消费了此事件，否则转发给上一层容器处理
+    // 可以参考 DrawerFragment，NavigationFragment 是如何处理返回键的
     return super.onBackPressed();
 }
 ```
+> 非容器页面也可以重写 `onBackPressed` 来处理用户点击返回按钮事件。
+
 
 ### 导航
 
@@ -439,7 +443,7 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 
 #### 自定义导航
 
-虽然 AwesomeFragment 和 NavigationFragment 提供的导航操作已经能满足大部分需求，但有时我们可能需要自定义导航操作。
+虽然 AwesomeFragment 和 NavigationFragment 提供的导航操作已经能满足大部分需求，但有时我们可能需要自定义导航操作，尤其是自定义容器的时候。
 
 需要注意几个点
 
@@ -467,7 +471,9 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
     getFragmentManager().setPrimaryNavigationFragment(fragment);
     ```
     
-可以参考 demo 中 GridFragment 这个类，看如何实现自定义导航
+- 一个容器中的子 fragment 要不都添加到返回栈中，就像 NavigationFragment 那样，要不都不添加到返回栈中，就像 TabBarFragment 和 DrawerFragment 那样，切勿混用这两种模式。
+    
+可以参考 demo 中 GridFragment 这个类，看如何实现自定义导航的，它遵循了 NavigationFragment 管理子 fragment 的规则。
 
 ![](./screenshot/shared_element_transition.gif)
 <!--<img src="./screenshot/shared_element_transition.gif" width="280px"/>-->
