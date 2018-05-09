@@ -43,7 +43,7 @@ public class ToolbarButtonItem {
         this(null, iconRes, null, 0, true, onClickListener);
     }
 
-    TextView button;
+    private TextView button;
 
     public void setEnabled(boolean enabled) {
         if (button != null) {

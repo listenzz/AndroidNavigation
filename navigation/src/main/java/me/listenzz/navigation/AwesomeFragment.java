@@ -98,6 +98,8 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     }
 
+    boolean callSuperOnViewCreated;
+
     @Override
     @CallSuper
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
@@ -109,6 +111,15 @@ public abstract class AwesomeFragment extends DialogFragment {
             fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
         }
         handleNavigationFragmentStuff(root);
+        callSuperOnViewCreated = true;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (!callSuperOnViewCreated) {
+            throw new IllegalStateException("you should call super when override `onViewCreated`");
+        }
     }
 
     @Override
