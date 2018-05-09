@@ -289,7 +289,7 @@ public class AwesomeToolbar extends Toolbar {
     @Override
     public void setNavigationIcon(@Nullable Drawable icon) {
         super.setNavigationIcon(icon);
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
             int count = getChildCount();
             for (int i = 0; i < count; i++) {
                 View child = getChildAt(i);
@@ -332,7 +332,7 @@ public class AwesomeToolbar extends Toolbar {
         }
 
         TypedValue typedValue = new TypedValue();
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
             button.setBackgroundResource(R.drawable.nav_toolbar_button_item_background);
         } else {
             if (getContext().getTheme().resolveAttribute(R.attr.actionBarItemBackground, typedValue, true)) {
