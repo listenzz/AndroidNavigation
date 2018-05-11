@@ -190,6 +190,10 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         }
     }
 
+    public void setMenuInteractive(boolean enabled) {
+        setDrawerLockMode(enabled ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
     public void toggleMenu() {
         if (isMenuOpened()) {
             closeMenu();
