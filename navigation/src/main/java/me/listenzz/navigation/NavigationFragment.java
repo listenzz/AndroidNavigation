@@ -71,74 +71,99 @@ public class NavigationFragment extends AwesomeFragment {
         transaction.commit();
     }
 
-    public void pushFragment(final AwesomeFragment fragment) {
+    public void pushFragment(AwesomeFragment fragment) {
+        pushFragment(fragment, Anim.Push);
+    }
+
+    public void pushFragment(final AwesomeFragment fragment, final Anim animation) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executePushFragment(fragment);
+                executePushFragment(fragment, animation);
             }
         });
     }
 
-    private void executePushFragment(AwesomeFragment fragment) {
+    private void executePushFragment(AwesomeFragment fragment, Anim animation) {
         int count = getChildFragmentCountAtBackStack();
         if (count == 0) {
             throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
         }
-        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Push);
+        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, animation);
     }
 
     public void popToFragment(final AwesomeFragment fragment) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executePopToFragment(fragment);
+                executePopToFragment(fragment, getTopFragment().getAnimation());
             }
         });
     }
 
-    private void executePopToFragment(AwesomeFragment fragment) {
+    public void popToFragment(final AwesomeFragment fragment, final Anim animation) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                executePopToFragment(fragment, animation);
+            }
+        });
+    }
+
+    private void executePopToFragment(AwesomeFragment fragment, Anim animation) {
         AwesomeFragment topFragment = getTopFragment();
         if (topFragment == fragment) {
             return;
         }
-        topFragment.setAnimation(PresentAnimation.Push);
-        fragment.setAnimation(PresentAnimation.Push);
+        topFragment.setAnimation(animation);
+        fragment.setAnimation(animation);
 
         fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
         getChildFragmentManager().popBackStack(fragment.getSceneId(), 0);
     }
 
     public void popFragment() {
+        popFragment(getTopFragment().getAnimation());
+    }
+
+    public void popFragment(Anim animation) {
         AwesomeFragment after = FragmentHelper.getLatterFragment(getChildFragmentManager(), getTopFragment());
         if (after != null) {
-            popToFragment(this);
+            popToFragment(this, animation);
             return;
         }
 
         AwesomeFragment before = FragmentHelper.getAheadFragment(getChildFragmentManager(), getTopFragment());
         if (before != null) {
-            popToFragment(before);
+            popToFragment(before, animation);
         }
     }
 
     public void popToRootFragment() {
+        popToRootFragment(getTopFragment().getAnimation());
+    }
+
+    public void popToRootFragment(Anim animation) {
         AwesomeFragment awesomeFragment = getRootFragment();
         if (awesomeFragment != null) {
-            popToFragment(getRootFragment());
+            popToFragment(getRootFragment(), animation);
         }
     }
 
     public void replaceFragment(final AwesomeFragment fragment) {
+        replaceFragment(fragment, Anim.Fade);
+    }
+
+    public void replaceFragment(final AwesomeFragment fragment, final Anim anim) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executeReplaceFragment(fragment);
+                executeReplaceFragment(fragment, anim);
             }
         });
     }
 
-    private void executeReplaceFragment(AwesomeFragment fragment) {
+    private void executeReplaceFragment(AwesomeFragment fragment, Anim anim) {
         int count = getChildFragmentCountAtBackStack();
         if (count == 0) {
             throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
@@ -147,10 +172,10 @@ public class NavigationFragment extends AwesomeFragment {
         FragmentManager fragmentManager = getChildFragmentManager();
         AwesomeFragment topFragment = getTopFragment();
         AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, topFragment);
-        topFragment.setAnimation(PresentAnimation.Fade);
+        topFragment.setAnimation(anim);
 
         if (aheadFragment != null) {
-            aheadFragment.setAnimation(PresentAnimation.Fade);
+            aheadFragment.setAnimation(anim);
         }
 
         fragmentManager.popBackStack();
@@ -166,23 +191,27 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     public void replaceToRootFragment(final AwesomeFragment fragment) {
+        replaceToRootFragment(fragment, Anim.Fade);
+    }
+
+    public void replaceToRootFragment(final AwesomeFragment fragment, final Anim anim) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executeReplaceRootFragment(fragment);
+                executeReplaceRootFragment(fragment, anim);
             }
         });
     }
 
-    private void executeReplaceRootFragment(AwesomeFragment fragment) {
+    private void executeReplaceRootFragment(AwesomeFragment fragment, Anim anim) {
         AwesomeFragment rootFragment = getRootFragment();
         if (rootFragment == null) {
             throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
         }
 
         AwesomeFragment topFragment = getTopFragment();
-        topFragment.setAnimation(PresentAnimation.Fade);
-        rootFragment.setAnimation(PresentAnimation.Fade);
+        topFragment.setAnimation(anim);
+        rootFragment.setAnimation(anim);
 
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.popBackStack(rootFragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);

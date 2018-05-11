@@ -235,7 +235,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     @Override
     @CallSuper
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        PresentAnimation animation = getAnimation();
+        Anim animation = getAnimation();
 
         handleHideBottomBarWhenPushed(transit, enter, animation);
         // ---------
@@ -248,15 +248,15 @@ public abstract class AwesomeFragment extends DialogFragment {
 
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
-                return AnimationUtils.loadAnimation(getContext(), animation.enter);
+                return AnimationUtils.loadAnimation(getContext(), animation.enter());
             } else {
-                return AnimationUtils.loadAnimation(getContext(), animation.exit);
+                return AnimationUtils.loadAnimation(getContext(), animation.exit());
             }
         } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
             if (enter) {
-                return AnimationUtils.loadAnimation(getContext(), animation.popEnter);
+                return AnimationUtils.loadAnimation(getContext(), animation.popEnter());
             } else {
-                return AnimationUtils.loadAnimation(getContext(), animation.popExit);
+                return AnimationUtils.loadAnimation(getContext(), animation.popExit());
             }
         }
 
@@ -288,26 +288,34 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     public void presentFragment(AwesomeFragment fragment, int requestCode) {
+        presentFragment(fragment, requestCode, Anim.Modal);
+    }
+
+    public void presentFragment(AwesomeFragment fragment, int requestCode, Anim anim) {
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            parent.presentFragment(fragment, requestCode);
+            parent.presentFragment(fragment, requestCode, anim);
         } else if (presentableActivity != null) {
             Bundle args = FragmentHelper.getArguments(fragment);
             args.putInt(ARGS_REQUEST_CODE, requestCode);
-            presentableActivity.presentFragment(fragment);
+            presentableActivity.presentFragment(fragment, anim);
         }
     }
 
     public void dismissFragment() {
+        dismissFragment(Anim.Modal);
+    }
+
+    public void dismissFragment(Anim anim) {
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             parent.setResult(resultCode, result);
-            parent.dismissFragment();
+            parent.dismissFragment(anim);
             return;
         }
 
         if (presentableActivity != null) {
-            presentableActivity.dismissFragment(this);
+            presentableActivity.dismissFragment(this, anim);
         }
     }
 
@@ -443,22 +451,22 @@ public abstract class AwesomeFragment extends DialogFragment {
         return null;
     }
 
-    private PresentAnimation animation = null;
+    private Anim animation = null;
 
-    public void setAnimation(PresentAnimation animation) {
+    public void setAnimation(Anim animation) {
         Bundle bundle = FragmentHelper.getArguments(this);
-        bundle.putString(ARGS_ANIMATION, animation.name());
+        bundle.putParcelable(ARGS_ANIMATION, animation);
         this.animation = animation;
     }
 
-    public PresentAnimation getAnimation() {
+    public Anim getAnimation() {
         if (animation == null) {
             Bundle bundle = FragmentHelper.getArguments(this);
-            String animationName = bundle.getString(ARGS_ANIMATION);
-            if (animationName != null) {
-                animation = PresentAnimation.valueOf(animationName);
+            Anim anim = bundle.getParcelable(ARGS_ANIMATION);
+            if (anim == null) {
+                animation = Anim.None;
             } else {
-                animation = PresentAnimation.None;
+                animation = anim;
             }
         }
         return animation;
@@ -688,7 +696,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         return navigationFragment.getRootFragment().hidesBottomBarWhenPushed();
     }
 
-    void handleHideBottomBarWhenPushed(int transit, boolean enter, PresentAnimation animation) {
+    void handleHideBottomBarWhenPushed(int transit, boolean enter, Anim animation) {
         // handle hidesBottomBarWhenPushed
         Fragment parent = getParentFragment();
         if (parent != null && parent instanceof NavigationFragment) {
@@ -703,11 +711,11 @@ public abstract class AwesomeFragment extends DialogFragment {
                 if (index == 0) {
                     tabBarFragment.getBottomBar().setVisibility(View.VISIBLE);
                 } else if (index == 1 && shouldHideBottomBarWhenPushed()) {
-                    tabBarFragment.hideBottomNavigationBarAnimatedWhenPush(animation.exit);
+                    tabBarFragment.hideBottomNavigationBarAnimatedWhenPush(animation.exit());
                 }
             } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
                 if (index == 0 && shouldHideBottomBarWhenPushed()) {
-                    tabBarFragment.showBottomNavigationBarAnimatedWhenPop(animation.popEnter);
+                    tabBarFragment.showBottomNavigationBarAnimatedWhenPop(animation.popEnter());
                 }
             }
         }

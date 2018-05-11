@@ -64,21 +64,31 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     @Override
-    public void presentFragment(final AwesomeFragment fragment) {
+    public void presentFragment(AwesomeFragment fragment) {
+        presentFragment(fragment, Anim.Modal);
+    }
+
+    @Override
+    public void dismissFragment(AwesomeFragment fragment) {
+        dismissFragment(fragment, Anim.Modal);
+    }
+
+    @Override
+    public void presentFragment(final AwesomeFragment fragment, final Anim anim) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executePresentFragment(fragment);
+                executePresentFragment(fragment, anim);
             }
         });
     }
 
     @Override
-    public void dismissFragment(final AwesomeFragment fragment) {
+    public void dismissFragment(final AwesomeFragment fragment, final Anim anim) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executeDismissFragment(fragment);
+                executeDismissFragment(fragment, anim);
             }
         });
     }
@@ -120,7 +130,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
 
-        fragment.setAnimation(PresentAnimation.None);
+        fragment.setAnimation(Anim.None);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -163,19 +173,19 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         return children;
     }
 
-    private void executePresentFragment(AwesomeFragment fragment) {
-        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.Modal);
+    private void executePresentFragment(AwesomeFragment fragment, Anim anim) {
+        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, anim);
     }
 
-    private void executeDismissFragment(AwesomeFragment fragment) {
+    private void executeDismissFragment(AwesomeFragment fragment, Anim anim) {
         // 如果有 presented 就 dismiss presented, 否则就 dismiss 自己
         AwesomeFragment top = (AwesomeFragment) getSupportFragmentManager().findFragmentById(android.R.id.content);
         AwesomeFragment presenting = getPresentingFragment(fragment);
 
-        top.setAnimation(PresentAnimation.Modal);
+        top.setAnimation(anim);
 
         if (presenting != null) {
-            presenting.setAnimation(PresentAnimation.Modal);
+            presenting.setAnimation(anim);
         }
 
         if (presenting == null) {

@@ -23,7 +23,7 @@ public class FragmentHelper {
         return args;
     }
 
-    public static void addFragmentToBackStack(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment, PresentAnimation animation) {
+    public static void addFragmentToBackStack(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment, Anim animation) {
         fragment.setAnimation(animation);
         AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentById(containerId);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
