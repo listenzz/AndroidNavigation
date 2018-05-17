@@ -96,7 +96,7 @@ public class NavigationFragment extends AwesomeFragment {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executePopToFragment(fragment, getTopFragment().getAnimation());
+                executePopToFragment(fragment, Anim.Push);
             }
         });
     }
@@ -123,7 +123,7 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     public void popFragment() {
-        popFragment(getTopFragment().getAnimation());
+        popFragment(Anim.Push);
     }
 
     public void popFragment(Anim animation) {
@@ -140,7 +140,7 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     public void popToRootFragment() {
-        popToRootFragment(getTopFragment().getAnimation());
+        popToRootFragment(Anim.Push);
     }
 
     public void popToRootFragment(Anim animation) {
