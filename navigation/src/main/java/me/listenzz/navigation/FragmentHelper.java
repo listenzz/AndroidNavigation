@@ -36,6 +36,7 @@ public class FragmentHelper {
         transaction.add(containerId, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
+        fragmentManager.executePendingTransactions();
     }
 
     public static void addFragmentToAddedList(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment) {
@@ -49,6 +50,7 @@ public class FragmentHelper {
             transaction.setPrimaryNavigationFragment(fragment); // primary
         }
         transaction.commit();
+        fragmentManager.executePendingTransactions();
     }
 
     public static AwesomeFragment getLatterFragment(FragmentManager fragmentManager, AwesomeFragment fragment) {
