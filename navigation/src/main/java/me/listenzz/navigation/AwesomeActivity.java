@@ -1,5 +1,7 @@
 package me.listenzz.navigation;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -126,6 +128,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         FragmentManager fragmentManager = getSupportFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 0) {
+            getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
             String tag = fragmentManager.getBackStackEntryAt(0).getName();
             fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
