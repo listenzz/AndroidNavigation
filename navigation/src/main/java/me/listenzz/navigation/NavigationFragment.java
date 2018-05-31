@@ -17,6 +17,22 @@ import java.util.List;
 
 public class NavigationFragment extends AwesomeFragment {
 
+    private static final String SAVED_STATE_HAS_SET_ROOT = "has_set_root";
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            hasSetRoot = savedInstanceState.getBoolean(SAVED_STATE_HAS_SET_ROOT, false);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SAVED_STATE_HAS_SET_ROOT, hasSetRoot);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -48,13 +64,26 @@ public class NavigationFragment extends AwesomeFragment {
         }
     }
 
+    private boolean hasSetRoot;
+
     public void setRootFragment(final AwesomeFragment fragment) {
+        hasSetRoot = true;
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
                 executeSetRootFragment(fragment);
             }
         });
+    }
+
+    public AwesomeFragment getRootFragment() {
+        FragmentManager fragmentManager = getChildFragmentManager();
+        int count = fragmentManager.getBackStackEntryCount();
+        if (count > 0) {
+            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(0);
+            return (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+        }
+        return null;
     }
 
     private void executeSetRootFragment(AwesomeFragment fragment) {
@@ -81,8 +110,7 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     private void executePushFragment(AwesomeFragment fragment) {
-        int count = getChildFragmentCountAtBackStack();
-        if (count == 0) {
+        if (!hasSetRoot) {
             throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
         }
         FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Push);
@@ -203,16 +231,6 @@ public class NavigationFragment extends AwesomeFragment {
         // 添加所有新的 fragment
     }
 
-    public AwesomeFragment getRootFragment() {
-        FragmentManager fragmentManager = getChildFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        if (count > 0) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(0);
-            return (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-        }
-        return null;
-    }
-
     public AwesomeFragment getTopFragment() {
         if (isAdded()) {
             return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.navigation_content);
@@ -220,16 +238,4 @@ public class NavigationFragment extends AwesomeFragment {
             return null;
         }
     }
-
-//    public NavigationFragment getNavigationFragment() {
-//        AwesomeFragment parent = getParentAwesomeFragment();
-//        if (parent != null) {
-//            NavigationFragment another = parent.getNavigationFragment();
-//            if (another != null) {
-//                throw new IllegalStateException("should not nest NavigationFragment");
-//            }
-//        }
-//        return this;
-//    }
-
 }
