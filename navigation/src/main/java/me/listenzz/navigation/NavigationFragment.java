@@ -98,6 +98,8 @@ public class NavigationFragment extends AwesomeFragment {
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
+
+        getChildFragmentManager().executePendingTransactions();
     }
 
     public void pushFragment(final AwesomeFragment fragment) {
