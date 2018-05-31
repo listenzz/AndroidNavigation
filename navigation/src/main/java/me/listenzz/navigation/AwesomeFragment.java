@@ -650,7 +650,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     // ------ NavigationFragment -----
-
+    @Nullable
     public NavigationFragment getNavigationFragment() {
         if (this instanceof NavigationFragment) {
             return (NavigationFragment) this;
@@ -943,6 +943,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     // ------ TabBarFragment -------
 
+    @Nullable
     public TabBarFragment getTabBarFragment() {
         if (this instanceof TabBarFragment) {
             return (TabBarFragment) this;
@@ -972,6 +973,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     // ------ DrawerFragment -------
 
+    @Nullable
     public DrawerFragment getDrawerFragment() {
         if (this instanceof DrawerFragment) {
             return (DrawerFragment) this;
