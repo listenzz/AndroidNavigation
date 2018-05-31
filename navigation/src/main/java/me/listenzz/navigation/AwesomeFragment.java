@@ -104,29 +104,14 @@ public abstract class AwesomeFragment extends DialogFragment {
     @CallSuper
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
-        if (shouldRenderBackgroundColor()) {
-            setBackgroundDrawable(root, preferredBackgroundDrawable());
+        if (!isParentFragment()) {
+            setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
         }
         if (getDialog() == null && getParentAwesomeFragment() == null) {
             fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
         }
         handleNavigationFragmentStuff(root);
         callSuperOnViewCreated = true;
-    }
-
-    private void setBackgroundDrawable(View root, Drawable drawable) {
-        if (getDialog() == null) {
-            root.setBackground(drawable);
-            getWindow().setBackgroundDrawable(null);
-        }
-    }
-
-    public boolean shouldRenderBackgroundColor() {
-        return !isParentFragment();
-    }
-
-    public Drawable preferredBackgroundDrawable() {
-        return new ColorDrawable(style.getScreenBackgroundColor());
     }
 
     @Override
@@ -143,6 +128,13 @@ public abstract class AwesomeFragment extends DialogFragment {
             AppUtils.hideSoftInput(getView());
         }
         super.onDestroyView();
+    }
+
+    private void setBackgroundDrawable(View root, Drawable drawable) {
+        if (getDialog() == null) {
+            root.setBackground(drawable);
+            getWindow().setBackgroundDrawable(null);
+        }
     }
 
     private boolean viewAppear;
