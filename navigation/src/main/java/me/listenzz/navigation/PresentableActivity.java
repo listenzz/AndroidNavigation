@@ -10,10 +10,6 @@ public interface PresentableActivity {
 
     void dismissFragment(AwesomeFragment fragment);
 
-    void presentFragment(AwesomeFragment fragment, Anim anim);
-
-    void dismissFragment(AwesomeFragment fragment, Anim anim);
-
     AwesomeFragment getPresentedFragment(AwesomeFragment fragment);
 
     AwesomeFragment getPresentingFragment(AwesomeFragment fragment);
