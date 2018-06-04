@@ -19,6 +19,7 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
@@ -81,7 +82,23 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     @Override
     public LayoutInflater onGetLayoutInflater(Bundle savedInstanceState) {
+        if (getShowsDialog()) {
+            setStyle(0, R.style.Theme_Nav_FullScreenDialog);
+        }
+
         LayoutInflater layoutInflater = super.onGetLayoutInflater(savedInstanceState);
+        if (getShowsDialog()) {
+            layoutInflater = new DialogLayoutInflater(requireContext(), layoutInflater,
+                    new DialogFrameLayout.OnTouchOutsideListener() {
+                        @Override
+                        public void onTouchOutside() {
+                            if (isCancelable()) {
+                                dismissDialog();
+                            }
+                        }
+                    }, alwaysAssumeNoHit());
+        }
+
         if (style == null) {
             try {
                 style = presentableActivity.getStyle().clone();
@@ -94,6 +111,10 @@ public abstract class AwesomeFragment extends DialogFragment {
         return layoutInflater;
     }
 
+    protected boolean alwaysAssumeNoHit() {
+        return false;
+    }
+
     protected void onCustomStyle(Style style) {
 
     }
@@ -104,34 +125,36 @@ public abstract class AwesomeFragment extends DialogFragment {
     @CallSuper
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
-        if (!isParentFragment()) {
-            setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
+        if (getShowsDialog()) {
+            AppUtils.setStatusBarTranslucent(getWindow(), isStatusBarTranslucent());
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        } else {
+            if (!isParentFragment()) {
+                setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
+            }
+            if (getParentAwesomeFragment() == null) {
+                fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
+            }
+            handleNavigationFragmentStuff(root);
         }
-        if (getDialog() == null && getParentAwesomeFragment() == null) {
-            fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
-        }
-        handleNavigationFragmentStuff(root);
         callSuperOnViewCreated = true;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (!callSuperOnViewCreated) {
-            throw new IllegalStateException("you should call super when override `onViewCreated`");
-        }
     }
 
     @Override
     public void onDestroyView() {
-        if (getView() != null && getDialog() == null) {
+        if (getView() != null) {
             AppUtils.hideSoftInput(getView());
         }
         super.onDestroyView();
     }
 
     private void setBackgroundDrawable(View root, Drawable drawable) {
-        if (getDialog() == null) {
+        if (!getShowsDialog()) {
             root.setBackground(drawable);
             getWindow().setBackgroundDrawable(null);
         }
@@ -518,24 +541,46 @@ public abstract class AwesomeFragment extends DialogFragment {
         } else {
 
             // statusBarHidden
-            setStatusBarHidden(preferredStatusBarHidden());
+            if (getShowsDialog()) {
+                Activity activity = requireActivity();
+                int activityWindowFlags = activity.getWindow().getAttributes().flags;
+                if ((activityWindowFlags
+                        & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                } else {
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                }
+            } else {
+                setStatusBarHidden(preferredStatusBarHidden());
+            }
 
             // statusBarStyle
-            setStatusBarStyle(preferredStatusBarStyle());
+            if (getShowsDialog()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    Activity activity = requireActivity();
+                    boolean isDark = (activity.getWindow().getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
+                    setStatusBarStyle(isDark ? BarStyle.DarkContent : BarStyle.LightContent);
+                }
+            } else {
+                setStatusBarStyle(preferredStatusBarStyle());
+            }
 
             // statusBarColor
-            boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !AppUtils.isMiuiV6()) {
-                shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
+            int color = (getShowsDialog() && isStatusBarTranslucent()) ? Color.TRANSPARENT : preferredStatusBarColor();
+            if (!getShowsDialog()) {
+                boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !AppUtils.isMiuiV6()) {
+                    shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
+                }
+                if (shouldAdjustForWhiteStatusBar) {
+                    color = Color.parseColor("#B0B0B0");
+                }
+                if (isStatusBarTranslucent() && color == preferredToolbarColor()) {
+                    color = Color.TRANSPARENT;
+                }
             }
-            int color = preferredStatusBarColor();
-            if (shouldAdjustForWhiteStatusBar) {
-                color = Color.parseColor("#B0B0B0");
-            }
-            if (isStatusBarTranslucent() && color == preferredToolbarColor()) {
-                color = Color.TRANSPARENT;
-            }
-            setStatusBarColor(color, preferredStatusBarColorAnimated());
+            boolean animated = !getShowsDialog() && preferredStatusBarColorAnimated();
+            setStatusBarColor(color, animated);
 
         }
     }
@@ -550,41 +595,6 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     public void setStatusBarColor(int color, boolean animated) {
         AppUtils.setStatusBarColor(getWindow(), color, animated);
-    }
-
-    public Window getWindow() {
-        if (getDialog() != null) {
-            return getDialog().getWindow();
-        }
-
-        if (getActivity() != null) {
-            return getActivity().getWindow();
-        }
-
-        return null;
-    }
-
-    /**
-     * @deprecated  call {@link #dismissDialog()} instead of this method.
-     */
-    @Deprecated
-    @Override
-    public void dismiss() {
-        if (getDialog() == null) {
-            throw new IllegalStateException("Can't find dialog, do you mean `dismissFragment`?");
-        } else {
-            super.dismiss();
-        }
-    }
-
-    /**
-     * Dismiss the fragment and its dialog.  If the fragment was added to the
-     * back stack, all back stack state up to and including this entry will
-     * be popped.  Otherwise, a new transaction will be committed to remove
-     * the fragment.
-     */
-    public void dismissDialog() {
-        super.dismiss();
     }
 
     public void setStatusBarTranslucent(boolean translucent) {
@@ -647,6 +657,43 @@ public abstract class AwesomeFragment extends DialogFragment {
                 }
             }
         }
+    }
+
+    // ------ dialog -----
+
+    public Window getWindow() {
+        if (getDialog() != null) {
+            return getDialog().getWindow();
+        }
+
+        if (getActivity() != null) {
+            return getActivity().getWindow();
+        }
+
+        return null;
+    }
+
+    /**
+     * @deprecated call {@link #dismissDialog()} instead of this method.
+     */
+    @Deprecated
+    @Override
+    public void dismiss() {
+        if (!getShowsDialog()) {
+            throw new IllegalStateException("Can't find dialog, do you mean `dismissFragment`?");
+        } else {
+            super.dismiss();
+        }
+    }
+
+    /**
+     * Dismiss the fragment and its dialog.  If the fragment was added to the
+     * back stack, all back stack state up to and including this entry will
+     * be popped.  Otherwise, a new transaction will be committed to remove
+     * the fragment.
+     */
+    public void dismissDialog() {
+        super.dismiss();
     }
 
     // ------ NavigationFragment -----

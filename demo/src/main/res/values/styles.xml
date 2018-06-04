@@ -14,16 +14,4 @@
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
-    <!--自定义Dialog样式-->
-    <style name="MyDialog" parent="AlertDialog.AppCompat">
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:backgroundDimEnabled">true</item>
-    </style>
-
-    <!--顶部弹出Dialog动画-->
-    <style name="TopDialog" parent="android:Animation">
-        <item name="android:windowEnterAnimation">@anim/dialog_top_in</item>
-        <item name="android:windowExitAnimation">@anim/dialog_top_out</item>
-    </style>
-
 </resources>

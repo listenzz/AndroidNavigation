@@ -1,6 +1,7 @@
 package com.navigation.dialog;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import com.navigation.R;
 
 import me.listenzz.navigation.AwesomeFragment;
+import me.listenzz.navigation.BarStyle;
 
 
 /**
@@ -18,9 +20,14 @@ import me.listenzz.navigation.AwesomeFragment;
 
 public class DialogEntryFragment extends AwesomeFragment {
 
+    @Override
+    protected BarStyle preferredStatusBarStyle() {
+        return BarStyle.DarkContent;
+    }
+
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_dialog_entry, container, false);
 
         TextView tagView = root.findViewById(R.id.tag);
@@ -30,7 +37,7 @@ public class DialogEntryFragment extends AwesomeFragment {
             @Override
             public void onClick(View v) {
                 TopDialogFragment dialog = new TopDialogFragment();
-                dialog.show(getActivity().getSupportFragmentManager(), dialog.getSceneId());
+                dialog.show(requireActivity().getSupportFragmentManager(), dialog.getSceneId());
             }
         });
 
@@ -38,7 +45,7 @@ public class DialogEntryFragment extends AwesomeFragment {
             @Override
             public void onClick(View v) {
                 BottomSheetDialogFragment dialog = new BottomSheetDialogFragment();
-                dialog.show(getActivity().getSupportFragmentManager(), dialog.getSceneId());
+                dialog.show(requireActivity().getSupportFragmentManager(), dialog.getSceneId());
             }
         });
 

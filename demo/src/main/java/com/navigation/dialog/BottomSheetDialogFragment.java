@@ -1,7 +1,6 @@
 package com.navigation.dialog;
 
 import android.app.Dialog;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,7 +9,6 @@ import android.support.design.widget.BottomSheetDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import com.navigation.R;
 
@@ -23,16 +21,6 @@ import me.listenzz.navigation.AwesomeFragment;
  */
 
 public class BottomSheetDialogFragment extends AwesomeFragment {
-
-    @Override
-    protected int preferredStatusBarColor() {
-        return Color.TRANSPARENT;
-    }
-
-    @Override
-    protected boolean preferredStatusBarColorAnimated() {
-        return false;
-    }
 
     @NonNull
     @Override
@@ -50,15 +38,10 @@ public class BottomSheetDialogFragment extends AwesomeFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // 开启沉浸式
-        setStatusBarTranslucent(true);
-
         BottomSheetBehavior behavior = BottomSheetBehavior.from((View) getView().getParent());
         behavior.setHideable(true);
         behavior.setPeekHeight(AppUtils.dp2px(requireContext(), 50));
         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
     }
 }
