@@ -126,7 +126,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
         if (getShowsDialog()) {
-            AppUtils.setStatusBarTranslucent(getWindow(), isStatusBarTranslucent());
+            setStatusBarTranslucent(true);
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         } else {
             if (!isParentFragment()) {
@@ -143,6 +143,9 @@ public abstract class AwesomeFragment extends DialogFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (!callSuperOnViewCreated) {
+            throw new IllegalStateException("you should call super when override `onViewCreated`");
+        }
     }
 
     @Override
@@ -598,7 +601,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     public void setStatusBarTranslucent(boolean translucent) {
-        if (getDialog() != null) {
+        if (getShowsDialog()) {
             AppUtils.setStatusBarTranslucent(getWindow(), translucent);
         } else {
             presentableActivity.setStatusBarTranslucent(translucent);

@@ -26,7 +26,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 ## Installation
 
 ```groovy
-implementation 'me.listenzz:navigation:1.6.0'
+implementation 'me.listenzz:navigation:1.6.1'
 ```
 
 ## Usage 
