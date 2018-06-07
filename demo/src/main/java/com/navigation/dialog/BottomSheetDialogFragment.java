@@ -30,7 +30,7 @@ public class BottomSheetDialogFragment extends AwesomeFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_bottom_sheet, container, false);
     }
 
@@ -44,4 +44,5 @@ public class BottomSheetDialogFragment extends AwesomeFragment {
         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
     }
+
 }

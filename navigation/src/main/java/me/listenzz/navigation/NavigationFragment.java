@@ -226,9 +226,9 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     public void setChildFragments(List<AwesomeFragment> fragments) {
-
         // TODO
         // 弹出所有旧的 fragment
+
 
         // 添加所有新的 fragment
     }

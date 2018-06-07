@@ -2,6 +2,7 @@ package com.navigation.statusbar;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 
@@ -24,7 +25,7 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
     }
 
     @Override
-    protected void onCustomStyle(Style style) {
+    protected void onCustomStyle(@NonNull Style style) {
         super.onCustomStyle(style);
         style.setStatusBarStyle(BarStyle.DarkContent);
         style.setStatusBarColor(Color.WHITE);

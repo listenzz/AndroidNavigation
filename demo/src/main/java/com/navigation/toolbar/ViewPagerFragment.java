@@ -2,6 +2,7 @@ package com.navigation.toolbar;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
@@ -47,7 +48,7 @@ public class ViewPagerFragment extends AwesomeFragment {
     }
 
     @Override
-    protected void onCustomStyle(Style style) {
+    protected void onCustomStyle(@NonNull Style style) {
         super.onCustomStyle(style);
         style.setShadow(null);
         style.setElevation(0);

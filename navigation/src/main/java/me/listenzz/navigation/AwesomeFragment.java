@@ -2,6 +2,7 @@ package me.listenzz.navigation;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -13,9 +14,11 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -81,6 +84,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     @Override
+    @NonNull
     public LayoutInflater onGetLayoutInflater(Bundle savedInstanceState) {
         if (getShowsDialog()) {
             setStyle(0, R.style.Theme_Nav_FullScreenDialog);
@@ -96,7 +100,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                                 dismissDialog();
                             }
                         }
-                    }, alwaysAssumeNoHit());
+                    });
         }
 
         if (style == null) {
@@ -111,11 +115,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         return layoutInflater;
     }
 
-    protected boolean alwaysAssumeNoHit() {
-        return false;
-    }
-
-    protected void onCustomStyle(Style style) {
+    protected void onCustomStyle(@NonNull Style style) {
 
     }
 
@@ -125,10 +125,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     @CallSuper
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
-        if (getShowsDialog()) {
-            setStatusBarTranslucent(true);
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        } else {
+        if (!getShowsDialog()) {
             if (!isParentFragment()) {
                 setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
             }
@@ -143,7 +140,10 @@ public abstract class AwesomeFragment extends DialogFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (!callSuperOnViewCreated) {
+        if (getShowsDialog()) {
+            setupDialog();
+        }
+        if (getView() != null && !callSuperOnViewCreated) {
             throw new IllegalStateException("you should call super when override `onViewCreated`");
         }
     }
@@ -325,6 +325,9 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     public void dismissFragment() {
+        if (getShowsDialog()) {
+            throw new IllegalStateException("似乎该 fragment 是以 dialog 的形式呈现，使用 `dismissDialog` 来关闭更合适");
+        }
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             parent.setResult(resultCode, result);
@@ -690,13 +693,60 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     /**
+     * @deprecated call {@link #showDialog(FragmentActivity)} ()} instead of this method.
+     */
+    @Deprecated
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        super.show(manager, tag);
+    }
+
+    /**
+     * @deprecated call {@link #showDialog(FragmentActivity)} ()} instead of this method.
+     */
+    @Deprecated
+    @Override
+    public int show(FragmentTransaction transaction, String tag) {
+        return super.show(transaction, tag);
+    }
+
+    /**
      * Dismiss the fragment and its dialog.  If the fragment was added to the
      * back stack, all back stack state up to and including this entry will
      * be popped.  Otherwise, a new transaction will be committed to remove
      * the fragment.
      */
     public void dismissDialog() {
-        super.dismiss();
+        if (getShowsDialog()) {
+            super.dismiss();
+        } else {
+            throw new IllegalStateException("似乎该 fragment 并没有以 dialog 的形式呈现.");
+        }
+    }
+
+    /**
+     * Present this fragment as dialog
+     */
+    public void showDialog(@NonNull FragmentActivity activity) {
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        super.show(fragmentManager, getSceneId());
+    }
+
+    protected void setupDialog() {
+        setStatusBarTranslucent(true);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && isCancelable()) {
+                        dismissDialog();
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     // ------ NavigationFragment -----
@@ -735,7 +785,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     boolean shouldHideBottomBarWhenPushed() {
         NavigationFragment navigationFragment = getNavigationFragment();
-        return navigationFragment.getRootFragment().hidesBottomBarWhenPushed();
+        return navigationFragment != null && navigationFragment.getRootFragment().hidesBottomBarWhenPushed();
     }
 
     void handleHideBottomBarWhenPushed(int transit, boolean enter, PresentAnimation animation) {
@@ -854,7 +904,10 @@ public abstract class AwesomeFragment extends DialogFragment {
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    getNavigationFragment().dispatchBackPressed();
+                    NavigationFragment navigationFragment = getNavigationFragment();
+                    if (navigationFragment != null) {
+                        getNavigationFragment().dispatchBackPressed();
+                    }
                 }
             });
         }
@@ -898,7 +951,10 @@ public abstract class AwesomeFragment extends DialogFragment {
                     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            getNavigationFragment().popFragment();
+                            NavigationFragment navigationFragment = getNavigationFragment();
+                            if (navigationFragment != null) {
+                                navigationFragment.popFragment();
+                            }
                         }
                     });
                 }
@@ -939,7 +995,10 @@ public abstract class AwesomeFragment extends DialogFragment {
                     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            getNavigationFragment().dispatchBackPressed();
+                            NavigationFragment navigationFragment = getNavigationFragment();
+                            if (navigationFragment != null) {
+                                getNavigationFragment().dispatchBackPressed();
+                            }
                         }
                     });
                 }

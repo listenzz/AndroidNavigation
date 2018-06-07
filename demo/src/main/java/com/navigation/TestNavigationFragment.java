@@ -2,6 +2,7 @@ package com.navigation;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -193,7 +194,7 @@ public class TestNavigationFragment extends AwesomeFragment {
     }
 
     @Override
-    protected void onCustomStyle(Style style) {
+    protected void onCustomStyle(@NonNull Style style) {
         style.setStatusBarStyle(BarStyle.DarkContent);
     }
 

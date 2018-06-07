@@ -21,12 +21,6 @@ public class DialogFrameLayout extends FrameLayout {
 
     OnTouchOutsideListener onTouchOutsideListener;
 
-    boolean assumeNoHit = false;
-
-    public void setAssumeNoHit(boolean assumeNoHit) {
-        this.assumeNoHit = assumeNoHit;
-    }
-
     public void setOnTouchOutsideListener(OnTouchOutsideListener onTouchOutsideListener) {
         this.onTouchOutsideListener = onTouchOutsideListener;
     }
@@ -49,17 +43,15 @@ public class DialogFrameLayout extends FrameLayout {
                 Rect rect = new Rect();
                 getHitRect(rect);
                 Log.i(TAG, "onSingleTapUp:" + rect);
-                if (!assumeNoHit) {
-                    int count = getChildCount();
-                    for (int i = count - 1; i > -1; i--) {
-                        View child = getChildAt(i);
-                        Rect outRect = new Rect();
-                        child.getHitRect(outRect);
-                        Log.i(TAG, "child rect:" + outRect);
-                        if (outRect.contains((int) e.getX(), (int) e.getY())) {
-                            Log.i(TAG, "hit child!!!!");
-                            return false;
-                        }
+                int count = getChildCount();
+                for (int i = count - 1; i > -1; i--) {
+                    View child = getChildAt(i);
+                    Rect outRect = new Rect();
+                    child.getHitRect(outRect);
+                    Log.i(TAG, "child rect:" + outRect);
+                    if (outRect.contains((int) e.getX(), (int) e.getY())) {
+                        Log.i(TAG, "hit child!!!!");
+                        return false;
                     }
                 }
                 if (onTouchOutsideListener != null) {

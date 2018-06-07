@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.navigation.R;
 
 import me.listenzz.navigation.AwesomeFragment;
-import me.listenzz.navigation.BarStyle;
 
 
 /**
@@ -19,11 +18,6 @@ import me.listenzz.navigation.BarStyle;
  */
 
 public class DialogEntryFragment extends AwesomeFragment {
-
-    @Override
-    protected BarStyle preferredStatusBarStyle() {
-        return BarStyle.DarkContent;
-    }
 
     @Nullable
     @Override
@@ -33,11 +27,19 @@ public class DialogEntryFragment extends AwesomeFragment {
         TextView tagView = root.findViewById(R.id.tag);
         tagView.setText(getDebugTag());
 
+        root.findViewById(R.id.alert).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialogFragment alert = new AlertDialogFragment();
+                alert.showDialog(requireActivity());
+            }
+        });
+
         root.findViewById(R.id.dialog).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TopDialogFragment dialog = new TopDialogFragment();
-                dialog.show(requireActivity().getSupportFragmentManager(), dialog.getSceneId());
+                dialog.showDialog(requireActivity());
             }
         });
 
@@ -45,7 +47,7 @@ public class DialogEntryFragment extends AwesomeFragment {
             @Override
             public void onClick(View v) {
                 BottomSheetDialogFragment dialog = new BottomSheetDialogFragment();
-                dialog.show(requireActivity().getSupportFragmentManager(), dialog.getSceneId());
+                dialog.showDialog(requireActivity());
             }
         });
 
