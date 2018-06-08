@@ -3,6 +3,7 @@ package com.navigation.dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,8 @@ import me.listenzz.navigation.AwesomeFragment;
 
 public class DialogEntryFragment extends AwesomeFragment {
 
+    TextView resultText;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -31,7 +34,7 @@ public class DialogEntryFragment extends AwesomeFragment {
             @Override
             public void onClick(View view) {
                 AlertDialogFragment alert = new AlertDialogFragment();
-                alert.showDialog(requireActivity());
+                showDialogFragment(alert, 0);
             }
         });
 
@@ -39,7 +42,7 @@ public class DialogEntryFragment extends AwesomeFragment {
             @Override
             public void onClick(View v) {
                 TopDialogFragment dialog = new TopDialogFragment();
-                dialog.showDialog(requireActivity());
+                showDialogFragment(dialog, 0);
             }
         });
 
@@ -47,10 +50,24 @@ public class DialogEntryFragment extends AwesomeFragment {
             @Override
             public void onClick(View v) {
                 BottomSheetDialogFragment dialog = new BottomSheetDialogFragment();
-                dialog.showDialog(requireActivity());
+                showDialogFragment(dialog, 0);
             }
         });
 
+
+        resultText = root.findViewById(R.id.result_text);
+
         return root;
+    }
+
+
+    @Override
+    public void onFragmentResult(int requestCode, int resultCode, @Nullable Bundle data) {
+        super.onFragmentResult(requestCode, resultCode, data);
+        Log.i(TAG, "onFragmentResult");
+        if (data != null) {
+            String words = data.getString("words", "");
+            resultText.setText(words);
+        }
     }
 }

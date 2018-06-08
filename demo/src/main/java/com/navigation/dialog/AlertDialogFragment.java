@@ -19,13 +19,17 @@ public class AlertDialogFragment extends AwesomeFragment {
                 .setPositiveButton("是的", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        Bundle result = new Bundle();
+                        result.putString("words", "一起加油！！");
+                        setResult(0, result);
                     }
                 })
                 .setNegativeButton("给个赞", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        Bundle result = new Bundle();
+                        result.putString("words", "感谢支持，祝生活愉快。");
+                        setResult(0, result);
                     }
                 })
                 .create();

@@ -48,7 +48,7 @@ public class TopDialogFragment extends AwesomeFragment {
 
 
     @Override
-    public void dismissDialog() {
+    public void dismissDialogFragment() {
         if (mIsAnimating) {
             return;
         }
@@ -88,7 +88,7 @@ public class TopDialogFragment extends AwesomeFragment {
                         // java.lang.IllegalArgumentException: View=com.android.internal.policy.PhoneWindow$DecorView{22dbf5b V.E...... R......D 0,0-1080,1083} not attached to window manager
                         // 在dismiss的时候可能已经detach了，简单try-catch一下
                         try {
-                            TopDialogFragment.super.dismissDialog();
+                            TopDialogFragment.super.dismissDialogFragment();
                         } catch (Exception e) {
                             Log.w(TAG, "dismiss error\n" + Log.getStackTraceString(e));
                         }

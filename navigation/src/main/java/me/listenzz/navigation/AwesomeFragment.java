@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -97,7 +96,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                         @Override
                         public void onTouchOutside() {
                             if (isCancelable()) {
-                                dismissDialog();
+                                dismissDialogFragment();
                             }
                         }
                     });
@@ -326,7 +325,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     public void dismissFragment() {
         if (getShowsDialog()) {
-            throw new IllegalStateException("似乎该 fragment 是以 dialog 的形式呈现，使用 `dismissDialog` 来关闭更合适");
+            throw new IllegalStateException("似乎该 fragment 是以 dialog 的形式呈现，使用 `dismissDialogFragment` 来关闭更合适");
         }
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
@@ -385,8 +384,8 @@ public abstract class AwesomeFragment extends DialogFragment {
         return result;
     }
 
-    public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
-        //Log.i(TAG, toString() + "#onFragmentResult requestCode=" + requestCode + " resultCode=" + resultCode + " data=" + data);
+    public void onFragmentResult(int requestCode, int resultCode, @Nullable Bundle data) {
+        // Log.i(TAG, toString() + "#onFragmentResult requestCode=" + requestCode + " resultCode=" + resultCode + " data=" + data);
         if (this instanceof TabBarFragment) {
             AwesomeFragment child = ((TabBarFragment) this).getSelectedFragment();
             child.onFragmentResult(requestCode, resultCode, data);
@@ -680,20 +679,20 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     /**
-     * @deprecated call {@link #dismissDialog()} instead of this method.
+     * @deprecated call {@link #dismissDialogFragment()} instead of this method.
      */
     @Deprecated
     @Override
     public void dismiss() {
         if (!getShowsDialog()) {
-            throw new IllegalStateException("Can't find dialog, do you mean `dismissFragment`?");
+            throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
         } else {
             super.dismiss();
         }
     }
 
     /**
-     * @deprecated call {@link #showDialog(FragmentActivity)} ()} instead of this method.
+     * @deprecated call {@link #showDialogFragment(AwesomeFragment, int)} instead of this method.
      */
     @Deprecated
     @Override
@@ -702,7 +701,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     /**
-     * @deprecated call {@link #showDialog(FragmentActivity)} ()} instead of this method.
+     * @deprecated call {@link #showDialogFragment(AwesomeFragment, int)} instead of this method.
      */
     @Deprecated
     @Override
@@ -711,25 +710,41 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     /**
-     * Dismiss the fragment and its dialog.  If the fragment was added to the
-     * back stack, all back stack state up to and including this entry will
-     * be popped.  Otherwise, a new transaction will be committed to remove
-     * the fragment.
+     * Dismiss the fragment and its dialog.
      */
-    public void dismissDialog() {
-        if (getShowsDialog()) {
-            super.dismiss();
-        } else {
-            throw new IllegalStateException("似乎该 fragment 并没有以 dialog 的形式呈现.");
-        }
+    public void dismissDialogFragment() {
+        dismiss();
     }
 
     /**
      * Present this fragment as dialog
      */
-    public void showDialog(@NonNull FragmentActivity activity) {
-        FragmentManager fragmentManager = activity.getSupportFragmentManager();
-        super.show(fragmentManager, getSceneId());
+    public void showDialogFragment(@NonNull final AwesomeFragment dialog, final int requestCode) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                if (fragmentManager.getBackStackEntryCount() > 0) {
+                    FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1);
+                    String tag = backStackEntry.getName();
+                    if (tag != null) {
+                        Fragment target = fragmentManager.findFragmentByTag(tag);
+                        dialog.setTargetFragment(target, requestCode);
+                    }
+                }
+                dialog.show(fragmentManager, dialog.getSceneId());
+            }
+        });
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        Fragment target = getTargetFragment();
+        if (target != null && target instanceof AwesomeFragment && target.isAdded() && !target.isRemoving()) {
+            AwesomeFragment fragment = (AwesomeFragment) target;
+            fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
+        }
+        super.onDismiss(dialog);
     }
 
     protected void setupDialog() {
@@ -740,7 +755,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_UP) {
                     if (keyCode == KeyEvent.KEYCODE_BACK && isCancelable()) {
-                        dismissDialog();
+                        dismissDialogFragment();
                         return true;
                     }
                 }

@@ -42,4 +42,13 @@
         android:text="Bottom Sheet Dialog"
         android:textAllCaps="false" />
 
+    <TextView
+        android:id="@+id/result_text"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="24dp"
+        android:textSize="18dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

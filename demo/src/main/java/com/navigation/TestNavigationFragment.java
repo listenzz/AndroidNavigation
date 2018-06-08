@@ -176,17 +176,17 @@ public class TestNavigationFragment extends AwesomeFragment {
     }
 
     @Override
-    public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
+    public void onFragmentResult(int requestCode, int resultCode, @Nullable Bundle data) {
         super.onFragmentResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE) {
-            if (resultCode != 0) {
+            if (resultCode != 0 && data != null) {
                 String text = data.getString("text", "");
                 resultText.setText("present result：" + text);
             } else {
                 resultText.setText("ACTION CANCEL");
             }
         } else {
-            if (resultCode != 0) {
+            if (resultCode != 0 && data != null) {
                 String text = data.getString("text", "");
                 resultText.setText("pop result：" + text);
             }
