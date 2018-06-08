@@ -65,8 +65,13 @@ public class TabBarFragment extends AwesomeFragment {
             for (int i = 0, size = fragmentTags.size(); i < size; i++) {
                 fragments.add((AwesomeFragment) fragmentManager.findFragmentByTag(fragmentTags.get(i)));
             }
-            initBottomNavigationBar(fragments);
+        } else {
+            if (fragments == null || fragments.size() == 0) {
+                throw new IllegalArgumentException("必须使用 `setChildFragments` 设置 childFragments ");
+            }
+            executeSetChildFragments(fragments);
         }
+        initBottomNavigationBar(fragments);
 
         // bottomBar
         if (savedInstanceState != null) {
@@ -102,13 +107,9 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     public void setChildFragments(final List<AwesomeFragment> fragments) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                executeSetChildFragments(fragments);
-                initBottomNavigationBar(fragments);
-            }
-        });
+        if (isAdded()) {
+            throw new IllegalStateException("TabBarFragment 已经处于 added 状态，不能再设置 childFragments");
+        }
         this.fragments = fragments;
     }
 

@@ -56,6 +56,23 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState == null) {
+            if (contentFragment == null) {
+                throw new IllegalArgumentException("必须调用 `setContentFragment` 设置 contentFragment");
+            }
+            if (menuFragment == null) {
+                throw new IllegalArgumentException("必须调用 `setMenuFragment` 设置 menuFragment");
+            }
+
+            FragmentHelper.addFragmentToAddedList(getChildFragmentManager(), R.id.drawer_content, contentFragment);
+            menuFragment.setUserVisibleHint(false);
+            FragmentHelper.addFragmentToAddedList(getChildFragmentManager(), R.id.drawer_menu, menuFragment, false);
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(MIN_DRAWER_MARGIN_KEY, minDrawerMargin);
@@ -127,13 +144,12 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         // Log.i(TAG, getDebugTag() + " drawer state:" + newState);
     }
 
+    private AwesomeFragment contentFragment;
     public void setContentFragment(final AwesomeFragment fragment) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                FragmentHelper.addFragmentToAddedList(getChildFragmentManager(), R.id.drawer_content, fragment);
-            }
-        });
+        if (isAdded()) {
+            throw new IllegalStateException("DrawerFragment 已处于 added 状态，不可以再设置 contentFragment");
+        }
+        contentFragment = fragment;
     }
 
     public AwesomeFragment getContentFragment() {
@@ -143,14 +159,12 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_content);
     }
 
-    public void setMenuFragment(final AwesomeFragment fragment) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                fragment.setUserVisibleHint(false);
-                FragmentHelper.addFragmentToAddedList(getChildFragmentManager(), R.id.drawer_menu, fragment, false);
-            }
-        });
+    private AwesomeFragment menuFragment;
+    public void setMenuFragment( AwesomeFragment fragment) {
+        if (isAdded()) {
+            throw new IllegalStateException("DrawerFragment 已处于 added 状态，不可以再设置 menuFragment");
+        }
+        menuFragment = fragment;
     }
 
     public AwesomeFragment getMenuFragment() {

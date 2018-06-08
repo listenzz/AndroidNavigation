@@ -17,26 +17,23 @@ import java.util.List;
 
 public class NavigationFragment extends AwesomeFragment {
 
-    private static final String SAVED_STATE_HAS_SET_ROOT = "has_set_root";
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            hasSetRoot = savedInstanceState.getBoolean(SAVED_STATE_HAS_SET_ROOT, false);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(SAVED_STATE_HAS_SET_ROOT, hasSetRoot);
-    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.nav_fragment_navigation, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState == null) {
+            if (rootFragment == null) {
+                throw new IllegalArgumentException("必须通过 `setRootFragment` 指定 rootFragment");
+            } else {
+                performSetRootFragment(rootFragment);
+            }
+        }
     }
 
     @Override
@@ -64,16 +61,13 @@ public class NavigationFragment extends AwesomeFragment {
         }
     }
 
-    private boolean hasSetRoot;
+    private AwesomeFragment rootFragment;
 
-    public void setRootFragment(final AwesomeFragment fragment) {
-        hasSetRoot = true;
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                executeSetRootFragment(fragment);
-            }
-        });
+    public void setRootFragment(@NonNull final AwesomeFragment fragment) {
+        if (isAdded()) {
+            throw new IllegalStateException("NavigationFragment 已经出于 added 状态，不可以再设置 rootFragment");
+        }
+        this.rootFragment = fragment;
     }
 
     public AwesomeFragment getRootFragment() {
@@ -86,20 +80,8 @@ public class NavigationFragment extends AwesomeFragment {
         return null;
     }
 
-    private void executeSetRootFragment(AwesomeFragment fragment) {
-        AwesomeFragment root = getRootFragment();
-        if (root != null) {
-            throw new IllegalStateException("不可以重复设置 rootFragment");
-        }
-
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.setReorderingAllowed(true);
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
-        transaction.addToBackStack(fragment.getSceneId());
-        transaction.commit();
-
-        getChildFragmentManager().executePendingTransactions();
+    private void performSetRootFragment(AwesomeFragment fragment) {
+       FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
     }
 
     public void pushFragment(final AwesomeFragment fragment) {
@@ -112,9 +94,6 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     private void executePushFragment(AwesomeFragment fragment) {
-        if (!hasSetRoot) {
-            throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
-        }
         FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Push);
     }
 
@@ -169,11 +148,6 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     private void executeReplaceFragment(AwesomeFragment fragment) {
-        int count = getChildFragmentCountAtBackStack();
-        if (count == 0) {
-            throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
-        }
-
         FragmentManager fragmentManager = getChildFragmentManager();
         AwesomeFragment topFragment = getTopFragment();
         AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, topFragment);
@@ -205,11 +179,6 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     private void executeReplaceRootFragment(AwesomeFragment fragment) {
-        AwesomeFragment rootFragment = getRootFragment();
-        if (rootFragment == null) {
-            throw new IllegalStateException("请先调用 #setRootFragment 添加 rootFragment.");
-        }
-
         AwesomeFragment topFragment = getTopFragment();
         topFragment.setAnimation(PresentAnimation.Fade);
         rootFragment.setAnimation(PresentAnimation.Fade);

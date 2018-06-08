@@ -45,7 +45,7 @@ publish {
     userOrg = 'listenzz'
     groupId = 'me.listenzz'
     artifactId = 'navigation'
-    publishVersion = '1.6.3'
+    publishVersion = '1.6.4'
     desc = 'A library managing nested Fragment, StatusBar, Toolbar for Android.'
     website = 'https://github.com/listenzz/AndroidNavigation'
 }

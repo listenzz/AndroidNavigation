@@ -35,9 +35,10 @@ public class TestNavigationFragment extends AwesomeFragment {
 
     EditText resultEditText;
 
+
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_test, container, false);
 
         resultText = root.findViewById(R.id.result_text);

@@ -46,6 +46,12 @@ public class MainActivity extends AwesomeActivity {
             drawerFragment.setMaxDrawerWidth(300); // 设置 menu 的最大宽度
             //drawerFragment.setMinDrawerMargin(0); // 可使 menu 和 drawerLayout 同宽
 
+
+//            CustomContainerFragment customContainerFragment = new CustomContainerFragment();
+//            customContainerFragment.setFirsFloorFragment(testNavigationFragment);
+//
+//            drawerFragment.setContentFragment(customContainerFragment);
+
             setActivityRootFragment(drawerFragment);
         }
     }

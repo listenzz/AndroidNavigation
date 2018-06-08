@@ -312,10 +312,19 @@ public abstract class AwesomeFragment extends DialogFragment {
         return this.sceneId;
     }
 
-    public void presentFragment(AwesomeFragment fragment, int requestCode) {
-        AwesomeFragment parent = getParentAwesomeFragment();
+    public void presentFragment(final AwesomeFragment fragment, int requestCode) {
+        final AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            parent.presentFragment(fragment, requestCode);
+            if (parent.isPresentContainer()) {
+                parent.scheduleTaskAtStarted(new Runnable() {
+                    @Override
+                    public void run() {
+                        FragmentHelper.addFragmentToBackStack(requireFragmentManager(), parent.getPresentContainerId(), fragment, PresentAnimation.Modal);
+                    }
+                });
+            } else {
+                parent.presentFragment(fragment, requestCode);
+            }
         } else if (presentableActivity != null) {
             Bundle args = FragmentHelper.getArguments(fragment);
             args.putInt(ARGS_REQUEST_CODE, requestCode);
@@ -327,10 +336,35 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (getShowsDialog()) {
             throw new IllegalStateException("似乎该 fragment 是以 dialog 的形式呈现，使用 `dismissDialogFragment` 来关闭更合适");
         }
-        AwesomeFragment parent = getParentAwesomeFragment();
+        final AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            parent.setResult(resultCode, result);
-            parent.dismissFragment();
+            if (parent.isPresentContainer()) {
+                parent.scheduleTaskAtStarted(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 如果有 presented 就 dismiss presented, 否则就 dismiss 自己
+                        AwesomeFragment top = (AwesomeFragment) requireFragmentManager().findFragmentById(parent.getPresentContainerId());
+                        AwesomeFragment presenting = getPresentingFragment();
+
+                        top.setAnimation(PresentAnimation.Modal);
+
+                        if (presenting != null) {
+                            presenting.setAnimation(PresentAnimation.Modal);
+                        }
+
+                        if (presenting == null) {
+                            parent.setResult(resultCode, result);
+                            parent.dismissFragment();
+                        } else {
+                            presenting.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
+                            requireFragmentManager().popBackStack(getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        }
+                    }
+                });
+            } else {
+                parent.setResult(resultCode, result);
+                parent.dismissFragment();
+            }
             return;
         }
 
@@ -339,10 +373,22 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
+    private boolean isPresentContainer() {
+        return getPresentContainerId() != 0;
+    }
+
+    public int getPresentContainerId() {
+        return 0;
+    }
+
     public AwesomeFragment getPresentedFragment() {
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            return parent.getPresentedFragment();
+            if (parent.isPresentContainer()) {
+                return FragmentHelper.getLatterFragment(requireFragmentManager(), this);
+            } else {
+                return parent.getPresentedFragment();
+            }
         }
         return presentableActivity.getPresentedFragment(this);
     }
@@ -350,7 +396,11 @@ public abstract class AwesomeFragment extends DialogFragment {
     public AwesomeFragment getPresentingFragment() {
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            return parent.getPresentingFragment();
+            if (parent.isPresentContainer()) {
+                return FragmentHelper.getAheadFragment(requireFragmentManager(), this);
+            } else {
+                return parent.getPresentingFragment();
+            }
         }
         return presentableActivity.getPresentingFragment(this);
     }

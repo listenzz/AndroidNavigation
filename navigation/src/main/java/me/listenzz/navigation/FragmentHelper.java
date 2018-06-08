@@ -25,10 +25,11 @@ public class FragmentHelper {
 
     public static void addFragmentToBackStack(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment, PresentAnimation animation) {
         fragment.setAnimation(animation);
-        AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentById(containerId);
+
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentById(containerId);
         if (topFragment != null) {
             topFragment.setAnimation(animation);
             transaction.hide(topFragment);
@@ -50,7 +51,7 @@ public class FragmentHelper {
             transaction.setPrimaryNavigationFragment(fragment); // primary
         }
         transaction.commit();
-        fragmentManager.executePendingTransactions();
+         fragmentManager.executePendingTransactions();
     }
 
     public static AwesomeFragment getLatterFragment(FragmentManager fragmentManager, AwesomeFragment fragment) {
