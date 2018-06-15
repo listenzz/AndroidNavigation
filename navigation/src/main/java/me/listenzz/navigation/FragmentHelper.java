@@ -51,7 +51,7 @@ public class FragmentHelper {
             transaction.setPrimaryNavigationFragment(fragment); // primary
         }
         transaction.commit();
-         fragmentManager.executePendingTransactions();
+        fragmentManager.executePendingTransactions();
     }
 
     public static AwesomeFragment getLatterFragment(FragmentManager fragmentManager, AwesomeFragment fragment) {

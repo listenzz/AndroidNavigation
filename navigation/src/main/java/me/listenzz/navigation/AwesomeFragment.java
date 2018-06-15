@@ -621,7 +621,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             }
 
             // statusBarColor
-            int color = (getShowsDialog() && isStatusBarTranslucent()) ? Color.TRANSPARENT : preferredStatusBarColor();
+            int color = getShowsDialog() ? Color.TRANSPARENT : preferredStatusBarColor();
             if (!getShowsDialog()) {
                 boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !AppUtils.isMiuiV6()) {
@@ -798,7 +798,13 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     protected void setupDialog() {
-        setStatusBarTranslucent(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setStatusBarTranslucent(true);
+        } else {
+            setStatusBarTranslucent(presentableActivity.isStatusBarTranslucent());
+        }
+
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
