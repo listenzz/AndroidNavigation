@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
+
+    dataBinding {
+        enabled = true
+    }
+
     signingConfigs {
         config {
             keyAlias 'navigation'

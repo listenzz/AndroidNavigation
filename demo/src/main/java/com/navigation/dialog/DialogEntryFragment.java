@@ -54,6 +54,14 @@ public class DialogEntryFragment extends AwesomeFragment {
             }
         });
 
+        root.findViewById(R.id.data_binding).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DataBindingDialogFragment fragment = new DataBindingDialogFragment();
+                showDialogFragment(fragment, 0);
+            }
+        });
+
 
         resultText = root.findViewById(R.id.result_text);
 
