@@ -96,7 +96,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                         @Override
                         public void onTouchOutside() {
                             if (isCancelable()) {
-                                dismissDialogFragment();
+                                dismissDialog();
                             }
                         }
                     });
@@ -298,6 +298,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     private String sceneId;
 
+    @NonNull
     public String getSceneId() {
         if (this.sceneId == null) {
             Bundle args = FragmentHelper.getArguments(this);
@@ -334,7 +335,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     public void dismissFragment() {
         if (getShowsDialog()) {
-            throw new IllegalStateException("似乎该 fragment 是以 dialog 的形式呈现，使用 `dismissDialogFragment` 来关闭更合适");
+            throw new IllegalStateException("似乎该 fragment 是以 dialog 的形式呈现，使用 `dismissDialog` 来关闭更合适");
         }
         final AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
@@ -729,7 +730,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     /**
-     * @deprecated call {@link #dismissDialogFragment()} instead of this method.
+     * @deprecated call {@link #dismissDialog()} instead of this method.
      */
     @Deprecated
     @Override
@@ -742,7 +743,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     /**
-     * @deprecated call {@link #showDialogFragment(AwesomeFragment, int)} instead of this method.
+     * @deprecated call {@link #showDialog(AwesomeFragment, int)} instead of this method.
      */
     @Deprecated
     @Override
@@ -751,7 +752,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     /**
-     * @deprecated call {@link #showDialogFragment(AwesomeFragment, int)} instead of this method.
+     * @deprecated call {@link #showDialog(AwesomeFragment, int)} instead of this method.
      */
     @Deprecated
     @Override
@@ -760,16 +761,16 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     /**
-     * Dismiss the fragment and its dialog.
+     * Dismiss the fragment as dialog.
      */
-    public void dismissDialogFragment() {
+    public void dismissDialog() {
         dismiss();
     }
 
     /**
-     * Present this fragment as dialog
+     * Present the fragment as dialog
      */
-    public void showDialogFragment(@NonNull final AwesomeFragment dialog, final int requestCode) {
+    public void showDialog(@NonNull final AwesomeFragment dialog, final int requestCode) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
@@ -811,7 +812,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_UP) {
                     if (keyCode == KeyEvent.KEYCODE_BACK && isCancelable()) {
-                        dismissDialogFragment();
+                        dismissDialog();
                         return true;
                     }
                 }

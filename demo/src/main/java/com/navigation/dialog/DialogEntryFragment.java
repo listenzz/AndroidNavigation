@@ -34,7 +34,7 @@ public class DialogEntryFragment extends AwesomeFragment {
             @Override
             public void onClick(View view) {
                 AlertDialogFragment alert = new AlertDialogFragment();
-                showDialogFragment(alert, 0);
+                showDialog(alert, 0);
             }
         });
 
@@ -42,7 +42,7 @@ public class DialogEntryFragment extends AwesomeFragment {
             @Override
             public void onClick(View v) {
                 TopDialogFragment dialog = new TopDialogFragment();
-                showDialogFragment(dialog, 0);
+                showDialog(dialog, 0);
             }
         });
 
@@ -50,7 +50,7 @@ public class DialogEntryFragment extends AwesomeFragment {
             @Override
             public void onClick(View v) {
                 BottomSheetDialogFragment dialog = new BottomSheetDialogFragment();
-                showDialogFragment(dialog, 0);
+                showDialog(dialog, 0);
             }
         });
 
@@ -58,7 +58,7 @@ public class DialogEntryFragment extends AwesomeFragment {
             @Override
             public void onClick(View view) {
                 DataBindingDialogFragment fragment = new DataBindingDialogFragment();
-                showDialogFragment(fragment, 0);
+                showDialog(fragment, 0);
             }
         });
 
