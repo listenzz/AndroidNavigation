@@ -93,7 +93,17 @@ public class FragmentHelper {
             int count = fragments.size();
             for (int i = count - 1; i > -1; i--) {
                 Fragment f = fragments.get(i);
-                target = findDescendantFragment(f.getChildFragmentManager(), tag);
+                if (f instanceof AwesomeFragment) {
+                    AwesomeFragment af = (AwesomeFragment) f;
+                    if (af.getSceneId().equals(tag)) {
+                        target = af;
+                    }
+                }
+
+                if (target == null) {
+                    target = findDescendantFragment(f.getChildFragmentManager(), tag);
+                }
+
                 if (target != null) {
                     break;
                 }
