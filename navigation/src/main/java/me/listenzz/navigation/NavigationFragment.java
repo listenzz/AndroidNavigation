@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -160,7 +159,6 @@ public class NavigationFragment extends AwesomeFragment {
             aheadFragment.setAnimation(PresentAnimation.Fade);
         }
         fragmentManager.popBackStack();
-        Log.d(TAG, "pop fragment");
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
@@ -192,7 +190,6 @@ public class NavigationFragment extends AwesomeFragment {
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.executePendingTransactions();
         fragmentManager.popBackStack(rootFragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        Log.d(TAG, "pop fragment");
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
@@ -218,15 +215,22 @@ public class NavigationFragment extends AwesomeFragment {
         }
     }
 
+
+    @Nullable
+    @Override
     public NavigationFragment getNavigationFragment() {
-        AwesomeFragment parent = getParentAwesomeFragment();
+        checkNavigationFragment(this);
+        return super.getNavigationFragment();
+    }
+
+    private void checkNavigationFragment(AwesomeFragment fragment) {
+        AwesomeFragment parent = fragment.getParentAwesomeFragment();
         if (parent != null) {
-            NavigationFragment another = parent.getNavigationFragment();
-            if (another != null && another != this) {
+            if (parent instanceof NavigationFragment) {
                 throw new IllegalStateException("should not nest NavigationFragment");
             }
+            checkNavigationFragment(parent);
         }
-        return this;
     }
 
 }
