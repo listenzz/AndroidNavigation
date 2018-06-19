@@ -1,6 +1,7 @@
 package com.navigation;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.navigation.statusbar.TestStatusBarFragment;
 
@@ -57,7 +58,7 @@ public class MainActivity extends AwesomeActivity {
     }
 
     @Override
-    protected void onCustomStyle(Style style) {
+    protected void onCustomStyle(@NonNull Style style) {
         // style.setTitleGravity(Gravity.CENTER);
         // style.setBottomBarBackgroundColor("#3F51B5");
         // style.setBottomBarBackgroundColor("#FDFFFFFF");

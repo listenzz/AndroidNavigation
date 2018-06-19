@@ -770,22 +770,8 @@ public abstract class AwesomeFragment extends DialogFragment {
     /**
      * Present the fragment as dialog
      */
-    public void showDialog(@NonNull final AwesomeFragment dialog, final int requestCode) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                if (fragmentManager.getBackStackEntryCount() > 0) {
-                    FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1);
-                    String tag = backStackEntry.getName();
-                    if (tag != null) {
-                        Fragment target = fragmentManager.findFragmentByTag(tag);
-                        dialog.setTargetFragment(target, requestCode);
-                    }
-                }
-                dialog.show(fragmentManager, dialog.getSceneId());
-            }
-        });
+    public void showDialog(@NonNull AwesomeFragment dialog, int requestCode) {
+        presentableActivity.showDialog(dialog, requestCode);
     }
 
     @Override

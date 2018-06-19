@@ -1,6 +1,7 @@
 package me.listenzz.navigation;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,8 +32,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             statusBarTranslucent = savedInstanceState.getBoolean(SAVED_STATE_STATUS_BAR_TRANSLUCENT);
             AppUtils.setStatusBarTranslucent(getWindow(), statusBarTranslucent);
         }
-
-        //Log.i(TAG, "onCreate");
     }
 
     @Override
@@ -50,10 +49,8 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             AwesomeFragment fragment = (AwesomeFragment) fragmentManager.findFragmentByTag(entry.getName());
             if (!fragment.dispatchBackPressed()) {
                 if (count == 1) {
-                    // Log.w(TAG, "finish activity");
                     ActivityCompat.finishAfterTransition(this);
                 } else {
-                    // Log.i(TAG, "dismiss:");
                     dismissFragment(fragment);
                 }
             }
@@ -63,7 +60,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     @Override
-    public void presentFragment(final AwesomeFragment fragment) {
+    public void presentFragment(@NonNull final AwesomeFragment fragment) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
@@ -72,8 +69,12 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         });
     }
 
+    private void executePresentFragment(AwesomeFragment fragment) {
+        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.Modal);
+    }
+
     @Override
-    public void dismissFragment(final AwesomeFragment fragment) {
+    public void dismissFragment(@NonNull final AwesomeFragment fragment) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
@@ -82,27 +83,71 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         });
     }
 
+    private void executeDismissFragment(AwesomeFragment fragment) {
+        // 如果有 presented 就 dismiss presented, 否则就 dismiss 自己
+        AwesomeFragment top = (AwesomeFragment) getSupportFragmentManager().findFragmentById(android.R.id.content);
+        AwesomeFragment presenting = getPresentingFragment(fragment);
+
+        top.setAnimation(PresentAnimation.Modal);
+
+        if (presenting != null) {
+            presenting.setAnimation(PresentAnimation.Modal);
+        }
+
+        if (presenting == null) {
+            ActivityCompat.finishAfterTransition(this);
+        } else {
+            presenting.onFragmentResult(fragment.getRequestCode(), fragment.getResultCode(), fragment.getResultData());
+            getSupportFragmentManager().popBackStack(fragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+
+    }
+
     @Override
-    public AwesomeFragment getPresentedFragment(AwesomeFragment fragment) {
+    public AwesomeFragment getPresentedFragment(@NonNull AwesomeFragment fragment) {
         return FragmentHelper.getLatterFragment(getSupportFragmentManager(), fragment);
     }
 
     @Override
-    public AwesomeFragment getPresentingFragment(AwesomeFragment fragment) {
+    public AwesomeFragment getPresentingFragment(@NonNull AwesomeFragment fragment) {
         return FragmentHelper.getAheadFragment(getSupportFragmentManager(), fragment);
     }
 
     @Override
+    public void showDialog(@NonNull final AwesomeFragment dialog, final int requestCode) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                executeShowDialog(dialog, requestCode);
+            }
+        });
+    }
+
+    private void executeShowDialog(  AwesomeFragment dialog,  int requestCode) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1);
+            String tag = backStackEntry.getName();
+            if (tag != null) {
+                Fragment target = fragmentManager.findFragmentByTag(tag);
+                dialog.setTargetFragment(target, requestCode);
+            }
+        }
+        dialog.show(fragmentManager, dialog.getSceneId());
+    }
+
+    @Override
+    @NonNull
     public Style getStyle() {
         return style;
     }
 
-    protected void onCustomStyle(Style style) {
+    protected void onCustomStyle(@NonNull Style style) {
 
     }
 
     @Override
-    public void setActivityRootFragment(final AwesomeFragment rootFragment) {
+    public void setActivityRootFragment(@NonNull final AwesomeFragment rootFragment) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
@@ -153,30 +198,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             }
         }
         return children;
-    }
-
-    private void executePresentFragment(AwesomeFragment fragment) {
-        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.Modal);
-    }
-
-    private void executeDismissFragment(AwesomeFragment fragment) {
-        // 如果有 presented 就 dismiss presented, 否则就 dismiss 自己
-        AwesomeFragment top = (AwesomeFragment) getSupportFragmentManager().findFragmentById(android.R.id.content);
-        AwesomeFragment presenting = getPresentingFragment(fragment);
-
-        top.setAnimation(PresentAnimation.Modal);
-
-        if (presenting != null) {
-            presenting.setAnimation(PresentAnimation.Modal);
-        }
-
-        if (presenting == null) {
-            ActivityCompat.finishAfterTransition(this);
-        } else {
-            presenting.onFragmentResult(fragment.getRequestCode(), fragment.getResultCode(), fragment.getResultData());
-            getSupportFragmentManager().popBackStack(fragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        }
-
     }
 
     protected void scheduleTaskAtStarted(Runnable runnable) {
