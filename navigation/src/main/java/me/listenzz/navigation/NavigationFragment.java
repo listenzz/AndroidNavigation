@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -148,22 +149,26 @@ public class NavigationFragment extends AwesomeFragment {
     }
 
     private void executeReplaceFragment(AwesomeFragment fragment) {
+
         FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.executePendingTransactions();
+
         AwesomeFragment topFragment = getTopFragment();
         AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, topFragment);
         topFragment.setAnimation(PresentAnimation.Fade);
-
         if (aheadFragment != null) {
             aheadFragment.setAnimation(PresentAnimation.Fade);
         }
-
         fragmentManager.popBackStack();
+        Log.d(TAG, "pop fragment");
+
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         if (aheadFragment != null) {
             transaction.hide(aheadFragment);
         }
+        fragment.setAnimation(PresentAnimation.Fade);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
@@ -180,15 +185,19 @@ public class NavigationFragment extends AwesomeFragment {
 
     private void executeReplaceRootFragment(AwesomeFragment fragment) {
         AwesomeFragment topFragment = getTopFragment();
+        AwesomeFragment rootFragment = getRootFragment();
         topFragment.setAnimation(PresentAnimation.Fade);
         rootFragment.setAnimation(PresentAnimation.Fade);
 
         FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.executePendingTransactions();
         fragmentManager.popBackStack(rootFragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        Log.d(TAG, "pop fragment");
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragment.setAnimation(PresentAnimation.Fade);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
@@ -197,7 +206,6 @@ public class NavigationFragment extends AwesomeFragment {
     public void setChildFragments(List<AwesomeFragment> fragments) {
         // TODO
         // 弹出所有旧的 fragment
-
 
         // 添加所有新的 fragment
     }
@@ -220,6 +228,5 @@ public class NavigationFragment extends AwesomeFragment {
         }
         return this;
     }
-
 
 }
