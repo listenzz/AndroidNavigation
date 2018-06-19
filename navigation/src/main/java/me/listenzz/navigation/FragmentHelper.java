@@ -24,7 +24,7 @@ public class FragmentHelper {
     }
 
     public static void addFragmentToBackStack(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment, PresentAnimation animation) {
-        fragment.setAnimation(animation);
+        fragmentManager.executePendingTransactions();
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
@@ -34,10 +34,10 @@ public class FragmentHelper {
             topFragment.setAnimation(animation);
             transaction.hide(topFragment);
         }
+        fragment.setAnimation(animation);
         transaction.add(containerId, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
-        fragmentManager.executePendingTransactions();
     }
 
     public static void addFragmentToAddedList(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment) {
@@ -45,13 +45,14 @@ public class FragmentHelper {
     }
 
     public static void addFragmentToAddedList(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment, boolean primary) {
+        fragmentManager.executePendingTransactions();
+
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(containerId, fragment, fragment.getSceneId());
         if (primary) {
             transaction.setPrimaryNavigationFragment(fragment); // primary
         }
         transaction.commit();
-        fragmentManager.executePendingTransactions();
     }
 
     public static AwesomeFragment getLatterFragment(FragmentManager fragmentManager, AwesomeFragment fragment) {
