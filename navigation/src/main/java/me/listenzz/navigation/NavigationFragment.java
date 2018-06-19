@@ -209,4 +209,17 @@ public class NavigationFragment extends AwesomeFragment {
             return null;
         }
     }
+
+    public NavigationFragment getNavigationFragment() {
+        AwesomeFragment parent = getParentAwesomeFragment();
+        if (parent != null) {
+            NavigationFragment another = parent.getNavigationFragment();
+            if (another != null && another != this) {
+                throw new IllegalStateException("should not nest NavigationFragment");
+            }
+        }
+        return this;
+    }
+
+
 }
