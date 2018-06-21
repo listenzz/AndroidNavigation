@@ -600,12 +600,8 @@ public abstract class AwesomeFragment extends DialogFragment {
             if (getShowsDialog()) {
                 Activity activity = requireActivity();
                 int activityWindowFlags = activity.getWindow().getAttributes().flags;
-                if ((activityWindowFlags
-                        & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
-                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                } else {
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                }
+                setStatusBarHidden((activityWindowFlags
+                        & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0 || preferredStatusBarHidden());
             } else {
                 setStatusBarHidden(preferredStatusBarHidden());
             }
