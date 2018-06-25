@@ -41,7 +41,7 @@ public class DialogEntryFragment extends AwesomeFragment {
         root.findViewById(R.id.dialog).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TopDialogFragment dialog = new TopDialogFragment();
+                CustomAnimationDialogFragment dialog = new CustomAnimationDialogFragment();
                 showDialog(dialog, 0);
             }
         });
@@ -49,7 +49,7 @@ public class DialogEntryFragment extends AwesomeFragment {
         root.findViewById(R.id.bottom_sheet).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BottomSheetDialogFragment dialog = new BottomSheetDialogFragment();
+                SlideAnimationDialogFragment dialog = new SlideAnimationDialogFragment();
                 showDialog(dialog, 0);
             }
         });

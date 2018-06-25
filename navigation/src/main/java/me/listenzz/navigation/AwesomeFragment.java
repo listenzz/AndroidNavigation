@@ -17,13 +17,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
@@ -42,6 +47,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     private static final String ARGS_SCENE_ID = "nav_scene_id";
     private static final String ARGS_REQUEST_CODE = "nav_request_code";
     private static final String ARGS_ANIMATION = "nav_animation";
+    private static final String ARGS_ANIMATION_TYPE = "nav_animation_type";
     private static final String ARGS_TAB_BAR_ITEM = "nav_tab_bar_item";
     private static final String SAVED_STATE_BOTTOM_PADDING_KEY = "bottom_padding";
 
@@ -132,6 +138,8 @@ public abstract class AwesomeFragment extends DialogFragment {
                 fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
             }
             handleNavigationFragmentStuff(root);
+        } else {
+            animateIn();
         }
         callSuperOnViewCreated = true;
     }
@@ -726,6 +734,28 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     /**
+     * set the animation for dialog
+     * @param type animation type
+     */
+    public void setAnimationType(AnimationType type) {
+        Bundle args = FragmentHelper.getArguments(this);
+        args.putString(ARGS_ANIMATION_TYPE, type.name());
+    }
+
+    /**
+     * get the dialog animation type
+     * @return dialog animation type
+     */
+    public AnimationType getAnimationType() {
+        Bundle args = FragmentHelper.getArguments(this);
+        String animationType = args.getString(ARGS_ANIMATION_TYPE);
+        if (animationType == null) {
+            return AnimationType.None;
+        }
+        return AnimationType.valueOf(animationType);
+    }
+
+    /**
      * @deprecated call {@link #dismissDialog()} instead of this method.
      */
     @Deprecated
@@ -756,11 +786,122 @@ public abstract class AwesomeFragment extends DialogFragment {
         return super.show(transaction, tag);
     }
 
+    private boolean animatingOut = false;
+
     /**
      * Dismiss the fragment as dialog.
      */
     public void dismissDialog() {
-        dismiss();
+        if (animatingOut) {
+            return;
+        }
+
+        if (getAnimationType() != AnimationType.None) {
+            animateOut();
+        } else {
+            dismiss();
+        }
+    }
+
+    private void animateIn() {
+        View root = getView();
+        if (root == null || !(root instanceof DialogFrameLayout)) {
+            return;
+        }
+        AnimationType type = getAnimationType();
+        boolean shouldAnimated = type != AnimationType.None;
+
+        if (!shouldAnimated) {
+            Bundle args = FragmentHelper.getArguments(this);
+            String animationType = args.getString(ARGS_ANIMATION_TYPE);
+            if (animationType == null) {
+                DialogFrameLayout frameLayout = (DialogFrameLayout) root;
+                View contentView = frameLayout.getChildAt(0);
+                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
+                if (layoutParams.gravity == Gravity.BOTTOM) {
+                    shouldAnimated = true;
+                    type = AnimationType.Slide;
+                    setAnimationType(type);
+                }
+            }
+        }
+        if (shouldAnimated) {
+            DialogFrameLayout frameLayout = (DialogFrameLayout) root;
+            View contentView = frameLayout.getChildAt(0);
+            if (type == AnimationType.Slide) {
+                animateUpIn(contentView);
+            }
+        }
+    }
+
+    private void animateOut() {
+        View root = getView();
+        AnimationType type = getAnimationType();
+        boolean shouldAnimated = type != AnimationType.None && root != null && root instanceof DialogFrameLayout;
+        if (shouldAnimated) {
+            DialogFrameLayout frameLayout = (DialogFrameLayout) root;
+            View contentView = frameLayout.getChildAt(0);
+            if (type == AnimationType.Slide) {
+                animateDownOut(contentView);
+            }
+        }
+    }
+
+    private void animateUpIn(@NonNull View contentView) {
+        TranslateAnimation translate = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
+        );
+        translate.setInterpolator(new DecelerateInterpolator());
+        translate.setDuration(300);
+        translate.setFillAfter(true);
+        contentView.startAnimation(translate);
+    }
+
+    private void animateDownOut(@NonNull final View contentView) {
+        TranslateAnimation translate = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 1f
+        );
+        translate.setInterpolator(new AccelerateInterpolator());
+        translate.setDuration(300);
+        translate.setFillAfter(true);
+        translate.setAnimationListener(createAnimationListener(contentView));
+        contentView.startAnimation(translate);
+    }
+
+    private Animation.AnimationListener createAnimationListener(@NonNull final View animationView) {
+        return new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                animatingOut = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                animatingOut = false;
+                /**
+                 * Bugfix： Attempting to destroy the window while drawing!
+                 */
+                animationView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // java.lang.IllegalArgumentException: View=com.android.internal.policy.PhoneWindow$DecorView{22dbf5b V.E...... R......D 0,0-1080,1083} not attached to window manager
+                        // 在dismiss的时候可能已经detach了，简单try-catch一下
+                        try {
+                            dismiss();
+                        } catch (Exception e) {
+                            Log.w(TAG, "dismiss error\n" + Log.getStackTraceString(e));
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        };
     }
 
     /**

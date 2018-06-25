@@ -1,36 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="240dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/panda" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/colorPrimary"
-            android:gravity="center"
-            android:text="上下拖动"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/panda" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:hint="enter something"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
-
-    </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
+</LinearLayout>

@@ -11,16 +11,22 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.TranslateAnimation;
+import android.view.animation.ScaleAnimation;
 
 import com.navigation.R;
 
+import me.listenzz.navigation.AnimationType;
 import me.listenzz.navigation.AwesomeFragment;
 
 /**
  * Created by Listen on 2018/2/2.
  */
-public class TopDialogFragment extends AwesomeFragment {
+public class CustomAnimationDialogFragment extends AwesomeFragment {
+
+    @Override
+    public AnimationType getAnimationType() {
+        return AnimationType.None;
+    }
 
     @Nullable
     @Override
@@ -30,42 +36,33 @@ public class TopDialogFragment extends AwesomeFragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        // 默认情况下，无论 activity 有没有开启沉浸式，dialog 都是开启的，这样导航栏会好看些，
-        // 如果不希望 dialog 开启沉浸式，可以把下面代码反注释
-        // setStatusBarTranslucent(false);
-
-        mContentView = getView().findViewById(R.id.dialog_content);
-
-        animateDown();
+    public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(root, savedInstanceState);
+        mContentView = root.findViewById(R.id.dialog_content);
+        animateScaleIn();
     }
-
 
     private final static int mAnimationDuration = 300;
     private boolean mIsAnimating = false;
     private View mContentView;
-
 
     @Override
     public void dismissDialog() {
         if (mIsAnimating) {
             return;
         }
-        animateUp();
+        animateScaleOut();
     }
 
-    private void animateUp() {
+    private void animateScaleOut() {
         if (mContentView == null) {
             return;
         }
-        TranslateAnimation translate = new TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
-                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, -1f
-        );
+
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1f, 0.3f, 1f, 0.3f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f );
         AlphaAnimation alpha = new AlphaAnimation(1, 0);
         AnimationSet set = new AnimationSet(true);
-        set.addAnimation(translate);
+        set.addAnimation(scaleAnimation);
         set.addAnimation(alpha);
         set.setInterpolator(new DecelerateInterpolator());
         set.setDuration(mAnimationDuration);
@@ -88,7 +85,7 @@ public class TopDialogFragment extends AwesomeFragment {
                         // java.lang.IllegalArgumentException: View=com.android.internal.policy.PhoneWindow$DecorView{22dbf5b V.E...... R......D 0,0-1080,1083} not attached to window manager
                         // 在dismiss的时候可能已经detach了，简单try-catch一下
                         try {
-                            TopDialogFragment.super.dismissDialog();
+                           CustomAnimationDialogFragment.super.dismissDialog();
                         } catch (Exception e) {
                             Log.w(TAG, "dismiss error\n" + Log.getStackTraceString(e));
                         }
@@ -104,17 +101,14 @@ public class TopDialogFragment extends AwesomeFragment {
         mContentView.startAnimation(set);
     }
 
-    private void animateDown() {
+    private void animateScaleIn() {
         if (mContentView == null) {
             return;
         }
-        TranslateAnimation translate = new TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
-                Animation.RELATIVE_TO_SELF, -1f, Animation.RELATIVE_TO_SELF, 0f
-        );
+        ScaleAnimation scaleAnimation = new ScaleAnimation(0.3f, 1.0f, 0.3f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         AlphaAnimation alpha = new AlphaAnimation(0, 1);
         AnimationSet set = new AnimationSet(true);
-        set.addAnimation(translate);
+        set.addAnimation(scaleAnimation);
         set.addAnimation(alpha);
         set.setInterpolator(new DecelerateInterpolator());
         set.setDuration(mAnimationDuration );
