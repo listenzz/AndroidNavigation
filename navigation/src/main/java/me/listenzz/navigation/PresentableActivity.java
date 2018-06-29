@@ -18,8 +18,6 @@ public interface PresentableActivity {
 
     void setActivityRootFragment(AwesomeFragment root);
 
-    void showDialog(@NonNull AwesomeFragment dialog, int requestCode);
-
     @NonNull
     Style getStyle();
 

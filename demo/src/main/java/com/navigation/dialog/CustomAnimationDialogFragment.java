@@ -59,7 +59,7 @@ public class CustomAnimationDialogFragment extends AwesomeFragment {
             return;
         }
 
-        ScaleAnimation scaleAnimation = new ScaleAnimation(1f, 0.3f, 1f, 0.3f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f );
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1f, 0.0f, 1f, 0.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f );
         AlphaAnimation alpha = new AlphaAnimation(1, 0);
         AnimationSet set = new AnimationSet(true);
         set.addAnimation(scaleAnimation);
@@ -105,7 +105,7 @@ public class CustomAnimationDialogFragment extends AwesomeFragment {
         if (mContentView == null) {
             return;
         }
-        ScaleAnimation scaleAnimation = new ScaleAnimation(0.3f, 1.0f, 0.3f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        ScaleAnimation scaleAnimation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         AlphaAnimation alpha = new AlphaAnimation(0, 1);
         AnimationSet set = new AnimationSet(true);
         set.addAnimation(scaleAnimation);

@@ -615,15 +615,8 @@ public abstract class AwesomeFragment extends DialogFragment {
             }
 
             // statusBarStyle
-            if (getShowsDialog()) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    Activity activity = requireActivity();
-                    boolean isDark = (activity.getWindow().getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
-                    setStatusBarStyle(isDark ? BarStyle.DarkContent : BarStyle.LightContent);
-                }
-            } else {
-                setStatusBarStyle(preferredStatusBarStyle());
-            }
+            setStatusBarStyle(preferredStatusBarStyle());
+
 
             // statusBarColor
             int color = getShowsDialog() ? Color.TRANSPARENT : preferredStatusBarColor();
@@ -908,7 +901,8 @@ public abstract class AwesomeFragment extends DialogFragment {
      * Present the fragment as dialog
      */
     public void showDialog(@NonNull AwesomeFragment dialog, int requestCode) {
-        presentableActivity.showDialog(dialog, requestCode);
+        dialog.setTargetFragment(this, requestCode);
+        dialog.show(getFragmentManager(), dialog.getSceneId());
     }
 
     @Override

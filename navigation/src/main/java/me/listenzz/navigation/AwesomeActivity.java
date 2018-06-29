@@ -64,12 +64,12 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executePresentFragment(fragment);
+                presentFragmentInternal(fragment);
             }
         });
     }
 
-    private void executePresentFragment(AwesomeFragment fragment) {
+    private void presentFragmentInternal(AwesomeFragment fragment) {
         FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.Modal);
     }
 
@@ -78,12 +78,12 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executeDismissFragment(fragment);
+                dismissFragmentInternal(fragment);
             }
         });
     }
 
-    private void executeDismissFragment(AwesomeFragment fragment) {
+    private void dismissFragmentInternal(AwesomeFragment fragment) {
         // 如果有 presented 就 dismiss presented, 否则就 dismiss 自己
         AwesomeFragment top = (AwesomeFragment) getSupportFragmentManager().findFragmentById(android.R.id.content);
         AwesomeFragment presenting = getPresentingFragment(fragment);
@@ -113,25 +113,22 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         return FragmentHelper.getAheadFragment(getSupportFragmentManager(), fragment);
     }
 
-    @Override
     public void showDialog(@NonNull final AwesomeFragment dialog, final int requestCode) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executeShowDialog(dialog, requestCode);
+                showDialogInternal(dialog, requestCode);
             }
         });
     }
 
-    private void executeShowDialog(  AwesomeFragment dialog,  int requestCode) {
+    private void showDialogInternal(AwesomeFragment dialog, int requestCode) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1);
-            String tag = backStackEntry.getName();
-            if (tag != null) {
-                Fragment target = fragmentManager.findFragmentByTag(tag);
-                dialog.setTargetFragment(target, requestCode);
-            }
+            Fragment fragment = fragmentManager.findFragmentById(android.R.id.content);
+           if (fragment != null) {
+               dialog.setTargetFragment(fragment, requestCode);
+           }
         }
         dialog.show(fragmentManager, dialog.getSceneId());
     }

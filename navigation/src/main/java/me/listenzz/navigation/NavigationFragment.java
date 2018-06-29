@@ -31,7 +31,7 @@ public class NavigationFragment extends AwesomeFragment {
             if (rootFragment == null) {
                 throw new IllegalArgumentException("必须通过 `setRootFragment` 指定 rootFragment");
             } else {
-                performSetRootFragment(rootFragment);
+                setRootFragmentInternal(rootFragment);
             }
         }
     }
@@ -80,7 +80,7 @@ public class NavigationFragment extends AwesomeFragment {
         return null;
     }
 
-    private void performSetRootFragment(AwesomeFragment fragment) {
+    private void setRootFragmentInternal(AwesomeFragment fragment) {
        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
     }
 
@@ -88,12 +88,12 @@ public class NavigationFragment extends AwesomeFragment {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executePushFragment(fragment);
+                pushFragmentInternal(fragment);
             }
         });
     }
 
-    private void executePushFragment(AwesomeFragment fragment) {
+    private void pushFragmentInternal(AwesomeFragment fragment) {
         FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Push);
     }
 
@@ -101,12 +101,12 @@ public class NavigationFragment extends AwesomeFragment {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executePopToFragment(fragment);
+                popToFragmentInternal(fragment);
             }
         });
     }
 
-    private void executePopToFragment(AwesomeFragment fragment) {
+    private void popToFragmentInternal(AwesomeFragment fragment) {
         AwesomeFragment topFragment = getTopFragment();
         if (topFragment == fragment) {
             return;
@@ -142,12 +142,12 @@ public class NavigationFragment extends AwesomeFragment {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executeReplaceFragment(fragment);
+                replaceFragmentInternal(fragment);
             }
         });
     }
 
-    private void executeReplaceFragment(AwesomeFragment fragment) {
+    private void replaceFragmentInternal(AwesomeFragment fragment) {
 
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.executePendingTransactions();
@@ -176,12 +176,12 @@ public class NavigationFragment extends AwesomeFragment {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                executeReplaceRootFragment(fragment);
+                replaceRootFragmentInternal(fragment);
             }
         });
     }
 
-    private void executeReplaceRootFragment(AwesomeFragment fragment) {
+    private void replaceRootFragmentInternal(AwesomeFragment fragment) {
         AwesomeFragment topFragment = getTopFragment();
         AwesomeFragment rootFragment = getRootFragment();
         topFragment.setAnimation(PresentAnimation.Fade);
