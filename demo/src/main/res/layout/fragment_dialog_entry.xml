@@ -53,6 +53,16 @@
         android:text="Data Binding Dialog"
         android:textAllCaps="false" />
 
+    <Button
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:id="@+id/nested_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Nested Fragment Dialog"
+        android:textAllCaps="false" />
+
     <TextView
         android:id="@+id/result_text"
         android:layout_marginLeft="24dp"
@@ -61,5 +71,6 @@
         android:textSize="18dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
 
 </LinearLayout>

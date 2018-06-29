@@ -10,8 +10,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.navigation.R;
+import com.navigation.statusbar.TestStatusBarFragment;
 
 import me.listenzz.navigation.AwesomeFragment;
+import me.listenzz.navigation.NavigationFragment;
 
 
 /**
@@ -59,6 +61,17 @@ public class DialogEntryFragment extends AwesomeFragment {
             public void onClick(View view) {
                 DataBindingDialogFragment fragment = new DataBindingDialogFragment();
                 showDialog(fragment, 0);
+            }
+        });
+
+        root.findViewById(R.id.nested_fragment).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavigationFragment navigationFragment = new NavigationFragment();
+                navigationFragment.setRootFragment(new TestStatusBarFragment());
+                NestedFragmentDialogFragment dialog = new NestedFragmentDialogFragment();
+                dialog.setContentFragment(navigationFragment);
+                showDialog(dialog, 0);
             }
         });
 

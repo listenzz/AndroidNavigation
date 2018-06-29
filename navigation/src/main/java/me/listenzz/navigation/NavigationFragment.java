@@ -210,9 +210,8 @@ public class NavigationFragment extends AwesomeFragment {
     public AwesomeFragment getTopFragment() {
         if (isAdded()) {
             return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.navigation_content);
-        } else {
-            return null;
         }
+        return null;
     }
 
 
@@ -225,7 +224,7 @@ public class NavigationFragment extends AwesomeFragment {
 
     private void checkNavigationFragment(AwesomeFragment fragment) {
         AwesomeFragment parent = fragment.getParentAwesomeFragment();
-        if (parent != null) {
+        if (parent != null && !parent.getShowsDialog()) {
             if (parent instanceof NavigationFragment) {
                 throw new IllegalStateException("should not nest NavigationFragment");
             }

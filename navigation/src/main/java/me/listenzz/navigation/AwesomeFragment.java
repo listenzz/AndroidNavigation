@@ -579,7 +579,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (childFragmentForStatusBarColor != null) {
             return childFragmentForStatusBarColor.preferredStatusBarColor();
         }
-        return style.getStatusBarColor();
+        return getShowsDialog() ? Color.TRANSPARENT : style.getStatusBarColor();
     }
 
     protected boolean preferredStatusBarColorAnimated() {
@@ -598,43 +598,52 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             return;
         }
+
         // Log.i(TAG, getDebugTag() + "#setNeedsStatusBarAppearanceUpdate");
+
+        if (getShowsDialog()) {
+            Activity activity = requireActivity();
+            int activityWindowFlags = activity.getWindow().getAttributes().flags;
+            boolean hidden = (activityWindowFlags
+                    & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0 || preferredStatusBarHidden();
+            setStatusBarHidden(hidden);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                boolean isDark = preferredStatusBarStyle() == BarStyle.DarkContent || (activity.getWindow().getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
+                setStatusBarStyle(isDark ? BarStyle.DarkContent : BarStyle.LightContent);
+            }
+
+            setStatusBarColor(preferredStatusBarColor(), false);
+
+            return;
+        }
+
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             parent.setNeedsStatusBarAppearanceUpdate();
         } else {
 
             // statusBarHidden
-            if (getShowsDialog()) {
-                Activity activity = requireActivity();
-                int activityWindowFlags = activity.getWindow().getAttributes().flags;
-                setStatusBarHidden((activityWindowFlags
-                        & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0 || preferredStatusBarHidden());
-            } else {
-                setStatusBarHidden(preferredStatusBarHidden());
-            }
+            setStatusBarHidden(preferredStatusBarHidden());
 
             // statusBarStyle
             setStatusBarStyle(preferredStatusBarStyle());
 
 
             // statusBarColor
-            int color = getShowsDialog() ? Color.TRANSPARENT : preferredStatusBarColor();
-            if (!getShowsDialog()) {
-                boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !AppUtils.isMiuiV6()) {
-                    shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
-                }
-                if (shouldAdjustForWhiteStatusBar) {
-                    color = Color.parseColor("#B0B0B0");
-                }
-                if (isStatusBarTranslucent() && color == preferredToolbarColor()) {
-                    color = Color.TRANSPARENT;
-                }
+            int color = preferredStatusBarColor();
+            boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !AppUtils.isMiuiV6()) {
+                shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
             }
-            boolean animated = !getShowsDialog() && preferredStatusBarColorAnimated();
+            if (shouldAdjustForWhiteStatusBar) {
+                color = Color.parseColor("#B0B0B0");
+            }
+            if (isStatusBarTranslucent() && color == preferredToolbarColor()) {
+                color = Color.TRANSPARENT;
+            }
+            boolean animated = preferredStatusBarColorAnimated();
             setStatusBarColor(color, animated);
-
         }
     }
 
@@ -728,6 +737,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     /**
      * set the animation for dialog
+     *
      * @param type animation type
      */
     public void setAnimationType(AnimationType type) {
@@ -737,6 +747,7 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     /**
      * get the dialog animation type
+     *
      * @return dialog animation type
      */
     public AnimationType getAnimationType() {
@@ -916,7 +927,6 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     protected void setupDialog() {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setStatusBarTranslucent(true);
         } else {
@@ -945,7 +955,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             return (NavigationFragment) this;
         }
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
+        if (parent != null && !parent.getShowsDialog()) {
             return parent.getNavigationFragment();
         }
         return null;
@@ -1250,7 +1260,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             return (TabBarFragment) this;
         }
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
+        if (parent != null && !parent.getShowsDialog()) {
             return parent.getTabBarFragment();
         }
         return null;
@@ -1280,7 +1290,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             return (DrawerFragment) this;
         }
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
+        if (parent != null && !parent.getShowsDialog()) {
             return parent.getDrawerFragment();
         }
         return null;

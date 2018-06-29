@@ -11,14 +11,13 @@ import com.navigation.R;
 
 import me.listenzz.navigation.AwesomeFragment;
 
-
 /**
  * Created by listen on 2018/2/3.
  */
 
 public class SlideAnimationDialogFragment extends AwesomeFragment {
 
-//    如果想要禁止默认的 slide 动画，可以重写 #getAnimationType
+    //    如果想要禁止默认的 slide 动画，可以重写 #getAnimationType
 //    @Override
 //    public AnimationType getAnimationType() {
 //        return AnimationType.None;
