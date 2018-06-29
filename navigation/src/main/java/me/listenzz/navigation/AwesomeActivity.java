@@ -201,4 +201,14 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         lifecycleDelegate.scheduleTaskAtStarted(runnable);
     }
 
+    public RetainFragment getRetainFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        RetainFragment fragment = (RetainFragment) fragmentManager.findFragmentByTag("nav_retain_fragment");
+        if (fragment == null) {
+            fragment = new RetainFragment();
+            fragmentManager.beginTransaction().add(fragment, "nav_retain_fragment").commitAllowingStateLoss();
+        }
+        return fragment;
+    }
+
 }

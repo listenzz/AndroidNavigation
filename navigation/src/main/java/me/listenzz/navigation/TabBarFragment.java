@@ -65,6 +65,16 @@ public class TabBarFragment extends AwesomeFragment {
             setChildFragmentsInternal(fragments);
         }
 
+        // tabBarProvider
+        AwesomeActivity awesomeActivity = (AwesomeActivity) requireActivity();
+        RetainFragment retainFragment = awesomeActivity.getRetainFragment();
+        if (savedInstanceState == null) {
+            retainFragment.setTabBarProvider(tabBarProvider);
+        } else {
+            tabBarProvider = retainFragment.getTabBarProvider();
+        }
+
+        // create TabBar if needed
         if (tabBarProvider != null) {
             List<TabBarItem> tabBarItems = new ArrayList<>();
             for (int i = 0, size = fragments.size(); i < size; i++) {
