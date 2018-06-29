@@ -24,8 +24,8 @@ public class DataBindingDialogFragment extends AwesomeFragment {
         FragmentDataBindingBinding bindingBinding = DataBindingUtil.bind(root.getChildAt(0));
 
         User user = new User();
-        user.setFirstName("LI");
-        user.setLastName("sheng");
+        user.setFirstName("Jack");
+        user.setLastName("Ma");
         bindingBinding.setUser(user);
 
         return root;

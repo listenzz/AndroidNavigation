@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
+
     <data>
-        <variable name="user" type="com.navigation.dialog.User"/>
+
+        <variable
+            name="user"
+            type="com.navigation.dialog.User" />
     </data>
+
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_gravity ="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <TextView android:layout_width="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:background="#ffffff"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{user.firstName}"/>
-        <TextView android:layout_width="wrap_content"
+            android:text="@{user.firstName}"
+            android:textColor="#666666" />
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{user.lastName}"/>
+            android:text="@{user.lastName}"
+            android:textColor="#666666" />
     </LinearLayout>
 </layout>
