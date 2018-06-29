@@ -15,6 +15,7 @@ import me.listenzz.navigation.BarStyle;
 import me.listenzz.navigation.DrawerFragment;
 import me.listenzz.navigation.NavigationFragment;
 import me.listenzz.navigation.Style;
+import me.listenzz.navigation.TabBar;
 import me.listenzz.navigation.TabBarFragment;
 import me.listenzz.navigation.ToolbarButtonItem;
 
@@ -122,12 +123,26 @@ public class TestNavigationFragment extends AwesomeFragment {
             }
         });
 
-        root.findViewById(R.id.toggle_tab_bar).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.show_badge).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 TabBarFragment tabBarFragment = getTabBarFragment();
                 if (tabBarFragment != null) {
-                    tabBarFragment.toggleBottomBar();
+                    TabBar tabBar = tabBarFragment.getTabBar();
+                    tabBar.setBadge(0, "12");
+                    tabBar.setRedPoint(1, true);
+                }
+            }
+        });
+
+        root.findViewById(R.id.hide_badge).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TabBarFragment tabBarFragment = getTabBarFragment();
+                if (tabBarFragment != null) {
+                    TabBar tabBar = tabBarFragment.getTabBar();
+                    tabBar.setBadge(0, null);
+                    tabBar.setRedPoint(1, false);
                 }
             }
         });
@@ -135,10 +150,6 @@ public class TestNavigationFragment extends AwesomeFragment {
         if (isNavigationRoot()) {
             root.findViewById(R.id.pop).setEnabled(false);
             root.findViewById(R.id.pop_to_root).setEnabled(false);
-        }
-
-        if (!isNavigationRoot() || getPresentingFragment() != null) {
-            root.findViewById(R.id.toggle_tab_bar).setEnabled(false);
         }
 
         if (getPresentingFragment() == null) {

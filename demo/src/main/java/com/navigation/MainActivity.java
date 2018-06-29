@@ -60,7 +60,7 @@ public class MainActivity extends AwesomeActivity {
     @Override
     protected void onCustomStyle(@NonNull Style style) {
         // style.setTitleGravity(Gravity.CENTER);
-        // style.setBottomBarBackgroundColor("#3F51B5");
-        // style.setBottomBarBackgroundColor("#FDFFFFFF");
+        // style.setTabBarBackgroundColor("#3F51B5");
+        // style.setTabBarBackgroundColor("#FDFFFFFF");
     }
 }

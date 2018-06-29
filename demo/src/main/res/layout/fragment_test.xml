@@ -94,14 +94,25 @@
                 android:textAllCaps="false" />
 
             <Button
-                android:id="@+id/toggle_tab_bar"
+                android:id="@+id/show_badge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:gravity="center"
-                android:text="toggleTabBar"
+                android:text="Show Badge"
                 android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/hide_badge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="Hide Badge"
+                android:textAllCaps="false" />
+
         </LinearLayout>
 
 

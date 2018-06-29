@@ -35,10 +35,10 @@ public class Style implements Cloneable {
     private int titleGravity = Gravity.START;
     private int toolbarButtonTextSize = 15;
 
-    private String bottomBarBackgroundColor = "#FFFFFF";
-    private String bottomBarActiveColor = null;
-    private String bottomBarInactiveColor = null;
-    private Drawable bottomBarShadow = defaultShadow;
+    private String tabBarBackgroundColor = "#FFFFFF";
+    private String tabBarActiveColor = null;
+    private String tabBarInactiveColor = null;
+    private Drawable tabBarShadow = defaultShadow;
 
     private Context context;
 
@@ -69,28 +69,28 @@ public class Style implements Cloneable {
         this.toolbarHeight = toolbarHeight;
     }
 
-    public void setBottomBarBackgroundColor(String bottomBarBackgroundColor) {
-        this.bottomBarBackgroundColor = bottomBarBackgroundColor;
+    public void setTabBarBackgroundColor(String tabBarBackgroundColor) {
+        this.tabBarBackgroundColor = tabBarBackgroundColor;
     }
 
-    public String getBottomBarBackgroundColor() {
-        return bottomBarBackgroundColor;
+    public String getTabBarBackgroundColor() {
+        return tabBarBackgroundColor;
     }
 
-    public void setBottomBarActiveColor(String bottomBarActiveColor) {
-        this.bottomBarActiveColor = bottomBarActiveColor;
+    public void setTabBarActiveColor(String tabBarActiveColor) {
+        this.tabBarActiveColor = tabBarActiveColor;
     }
 
-    public String getBottomBarActiveColor() {
-        return bottomBarActiveColor;
+    public String getTabBarActiveColor() {
+        return tabBarActiveColor;
     }
 
-    public String getBottomBarInactiveColor() {
-        return bottomBarInactiveColor;
+    public String getTabBarInActiveColor() {
+        return tabBarInactiveColor;
     }
 
-    public void setBottomBarInactiveColor(String bottomBarInactiveColor) {
-        this.bottomBarInactiveColor = bottomBarInactiveColor;
+    public void setTabBarInactiveColor(String tabBarInactiveColor) {
+        this.tabBarInactiveColor = tabBarInactiveColor;
     }
 
     // ------- toolbar ---------
@@ -227,12 +227,12 @@ public class Style implements Cloneable {
         this.shadow = drawable;
     }
 
-    public Drawable getBottomBarShadow() {
-        return bottomBarShadow;
+    public Drawable getTabBarShadow() {
+        return tabBarShadow;
     }
 
-    public void setBottomBarShadow(Drawable drawable) {
-        this.bottomBarShadow = drawable;
+    public void setTabBarShadow(Drawable drawable) {
+        this.tabBarShadow = drawable;
     }
 
     public void setToolbarButtonTextSize(int dp) {

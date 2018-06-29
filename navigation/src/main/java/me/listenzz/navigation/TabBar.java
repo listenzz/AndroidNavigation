@@ -10,10 +10,12 @@ import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 
@@ -24,24 +26,25 @@ import java.util.List;
  * Created by Listen on 2018/1/30.
  */
 
-public class BottomBar extends BottomNavigationBar {
+public class TabBar extends BottomNavigationBar {
 
     private Drawable shadow = new ColorDrawable(Color.parseColor("#dddddd"));
     private List<ImageView> imageViews = new ArrayList<>();
+    private List<TextView> badgeViews = new ArrayList<>();
 
-    public BottomBar(Context context) {
+    public TabBar(Context context) {
         super(context);
     }
 
-    public BottomBar(Context context, AttributeSet attrs) {
+    public TabBar(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public BottomBar(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TabBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public BottomBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public TabBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
@@ -68,11 +71,15 @@ public class BottomBar extends BottomNavigationBar {
         LinearLayout itemContainer = findViewById(R.id.bottom_navigation_bar_item_container);
         int count = itemContainer.getChildCount();
         imageViews.clear();
+        badgeViews.clear();
         for (int i = 0; i < count; i++) {
             View itemLayout = itemContainer.getChildAt(i);
             ImageView iconView = itemLayout.findViewById(R.id.fixed_bottom_navigation_icon);
             iconView.setScaleType(ImageView.ScaleType.CENTER);
             imageViews.add(iconView);
+
+            TextView textView = itemLayout.findViewById(R.id.fixed_bottom_navigation_badge);
+            badgeViews.add(textView);
         }
     }
 
@@ -109,4 +116,33 @@ public class BottomBar extends BottomNavigationBar {
         }
     }
 
+    public TextView badgeViewAtTab(int index) {
+        return badgeViews.get(index);
+    }
+
+    public void setBadge(int index, String text) {
+        TextView badgeView = badgeViewAtTab(index);
+        if (TextUtils.isEmpty(text)) {
+            badgeView.setVisibility(GONE);
+        } else {
+            badgeView.setText(text);
+            badgeView.setScaleX(1);
+            badgeView.setScaleY(1);
+            badgeView.setTextColor(Color.WHITE);
+            badgeView.setVisibility(VISIBLE);
+        }
+    }
+
+    public void setRedPoint(int index, boolean visible) {
+        TextView badgeView = badgeViewAtTab(index);
+        if (!visible) {
+            badgeView.setVisibility(GONE);
+        } else {
+            badgeView.setText("1");
+            badgeView.setTextColor(Color.parseColor("#FF3B30"));
+            badgeView.setScaleX(0.5f);
+            badgeView.setScaleY(0.5f);
+            badgeView.setVisibility(VISIBLE);
+        }
+    }
 }

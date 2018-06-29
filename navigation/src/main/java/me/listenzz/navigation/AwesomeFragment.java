@@ -853,7 +853,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                 Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
         );
         translate.setInterpolator(new DecelerateInterpolator());
-        translate.setDuration(300);
+        translate.setDuration(200);
         translate.setFillAfter(true);
         contentView.startAnimation(translate);
     }
@@ -864,7 +864,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                 Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 1f
         );
         translate.setInterpolator(new AccelerateInterpolator());
-        translate.setDuration(300);
+        translate.setDuration(200);
         translate.setFillAfter(true);
         translate.setAnimationListener(createAnimationListener(contentView));
         contentView.startAnimation(translate);
@@ -978,7 +978,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         return true;
     }
 
-    boolean shouldHideBottomBarWhenPushed() {
+    boolean shouldHideTabBarWhenPushed() {
         NavigationFragment navigationFragment = getNavigationFragment();
         return navigationFragment != null && navigationFragment.getRootFragment().hidesBottomBarWhenPushed();
     }
@@ -996,13 +996,16 @@ public abstract class AwesomeFragment extends DialogFragment {
             int index = getIndexAtBackStack();
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
                 if (index == 0) {
-                    tabBarFragment.getBottomBar().setVisibility(View.VISIBLE);
-                } else if (index == 1 && shouldHideBottomBarWhenPushed()) {
-                    tabBarFragment.hideBottomNavigationBarAnimatedWhenPush(animation.exit);
+                    if (tabBarFragment.getTabBar() != null) {
+                        tabBarFragment.getTabBar().setVisibility(View.VISIBLE);
+                    }
+
+                } else if (index == 1 && shouldHideTabBarWhenPushed()) {
+                    tabBarFragment.hideTabBarWhenPush(animation.exit);
                 }
             } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
-                if (index == 0 && shouldHideBottomBarWhenPushed()) {
-                    tabBarFragment.showBottomNavigationBarAnimatedWhenPop(animation.popEnter);
+                if (index == 0 && shouldHideTabBarWhenPushed()) {
+                    tabBarFragment.showTabBarWhenPop(animation.popEnter);
                 }
             }
         }
@@ -1034,16 +1037,16 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     private void adjustBottomPaddingIfNeeded(final View root) {
         int index = getIndexAtBackStack();
-        if (index == 0 || !shouldHideBottomBarWhenPushed()) {
-            int color = Color.parseColor(style.getBottomBarBackgroundColor());
+        if (index == 0 || !shouldHideTabBarWhenPushed()) {
+            int color = Color.parseColor(style.getTabBarBackgroundColor());
             if (Color.alpha(color) == 255) {
                 final TabBarFragment tabBarFragment = getTabBarFragment();
-                if (tabBarFragment != null) {
+                if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
                     root.post(new Runnable() {
                         @Override
                         public void run() {
-                            if (tabBarFragment.getBottomBar().getHeight() != 0) {
-                                bottomPadding = tabBarFragment.getBottomBar().getHeight();
+                            if (tabBarFragment.getTabBar().getHeight() != 0) {
+                                bottomPadding = tabBarFragment.getTabBar().getHeight();
                                 root.setPadding(0, 0, 0, bottomPadding);
                             } else {
                                 root.setPadding(0, 0, 0, bottomPadding);
