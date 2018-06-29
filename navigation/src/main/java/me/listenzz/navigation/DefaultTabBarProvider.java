@@ -17,6 +17,9 @@ import com.ashokvarma.bottomnavigation.TextBadgeItem;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by Listen on 2018/06/29.
+ */
 public class DefaultTabBarProvider implements TabBarProvider {
 
     private TabBar tabBar;
