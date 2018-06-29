@@ -84,7 +84,7 @@ public class NavigationFragment extends AwesomeFragment {
        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
     }
 
-    public void pushFragment(final AwesomeFragment fragment) {
+    public void pushFragment(@NonNull final AwesomeFragment fragment) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
@@ -97,7 +97,7 @@ public class NavigationFragment extends AwesomeFragment {
         FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Push);
     }
 
-    public void popToFragment(final AwesomeFragment fragment) {
+    public void popToFragment(@NonNull final AwesomeFragment fragment) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
@@ -138,7 +138,7 @@ public class NavigationFragment extends AwesomeFragment {
         }
     }
 
-    public void replaceFragment(final AwesomeFragment fragment) {
+    public void replaceFragment(@NonNull final AwesomeFragment fragment) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
@@ -172,7 +172,7 @@ public class NavigationFragment extends AwesomeFragment {
         transaction.commit();
     }
 
-    public void replaceToRootFragment(final AwesomeFragment fragment) {
+    public void replaceToRootFragment(@NonNull final AwesomeFragment fragment) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
