@@ -95,7 +95,8 @@ public abstract class AwesomeFragment extends DialogFragment {
             setStyle(0, R.style.Theme_Nav_FullScreenDialog);
         }
 
-        LayoutInflater layoutInflater = super.onGetLayoutInflater(savedInstanceState);
+        super.onGetLayoutInflater(savedInstanceState);
+        LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
         if (getShowsDialog() && !getWindow().isFloating()) {
             layoutInflater = new DialogLayoutInflater(requireContext(), layoutInflater,
                     new DialogFrameLayout.OnTouchOutsideListener() {
@@ -139,7 +140,9 @@ public abstract class AwesomeFragment extends DialogFragment {
             }
             handleNavigationFragmentStuff(root);
         } else {
+            setupDialog();
             animateIn();
+
         }
         callSuperOnViewCreated = true;
     }
@@ -147,9 +150,6 @@ public abstract class AwesomeFragment extends DialogFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (getShowsDialog()) {
-            setupDialog();
-        }
         if (getView() != null && !callSuperOnViewCreated) {
             throw new IllegalStateException("you should call super when override `onViewCreated`");
         }
