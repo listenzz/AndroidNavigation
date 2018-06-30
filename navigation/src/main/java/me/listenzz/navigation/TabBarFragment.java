@@ -28,6 +28,7 @@ public class TabBarFragment extends AwesomeFragment {
     private static final String SAVED_FRAGMENT_TAGS = "nav_fragment_tags";
     private static final String SAVED_SELECTED_INDEX = "nav_selected_index";
     private static final String SAVED_BOTTOM_BAR_HIDDEN = "nav_tab_bar_hidden";
+    private static final String SAVED_TAB_BAR_PROVIDER_CLASS_NAME = "nav_tab_bar_provider_class_name";
 
     private List<AwesomeFragment> fragments;
     private ArrayList<String> fragmentTags = new ArrayList<>();
@@ -58,20 +59,21 @@ public class TabBarFragment extends AwesomeFragment {
             }
             selectedIndex = savedInstanceState.getInt(SAVED_SELECTED_INDEX);
             tabBarHidden = savedInstanceState.getBoolean(SAVED_BOTTOM_BAR_HIDDEN, false);
+            String providerClassName = savedInstanceState.getString(SAVED_TAB_BAR_PROVIDER_CLASS_NAME);
+            tabBarProvider = null;
+            if (providerClassName != null) {
+                try {
+                    Class clazz = Class.forName(providerClassName);
+                    tabBarProvider = (TabBarProvider) clazz.newInstance();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         } else {
             if (fragments == null || fragments.size() == 0) {
                 throw new IllegalArgumentException("必须使用 `setChildFragments` 设置 childFragments ");
             }
             setChildFragmentsInternal(fragments);
-        }
-
-        // tabBarProvider
-        AwesomeActivity awesomeActivity = (AwesomeActivity) requireActivity();
-        RetainFragment retainFragment = awesomeActivity.getRetainFragment();
-        if (savedInstanceState == null) {
-            retainFragment.setTabBarProvider(tabBarProvider);
-        } else {
-            tabBarProvider = retainFragment.getTabBarProvider();
         }
 
         // create TabBar if needed
@@ -105,6 +107,7 @@ public class TabBarFragment extends AwesomeFragment {
         outState.putInt(SAVED_SELECTED_INDEX, selectedIndex);
         outState.putBoolean(SAVED_BOTTOM_BAR_HIDDEN, tabBarHidden);
         if (tabBarProvider != null) {
+            outState.putString(SAVED_TAB_BAR_PROVIDER_CLASS_NAME, tabBarProvider.getClass().getName());
             tabBarProvider.onSaveInstanceState(outState);
         }
     }

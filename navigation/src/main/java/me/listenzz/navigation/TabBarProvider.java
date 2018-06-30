@@ -9,6 +9,10 @@ import java.util.List;
 
 /**
  * Created by Listen on 2018/06/29.
+ * <p>
+ * 注意：实现类的构造函数必须是无参构造函数，因为当 Activity 销毁后重建，
+ * TabBarFragment 会利用此实现类的无参构造函数构建其实例
+ * </p>
  */
 public interface TabBarProvider {
 
