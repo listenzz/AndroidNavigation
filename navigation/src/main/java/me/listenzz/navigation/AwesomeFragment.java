@@ -617,8 +617,17 @@ public abstract class AwesomeFragment extends DialogFragment {
                 setStatusBarStyle(isDark ? BarStyle.DarkContent : BarStyle.LightContent);
             }
 
-            setStatusBarColor(preferredStatusBarColor(), false);
-
+            int color = preferredStatusBarColor();
+            if (color != Color.TRANSPARENT) {
+                boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !AppUtils.isMiuiV6()) {
+                    shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
+                }
+                if (shouldAdjustForWhiteStatusBar) {
+                    color = Color.parseColor("#B0B0B0");
+                }
+            }
+            setStatusBarColor(color, false);
             return;
         }
 
@@ -632,7 +641,6 @@ public abstract class AwesomeFragment extends DialogFragment {
 
             // statusBarStyle
             setStatusBarStyle(preferredStatusBarStyle());
-
 
             // statusBarColor
             int color = preferredStatusBarColor();

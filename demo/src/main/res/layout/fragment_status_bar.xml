@@ -7,7 +7,9 @@
         android:layout_marginTop="32dp"
         android:id="@+id/tag"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:gravity="center"
         android:textColor="#000000"
         android:textSize="12dp" />
