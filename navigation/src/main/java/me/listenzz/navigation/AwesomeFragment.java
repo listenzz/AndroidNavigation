@@ -96,7 +96,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
 
         LayoutInflater layoutInflater = super.onGetLayoutInflater(savedInstanceState);
-        if (getShowsDialog()) {
+        if (getShowsDialog() && !getWindow().isFloating()) {
             layoutInflater = new DialogLayoutInflater(requireContext(), layoutInflater,
                     new DialogFrameLayout.OnTouchOutsideListener() {
                         @Override
@@ -324,7 +324,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     public void presentFragment(final AwesomeFragment fragment, int requestCode) {
         final AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            if (parent.isPresentContainer()) {
+            if (parent.isPresentationContainer()) {
                 parent.scheduleTaskAtStarted(new Runnable() {
                     @Override
                     public void run() {
@@ -347,29 +347,8 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
         final AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            if (parent.isPresentContainer()) {
-                parent.scheduleTaskAtStarted(new Runnable() {
-                    @Override
-                    public void run() {
-                        // 如果有 presented 就 dismiss presented, 否则就 dismiss 自己
-                        AwesomeFragment top = (AwesomeFragment) requireFragmentManager().findFragmentById(parent.getPresentContainerId());
-                        AwesomeFragment presenting = getPresentingFragment();
-
-                        top.setAnimation(PresentAnimation.Modal);
-
-                        if (presenting != null) {
-                            presenting.setAnimation(PresentAnimation.Modal);
-                        }
-
-                        if (presenting == null) {
-                            parent.setResult(resultCode, result);
-                            parent.dismissFragment();
-                        } else {
-                            presenting.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
-                            requireFragmentManager().popBackStack(getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                        }
-                    }
-                });
+            if (parent.isPresentationContainer()) {
+                dismissFragmentInternal(parent);
             } else {
                 parent.setResult(resultCode, result);
                 parent.dismissFragment();
@@ -382,7 +361,32 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
-    private boolean isPresentContainer() {
+    private void dismissFragmentInternal(final AwesomeFragment parent) {
+        parent.scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                // 如果有 presented 就 dismiss presented, 否则就 dismiss 自己
+                AwesomeFragment top = (AwesomeFragment) requireFragmentManager().findFragmentById(parent.getPresentContainerId());
+                AwesomeFragment presenting = getPresentingFragment();
+
+                top.setAnimation(PresentAnimation.Modal);
+
+                if (presenting != null) {
+                    presenting.setAnimation(PresentAnimation.Modal);
+                }
+
+                if (presenting == null) {
+                    parent.setResult(resultCode, result);
+                    parent.dismissFragment();
+                } else {
+                    presenting.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
+                    requireFragmentManager().popBackStack(getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }
+            }
+        });
+    }
+
+    private boolean isPresentationContainer() {
         return getPresentContainerId() != 0;
     }
 
@@ -393,7 +397,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     public AwesomeFragment getPresentedFragment() {
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            if (parent.isPresentContainer()) {
+            if (parent.isPresentationContainer()) {
                 return FragmentHelper.getLatterFragment(requireFragmentManager(), this);
             } else {
                 return parent.getPresentedFragment();
@@ -405,7 +409,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     public AwesomeFragment getPresentingFragment() {
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            if (parent.isPresentContainer()) {
+            if (parent.isPresentationContainer()) {
                 return FragmentHelper.getAheadFragment(requireFragmentManager(), this);
             } else {
                 return parent.getPresentingFragment();
@@ -735,6 +739,14 @@ public abstract class AwesomeFragment extends DialogFragment {
         return null;
     }
 
+    public boolean isInDialog() {
+        if (getShowsDialog()) {
+            return true;
+        }
+        AwesomeFragment parent = getParentAwesomeFragment();
+        return parent != null && parent.isInDialog();
+    }
+
     /**
      * set the animation for dialog
      *
@@ -765,11 +777,27 @@ public abstract class AwesomeFragment extends DialogFragment {
     @Deprecated
     @Override
     public void dismiss() {
-        if (!getShowsDialog()) {
+        if (!isInDialog()) {
             throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
         } else {
-            super.dismiss();
+            if (getShowsDialog()) {
+                super.dismiss();
+            } else {
+                AwesomeFragment parent = getParentAwesomeFragment();
+                parent.setResult(getResultCode(), getResultData());
+                parent.dismissDialog();
+            }
         }
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        Fragment target = getTargetFragment();
+        if (target != null && target instanceof AwesomeFragment && target.isAdded() && !target.isRemoving()) {
+            AwesomeFragment fragment = (AwesomeFragment) target;
+            fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
+        }
+        super.onDismiss(dialog);
     }
 
     /**
@@ -916,15 +944,6 @@ public abstract class AwesomeFragment extends DialogFragment {
         dialog.show(getFragmentManager(), dialog.getSceneId());
     }
 
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        Fragment target = getTargetFragment();
-        if (target != null && target instanceof AwesomeFragment && target.isAdded() && !target.isRemoving()) {
-            AwesomeFragment fragment = (AwesomeFragment) target;
-            fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
-        }
-        super.onDismiss(dialog);
-    }
 
     protected void setupDialog() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -933,15 +952,24 @@ public abstract class AwesomeFragment extends DialogFragment {
             setStatusBarTranslucent(presentableActivity.isStatusBarTranslucent());
         }
 
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        Window window = getWindow();
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_UP) {
-                    if (keyCode == KeyEvent.KEYCODE_BACK && isCancelable()) {
-                        dismissDialog();
-                        return true;
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (!dispatchBackPressed()) {
+                        FragmentManager fragmentManager = getChildFragmentManager();
+                        int count = fragmentManager.getBackStackEntryCount();
+                        if (count > 1) {
+                            FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(count - 1);
+                            AwesomeFragment fragment = (AwesomeFragment) fragmentManager.findFragmentByTag(entry.getName());
+                            fragment.dismissFragment();
+                        } else if (isCancelable()) {
+                            dismissDialog();
+                        }
                     }
+                    return true;
                 }
                 return false;
             }
@@ -1078,7 +1106,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                     + " 添加 Toolbar. 请重写 onCreateAwesomeToolbar 并返回 null, 这样你就可以自行添加 Toolbar 了。");
         }
 
-        if (isStatusBarTranslucent()) {
+        if (isStatusBarTranslucent() && !isInDialog()) {
             appendStatusBarPadding(toolbar, getToolbarHeight());
         }
 

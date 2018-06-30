@@ -71,6 +71,7 @@ public class DialogEntryFragment extends AwesomeFragment {
                 navigationFragment.setRootFragment(new TestStatusBarFragment());
                 NestedFragmentDialogFragment dialog = new NestedFragmentDialogFragment();
                 dialog.setContentFragment(navigationFragment);
+                // dialog.setCancelable(false);
                 showDialog(dialog, 0);
             }
         });
@@ -87,7 +88,7 @@ public class DialogEntryFragment extends AwesomeFragment {
         super.onFragmentResult(requestCode, resultCode, data);
         Log.i(TAG, "onFragmentResult");
         if (data != null) {
-            String words = data.getString("words", "");
+            String words = data.getString("text", "");
             resultText.setText(words);
         }
     }

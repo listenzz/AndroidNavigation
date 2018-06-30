@@ -2,6 +2,7 @@ package com.navigation.dialog;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -9,6 +10,11 @@ import android.support.v7.app.AlertDialog;
 import me.listenzz.navigation.AwesomeFragment;
 
 public class AlertDialogFragment extends AwesomeFragment {
+
+    @Override
+    protected int preferredStatusBarColor() {
+        return Color.RED;
+    }
 
     @NonNull
     @Override
@@ -20,7 +26,7 @@ public class AlertDialogFragment extends AwesomeFragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Bundle result = new Bundle();
-                        result.putString("words", "一起加油！！");
+                        result.putString("text", "一起加油！！");
                         setResult(0, result);
                     }
                 })
@@ -28,7 +34,7 @@ public class AlertDialogFragment extends AwesomeFragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Bundle result = new Bundle();
-                        result.putString("words", "感谢支持，祝生活愉快。");
+                        result.putString("text", "感谢支持，祝生活愉快。");
                         setResult(0, result);
                     }
                 })
