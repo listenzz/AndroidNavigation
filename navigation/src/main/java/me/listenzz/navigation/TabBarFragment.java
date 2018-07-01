@@ -225,7 +225,7 @@ public class TabBarFragment extends AwesomeFragment {
             tabBarHidden = false;
             // Log.w(TAG, "tabBarHidden:" + tabBarHidden);
             Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
-            animation.setAnimationListener(new BottomNavigationBarAnimationListener(false));
+            animation.setAnimationListener(new TabBarAnimationListener(false));
             tabBar.startAnimation(animation);
         }
 
@@ -236,16 +236,16 @@ public class TabBarFragment extends AwesomeFragment {
             tabBarHidden = true;
             // Log.w(TAG, "tabBarHidden:" + tabBarHidden);
             Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
-            animation.setAnimationListener(new BottomNavigationBarAnimationListener(true));
+            animation.setAnimationListener(new TabBarAnimationListener(true));
             tabBar.startAnimation(animation);
         }
     }
 
-    class BottomNavigationBarAnimationListener implements Animation.AnimationListener {
+    class TabBarAnimationListener implements Animation.AnimationListener {
 
         boolean hidden;
 
-        BottomNavigationBarAnimationListener(boolean hidden) {
+        TabBarAnimationListener(boolean hidden) {
             this.hidden = hidden;
         }
 

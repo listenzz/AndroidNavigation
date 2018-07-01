@@ -226,7 +226,7 @@ public class NavigationFragment extends AwesomeFragment {
         AwesomeFragment parent = fragment.getParentAwesomeFragment();
         if (parent != null && !parent.getShowsDialog()) {
             if (parent instanceof NavigationFragment) {
-                throw new IllegalStateException("should not nest NavigationFragment");
+                throw new IllegalStateException("should not nest NavigationFragment in the same presentation container");
             }
             checkNavigationFragment(parent);
         }

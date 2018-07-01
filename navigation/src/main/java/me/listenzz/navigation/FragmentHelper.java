@@ -2,6 +2,7 @@ package me.listenzz.navigation;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -14,6 +15,7 @@ import java.util.List;
 
 public class FragmentHelper {
 
+    @NonNull
     public static Bundle getArguments(Fragment fragment) {
         Bundle args = fragment.getArguments();
         if (args == null) {
@@ -55,6 +57,7 @@ public class FragmentHelper {
         transaction.commit();
     }
 
+    @Nullable
     public static AwesomeFragment getLatterFragment(FragmentManager fragmentManager, AwesomeFragment fragment) {
         int count = fragmentManager.getBackStackEntryCount();
         int index = findIndexAtBackStack(fragmentManager, fragment);
@@ -65,6 +68,7 @@ public class FragmentHelper {
         return null;
     }
 
+    @Nullable
     public static AwesomeFragment getAheadFragment(FragmentManager fragmentManager, AwesomeFragment fragment) {
         int count = fragmentManager.getBackStackEntryCount();
         int index = findIndexAtBackStack(fragmentManager, fragment);
@@ -87,6 +91,7 @@ public class FragmentHelper {
         return index;
     }
 
+    @Nullable
     public static Fragment findDescendantFragment(@NonNull FragmentManager fragmentManager, @NonNull String tag) {
         Fragment target = fragmentManager.findFragmentByTag(tag);
         if (target == null) {
