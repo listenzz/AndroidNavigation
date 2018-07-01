@@ -29,6 +29,7 @@ public class MainActivity extends AwesomeActivity {
 
             TestNavigationFragment testNavigationFragment = new TestNavigationFragment();
             NavigationFragment navigation = new NavigationFragment();
+            navigation.setSwipeBackEnabled(true); // 开启侧滑返回
             navigation.setRootFragment(testNavigationFragment);
             String iconUri = "font://FontAwesome/" + fromCharCode(61732) + "/24";
             navigation.setTabBarItem(new TabBarItem(iconUri, "Navigation"));
@@ -46,6 +47,7 @@ public class MainActivity extends AwesomeActivity {
             drawerFragment.setContentFragment(tabBarFragment);
             drawerFragment.setMaxDrawerWidth(300); // 设置 menu 的最大宽度
             //drawerFragment.setMinDrawerMargin(0); // 可使 menu 和 drawerLayout 同宽
+            drawerFragment.setMenuInteractive(false); // 是否可以侧滑打开抽屉，如果 NavigationFragment 也开启了侧滑返回，它们之间会冲突
 
 
 //            CustomContainerFragment customContainerFragment = new CustomContainerFragment();

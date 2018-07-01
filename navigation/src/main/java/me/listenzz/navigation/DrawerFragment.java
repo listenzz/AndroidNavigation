@@ -198,10 +198,15 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         }
     }
 
-    public void setDrawerLockMode(int lockMode) {
-        if (drawerLayout != null) {
-            drawerLayout.setDrawerLockMode(lockMode);
-        }
+    public void setDrawerLockMode(final int lockMode) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                if (drawerLayout != null) {
+                    drawerLayout.setDrawerLockMode(lockMode);
+                }
+            }
+        });
     }
 
     public void setMenuInteractive(boolean enabled) {

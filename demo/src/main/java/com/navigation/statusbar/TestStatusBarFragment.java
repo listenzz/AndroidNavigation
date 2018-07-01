@@ -119,4 +119,21 @@ public class TestStatusBarFragment extends AwesomeFragment {
         }
     }
 
+    @Override
+    protected void onViewAppear() {
+        super.onViewAppear();
+        DrawerFragment drawerFragment = getDrawerFragment();
+        if (drawerFragment != null) {
+            drawerFragment.setMenuInteractive(true);
+        }
+    }
+
+    @Override
+    protected void onViewDisappear() {
+        super.onViewDisappear();
+        DrawerFragment drawerFragment = getDrawerFragment();
+        if (drawerFragment != null) {
+            drawerFragment.setMenuInteractive(false);
+        }
+    }
 }

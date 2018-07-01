@@ -4,7 +4,6 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_marginTop="32dp"
         android:id="@+id/tag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

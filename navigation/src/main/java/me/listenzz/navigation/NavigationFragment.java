@@ -15,13 +15,38 @@ import java.util.List;
  * Created by Listen on 2018/1/11.
  */
 
-public class NavigationFragment extends AwesomeFragment {
+public class NavigationFragment extends AwesomeFragment implements SwipeBackLayout.SwipeListener {
 
+    private static final String SAVED_SWIPE_BACK_ENABLED = "swipe_back_enabled";
+
+    private SwipeBackLayout swipeBackLayout;
+    private boolean swipeBackEnabled = false;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.nav_fragment_navigation, container, false);
+        if (savedInstanceState != null) {
+            swipeBackEnabled = savedInstanceState.getBoolean(SAVED_SWIPE_BACK_ENABLED, false);
+        }
+        View root = inflater.inflate(R.layout.nav_fragment_navigation, container, false);
+        swipeBackLayout = root.findViewById(R.id.navigation_content);
+        swipeBackLayout.setEnableGesture(swipeBackEnabled);
+        swipeBackLayout.addSwipeListener(this);
+        return root;
+    }
+
+    public SwipeBackLayout getSwipeBackLayout() {
+        return swipeBackLayout;
+    }
+
+    public void setSwipeBackEnabled(boolean enabled) {
+        this.swipeBackEnabled = enabled;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SAVED_SWIPE_BACK_ENABLED, swipeBackEnabled);
     }
 
     @Override
@@ -232,4 +257,27 @@ public class NavigationFragment extends AwesomeFragment {
         }
     }
 
+    @Override
+    public void onViewDragStateChanged(int state, float scrollPercent) {
+        if (state == SwipeBackLayout.STATE_DRAGGING) {
+            AwesomeFragment topFragment = getTopFragment();
+            AwesomeFragment before = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
+            if (before != null && before.getView() != null) {
+                before.getView().setVisibility(View.VISIBLE);
+            }
+        } else if (state == SwipeBackLayout.STATE_IDLE) {
+            swipeBackLayout.requestLayout();
+            AwesomeFragment topFragment = getTopFragment();
+            AwesomeFragment before = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
+            if (before != null && before.getView() != null) {
+               before.getView().setVisibility(View.GONE);
+            }
+            if (before != null && scrollPercent >= 1.0f) {
+                topFragment.setAnimation(PresentAnimation.None);
+                before.setAnimation(PresentAnimation.None);
+                before.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
+                getChildFragmentManager().popBackStackImmediate(before.getSceneId(), 0);
+            }
+        }
+    }
 }
