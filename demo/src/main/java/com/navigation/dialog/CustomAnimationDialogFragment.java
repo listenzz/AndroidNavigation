@@ -39,7 +39,12 @@ public class CustomAnimationDialogFragment extends AwesomeFragment {
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
         mContentView = root.findViewById(R.id.dialog_content);
-        animateScaleIn();
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                animateScaleIn();
+            }
+        });
     }
 
     private final static int mAnimationDuration = 300;

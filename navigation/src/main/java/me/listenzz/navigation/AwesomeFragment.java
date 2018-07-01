@@ -24,8 +24,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
@@ -141,8 +142,12 @@ public abstract class AwesomeFragment extends DialogFragment {
             handleNavigationFragmentStuff(root);
         } else {
             setupDialog();
-            animateIn();
-
+            scheduleTaskAtStarted(new Runnable() {
+                @Override
+                public void run() {
+                    animateIn();
+                }
+            });
         }
         callSuperOnViewCreated = true;
     }
@@ -887,15 +892,19 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
-    private void animateUpIn(@NonNull View contentView) {
+    private void animateUpIn(@NonNull final View contentView) {
         TranslateAnimation translate = new TranslateAnimation(
                 Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
                 Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
         );
-        translate.setInterpolator(new DecelerateInterpolator());
-        translate.setDuration(200);
-        translate.setFillAfter(true);
-        contentView.startAnimation(translate);
+        AlphaAnimation alpha = new AlphaAnimation(0, 1);
+        AnimationSet set = new AnimationSet(true);
+        set.addAnimation(translate);
+        set.addAnimation(alpha);
+        set.setInterpolator(new DecelerateInterpolator());
+        set.setDuration(200);
+        set.setFillAfter(true);
+        contentView.startAnimation(set);
     }
 
     private void animateDownOut(@NonNull final View contentView) {
@@ -903,11 +912,15 @@ public abstract class AwesomeFragment extends DialogFragment {
                 Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
                 Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 1f
         );
-        translate.setInterpolator(new AccelerateInterpolator());
-        translate.setDuration(200);
-        translate.setFillAfter(true);
-        translate.setAnimationListener(createAnimationListener(contentView));
-        contentView.startAnimation(translate);
+        AlphaAnimation alpha = new AlphaAnimation(1, 0);
+        AnimationSet set = new AnimationSet(true);
+        set.addAnimation(translate);
+        set.addAnimation(alpha);
+        set.setInterpolator(new DecelerateInterpolator());
+        set.setDuration(200);
+        set.setFillAfter(true);
+        set.setAnimationListener(createAnimationListener(contentView));
+        contentView.startAnimation(set);
     }
 
     private Animation.AnimationListener createAnimationListener(@NonNull final View animationView) {
