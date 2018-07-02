@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -225,7 +224,6 @@ public class TabBarFragment extends AwesomeFragment {
     void showTabBarWhenPop(@AnimRes int anim) {
         if (tabBar != null) {
             tabBarHidden = false;
-            Log.w(TAG, "tabBarHidden:" + tabBarHidden + "  " + System.currentTimeMillis());
             if (anim != R.anim.nav_none) {
                 Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
                 animation.setAnimationListener(new TabBarAnimationListener(false));
@@ -240,7 +238,6 @@ public class TabBarFragment extends AwesomeFragment {
     void hideTabBarWhenPush(@AnimRes int anim) {
         if (tabBar != null) {
             tabBarHidden = true;
-            Log.w(TAG, "tabBarHidden:" + tabBarHidden + "  " + System.currentTimeMillis());
             if (anim != R.anim.nav_none) {
                 Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
                 animation.setAnimationListener(new TabBarAnimationListener(true));
@@ -264,7 +261,6 @@ public class TabBarFragment extends AwesomeFragment {
             if (hidden && tabBar != null) {
                 tabBar.setVisibility(View.GONE);
             }
-            Log.w(TAG, "tabBarHidden: start-" + System.currentTimeMillis());
         }
 
         @Override
@@ -272,7 +268,6 @@ public class TabBarFragment extends AwesomeFragment {
             if (!hidden && tabBar != null) {
                 tabBar.setVisibility(View.VISIBLE);
             }
-            Log.w(TAG, "tabBarHidden: end-" + System.currentTimeMillis());
         }
 
         @Override

@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -217,7 +216,6 @@ public class SwipeBackLayout extends FrameLayout {
 
         if (mTabBar != null && drawContent) {
             drawTabBar(canvas, child);
-            Log.i(TAG, "draw -------------------:" + System.currentTimeMillis());
         }
 
         if (mScrimOpacity > 0 && drawContent
