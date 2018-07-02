@@ -155,19 +155,19 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (getView() != null && !callSuperOnViewCreated) {
-            throw new IllegalStateException("you should call super when override `onViewCreated`");
-        }
-    }
-
-    @Override
     public void onDestroyView() {
         if (getView() != null) {
             AppUtils.hideSoftInput(getView());
         }
         super.onDestroyView();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (getView() != null && !callSuperOnViewCreated) {
+            throw new IllegalStateException("you should call super when override `onViewCreated`");
+        }
     }
 
     private void setBackgroundDrawable(View root, Drawable drawable) {
@@ -978,7 +978,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         return false;
     }
 
-    protected boolean backInteractive() {
+    protected boolean isBackInteractive() {
         return true;
     }
 

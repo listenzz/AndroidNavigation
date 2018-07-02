@@ -18,36 +18,24 @@ import java.util.List;
  * Created by Listen on 2018/1/11.
  */
 
-public class NavigationFragment extends AwesomeFragment implements SwipeBackLayout.SwipeListener, FragmentManager.OnBackStackChangedListener {
+public class NavigationFragment extends AwesomeFragment implements SwipeBackLayout.SwipeListener {
 
     private static final String SAVED_SWIPE_BACK_ENABLED = "swipe_back_enabled";
 
     private SwipeBackLayout swipeBackLayout;
-    private boolean swipeBackEnabled = false;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        swipeBackEnabled = style.isSwipeBackEnabled();
-        if (savedInstanceState != null) {
-            swipeBackEnabled = savedInstanceState.getBoolean(SAVED_SWIPE_BACK_ENABLED, false);
+        View root;
+        if (style.isSwipeBackEnabled()) {
+            root = inflater.inflate(R.layout.nav_fragment_navigation_swipe_back, container, false);
+            swipeBackLayout = root.findViewById(R.id.navigation_content);
+            swipeBackLayout.setSwipeListener(this);
+        } else {
+            root = inflater.inflate(R.layout.nav_fragment_navigation, container, false);
         }
-        View root = inflater.inflate(R.layout.nav_fragment_navigation, container, false);
-        swipeBackLayout = root.findViewById(R.id.navigation_content);
-        swipeBackLayout.addSwipeListener(this);
-        swipeBackLayout.setEnableGesture(swipeBackEnabled);
-        AwesomeFragment top = getTopFragment();
-        if (top != null) {
-            swipeBackLayout.setEnableGesture(swipeBackEnabled && top.backInteractive());
-        }
-        getChildFragmentManager().addOnBackStackChangedListener(this);
         return root;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(SAVED_SWIPE_BACK_ENABLED, swipeBackEnabled);
     }
 
     @Override
@@ -78,7 +66,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 1) {
             AwesomeFragment topFragment = getTopFragment();
-            if (topFragment.backInteractive()) {
+            if (topFragment.isBackInteractive()) {
                 popFragment();
             }
             return true;
@@ -282,15 +270,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         return swipeBackLayout;
     }
 
-    public void setSwipeBackEnabled(final boolean enabled) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                swipeBackEnabled = enabled;
-            }
-        });
-    }
-
     @Override
     public void onViewDragStateChanged(int state, float scrollPercent) {
         if (state == SwipeBackLayout.STATE_DRAGGING) {
@@ -337,10 +316,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     @Override
-    public void onBackStackChanged() {
-        AwesomeFragment top = getTopFragment();
-        if (top != null) {
-            swipeBackLayout.setEnableGesture(swipeBackEnabled && top.backInteractive());
-        }
+    public boolean shouldSwipeBack() {
+        return style.isSwipeBackEnabled() && getChildFragmentCountAtBackStack() > 1 && getTopFragment().isBackInteractive();
     }
 }

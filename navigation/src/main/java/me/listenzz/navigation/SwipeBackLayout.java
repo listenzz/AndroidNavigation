@@ -9,12 +9,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Listen on 2018/7/1.
@@ -70,8 +68,6 @@ public class SwipeBackLayout extends FrameLayout {
 
     private float mParallaxOffset = DEFAULT_PARALLAX;
 
-    private boolean mEnable = true;
-
     private View mCapturedView;
 
     private ViewDragHelper mDragHelper;
@@ -83,7 +79,7 @@ public class SwipeBackLayout extends FrameLayout {
     /**
      * The set of listeners to be sent events through.
      */
-    private List<SwipeListener> mListeners;
+    private SwipeListener mListener;
 
     private Drawable mShadowLeft;
 
@@ -118,10 +114,6 @@ public class SwipeBackLayout extends FrameLayout {
         mDragHelper.setEdgeTrackingEnabled(ViewDragHelper.EDGE_LEFT);
     }
 
-    public void setEnableGesture(boolean enable) {
-        mEnable = enable;
-    }
-
     public void setTabBar(Drawable drawable) {
         this.mTabBar = drawable;
         if (drawable != null) {
@@ -138,29 +130,15 @@ public class SwipeBackLayout extends FrameLayout {
      *
      * @param listener the swipe listener to attach to this view
      */
-    public void addSwipeListener(SwipeListener listener) {
-        if (mListeners == null) {
-            mListeners = new ArrayList<SwipeListener>();
-        }
-        mListeners.add(listener);
-    }
-
-    /**
-     * Removes a listener from the set of listeners
-     *
-     * @param listener
-     */
-    public void removeSwipeListener(SwipeListener listener) {
-        if (mListeners == null) {
-            return;
-        }
-        mListeners.remove(listener);
+    public void setSwipeListener(SwipeListener listener) {
+        mListener = listener;
     }
 
     public interface SwipeListener {
 
         void onViewDragStateChanged(int state, float scrollPercent);
 
+        boolean shouldSwipeBack();
     }
 
     public void setScrollThresHold(float threshold) {
@@ -172,9 +150,12 @@ public class SwipeBackLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (!mEnable ||  getChildCount() < 2) {
+        Log.i(TAG, "onInterceptTouchEvent");
+        if (!mListener.shouldSwipeBack()) {
             return false;
         }
+
+
         try {
             return mDragHelper.shouldInterceptTouchEvent(event);
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -184,7 +165,8 @@ public class SwipeBackLayout extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!mEnable || getChildCount() < 2) {
+        Log.i(TAG, "onTouchEvent");
+        if (!mListener.shouldSwipeBack()) {
             return false;
         }
         mDragHelper.processTouchEvent(event);
@@ -271,6 +253,7 @@ public class SwipeBackLayout extends FrameLayout {
 
         @Override
         public boolean tryCaptureView(@NonNull View view, int pointerId) {
+            Log.i(TAG, "tryCaptureView");
             boolean ret = mDragHelper.isEdgeTouched(ViewDragHelper.EDGE_LEFT, pointerId);
             boolean directionCheck = !mDragHelper.checkTouchSlop(ViewDragHelper.DIRECTION_VERTICAL, pointerId);
             boolean shouldCapture = mDragHelper.getViewDragState() != ViewDragHelper.STATE_SETTLING &&  (ret & directionCheck);
@@ -309,7 +292,20 @@ public class SwipeBackLayout extends FrameLayout {
         }
 
         @Override
+        public void onEdgeDragStarted(int edgeFlags, int pointerId) {
+            super.onEdgeDragStarted(edgeFlags, pointerId);
+            Log.i(TAG, "onEdgeDragStarted");
+        }
+
+        @Override
+        public void onEdgeTouched(int edgeFlags, int pointerId) {
+            super.onEdgeTouched(edgeFlags, pointerId);
+            Log.i(TAG, "onEdgeTouched");
+        }
+
+        @Override
         public void onViewDragStateChanged(int state) {
+            Log.i(TAG, "onViewDragStateChanged");
             if (state == ViewDragHelper.STATE_IDLE) {
                 mCapturedView = null;
                 mLeft = 0;
@@ -319,11 +315,7 @@ public class SwipeBackLayout extends FrameLayout {
                     underlying.setX(0);
                 }
             }
-            if (mListeners != null && !mListeners.isEmpty()) {
-                for (SwipeListener listener : mListeners) {
-                    listener.onViewDragStateChanged(state, mScrollPercent);
-                }
-            }
+            mListener.onViewDragStateChanged(state, mScrollPercent);
         }
     }
 }
