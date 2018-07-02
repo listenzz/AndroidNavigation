@@ -42,6 +42,8 @@ public class Style implements Cloneable {
 
     private Context context;
 
+    private boolean swipeBackEnabled;
+
     protected Style(Context context) {
         this.context = context;
         statusBarColor = AppUtils.fetchContextColor(context, R.attr.colorPrimaryDark);
@@ -249,6 +251,14 @@ public class Style implements Cloneable {
 
     public int getTitleGravity() {
         return titleGravity;
+    }
+
+    public boolean isSwipeBackEnabled() {
+        return swipeBackEnabled;
+    }
+
+    public void setSwipeBackEnabled(boolean swipeBackEnabled) {
+        this.swipeBackEnabled = swipeBackEnabled;
     }
 
     @Override

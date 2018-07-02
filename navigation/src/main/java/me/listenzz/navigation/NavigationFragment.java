@@ -1,10 +1,13 @@
 package me.listenzz.navigation;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +18,7 @@ import java.util.List;
  * Created by Listen on 2018/1/11.
  */
 
-public class NavigationFragment extends AwesomeFragment implements SwipeBackLayout.SwipeListener {
+public class NavigationFragment extends AwesomeFragment implements SwipeBackLayout.SwipeListener, FragmentManager.OnBackStackChangedListener {
 
     private static final String SAVED_SWIPE_BACK_ENABLED = "swipe_back_enabled";
 
@@ -25,22 +28,20 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        swipeBackEnabled = style.isSwipeBackEnabled();
         if (savedInstanceState != null) {
             swipeBackEnabled = savedInstanceState.getBoolean(SAVED_SWIPE_BACK_ENABLED, false);
         }
         View root = inflater.inflate(R.layout.nav_fragment_navigation, container, false);
         swipeBackLayout = root.findViewById(R.id.navigation_content);
-        swipeBackLayout.setEnableGesture(swipeBackEnabled);
         swipeBackLayout.addSwipeListener(this);
+        swipeBackLayout.setEnableGesture(swipeBackEnabled);
+        AwesomeFragment top = getTopFragment();
+        if (top != null) {
+            swipeBackLayout.setEnableGesture(swipeBackEnabled && top.backInteractive());
+        }
+        getChildFragmentManager().addOnBackStackChangedListener(this);
         return root;
-    }
-
-    public SwipeBackLayout getSwipeBackLayout() {
-        return swipeBackLayout;
-    }
-
-    public void setSwipeBackEnabled(boolean enabled) {
-        this.swipeBackEnabled = enabled;
     }
 
     @Override
@@ -239,7 +240,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         return null;
     }
 
-
     @Nullable
     @Override
     public NavigationFragment getNavigationFragment() {
@@ -257,27 +257,70 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         }
     }
 
+    public SwipeBackLayout getSwipeBackLayout() {
+        return swipeBackLayout;
+    }
+
+    public void setSwipeBackEnabled(final boolean enabled) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                swipeBackEnabled = enabled;
+            }
+        });
+    }
+
     @Override
     public void onViewDragStateChanged(int state, float scrollPercent) {
         if (state == SwipeBackLayout.STATE_DRAGGING) {
             AwesomeFragment topFragment = getTopFragment();
-            AwesomeFragment before = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
-            if (before != null && before.getView() != null) {
-                before.getView().setVisibility(View.VISIBLE);
+            AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
+            if (aheadFragment != null && aheadFragment.getView() != null) {
+                aheadFragment.getView().setVisibility(View.VISIBLE);
             }
+
+            if (aheadFragment != null && aheadFragment == getRootFragment() && aheadFragment.shouldHideTabBarWhenPushed()) {
+                TabBarFragment tabBarFragment = getTabBarFragment();
+                if (tabBarFragment != null && tabBarFragment.getTabBar() != null && tabBarFragment.getView() != null) {
+                    View tabBar = tabBarFragment.getTabBar();
+                    tabBar.setDrawingCacheEnabled(true);
+                    tabBar.buildDrawingCache(true);
+                    if (tabBar.getMeasuredWidth() == 0) {
+                        tabBar.measure(View.MeasureSpec.makeMeasureSpec(tabBarFragment.getView().getWidth(), View.MeasureSpec.EXACTLY),
+                                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                        tabBar.layout(0, 0, tabBar.getMeasuredWidth(), tabBar.getMeasuredHeight());
+                    }
+                    Bitmap bitmap = Bitmap.createBitmap(tabBar.getDrawingCache());
+                    tabBar.setDrawingCacheEnabled(false);
+                    BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
+                    bitmapDrawable.setBounds(0, tabBarFragment.getView().getHeight() - tabBar.getMeasuredHeight(),
+                            tabBar.getMeasuredWidth(), tabBarFragment.getView().getHeight());
+                    swipeBackLayout.setTabBar(bitmapDrawable);
+                }
+            }
+
         } else if (state == SwipeBackLayout.STATE_IDLE) {
-            swipeBackLayout.requestLayout();
             AwesomeFragment topFragment = getTopFragment();
-            AwesomeFragment before = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
-            if (before != null && before.getView() != null) {
-               before.getView().setVisibility(View.GONE);
+            AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
+            if (aheadFragment != null && aheadFragment.getView() != null) {
+               aheadFragment.getView().setVisibility(View.GONE);
             }
-            if (before != null && scrollPercent >= 1.0f) {
+            if (aheadFragment != null && scrollPercent >= 1.0f) {
                 topFragment.setAnimation(PresentAnimation.None);
-                before.setAnimation(PresentAnimation.None);
-                before.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
-                getChildFragmentManager().popBackStackImmediate(before.getSceneId(), 0);
+                aheadFragment.setAnimation(PresentAnimation.None);
+                aheadFragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
+                getChildFragmentManager().popBackStackImmediate(aheadFragment.getSceneId(), 0);
+                Log.w(TAG, "gesture popBack:" + System.currentTimeMillis());
             }
+            swipeBackLayout.setTabBar(null);
+        }
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        AwesomeFragment top = getTopFragment();
+        if (top != null) {
+            swipeBackLayout.setEnableGesture(swipeBackEnabled && top.backInteractive());
         }
     }
 }

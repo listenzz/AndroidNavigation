@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -87,6 +88,10 @@ public class SwipeBackLayout extends FrameLayout {
 
     private Drawable mShadowLeft;
 
+    private Drawable mTabBar;
+
+    private Rect mTabBarOriginBounds;
+
     private float mScrimOpacity;
 
     private int mScrimColor = DEFAULT_SCRIM_COLOR;
@@ -116,6 +121,13 @@ public class SwipeBackLayout extends FrameLayout {
 
     public void setEnableGesture(boolean enable) {
         mEnable = enable;
+    }
+
+    public void setTabBar(Drawable drawable) {
+        this.mTabBar = drawable;
+        if (drawable != null) {
+            mTabBarOriginBounds = drawable.copyBounds();
+        }
     }
 
     public void setParallaxOffset(float offset) {
@@ -148,7 +160,7 @@ public class SwipeBackLayout extends FrameLayout {
 
     public interface SwipeListener {
 
-        public void onViewDragStateChanged(int state, float scrollPercent);
+        void onViewDragStateChanged(int state, float scrollPercent);
 
     }
 
@@ -202,6 +214,12 @@ public class SwipeBackLayout extends FrameLayout {
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         final boolean drawContent = child == mCapturedView;
         boolean ret = super.drawChild(canvas, child, drawingTime);
+
+        if (mTabBar != null && drawContent) {
+            drawTabBar(canvas, child);
+            Log.i(TAG, "draw -------------------:" + System.currentTimeMillis());
+        }
+
         if (mScrimOpacity > 0 && drawContent
                 && mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE) {
             drawShadow(canvas, child);
@@ -225,6 +243,15 @@ public class SwipeBackLayout extends FrameLayout {
                 childRect.left, childRect.bottom);
         mShadowLeft.setAlpha((int) (mScrimOpacity * FULL_ALPHA));
         mShadowLeft.draw(canvas);
+    }
+
+    private void drawTabBar(Canvas canvas, View child) {
+        canvas.save();
+        canvas.clipRect(0, 0, child.getLeft(), getHeight());
+        int leftOffset = (int) ((mCapturedView.getLeft() - getWidth()) * mParallaxOffset * mScrimOpacity);
+        mTabBar.setBounds(leftOffset, mTabBarOriginBounds.top, mTabBarOriginBounds.right + leftOffset, mTabBarOriginBounds.bottom );
+        mTabBar.draw(canvas);
+        canvas.restore();
     }
 
     @Override

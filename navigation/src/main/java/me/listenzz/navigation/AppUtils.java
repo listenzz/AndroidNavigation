@@ -323,6 +323,4 @@ public class AppUtils {
         }
         return statusBarHeight;
     }
-
-
 }
