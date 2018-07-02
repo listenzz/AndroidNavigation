@@ -136,9 +136,6 @@ public abstract class AwesomeFragment extends DialogFragment {
             if (!isParentFragment()) {
                 setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
             }
-            if (getParentAwesomeFragment() == null) {
-                fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
-            }
             handleNavigationFragmentStuff(root);
         } else {
             setupDialog();
@@ -149,6 +146,11 @@ public abstract class AwesomeFragment extends DialogFragment {
                 }
             });
         }
+
+        if (getParentAwesomeFragment() == null || getShowsDialog()) {
+            fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
+        }
+
         callSuperOnViewCreated = true;
     }
 
@@ -169,8 +171,8 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     private void setBackgroundDrawable(View root, Drawable drawable) {
-        if (!getShowsDialog()) {
-            root.setBackground(drawable);
+        root.setBackground(drawable);
+        if (!isInDialog()) {
             getWindow().setBackgroundDrawable(null);
         }
     }
@@ -628,13 +630,16 @@ public abstract class AwesomeFragment extends DialogFragment {
     public void setStatusBarTranslucent(boolean translucent) {
         if (getShowsDialog()) {
             AppUtils.setStatusBarTranslucent(getWindow(), translucent);
-        } else {
-            presentableActivity.setStatusBarTranslucent(translucent);
         }
+        presentableActivity.setStatusBarTranslucent(translucent);
     }
 
     public boolean isStatusBarTranslucent() {
-        return presentableActivity.isStatusBarTranslucent();
+        if (isInDialog()) {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP || presentableActivity.isStatusBarTranslucent();
+        } else {
+            return presentableActivity.isStatusBarTranslucent();
+        }
     }
 
     @CallSuper
