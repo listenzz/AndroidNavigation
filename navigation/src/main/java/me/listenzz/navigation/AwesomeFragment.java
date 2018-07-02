@@ -542,7 +542,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (childFragmentForStatusBarColor != null) {
             return childFragmentForStatusBarColor.preferredStatusBarColorAnimated();
         }
-        return style.isStatusBarColorAnimated();
+        return getAnimation() != PresentAnimation.None && style.isStatusBarColorAnimated();
     }
 
     protected AwesomeFragment childFragmentForAppearance() {
