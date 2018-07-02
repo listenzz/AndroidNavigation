@@ -48,12 +48,6 @@ public class MainActivity extends AwesomeActivity {
             //drawerFragment.setMinDrawerMargin(0); // 可使 menu 和 drawerLayout 同宽
             drawerFragment.setMenuInteractive(false); // 是否可以侧滑打开抽屉，如过开启了手势返回，它们之间会冲突
 
-
-//            CustomContainerFragment customContainerFragment = new CustomContainerFragment();
-//            customContainerFragment.setFirsFloorFragment(testNavigationFragment);
-//
-//            drawerFragment.setContentFragment(customContainerFragment);
-
             setActivityRootFragment(drawerFragment);
         }
     }

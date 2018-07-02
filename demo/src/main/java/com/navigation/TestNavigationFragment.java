@@ -36,6 +36,18 @@ public class TestNavigationFragment extends AwesomeFragment {
 
     EditText resultEditText;
 
+    @Override
+    protected void onCustomStyle(@NonNull Style style) {
+        style.setStatusBarStyle(BarStyle.DarkContent);
+    }
+
+    @Override
+    public void appendStatusBarPadding(View view, int viewHeight) {
+        if (!isInDialog()) {
+            super.appendStatusBarPadding(view, viewHeight);
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -202,11 +214,6 @@ public class TestNavigationFragment extends AwesomeFragment {
                 resultText.setText("pop result：" + text);
             }
         }
-    }
-
-    @Override
-    protected void onCustomStyle(@NonNull Style style) {
-        style.setStatusBarStyle(BarStyle.DarkContent);
     }
 
 }

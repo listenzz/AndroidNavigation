@@ -25,11 +25,6 @@ public class NestedFragmentDialogFragment extends AwesomeFragment {
         return getContentFragment();
     }
 
-    @Override
-    public int getPresentContainerId() {
-        return  R.id.nested_content;
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

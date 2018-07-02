@@ -329,16 +329,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     public void presentFragment(final AwesomeFragment fragment, int requestCode) {
         final AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            if (parent.isPresentationContainer()) {
-                parent.scheduleTaskAtStarted(new Runnable() {
-                    @Override
-                    public void run() {
-                        FragmentHelper.addFragmentToBackStack(requireFragmentManager(), parent.getPresentContainerId(), fragment, PresentAnimation.Modal);
-                    }
-                });
-            } else {
-                parent.presentFragment(fragment, requestCode);
-            }
+            parent.presentFragment(fragment, requestCode);
         } else if (presentableActivity != null) {
             Bundle args = FragmentHelper.getArguments(fragment);
             args.putInt(ARGS_REQUEST_CODE, requestCode);
@@ -352,12 +343,8 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
         final AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            if (parent.isPresentationContainer()) {
-                dismissFragmentInternal(parent);
-            } else {
-                parent.setResult(resultCode, result);
-                parent.dismissFragment();
-            }
+            parent.setResult(resultCode, result);
+            parent.dismissFragment();
             return;
         }
 
@@ -366,47 +353,10 @@ public abstract class AwesomeFragment extends DialogFragment {
         }
     }
 
-    private void dismissFragmentInternal(final AwesomeFragment parent) {
-        parent.scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                // 如果有 presented 就 dismiss presented, 否则就 dismiss 自己
-                AwesomeFragment top = (AwesomeFragment) requireFragmentManager().findFragmentById(parent.getPresentContainerId());
-                AwesomeFragment presenting = getPresentingFragment();
-
-                top.setAnimation(PresentAnimation.Modal);
-
-                if (presenting != null) {
-                    presenting.setAnimation(PresentAnimation.Modal);
-                }
-
-                if (presenting == null) {
-                    parent.setResult(resultCode, result);
-                    parent.dismissFragment();
-                } else {
-                    presenting.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
-                    requireFragmentManager().popBackStack(getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                }
-            }
-        });
-    }
-
-    private boolean isPresentationContainer() {
-        return getPresentContainerId() != 0;
-    }
-
-    public int getPresentContainerId() {
-        return 0;
-    }
-
     public AwesomeFragment getPresentedFragment() {
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            if (parent.isPresentationContainer()) {
-                return FragmentHelper.getLatterFragment(requireFragmentManager(), this);
-            } else {
-                return parent.getPresentedFragment();
-            }
+            return parent.getPresentedFragment();
         }
         return presentableActivity.getPresentedFragment(this);
     }
@@ -414,11 +364,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     public AwesomeFragment getPresentingFragment() {
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            if (parent.isPresentationContainer()) {
-                return FragmentHelper.getAheadFragment(requireFragmentManager(), this);
-            } else {
-                return parent.getPresentingFragment();
-            }
+            return parent.getPresentingFragment();
         }
         return presentableActivity.getPresentingFragment(this);
     }
@@ -760,28 +706,27 @@ public abstract class AwesomeFragment extends DialogFragment {
         return parent != null && parent.isInDialog();
     }
 
-    /**
-     * set the animation for dialog
-     *
-     * @param type animation type
-     */
-    public void setAnimationType(AnimationType type) {
-        Bundle args = FragmentHelper.getArguments(this);
-        args.putString(ARGS_ANIMATION_TYPE, type.name());
-    }
-
-    /**
-     * get the dialog animation type
-     *
-     * @return dialog animation type
-     */
-    public AnimationType getAnimationType() {
-        Bundle args = FragmentHelper.getArguments(this);
-        String animationType = args.getString(ARGS_ANIMATION_TYPE);
-        if (animationType == null) {
-            return AnimationType.None;
+    protected void setupDialog() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setStatusBarTranslucent(true);
+        } else {
+            setStatusBarTranslucent(presentableActivity.isStatusBarTranslucent());
         }
-        return AnimationType.valueOf(animationType);
+
+        Window window = getWindow();
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (!dispatchBackPressed() && isCancelable()) {
+                        dismissDialog();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     /**
@@ -800,6 +745,23 @@ public abstract class AwesomeFragment extends DialogFragment {
                 parent.setResult(getResultCode(), getResultData());
                 parent.dismissDialog();
             }
+        }
+    }
+
+    private boolean animatingOut = false;
+
+    /**
+     * Dismiss the fragment as dialog.
+     */
+    public void dismissDialog() {
+        if (animatingOut) {
+            return;
+        }
+
+        if (getAnimationType() != AnimationType.None) {
+            animateOut();
+        } else {
+            dismiss();
         }
     }
 
@@ -831,21 +793,36 @@ public abstract class AwesomeFragment extends DialogFragment {
         return super.show(transaction, tag);
     }
 
-    private boolean animatingOut = false;
+    /**
+     * Present the fragment as dialog
+     */
+    public void showDialog(@NonNull AwesomeFragment dialog, int requestCode) {
+        dialog.setTargetFragment(this, requestCode);
+        dialog.show(getFragmentManager(), dialog.getSceneId());
+    }
 
     /**
-     * Dismiss the fragment as dialog.
+     * set the animation for dialog
+     *
+     * @param type animation type
      */
-    public void dismissDialog() {
-        if (animatingOut) {
-            return;
-        }
+    public void setAnimationType(AnimationType type) {
+        Bundle args = FragmentHelper.getArguments(this);
+        args.putString(ARGS_ANIMATION_TYPE, type.name());
+    }
 
-        if (getAnimationType() != AnimationType.None) {
-            animateOut();
-        } else {
-            dismiss();
+    /**
+     * get the dialog animation type
+     *
+     * @return dialog animation type
+     */
+    public AnimationType getAnimationType() {
+        Bundle args = FragmentHelper.getArguments(this);
+        String animationType = args.getString(ARGS_ANIMATION_TYPE);
+        if (animationType == null) {
+            return AnimationType.None;
         }
+        return AnimationType.valueOf(animationType);
     }
 
     private void animateIn() {
@@ -955,46 +932,6 @@ public abstract class AwesomeFragment extends DialogFragment {
 
             }
         };
-    }
-
-    /**
-     * Present the fragment as dialog
-     */
-    public void showDialog(@NonNull AwesomeFragment dialog, int requestCode) {
-        dialog.setTargetFragment(this, requestCode);
-        dialog.show(getFragmentManager(), dialog.getSceneId());
-    }
-
-
-    protected void setupDialog() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setStatusBarTranslucent(true);
-        } else {
-            setStatusBarTranslucent(presentableActivity.isStatusBarTranslucent());
-        }
-
-        Window window = getWindow();
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (!dispatchBackPressed()) {
-                        FragmentManager fragmentManager = getChildFragmentManager();
-                        int count = fragmentManager.getBackStackEntryCount();
-                        if (count > 1) {
-                            FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(count - 1);
-                            AwesomeFragment fragment = (AwesomeFragment) fragmentManager.findFragmentByTag(entry.getName());
-                            fragment.dismissFragment();
-                        } else if (isCancelable()) {
-                            dismissDialog();
-                        }
-                    }
-                    return true;
-                }
-                return false;
-            }
-        });
     }
 
     // ------ NavigationFragment -----
@@ -1127,7 +1064,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                     + " 添加 Toolbar. 请重写 onCreateAwesomeToolbar 并返回 null, 这样你就可以自行添加 Toolbar 了。");
         }
 
-        if (isStatusBarTranslucent() && !isInDialog()) {
+        if (isStatusBarTranslucent()) {
             appendStatusBarPadding(toolbar, getToolbarHeight());
         }
 

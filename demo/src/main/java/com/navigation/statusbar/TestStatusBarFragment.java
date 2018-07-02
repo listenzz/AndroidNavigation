@@ -38,6 +38,13 @@ public class TestStatusBarFragment extends AwesomeFragment {
         return false;
     }
 
+    @Override
+    public void appendStatusBarPadding(View view, int viewHeight) {
+        if (!isInDialog()) {
+            super.appendStatusBarPadding(view, viewHeight);
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -118,22 +125,4 @@ public class TestStatusBarFragment extends AwesomeFragment {
             setLeftBarButtonItem(item);
         }
     }
-
-//    @Override
-//    protected void onViewAppear() {
-//        super.onViewAppear();
-//        DrawerFragment drawerFragment = getDrawerFragment();
-//        if (drawerFragment != null) {
-//            drawerFragment.setMenuInteractive(true);
-//        }
-//    }
-//
-//    @Override
-//    protected void onViewDisappear() {
-//        super.onViewDisappear();
-//        DrawerFragment drawerFragment = getDrawerFragment();
-//        if (drawerFragment != null) {
-//            drawerFragment.setMenuInteractive(false);
-//        }
-//    }
 }
