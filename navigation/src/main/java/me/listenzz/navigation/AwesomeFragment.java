@@ -690,8 +690,12 @@ public abstract class AwesomeFragment extends DialogFragment {
     // ------ dialog -----
 
     public Window getWindow() {
-        if (getDialog() != null) {
-            return getDialog().getWindow();
+        if (isInDialog()) {
+            AwesomeFragment fragment = this;
+            while (!fragment.getShowsDialog()) {
+                fragment = fragment.getParentAwesomeFragment();
+            }
+            return fragment.getDialog().getWindow();
         }
 
         if (getActivity() != null) {
