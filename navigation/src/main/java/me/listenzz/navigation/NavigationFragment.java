@@ -265,18 +265,17 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     @Nullable
     @Override
     public NavigationFragment getNavigationFragment() {
-        checkNavigationFragment(this);
-        return super.getNavigationFragment();
-    }
-
-    private void checkNavigationFragment(AwesomeFragment fragment) {
-        AwesomeFragment parent = fragment.getParentAwesomeFragment();
-        if (parent != null && !parent.getShowsDialog()) {
-            if (parent instanceof NavigationFragment) {
-                throw new IllegalStateException("should not nest NavigationFragment in the same presentation container");
+        NavigationFragment navF = super.getNavigationFragment();
+        if (navF != null) {
+            AwesomeFragment parent = navF.getParentAwesomeFragment();
+            if (parent != null) {
+                NavigationFragment parentNavF = parent.getNavigationFragment();
+                if (parentNavF != null && parentNavF.getWindow() == navF.getWindow()) {
+                    throw new IllegalStateException("should not nest NavigationFragment in the same window.");
+                }
             }
-            checkNavigationFragment(parent);
         }
+        return navF;
     }
 
     public SwipeBackLayout getSwipeBackLayout() {

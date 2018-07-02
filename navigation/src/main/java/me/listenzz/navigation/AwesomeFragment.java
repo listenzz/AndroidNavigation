@@ -327,6 +327,9 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     public void presentFragment(final AwesomeFragment fragment, int requestCode) {
+        if (isInDialog()) {
+            throw new IllegalStateException("在 dialog 中， 不能执行此操作, 可以考虑再次使用 `showDialog`");
+        }
         final AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             parent.presentFragment(fragment, requestCode);
@@ -338,8 +341,8 @@ public abstract class AwesomeFragment extends DialogFragment {
     }
 
     public void dismissFragment() {
-        if (getShowsDialog()) {
-            throw new IllegalStateException("似乎该 fragment 是以 dialog 的形式呈现，使用 `dismissDialog` 来关闭更合适");
+        if (isInDialog()) {
+            throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `dismissDialog`");
         }
         final AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
@@ -941,8 +944,13 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (this instanceof NavigationFragment) {
             return (NavigationFragment) this;
         }
+
+        if (getShowsDialog()) {
+            return null;
+        }
+
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null && !parent.getShowsDialog()) {
+        if (parent != null) {
             return parent.getNavigationFragment();
         }
         return null;
@@ -1246,8 +1254,13 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (this instanceof TabBarFragment) {
             return (TabBarFragment) this;
         }
+
+        if (getShowsDialog()) {
+            return null;
+        }
+
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null && !parent.getShowsDialog()) {
+        if (parent != null) {
             return parent.getTabBarFragment();
         }
         return null;
@@ -1276,8 +1289,13 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (this instanceof DrawerFragment) {
             return (DrawerFragment) this;
         }
+
+        if (getShowsDialog()) {
+            return null;
+        }
+
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null && !parent.getShowsDialog()) {
+        if (parent != null) {
             return parent.getDrawerFragment();
         }
         return null;
