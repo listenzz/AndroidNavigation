@@ -761,6 +761,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (getAnimationType() != AnimationType.None) {
             animateOut();
         } else {
+            AppUtils.hideSoftInput(getView());
             dismiss();
         }
     }
