@@ -150,11 +150,9 @@ public class SwipeBackLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        Log.i(TAG, "onInterceptTouchEvent");
         if (!mListener.shouldSwipeBack()) {
-            return false;
+            return super.onInterceptTouchEvent(event);
         }
-
 
         try {
             return mDragHelper.shouldInterceptTouchEvent(event);
@@ -165,12 +163,12 @@ public class SwipeBackLayout extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.i(TAG, "onTouchEvent");
         if (!mListener.shouldSwipeBack()) {
-            return false;
+            return super.onTouchEvent(event);
+
         }
         mDragHelper.processTouchEvent(event);
-        return true;
+        return mDragHelper.getViewDragState() == ViewDragHelper.STATE_DRAGGING;
     }
 
     @Override
@@ -253,7 +251,6 @@ public class SwipeBackLayout extends FrameLayout {
 
         @Override
         public boolean tryCaptureView(@NonNull View view, int pointerId) {
-            Log.i(TAG, "tryCaptureView");
             boolean ret = mDragHelper.isEdgeTouched(ViewDragHelper.EDGE_LEFT, pointerId);
             boolean directionCheck = !mDragHelper.checkTouchSlop(ViewDragHelper.DIRECTION_VERTICAL, pointerId);
             boolean shouldCapture = mDragHelper.getViewDragState() != ViewDragHelper.STATE_SETTLING &&  (ret & directionCheck);
@@ -292,20 +289,7 @@ public class SwipeBackLayout extends FrameLayout {
         }
 
         @Override
-        public void onEdgeDragStarted(int edgeFlags, int pointerId) {
-            super.onEdgeDragStarted(edgeFlags, pointerId);
-            Log.i(TAG, "onEdgeDragStarted");
-        }
-
-        @Override
-        public void onEdgeTouched(int edgeFlags, int pointerId) {
-            super.onEdgeTouched(edgeFlags, pointerId);
-            Log.i(TAG, "onEdgeTouched");
-        }
-
-        @Override
         public void onViewDragStateChanged(int state) {
-            Log.i(TAG, "onViewDragStateChanged");
             if (state == ViewDragHelper.STATE_IDLE) {
                 mCapturedView = null;
                 mLeft = 0;

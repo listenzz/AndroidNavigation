@@ -20,8 +20,6 @@ import java.util.List;
 
 public class NavigationFragment extends AwesomeFragment implements SwipeBackLayout.SwipeListener {
 
-    private static final String SAVED_SWIPE_BACK_ENABLED = "swipe_back_enabled";
-
     private SwipeBackLayout swipeBackLayout;
 
     @Nullable
