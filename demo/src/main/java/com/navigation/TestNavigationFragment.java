@@ -167,6 +167,10 @@ public class TestNavigationFragment extends AwesomeFragment {
             root.findViewById(R.id.dismiss).setEnabled(false);
         }
 
+        if (isInDialog()) {
+            root.findViewById(R.id.present).setEnabled(false);
+        }
+
         return root;
     }
 
