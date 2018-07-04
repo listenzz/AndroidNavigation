@@ -2,7 +2,6 @@ package me.listenzz.navigation;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -154,30 +153,22 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    replaceFragmentInternal(fragment, PresentAnimation.Fade);
-                } else {
-                    replaceFragmentInternal(fragment, PresentAnimation.None);
-                }
+                replaceFragmentInternal(fragment);
             }
         });
     }
 
-    private void replaceFragmentInternal(AwesomeFragment fragment, PresentAnimation animation) {
+    private void replaceFragmentInternal(AwesomeFragment fragment) {
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.executePendingTransactions();
 
         AwesomeFragment topFragment = getTopFragment();
         AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, topFragment);
-        topFragment.setAnimation(animation);
+        topFragment.setAnimation(PresentAnimation.Fade);
         if (aheadFragment != null) {
-            aheadFragment.setAnimation(animation);
+            aheadFragment.setAnimation(PresentAnimation.Fade);
         }
-        if (animation == PresentAnimation.None) {
-            fragmentManager.popBackStackImmediate();
-        } else {
-            fragmentManager.popBackStack();
-        }
+        fragmentManager.popBackStack();
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
@@ -185,53 +176,38 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         if (aheadFragment != null) {
             transaction.hide(aheadFragment);
         }
-        fragment.setAnimation(animation);
+        fragment.setAnimation(PresentAnimation.None);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
-        if (animation == PresentAnimation.None) {
-            fragmentManager.executePendingTransactions();
-        }
     }
 
     public void replaceToRootFragment(@NonNull final AwesomeFragment fragment) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    replaceRootFragmentInternal(fragment, PresentAnimation.Fade);
-                } else {
-                    replaceRootFragmentInternal(fragment, PresentAnimation.None);
-                }
+                replaceToRootFragmentInternal(fragment);
             }
         });
     }
 
-    private void replaceRootFragmentInternal(AwesomeFragment fragment, PresentAnimation animation) {
+    private void replaceToRootFragmentInternal(AwesomeFragment fragment) {
         AwesomeFragment topFragment = getTopFragment();
         AwesomeFragment rootFragment = getRootFragment();
-        topFragment.setAnimation(animation);
-        rootFragment.setAnimation(animation);
+        topFragment.setAnimation(PresentAnimation.Fade);
+        rootFragment.setAnimation(PresentAnimation.Fade);
 
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.executePendingTransactions();
-
-        if (animation == PresentAnimation.None) {
-            fragmentManager.popBackStackImmediate(rootFragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        } else {
-            fragmentManager.popBackStack(rootFragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        }
+        fragmentManager.popBackStack(rootFragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        fragment.setAnimation(animation);
+        fragment.setAnimation(PresentAnimation.None);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
-        if (animation == PresentAnimation.None) {
-            fragmentManager.executePendingTransactions();
-        }
     }
 
     public void setChildFragments(List<AwesomeFragment> fragments) {
