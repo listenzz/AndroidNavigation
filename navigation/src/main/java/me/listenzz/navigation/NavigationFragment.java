@@ -315,6 +315,9 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     @Override
     public boolean shouldSwipeBack() {
-        return style.isSwipeBackEnabled() && getChildFragmentCountAtBackStack() > 1 && getTopFragment().isBackInteractive();
+        return style.isSwipeBackEnabled()
+                && getChildFragmentCountAtBackStack() > 1
+                && getTopFragment().isBackInteractive()
+                && getTopFragment().isSwipeBackEnabled();
     }
 }

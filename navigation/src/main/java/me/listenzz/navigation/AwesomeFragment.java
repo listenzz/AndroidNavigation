@@ -982,6 +982,10 @@ public abstract class AwesomeFragment extends DialogFragment {
         return true;
     }
 
+    protected boolean isSwipeBackEnabled() {
+        return true;
+    }
+
     protected boolean hidesBottomBarWhenPushed() {
         return true;
     }
