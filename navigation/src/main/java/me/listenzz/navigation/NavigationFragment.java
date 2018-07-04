@@ -118,6 +118,8 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     private void popToFragmentInternal(AwesomeFragment fragment) {
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.executePendingTransactions();
         AwesomeFragment topFragment = getTopFragment();
         if (topFragment == fragment) {
             return;
@@ -126,7 +128,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         fragment.setAnimation(PresentAnimation.Push);
 
         fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
-        getChildFragmentManager().popBackStack(fragment.getSceneId(), 0);
+        fragmentManager.popBackStack(fragment.getSceneId(), 0);
     }
 
     public void popFragment() {
@@ -192,13 +194,13 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     private void replaceToRootFragmentInternal(AwesomeFragment fragment) {
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.executePendingTransactions();
+
         AwesomeFragment topFragment = getTopFragment();
         AwesomeFragment rootFragment = getRootFragment();
         topFragment.setAnimation(PresentAnimation.Fade);
         rootFragment.setAnimation(PresentAnimation.Fade);
-
-        FragmentManager fragmentManager = getChildFragmentManager();
-        fragmentManager.executePendingTransactions();
         fragmentManager.popBackStack(rootFragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -274,16 +276,19 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             }
 
         } else if (state == SwipeBackLayout.STATE_IDLE) {
+
             AwesomeFragment topFragment = getTopFragment();
             AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
             if (aheadFragment != null && aheadFragment.getView() != null) {
                 aheadFragment.getView().setVisibility(View.GONE);
             }
             if (aheadFragment != null && scrollPercent >= 1.0f) {
+                FragmentManager fragmentManager = getChildFragmentManager();
+                fragmentManager.executePendingTransactions();
                 topFragment.setAnimation(PresentAnimation.None);
                 aheadFragment.setAnimation(PresentAnimation.None);
                 aheadFragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
-                getChildFragmentManager().popBackStackImmediate(aheadFragment.getSceneId(), 0);
+                fragmentManager.popBackStackImmediate(aheadFragment.getSceneId(), 0);
             }
             swipeBackLayout.setTabBar(null);
         }

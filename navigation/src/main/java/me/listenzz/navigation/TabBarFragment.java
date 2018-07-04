@@ -188,6 +188,7 @@ public class TabBarFragment extends AwesomeFragment {
                 }
                 selectedIndex = index;
                 FragmentManager fragmentManager = getChildFragmentManager();
+                fragmentManager.executePendingTransactions();
                 Fragment previous = fragmentManager.getPrimaryNavigationFragment();
                 AwesomeFragment current = fragments.get(index);
                 FragmentTransaction transaction = fragmentManager.beginTransaction();

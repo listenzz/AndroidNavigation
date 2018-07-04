@@ -3,6 +3,7 @@ package me.listenzz.navigation;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -127,7 +128,9 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     public void onDrawerOpened(@NonNull View drawerView) {
         closing = false;
         setNeedsStatusBarAppearanceUpdate();
-        getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.executePendingTransactions();
+        fragmentManager.beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
         getMenuFragment().setUserVisibleHint(true);
     }
 
@@ -135,7 +138,9 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     public void onDrawerClosed(@NonNull View drawerView) {
         closing = false;
         setNeedsStatusBarAppearanceUpdate();
-        getChildFragmentManager().beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.executePendingTransactions();
+        fragmentManager.beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
         getMenuFragment().setUserVisibleHint(false);
     }
 
