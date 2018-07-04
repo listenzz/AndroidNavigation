@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -168,7 +167,7 @@ public class SwipeBackLayout extends FrameLayout {
 
         }
         mDragHelper.processTouchEvent(event);
-        return mDragHelper.getViewDragState() == ViewDragHelper.STATE_DRAGGING;
+        return mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE;
     }
 
     @Override
@@ -192,7 +191,18 @@ public class SwipeBackLayout extends FrameLayout {
     @Override
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         final boolean drawContent = child == mCapturedView;
+        int index = indexOfChild(child);
+        if (mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE && index == getChildCount() -2) {
+            View lastChild = getChildAt(getChildCount() -1);
+            canvas.save();
+            canvas.clipRect(0, 0, lastChild.getLeft(), getHeight());
+        }
+
         boolean ret = super.drawChild(canvas, child, drawingTime);
+
+        if (mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE && index == getChildCount() -2) {
+            canvas.restore();
+        }
 
         if (mTabBar != null && drawContent) {
             drawTabBar(canvas, child);
