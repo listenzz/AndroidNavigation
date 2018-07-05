@@ -101,7 +101,7 @@ public class DefaultTabBarProvider implements TabBarProvider {
             }
 
             TextBadgeItem textBadgeItem = new TextBadgeItem();
-            textBadgeItem.setBackgroundColor("#FF3B30");
+            textBadgeItem.setBackgroundColor(tabBarFragment.style.getBadgeColor());
             textBadgeItems.add(textBadgeItem);
             bottomNavigationItem.setBadgeItem(textBadgeItem);
             tabBar.addItem(bottomNavigationItem);

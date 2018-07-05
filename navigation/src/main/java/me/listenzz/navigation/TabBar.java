@@ -4,15 +4,19 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,6 +35,7 @@ public class TabBar extends BottomNavigationBar {
     private Drawable shadow = new ColorDrawable(Color.parseColor("#dddddd"));
     private List<ImageView> imageViews = new ArrayList<>();
     private List<TextView> badgeViews = new ArrayList<>();
+    private List<TextView> redPoints = new ArrayList<>();
 
     public TabBar(Context context) {
         super(context);
@@ -72,6 +77,9 @@ public class TabBar extends BottomNavigationBar {
         int count = itemContainer.getChildCount();
         imageViews.clear();
         badgeViews.clear();
+
+        Context context = getContext();
+
         for (int i = 0; i < count; i++) {
             View itemLayout = itemContainer.getChildAt(i);
             ImageView iconView = itemLayout.findViewById(R.id.fixed_bottom_navigation_icon);
@@ -80,6 +88,23 @@ public class TabBar extends BottomNavigationBar {
 
             TextView textView = itemLayout.findViewById(R.id.fixed_bottom_navigation_badge);
             badgeViews.add(textView);
+
+            TextView redPoint = new TextView(context);
+            int size = AppUtils.dp2px(context, 10);
+            FrameLayout.LayoutParams layoutParams = new LayoutParams(size, size);
+            layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
+            layoutParams.topMargin = AppUtils.dp2px(context, 4);
+            layoutParams.rightMargin = AppUtils.dp2px(context, 2);
+            FrameLayout frameLayout = itemLayout.findViewById(R.id.fixed_bottom_navigation_icon_container);
+            frameLayout.addView(redPoint, layoutParams);
+            Drawable drawable = ContextCompat.getDrawable(context, R.drawable.nav_red_point);
+            if (context instanceof AwesomeActivity && drawable != null) {
+                AwesomeActivity activity = (AwesomeActivity) context;
+                drawable.setColorFilter(Color.parseColor(activity.getStyle().getBadgeColor()), PorterDuff.Mode.SRC_IN);
+            }
+            redPoint.setBackground(drawable);
+            redPoint.setVisibility(GONE);
+            redPoints.add(redPoint);
         }
     }
 
@@ -126,23 +151,20 @@ public class TabBar extends BottomNavigationBar {
             badgeView.setVisibility(GONE);
         } else {
             badgeView.setText(text);
-            badgeView.setScaleX(1);
-            badgeView.setScaleY(1);
-            badgeView.setTextColor(Color.WHITE);
             badgeView.setVisibility(VISIBLE);
         }
     }
 
+    public TextView redPointAtTab(int index) {
+        return redPoints.get(index);
+    }
+
     public void setRedPoint(int index, boolean visible) {
-        TextView badgeView = badgeViewAtTab(index);
+        TextView redPoint = redPointAtTab(index);
         if (!visible) {
-            badgeView.setVisibility(GONE);
+            redPoint.setVisibility(GONE);
         } else {
-            badgeView.setText("1");
-            badgeView.setTextColor(Color.parseColor("#FF3B30"));
-            badgeView.setScaleX(0.5f);
-            badgeView.setScaleY(0.5f);
-            badgeView.setVisibility(VISIBLE);
+            redPoint.setVisibility(VISIBLE);
         }
     }
 }

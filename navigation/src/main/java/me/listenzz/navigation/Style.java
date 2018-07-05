@@ -43,6 +43,7 @@ public class Style implements Cloneable {
     private Context context;
 
     private boolean swipeBackEnabled;
+    private String badgeColor = "#FF3B30";
 
     protected Style(Context context) {
         this.context = context;
@@ -259,6 +260,14 @@ public class Style implements Cloneable {
 
     public void setSwipeBackEnabled(boolean swipeBackEnabled) {
         this.swipeBackEnabled = swipeBackEnabled;
+    }
+
+    public String getBadgeColor() {
+        return badgeColor;
+    }
+
+    public void setBadgeColor(String badgeColor) {
+        this.badgeColor = badgeColor;
     }
 
     @Override

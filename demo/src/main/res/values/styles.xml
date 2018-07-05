@@ -13,13 +13,12 @@
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
-
     <dimen name="fixed_height_bottom_padding">8dp</dimen>
     <dimen name="fixed_height_top_padding_active">0dp</dimen>
     <dimen name="fixed_height_top_padding_inactive">0dp</dimen>
     <dimen name="fixed_icon_grid">24dp</dimen>
-    <dimen name="fixed_label_active">12sp</dimen>
-    <dimen name="fixed_label_inactive">12sp</dimen>
+    <dimen name="fixed_label_active">12dp</dimen>
+    <dimen name="fixed_label_inactive">12dp</dimen>
     <item name="fixed_label_active_to_inactive_ratio" format="float" type="dimen">1</item>
     <dimen name="badge_corner_radius">14dp</dimen>
     <dimen name="badge_height_padding">1dp</dimen>
