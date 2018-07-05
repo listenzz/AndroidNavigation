@@ -580,7 +580,7 @@ public abstract class AwesomeFragment extends DialogFragment {
                     shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
                 }
                 if (shouldAdjustForWhiteStatusBar) {
-                    color = Color.parseColor("#B0B0B0");
+                    color = Color.parseColor("#4A4A4A");
                 }
             }
             setStatusBarColor(color, false);
