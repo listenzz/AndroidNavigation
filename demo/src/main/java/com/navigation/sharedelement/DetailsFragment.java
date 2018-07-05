@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.navigation.R;
 
 import me.listenzz.navigation.AwesomeFragment;
+import me.listenzz.navigation.FragmentHelper;
 
 
 /**
@@ -45,7 +46,7 @@ public class DetailsFragment extends AwesomeFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_shared_details, container, false);
     }
 
@@ -55,7 +56,7 @@ public class DetailsFragment extends AwesomeFragment {
 
         ImageView image = (ImageView) view.findViewById(R.id.image);
 
-        Bundle args = getArguments();
+        Bundle args = FragmentHelper.getArguments(this);
         int kittenNumber = args.containsKey(ARG_KITTEN_NUMBER) ? args.getInt(ARG_KITTEN_NUMBER) : 1;
 
         switch (kittenNumber) {

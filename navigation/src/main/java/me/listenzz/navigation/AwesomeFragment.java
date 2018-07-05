@@ -1052,11 +1052,11 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (index == 0 || !shouldHideTabBarWhenPushed()) {
             int color = Color.parseColor(style.getTabBarBackgroundColor());
             if (Color.alpha(color) == 255) {
-                final TabBarFragment tabBarFragment = getTabBarFragment();
-                if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
-                    root.post(new Runnable() {
-                        @Override
-                        public void run() {
+                root.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        TabBarFragment tabBarFragment = getTabBarFragment();
+                        if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
                             if (tabBarFragment.getTabBar().getHeight() != 0) {
                                 bottomPadding = tabBarFragment.getTabBar().getHeight();
                                 root.setPadding(0, 0, 0, bottomPadding);
@@ -1064,8 +1064,8 @@ public abstract class AwesomeFragment extends DialogFragment {
                                 root.setPadding(0, 0, 0, bottomPadding);
                             }
                         }
-                    });
-                }
+                    }
+                });
             }
         }
     }
