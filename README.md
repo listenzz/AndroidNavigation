@@ -15,6 +15,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 - 一行代码开关沉浸式状态栏，兼容到 Android 4.4 并解决了相关 BUG
 - 自动为你创建 Toolbar，一行代码设置标题、按钮，支持关闭自动创建功能以实现定制
 - 一处设置全局样式，到处使用，并且支持不同页面个性化
+- 支持侧滑返回
 - 支持 font icons
 
 ### 6.0 screenshot:
@@ -26,7 +27,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 ## Installation
 
 ```groovy
-implementation 'me.listenzz:navigation:1.6.7'
+implementation 'me.listenzz:navigation:1.8.3'
 ```
 
 ## Usage 
