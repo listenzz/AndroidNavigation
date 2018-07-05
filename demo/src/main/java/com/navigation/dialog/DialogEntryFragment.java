@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.navigation.R;
-import com.navigation.statusbar.TestStatusBarFragment;
+import com.navigation.TestNavigationFragment;
 
 import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.NavigationFragment;
@@ -68,7 +68,7 @@ public class DialogEntryFragment extends AwesomeFragment {
             @Override
             public void onClick(View view) {
                 NavigationFragment navigationFragment = new NavigationFragment();
-                navigationFragment.setRootFragment(new TestStatusBarFragment());
+                navigationFragment.setRootFragment(new TestNavigationFragment());
                 NestedFragmentDialogFragment dialog = new NestedFragmentDialogFragment();
                 dialog.setContentFragment(navigationFragment);
                 // dialog.setCancelable(false);

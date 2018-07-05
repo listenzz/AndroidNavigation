@@ -22,6 +22,13 @@ import me.listenzz.navigation.AwesomeFragment;
 public class DetailsFragment extends AwesomeFragment {
     private static final String ARG_KITTEN_NUMBER = "argKittenNumber";
 
+
+    // 共享元素转场就不要支持手势返回了
+    @Override
+    protected boolean isSwipeBackEnabled() {
+        return false;
+    }
+
     /**
      * Create a new DetailsFragment
      * @param kittenNumber The number (between 1 and 6) of the kitten to display
