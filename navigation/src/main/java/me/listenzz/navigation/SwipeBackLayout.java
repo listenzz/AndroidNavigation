@@ -53,11 +53,9 @@ public class SwipeBackLayout extends FrameLayout {
     /**
      * Default threshold of scroll
      */
-    private static final float DEFAULT_SCROLL_THRESHOLD = 0.25f;
+    private static final float DEFAULT_SCROLL_THRESHOLD = 0.45f;
 
     private static final float DEFAULT_PARALLAX = 0.5f;
-
-    private static final int OVERSCROLL_DISTANCE = 10;
 
     /**
      * Threshold of scroll, we will close the activity, when scrollPercent over
@@ -164,7 +162,6 @@ public class SwipeBackLayout extends FrameLayout {
     public boolean onTouchEvent(MotionEvent event) {
         if (!mListener.shouldSwipeBack()) {
             return super.onTouchEvent(event);
-
         }
         mDragHelper.processTouchEvent(event);
         return mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE;
@@ -263,22 +260,22 @@ public class SwipeBackLayout extends FrameLayout {
         public boolean tryCaptureView(@NonNull View view, int pointerId) {
             boolean ret = mDragHelper.isEdgeTouched(ViewDragHelper.EDGE_LEFT, pointerId);
             boolean directionCheck = !mDragHelper.checkTouchSlop(ViewDragHelper.DIRECTION_VERTICAL, pointerId);
-            boolean shouldCapture = mDragHelper.getViewDragState() != ViewDragHelper.STATE_SETTLING &&  (ret & directionCheck);
-            if (shouldCapture) {
-                mCapturedView = view;
-            }
-            return shouldCapture;
+            return  mDragHelper.getViewDragState() != ViewDragHelper.STATE_SETTLING &&  (ret & directionCheck);
+        }
+
+        @Override
+        public void onViewCaptured(@NonNull View capturedChild, int activePointerId) {
+            mCapturedView = capturedChild;
         }
 
         @Override
         public int getViewHorizontalDragRange(@NonNull View child) {
-            return 1;
+            return child.getWidth();
         }
 
         @Override
         public void onViewPositionChanged(@NonNull View changedView, int left, int top, int dx, int dy) {
-            mScrollPercent = Math.abs((float) left
-                    / (mCapturedView.getWidth() + mShadowLeft.getIntrinsicWidth()));
+            mScrollPercent = Math.abs((float) left / mCapturedView.getWidth());
             mLeft = left;
             invalidate();
         }
@@ -286,9 +283,7 @@ public class SwipeBackLayout extends FrameLayout {
         @Override
         public void onViewReleased(@NonNull View releasedChild, float xvel, float yvel) {
             final int childWidth = releasedChild.getWidth();
-            int left = xvel > 0 || xvel == 0 && mScrollPercent > mScrollThreshold ? childWidth
-                    + mShadowLeft.getIntrinsicWidth() + OVERSCROLL_DISTANCE : 0;
-
+            int left = xvel > 0 || (xvel == 0 && mScrollPercent > mScrollThreshold) ? childWidth : 0;
             mDragHelper.settleCapturedViewAt(left, 0);
             invalidate();
         }
