@@ -211,6 +211,10 @@ public class AppUtils {
                 decorViewGroup.addView(statusBarView);
             }
 
+            if ((window.getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN) == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
+                return;
+            }
+
             if (animated) {
                 Drawable drawable = statusBarView.getBackground();
                 int curColor = Integer.MAX_VALUE;
@@ -261,7 +265,6 @@ public class AppUtils {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             ViewGroup decorViewGroup = (ViewGroup) window.getDecorView();
             final View statusBarView = decorViewGroup.findViewWithTag("custom_status_bar_tag");
-
             if (statusBarView != null) {
                 boolean hiding = statusBarView.isClickable();
                 if (hiding == hidden) {
