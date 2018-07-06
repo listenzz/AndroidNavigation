@@ -17,7 +17,6 @@ import android.widget.FrameLayout;
  * Created by Listen on 2018/7/1.
  * <p>
  * modified from https://github.com/ikew0ng/SwipeBackLayout
- *
  */
 public class SwipeBackLayout extends FrameLayout {
 
@@ -97,7 +96,7 @@ public class SwipeBackLayout extends FrameLayout {
     }
 
     public SwipeBackLayout(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public SwipeBackLayout(Context context, AttributeSet attrs, int defStyle) {
@@ -189,15 +188,15 @@ public class SwipeBackLayout extends FrameLayout {
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         final boolean drawContent = child == mCapturedView;
         int index = indexOfChild(child);
-        if (mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE && index == getChildCount() -2) {
-            View lastChild = getChildAt(getChildCount() -1);
+        if (mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE && index == getChildCount() - 2) {
+            View lastChild = getChildAt(getChildCount() - 1);
             canvas.save();
             canvas.clipRect(0, 0, lastChild.getLeft(), getHeight());
         }
 
         boolean ret = super.drawChild(canvas, child, drawingTime);
 
-        if (mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE && index == getChildCount() -2) {
+        if (mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE && index == getChildCount() - 2) {
             canvas.restore();
         }
 
@@ -234,7 +233,7 @@ public class SwipeBackLayout extends FrameLayout {
         canvas.save();
         canvas.clipRect(0, 0, child.getLeft(), getHeight());
         int leftOffset = (int) ((mCapturedView.getLeft() - getWidth()) * mParallaxOffset * mScrimOpacity);
-        mTabBar.setBounds(leftOffset, mTabBarOriginBounds.top, mTabBarOriginBounds.right + leftOffset, mTabBarOriginBounds.bottom );
+        mTabBar.setBounds(leftOffset, mTabBarOriginBounds.top, mTabBarOriginBounds.right + leftOffset, mTabBarOriginBounds.bottom);
         mTabBar.draw(canvas);
         canvas.restore();
     }
@@ -249,7 +248,7 @@ public class SwipeBackLayout extends FrameLayout {
         int count = getChildCount();
         if (mScrimOpacity >= 0 && mCapturedView != null && count > 1) {
             int leftOffset = (int) ((mCapturedView.getLeft() - getWidth()) * mParallaxOffset * mScrimOpacity);
-            View underlying = getChildAt(count -2);
+            View underlying = getChildAt(count - 2);
             underlying.setX(leftOffset > 0 ? 0 : leftOffset);
         }
     }
@@ -260,7 +259,7 @@ public class SwipeBackLayout extends FrameLayout {
         public boolean tryCaptureView(@NonNull View view, int pointerId) {
             boolean ret = mDragHelper.isEdgeTouched(ViewDragHelper.EDGE_LEFT, pointerId);
             boolean directionCheck = !mDragHelper.checkTouchSlop(ViewDragHelper.DIRECTION_VERTICAL, pointerId);
-            return  mDragHelper.getViewDragState() != ViewDragHelper.STATE_SETTLING &&  (ret & directionCheck);
+            return mDragHelper.getViewDragState() != ViewDragHelper.STATE_SETTLING && (ret & directionCheck);
         }
 
         @Override

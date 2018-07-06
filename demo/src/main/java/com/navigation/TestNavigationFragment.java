@@ -48,6 +48,15 @@ public class TestNavigationFragment extends AwesomeFragment {
         }
     }
 
+    @Override
+    protected void onViewAppear() {
+        super.onViewAppear();
+        DrawerFragment drawerFragment = getDrawerFragment();
+        if (drawerFragment != null) {
+            drawerFragment.setMenuInteractive(isNavigationRoot());
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
