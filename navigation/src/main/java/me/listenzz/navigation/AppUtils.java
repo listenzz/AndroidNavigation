@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -179,6 +180,10 @@ public class AppUtils {
     }
 
     public static void setStatusBarColor(final Window window, int color, boolean animated) {
+        if ((window.getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN) == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
+            color = Color.TRANSPARENT;
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             if (animated) {
@@ -202,9 +207,6 @@ public class AppUtils {
             ViewGroup decorViewGroup = (ViewGroup) window.getDecorView();
             View statusBarView = decorViewGroup.findViewWithTag("custom_status_bar_tag");
             if (statusBarView == null) {
-                if ((window.getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN) == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
-                    return;
-                }
                 statusBarView = new View(window.getContext());
                 statusBarView.setTag("custom_status_bar_tag");
                 FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
@@ -213,6 +215,7 @@ public class AppUtils {
                 statusBarView.setLayoutParams(params);
                 decorViewGroup.addView(statusBarView);
             }
+
 
 
             if (animated) {
