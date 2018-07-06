@@ -53,9 +53,9 @@ public class SwipeBackLayout extends FrameLayout {
     /**
      * Default threshold of scroll
      */
-    private static final float DEFAULT_SCROLL_THRESHOLD = 0.45f;
+    private static final float DEFAULT_SCROLL_THRESHOLD = 0.5f;
 
-    private static final float DEFAULT_PARALLAX = 0.5f;
+    private static final float DEFAULT_PARALLAX = 0.25f;
 
     /**
      * Threshold of scroll, we will close the activity, when scrollPercent over
