@@ -202,6 +202,9 @@ public class AppUtils {
             ViewGroup decorViewGroup = (ViewGroup) window.getDecorView();
             View statusBarView = decorViewGroup.findViewWithTag("custom_status_bar_tag");
             if (statusBarView == null) {
+                if ((window.getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN) == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
+                    return;
+                }
                 statusBarView = new View(window.getContext());
                 statusBarView.setTag("custom_status_bar_tag");
                 FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
@@ -211,9 +214,6 @@ public class AppUtils {
                 decorViewGroup.addView(statusBarView);
             }
 
-            if ((window.getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN) == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
-                return;
-            }
 
             if (animated) {
                 Drawable drawable = statusBarView.getBackground();
