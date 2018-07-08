@@ -9,9 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
+import com.navigation.BaseFragment;
 import com.navigation.R;
 
-import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.Style;
 
 
@@ -19,7 +19,7 @@ import me.listenzz.navigation.Style;
  * Created by Listen on 2018/2/1.
  */
 
-public class ToolbarColorTransitionFragment extends AwesomeFragment {
+public class ToolbarColorTransitionFragment extends BaseFragment {
 
     @Override
     protected int preferredStatusBarColor() {

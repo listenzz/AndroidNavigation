@@ -7,14 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
-import me.listenzz.navigation.AwesomeFragment;
-
 
 /**
  * Created by Listen on 2018/2/2.
  */
 
-public class WebFragment extends AwesomeFragment {
+public class WebFragment extends BaseFragment {
 
     WebView webView;
 

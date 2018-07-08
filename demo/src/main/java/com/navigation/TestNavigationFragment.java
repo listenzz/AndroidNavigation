@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.BarStyle;
 import me.listenzz.navigation.DrawerFragment;
 import me.listenzz.navigation.NavigationFragment;
@@ -24,7 +23,7 @@ import me.listenzz.navigation.ToolbarButtonItem;
  * Created by Listen on 2018/1/11.
  */
 
-public class TestNavigationFragment extends AwesomeFragment {
+public class TestNavigationFragment extends BaseFragment {
 
     public static String fromCharCode(int... codePoints) {
         return new String(codePoints, 0, codePoints.length);
@@ -45,15 +44,6 @@ public class TestNavigationFragment extends AwesomeFragment {
     public void appendStatusBarPadding(View view, int viewHeight) {
         if (!isInDialog()) {
             super.appendStatusBarPadding(view, viewHeight);
-        }
-    }
-
-    @Override
-    protected void onViewAppear() {
-        super.onViewAppear();
-        DrawerFragment drawerFragment = getDrawerFragment();
-        if (drawerFragment != null) {
-            drawerFragment.setMenuInteractive(isNavigationRoot());
         }
     }
 

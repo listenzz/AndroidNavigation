@@ -9,10 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.navigation.BaseFragment;
 import com.navigation.R;
 import com.navigation.statusbar.TestStatusBarFragment;
 
-import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.NavigationFragment;
 
 
@@ -20,7 +20,7 @@ import me.listenzz.navigation.NavigationFragment;
  * Created by listen on 2018/2/3.
  */
 
-public class DialogEntryFragment extends AwesomeFragment {
+public class DialogEntryFragment extends BaseFragment {
 
     TextView resultText;
 

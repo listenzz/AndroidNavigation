@@ -8,10 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.navigation.BaseFragment;
 import com.navigation.R;
 import com.navigation.toolbar.NoToolbarFragment;
 
-import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.BarStyle;
 import me.listenzz.navigation.DrawerFragment;
 import me.listenzz.navigation.NavigationFragment;
@@ -22,7 +22,7 @@ import me.listenzz.navigation.ToolbarButtonItem;
  * Created by listen on 2018/1/12.
  */
 
-public class TestStatusBarFragment extends AwesomeFragment {
+public class TestStatusBarFragment extends BaseFragment {
 
     public static String fromCharCode(int... codePoints) {
         return new String(codePoints, 0, codePoints.length);
@@ -42,15 +42,6 @@ public class TestStatusBarFragment extends AwesomeFragment {
     public void appendStatusBarPadding(View view, int viewHeight) {
         if (!isInDialog()) {
             super.appendStatusBarPadding(view, viewHeight);
-        }
-    }
-
-    @Override
-    protected void onViewAppear() {
-        super.onViewAppear();
-        DrawerFragment drawerFragment = getDrawerFragment();
-        if (drawerFragment != null) {
-            drawerFragment.setMenuInteractive(isNavigationRoot());
         }
     }
 

@@ -14,9 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.navigation.BaseFragment;
 import com.navigation.R;
 
-import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.AwesomeToolbar;
 import me.listenzz.navigation.Style;
 
@@ -25,7 +25,7 @@ import me.listenzz.navigation.Style;
  * Created by Listen on 2018/2/1.
  */
 
-public class ViewPagerFragment extends AwesomeFragment {
+public class ViewPagerFragment extends BaseFragment {
 
     AwesomeToolbar toolbar;
 

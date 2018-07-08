@@ -9,9 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.navigation.BaseFragment;
 import com.navigation.R;
 
-import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.FragmentHelper;
 
 
@@ -20,7 +20,7 @@ import me.listenzz.navigation.FragmentHelper;
  *
  * @author bherbst
  */
-public class DetailsFragment extends AwesomeFragment {
+public class DetailsFragment extends BaseFragment {
     private static final String ARG_KITTEN_NUMBER = "argKittenNumber";
 
 

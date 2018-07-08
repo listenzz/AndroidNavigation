@@ -10,19 +10,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.navigation.BaseFragment;
 import com.navigation.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.FragmentHelper;
 
 /**
  * Created by Listen on 2018/2/1.
  */
 
-public class PageFragment extends AwesomeFragment {
+public class PageFragment extends BaseFragment {
 
     private static final String ARG_TITLE = "title";
 

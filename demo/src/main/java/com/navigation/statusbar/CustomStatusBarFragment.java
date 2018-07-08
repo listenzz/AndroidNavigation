@@ -12,9 +12,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.navigation.BaseFragment;
 import com.navigation.R;
 
-import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.AwesomeToolbar;
 import me.listenzz.navigation.BarStyle;
 
@@ -23,7 +23,7 @@ import me.listenzz.navigation.BarStyle;
  * Created by listen on 2018/2/2.
  */
 
-public class CustomStatusBarFragment extends AwesomeFragment implements CompoundButton.OnCheckedChangeListener{
+public class CustomStatusBarFragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener{
 
     Toolbar toolbar;
 

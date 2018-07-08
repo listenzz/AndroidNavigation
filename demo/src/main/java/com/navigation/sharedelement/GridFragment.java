@@ -11,16 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.navigation.BaseFragment;
 import com.navigation.R;
-
-import me.listenzz.navigation.AwesomeFragment;
 
 /**
  * Displays a grid of pictures
  *
  * @author bherbst
  */
-public class GridFragment extends AwesomeFragment implements KittenClickListener {
+public class GridFragment extends BaseFragment implements KittenClickListener {
 
     @Nullable
     @Override
