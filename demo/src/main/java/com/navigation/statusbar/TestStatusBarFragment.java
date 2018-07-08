@@ -56,7 +56,7 @@ public class TestStatusBarFragment extends AwesomeFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_status_bar, container, false);
 
         TextView tagView = root.findViewById(R.id.tag);

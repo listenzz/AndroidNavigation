@@ -27,8 +27,6 @@ public class SwipeBackLayout extends FrameLayout {
      */
     private static final int MIN_FLING_VELOCITY = 400; // dips per second
 
-    private static final int DEFAULT_SCRIM_COLOR = 0x99000000;
-
     private static final int FULL_ALPHA = 255;
 
     /**
@@ -83,9 +81,7 @@ public class SwipeBackLayout extends FrameLayout {
 
     private Rect mTabBarOriginBounds;
 
-    private float mScrimOpacity;
-
-    private int mScrimColor = DEFAULT_SCRIM_COLOR;
+    private float mShadowOpacity;
 
     private boolean mInLayout;
 
@@ -204,20 +200,11 @@ public class SwipeBackLayout extends FrameLayout {
             drawTabBar(canvas, child);
         }
 
-        if (mScrimOpacity > 0 && drawContent
+        if (mShadowOpacity > 0 && drawContent
                 && mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE) {
             drawShadow(canvas, child);
-            drawScrim(canvas, child);
         }
         return ret;
-    }
-
-    private void drawScrim(Canvas canvas, View child) {
-        final int baseAlpha = (mScrimColor & 0xff000000) >>> 24;
-        final int alpha = (int) (baseAlpha * mScrimOpacity);
-        final int color = alpha << 24 | (mScrimColor & 0xffffff);
-        canvas.clipRect(0, 0, child.getLeft(), getHeight());
-        canvas.drawColor(color);
     }
 
     private void drawShadow(Canvas canvas, View child) {
@@ -225,14 +212,14 @@ public class SwipeBackLayout extends FrameLayout {
         child.getHitRect(childRect);
         mShadowLeft.setBounds(childRect.left - mShadowLeft.getIntrinsicWidth(), childRect.top,
                 childRect.left, childRect.bottom);
-        mShadowLeft.setAlpha((int) (mScrimOpacity * FULL_ALPHA));
+        mShadowLeft.setAlpha((int) (mShadowOpacity * FULL_ALPHA));
         mShadowLeft.draw(canvas);
     }
 
     private void drawTabBar(Canvas canvas, View child) {
         canvas.save();
         canvas.clipRect(0, 0, child.getLeft(), getHeight());
-        int leftOffset = (int) ((mCapturedView.getLeft() - getWidth()) * mParallaxOffset * mScrimOpacity);
+        int leftOffset = (int) ((mCapturedView.getLeft() - getWidth()) * mParallaxOffset * mShadowOpacity);
         mTabBar.setBounds(leftOffset, mTabBarOriginBounds.top, mTabBarOriginBounds.right + leftOffset, mTabBarOriginBounds.bottom);
         mTabBar.draw(canvas);
         canvas.restore();
@@ -240,14 +227,14 @@ public class SwipeBackLayout extends FrameLayout {
 
     @Override
     public void computeScroll() {
-        mScrimOpacity = 1 - mScrollPercent;
+        mShadowOpacity = 1 - mScrollPercent;
         if (mDragHelper.continueSettling(true)) {
             ViewCompat.postInvalidateOnAnimation(this);
         }
 
         int count = getChildCount();
-        if (mScrimOpacity >= 0 && mCapturedView != null && count > 1) {
-            int leftOffset = (int) ((mCapturedView.getLeft() - getWidth()) * mParallaxOffset * mScrimOpacity);
+        if (mShadowOpacity >= 0 && mCapturedView != null && count > 1) {
+            int leftOffset = (int) ((mCapturedView.getLeft() - getWidth()) * mParallaxOffset * mShadowOpacity);
             View underlying = getChildAt(count - 2);
             underlying.setX(leftOffset > 0 ? 0 : leftOffset);
         }
