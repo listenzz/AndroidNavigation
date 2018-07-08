@@ -244,6 +244,10 @@ public class SwipeBackLayout extends FrameLayout {
 
         @Override
         public boolean tryCaptureView(@NonNull View view, int pointerId) {
+            if (view.getAnimation() != null) {
+                return false;
+            }
+
             boolean ret = mDragHelper.isEdgeTouched(ViewDragHelper.EDGE_LEFT, pointerId);
             boolean directionCheck = !mDragHelper.checkTouchSlop(ViewDragHelper.DIRECTION_VERTICAL, pointerId);
             return mDragHelper.getViewDragState() != ViewDragHelper.STATE_SETTLING && (ret & directionCheck);
