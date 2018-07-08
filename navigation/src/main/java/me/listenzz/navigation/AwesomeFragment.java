@@ -1083,7 +1083,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             frameLayout.addView(toolbar, new FrameLayout.LayoutParams(-1, height));
         } else {
             throw new UnsupportedOperationException("AwesomeFragment 无法为 " + parent.getClass().getSimpleName()
-                    + " 添加 Toolbar. 请重写 onCreateAwesomeToolbar 并返回 null, 这样你就可以自行添加 Toolbar 了。");
+                    + " 添加 Toolbar. 请重写 onCreateAwesomeToolbar, 这样你就可以自行添加 Toolbar 了。");
         }
 
         if (isStatusBarTranslucent()) {

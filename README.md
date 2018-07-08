@@ -28,7 +28,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 ## Installation
 
 ```groovy
-implementation 'me.listenzz:navigation:1.8.4'
+implementation 'me.listenzz:navigation:1.8.5'
 ```
 
 ## Usage 
@@ -134,7 +134,10 @@ public class MainActivity extends AwesomeActivity {
 
 在 HomeFragment 或 ContactsFragment 中，可以通过 `getTabBarFragment` 来获取它们所属的 TabBarFragment.
 
-可以通过 TabBarFragment 的 `setSelectedIndex` 方法来动态切换 tab，通过 `setBadge` 来设置 badge，譬如未读消息数。
+可以通过 TabBarFragment 的 `setSelectedIndex` 方法来动态切换 tab，通过 `getTabBar` 可以获取 TabBar, 然后可以调用 TabBar 提供的方法来设置红点，未读消息数等。
+
+如果对提供的默认 TabBar 不满意，可以通过实现 `TabBarProvider` 来自定义 TabBar , 在设置 TabBarFragment 为其它容器的根前，调用 `TabBarFragament#setTabBarProvider` 来设置自定义的 TabBar, 参数可以为 null, 表示不需要 TabBar.
+
 
 如果 HomeFragment 或 ContactsFragment 需要有导航的能力，可以先把它们嵌套到 NavigationFragment 中。
 
@@ -255,7 +258,7 @@ protected boolean onBackPressed() {
 
 ### 导航
 
-导航是指页面间的跳转和传值。
+导航是指页面间的跳转和传值，实际上和容器如何管理它的子 Fragment 有很大关系。
 
 #### present & dismiss
 
@@ -340,6 +343,19 @@ AwesomeActivity 和 AwesomeFragment 提供了两个基础的导航功能 present
 	
 > present 所使用的 FragmentManager 是 Activity 的 `getSupportFragmentManager`，因此 present 出来的 fragment 是属于 Activity 的，它不属于任何 fragment 的子 fragment，这样就确保了 present 出来的 fragment 是模态的。
 
+- showDialog
+
+    把一个 fragment 作为 dialog 显示。showDialog 的参数列表和 present 是一样的，使用方式也基本相同。作为 dialog 的 fragment 可以通过 setResult 返回结果给把它作为 dialog show 出来的那个 fragment。
+    
+    
+- dismissDialog
+
+    关闭作为 dialog 的 fragment
+    
+- onBackPressed
+
+    通过重写该方法，并返回 true，可以拦截返回键事件。
+
 
 #### NavigationFragment
 
@@ -366,6 +382,10 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
     // BFragment.java
     getNavigationFragment.popFragment();
 	```
+	
+- 手势返回
+
+    手势返回是 NavigationFragment 的能力，需要在 Activity 的 onCustomStyle 中开启。手势返回实质上是个 pop.
 	
 - popToRoot
 
@@ -435,7 +455,10 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 	
 	现在 NavigationFragment 里只有 EFragment 这么一个子 Fragment 了。
 
+- isNavigationRoot
 
+    通过这个方法，可以判断当前 fragment 是不是 NavigationFragment 的 rootFragment
+    
 
 上面这些操作所使用的 FragmentManager，是 NavigationFragment 的 `getChildFragmentManager`，所有出栈或入栈的 fragment 都是 NavigationFragment 的子 fragment. 
 
@@ -525,6 +548,8 @@ protected void onCustomStyle(Style style) {
     titleTextSize: int               // toolbar 标题字体大小，默认是 17 dp
     titleGravity: int                // toolbar 标题的位置，默认是 Gravity.START
     toolbarButtonTextSize: int       // toolbar 按钮字体大小，默认是 15 dp
+    swipeBackEnabled: boolean.       // 是否支持手势返回，默认是 false
+    badgeColor: String               // Badge 背景颜色 
      
     // BottomBar
     bottomBarBackgroundColor: String // BottomNavigationBar 背景，默认值是 #FFFFFF
@@ -645,13 +670,22 @@ protected boolean shouldHideBackButton() {
 }
 ```
 
-如果你希望禁止用户通过返回键（物理的或虚拟的）退出当前页面，你可以重写以下方法，并返回 false。
+如果你希望禁止用户通过返回键（物理的或虚拟的）或者手势退出当前页面，你可以重写以下方法，并返回 false。
 
 ```java
 protected boolean backInteractive() {
     return false;
 }
 ```
+
+如果只是希望禁止用户通过手势退出当前页面，重写以下方法，返回 false，此时用户仍然可以通过返回键退出当前页面。
+
+```java
+protected boolean isSwipeBackEnabled() {
+    return false;
+}
+```
+
 
 如果你不希望自动为你创建 toolbar, 或者自动创建的 toolbar 所在 UI 层级不合适，你可以重写以下方法，返回 null 或者自定义的 toolbar。
 
