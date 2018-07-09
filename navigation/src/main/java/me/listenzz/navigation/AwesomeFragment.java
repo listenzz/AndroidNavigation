@@ -576,7 +576,7 @@ public abstract class AwesomeFragment extends DialogFragment {
             int color = preferredStatusBarColor();
             if (color != Color.TRANSPARENT) {
                 boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !AppUtils.isMiuiV6()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
                 }
                 if (shouldAdjustForWhiteStatusBar) {
@@ -601,11 +601,12 @@ public abstract class AwesomeFragment extends DialogFragment {
             // statusBarColor
             int color = preferredStatusBarColor();
             boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !AppUtils.isMiuiV6()) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
             }
             if (shouldAdjustForWhiteStatusBar) {
-                color = Color.parseColor("#B0B0B0");
+                color = Color.parseColor("#4A4A4A");
             }
             if (isStatusBarTranslucent() && color == preferredToolbarColor()) {
                 color = Color.TRANSPARENT;

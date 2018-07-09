@@ -12,7 +12,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -23,8 +22,6 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
-import java.lang.reflect.Method;
-
 /**
  * Created by listen on 2018/2/3.
  */
@@ -32,30 +29,6 @@ import java.lang.reflect.Method;
 public class AppUtils {
 
     private AppUtils() {
-    }
-
-    private static boolean sIsMiuiV6;
-
-    static {
-        try {
-            Class<?> sysClass = Class.forName("android.os.SystemProperties");
-            Method getStringMethod = sysClass.getDeclaredMethod("get", String.class);
-            String version = (String) getStringMethod.invoke(sysClass, "ro.miui.ui.version.name");
-            if (!TextUtils.isEmpty(version)) {
-                try {
-                    int num = Integer.valueOf(version.substring(1));
-                    sIsMiuiV6 = num >= 6;
-                } catch (NumberFormatException e) {
-                    // ignore
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static boolean isMiuiV6() {
-        return sIsMiuiV6;
     }
 
     /**
@@ -137,7 +110,7 @@ public class AppUtils {
      */
     public static int dp2px(Context context, float dp) {
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
-        return (int)px;
+        return (int) px;
     }
 
     public static void hideSoftInput(View view) {
@@ -215,7 +188,6 @@ public class AppUtils {
                 statusBarView.setLayoutParams(params);
                 decorViewGroup.addView(statusBarView);
             }
-
 
 
             if (animated) {
