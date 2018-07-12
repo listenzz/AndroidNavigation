@@ -84,8 +84,10 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     private void dismissFragmentInternal(AwesomeFragment fragment) {
-        // 如果有 presented 就 dismiss presented, 否则就 dismiss 自己
-        AwesomeFragment top = (AwesomeFragment) getSupportFragmentManager().findFragmentById(android.R.id.content);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.executePendingTransactions();
+
+        AwesomeFragment top = (AwesomeFragment)fragmentManager.findFragmentById(android.R.id.content);
         AwesomeFragment presenting = getPresentingFragment(fragment);
 
         top.setAnimation(PresentAnimation.Modal);
@@ -98,9 +100,8 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             ActivityCompat.finishAfterTransition(this);
         } else {
             presenting.onFragmentResult(fragment.getRequestCode(), fragment.getResultCode(), fragment.getResultData());
-            getSupportFragmentManager().popBackStack(fragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentManager.popBackStack(fragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
-
     }
 
     @Override

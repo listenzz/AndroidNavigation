@@ -232,11 +232,11 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         NavigationFragment navF = super.getNavigationFragment();
         if (navF != null) {
             AwesomeFragment parent = navF.getParentAwesomeFragment();
-            if (parent != null) {
-                NavigationFragment parentNavF = parent.getNavigationFragment();
-                if (parentNavF != null && parentNavF.getWindow() == navF.getWindow()) {
+            while (parent != null) {
+                if (parent instanceof NavigationFragment && parent.getWindow() == navF.getWindow()) {
                     throw new IllegalStateException("should not nest NavigationFragment in the same window.");
                 }
+                parent = parent.getParentAwesomeFragment();
             }
         }
         return navF;

@@ -12,10 +12,10 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.InternalFragment;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
 import android.view.Gravity;
@@ -41,7 +41,7 @@ import java.util.UUID;
  * Created by Listen on 2018/1/11.
  */
 
-public abstract class AwesomeFragment extends DialogFragment {
+public abstract class AwesomeFragment extends InternalFragment {
 
     public static final String TAG = "Navigation";
 
@@ -49,6 +49,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     private static final String ARGS_REQUEST_CODE = "nav_request_code";
     private static final String ARGS_ANIMATION = "nav_animation";
     private static final String ARGS_ANIMATION_TYPE = "nav_animation_type";
+    private static final String SAVED_STATE_DEFINES_PRESENTATION_CONTEXT = "defines_presentation_context";
     private static final String ARGS_TAB_BAR_ITEM = "nav_tab_bar_item";
     private static final String SAVED_STATE_BOTTOM_PADDING_KEY = "bottom_padding";
 
@@ -80,6 +81,7 @@ public abstract class AwesomeFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             bottomPadding = savedInstanceState.getInt(SAVED_STATE_BOTTOM_PADDING_KEY);
+            definesPresentationContext = savedInstanceState.getBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, false);
         }
     }
 
@@ -87,6 +89,7 @@ public abstract class AwesomeFragment extends DialogFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(SAVED_STATE_BOTTOM_PADDING_KEY, bottomPadding);
+        outState.putBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, definesPresentationContext);
     }
 
     @Override
@@ -328,12 +331,61 @@ public abstract class AwesomeFragment extends DialogFragment {
         return this.sceneId;
     }
 
+    private boolean definesPresentationContext;
+
+    public boolean definesPresentationContext() {
+        return definesPresentationContext;
+    }
+
+    public void setDefinesPresentationContext(boolean defines) {
+        definesPresentationContext = defines;
+    }
+
+    protected boolean dispatchBackPressed() {
+        FragmentManager fragmentManager = getChildFragmentManager();
+        int count = fragmentManager.getBackStackEntryCount();
+        Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
+        if (fragment != null) {
+            AwesomeFragment child = (AwesomeFragment) fragment;
+            return child.dispatchBackPressed() || onBackPressed();
+        } else if (count > 0) {
+            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count - 1);
+            AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+            return child.dispatchBackPressed() || onBackPressed();
+        } else {
+            return onBackPressed();
+        }
+    }
+
+    protected boolean onBackPressed() {
+        FragmentManager fragmentManager = getChildFragmentManager();
+        int count = fragmentManager.getBackStackEntryCount();
+        for (int i = count -1; i > -1; i--) {
+            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(i);
+            AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+            if (child.definesPresentationContext()) {
+                AwesomeFragment presented = FragmentHelper.getLatterFragment(fragmentManager, child);
+                if (presented != null) {
+                    presented.dismissFragment();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void presentFragment(final AwesomeFragment fragment, int requestCode) {
         if (isInDialog()) {
             throw new IllegalStateException("在 dialog 中， 不能执行此操作, 可以考虑再次使用 `showDialog`");
         }
-        final AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
+
+        AwesomeFragment parent = getParentAwesomeFragment();
+        if (definesPresentationContext() && parent != null) {
+            Bundle args = FragmentHelper.getArguments(fragment);
+            args.putInt(ARGS_REQUEST_CODE, requestCode);
+            fragment.setTargetFragment(this, requestCode);
+            FragmentHelper.addFragmentToBackStack(requireFragmentManager(), getContainerId(), fragment, PresentAnimation.Modal);
+        } else if (parent != null) {
             parent.presentFragment(fragment, requestCode);
         } else if (presentableActivity != null) {
             Bundle args = FragmentHelper.getArguments(fragment);
@@ -346,7 +398,17 @@ public abstract class AwesomeFragment extends DialogFragment {
         if (isInDialog()) {
             throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `dismissDialog`");
         }
-        final AwesomeFragment parent = getParentAwesomeFragment();
+
+        AwesomeFragment target = (AwesomeFragment) getTargetFragment();
+        if (target != null) {
+            setAnimation(PresentAnimation.Modal);
+            target.setAnimation(PresentAnimation.Modal);
+            target.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
+            requireFragmentManager().popBackStack(getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            return;
+        }
+
+        AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             parent.setResult(resultCode, result);
             parent.dismissFragment();
@@ -360,14 +422,22 @@ public abstract class AwesomeFragment extends DialogFragment {
 
     public AwesomeFragment getPresentedFragment() {
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
+        if (definesPresentationContext() && parent != null) {
+            return FragmentHelper.getLatterFragment(requireFragmentManager(), this);
+        } else if (parent != null) {
             return parent.getPresentedFragment();
         }
         return presentableActivity.getPresentedFragment(this);
     }
 
     public AwesomeFragment getPresentingFragment() {
+        AwesomeFragment target = (AwesomeFragment) getTargetFragment();
+        if (target != null) {
+            return target;
+        }
+
         AwesomeFragment parent = getParentAwesomeFragment();
+
         if (parent != null) {
             return parent.getPresentingFragment();
         }
@@ -420,26 +490,6 @@ public abstract class AwesomeFragment extends DialogFragment {
                 child.onFragmentResult(requestCode, resultCode, data);
             }
         }
-    }
-
-    protected boolean dispatchBackPressed() {
-        FragmentManager fragmentManager = getChildFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
-        if (fragment != null) {
-            AwesomeFragment child = (AwesomeFragment) fragment;
-            return child.dispatchBackPressed() || onBackPressed();
-        } else if (count > 0) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count - 1);
-            AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-            return child.dispatchBackPressed() || onBackPressed();
-        } else {
-            return onBackPressed();
-        }
-    }
-
-    protected boolean onBackPressed() {
-        return false;
     }
 
     public String getDebugTag() {
