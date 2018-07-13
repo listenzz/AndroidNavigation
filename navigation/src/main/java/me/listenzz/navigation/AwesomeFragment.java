@@ -384,6 +384,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             Bundle args = FragmentHelper.getArguments(fragment);
             args.putInt(ARGS_REQUEST_CODE, requestCode);
             fragment.setTargetFragment(this, requestCode);
+            fragment.setDefinesPresentationContext(true);
             FragmentHelper.addFragmentToBackStack(requireFragmentManager(), getContainerId(), fragment, PresentAnimation.Modal);
         } else if (parent != null) {
             parent.presentFragment(fragment, requestCode);
