@@ -19,7 +19,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 27
         versionCode gitVersionCode()
-        versionName "1.8.6"
+        versionName "1.8.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -45,7 +45,7 @@ publish {
     userOrg = 'listenzz'
     groupId = 'me.listenzz'
     artifactId = 'navigation'
-    publishVersion = '1.8.6'
+    publishVersion = '1.8.7'
     desc = 'A library managing nested Fragment, StatusBar, Toolbar for Android.'
     website = 'https://github.com/listenzz/AndroidNavigation'
 }

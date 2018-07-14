@@ -96,58 +96,75 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void pushFragment(@NonNull final AwesomeFragment fragment) {
+        pushFragment(fragment, true);
+    }
+
+    public void pushFragment(@NonNull final AwesomeFragment fragment, final boolean animated) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                pushFragmentInternal(fragment);
+                pushFragmentInternal(fragment, animated);
             }
         });
     }
 
-    private void pushFragmentInternal(AwesomeFragment fragment) {
-        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Push);
+    private void pushFragmentInternal(AwesomeFragment fragment, boolean animated) {
+        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, animated ? PresentAnimation.Push : PresentAnimation.None);
     }
 
     public void popToFragment(@NonNull final AwesomeFragment fragment) {
+        popToFragment(fragment, true);
+    }
+
+    public void popToFragment(@NonNull final AwesomeFragment fragment, final boolean animated) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                popToFragmentInternal(fragment);
+                popToFragmentInternal(fragment, animated);
             }
         });
     }
 
-    private void popToFragmentInternal(AwesomeFragment fragment) {
+    private void popToFragmentInternal(AwesomeFragment fragment, boolean animated) {
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.executePendingTransactions();
         AwesomeFragment topFragment = getTopFragment();
         if (topFragment == fragment) {
             return;
         }
-        topFragment.setAnimation(PresentAnimation.Push);
-        fragment.setAnimation(PresentAnimation.Push);
+
+        topFragment.setAnimation( animated ? PresentAnimation.Push : PresentAnimation.None);
+        fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
 
         fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
         fragmentManager.popBackStack(fragment.getSceneId(), 0);
     }
 
     public void popFragment() {
+        popFragment(true);
+    }
+
+    public void popFragment(boolean animated) {
         AwesomeFragment after = FragmentHelper.getLatterFragment(getChildFragmentManager(), getTopFragment());
         if (after != null) {
-            popToFragment(this);
+            popToFragment(this, animated);
             return;
         }
 
         AwesomeFragment before = FragmentHelper.getAheadFragment(getChildFragmentManager(), getTopFragment());
         if (before != null) {
-            popToFragment(before);
+            popToFragment(before, animated);
         }
     }
 
     public void popToRootFragment() {
+        popToRootFragment(true);
+    }
+
+    public void popToRootFragment(boolean animated) {
         AwesomeFragment awesomeFragment = getRootFragment();
         if (awesomeFragment != null) {
-            popToFragment(getRootFragment());
+            popToFragment(getRootFragment(), animated);
         }
     }
 
