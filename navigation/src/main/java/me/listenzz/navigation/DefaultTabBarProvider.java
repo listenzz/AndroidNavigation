@@ -83,19 +83,30 @@ public class DefaultTabBarProvider implements TabBarProvider {
             BottomNavigationItem bottomNavigationItem;
             if (tabBarItem != null) {
                 Drawable icon = new ColorDrawable();
-                if (tabBarItem.iconRes != -1) {
-                    icon = ContextCompat.getDrawable(context, tabBarItem.iconRes);
-                } else if (tabBarItem.iconUri != null) {
-                    icon = DrawableUtils.fromUri(context, tabBarItem.iconUri);
+                Drawable inActiveIcon = null;
+                if (tabBarItem.selectedIconRes != -1 || tabBarItem.selectedIconUri != null) {
+                    if (tabBarItem.selectedIconRes != -1) {
+                        icon = ContextCompat.getDrawable(context, tabBarItem.selectedIconRes);
+                    } else  {
+                        icon = DrawableUtils.fromUri(context, tabBarItem.selectedIconUri);
+                    }
+                    bottomNavigationItem = new BottomNavigationItem(icon, tabBarItem.title);
+                    if (tabBarItem.iconRes != -1) {
+                        inActiveIcon = ContextCompat.getDrawable(context, tabBarItem.iconRes);
+
+                    } else if (tabBarItem.iconUri != null) {
+                        inActiveIcon = DrawableUtils.fromUri(context, tabBarItem.iconUri);
+                    }
+                    bottomNavigationItem.setInactiveIcon(inActiveIcon);
+                } else {
+                    if (tabBarItem.iconRes != -1) {
+                        icon = ContextCompat.getDrawable(context, tabBarItem.iconRes);
+                    } else if (tabBarItem.iconUri != null) {
+                        icon = DrawableUtils.fromUri(context, tabBarItem.iconUri);
+                    }
+                    bottomNavigationItem = new BottomNavigationItem(icon, tabBarItem.title);
                 }
 
-                bottomNavigationItem = new BottomNavigationItem(icon, tabBarItem.title);
-
-                if (tabBarItem.inactiveIconRes != -1) {
-                    bottomNavigationItem.setInactiveIconResource(tabBarItem.inactiveIconRes);
-                } else if (tabBarItem.inactiveIconUri != null) {
-                    bottomNavigationItem.setInactiveIcon(DrawableUtils.fromUri(context, tabBarItem.inactiveIconUri));
-                }
             } else {
                 bottomNavigationItem = new BottomNavigationItem(new ColorDrawable(), "Tab");
             }
@@ -119,12 +130,15 @@ public class DefaultTabBarProvider implements TabBarProvider {
         Style style = tabBarFragment.style;
         tabBar.setBarBackgroundColor(style.getTabBarBackgroundColor());
 
-        if (style.getTabBarActiveColor() != null) {
-            tabBar.setActiveColor(style.getTabBarActiveColor());
-        }
-
-        if (style.getTabBarInActiveColor() != null) {
-            tabBar.setInActiveColor(style.getTabBarInActiveColor());
+        if (style.getTabBarSelectedItemColor() != null) {
+            tabBar.setActiveColor(style.getTabBarSelectedItemColor());
+            if (style.getTabBarItemColor() != null) {
+                tabBar.setInActiveColor(style.getTabBarItemColor());
+            }
+        } else {
+            if (style.getTabBarItemColor() != null) {
+                tabBar.setActiveColor(style.getTabBarItemColor());
+            }
         }
 
         tabBar.setShadow(style.getTabBarShadow());

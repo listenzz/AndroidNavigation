@@ -36,8 +36,8 @@ public class Style implements Cloneable {
     private int toolbarButtonTextSize = 15;
 
     private String tabBarBackgroundColor = "#FFFFFF";
-    private String tabBarActiveColor = null;
-    private String tabBarInactiveColor = null;
+    private String tabBarItemColor = null;
+    private String tabBarSelectedItemColor = null;
     private Drawable tabBarShadow = defaultShadow;
 
     private Context context;
@@ -80,20 +80,20 @@ public class Style implements Cloneable {
         return tabBarBackgroundColor;
     }
 
-    public void setTabBarActiveColor(String tabBarActiveColor) {
-        this.tabBarActiveColor = tabBarActiveColor;
+    public void setTabBarItemColor(String tabBarItemColor) {
+        this.tabBarItemColor = tabBarItemColor;
     }
 
-    public String getTabBarActiveColor() {
-        return tabBarActiveColor;
+    public String getTabBarItemColor() {
+        return tabBarItemColor;
     }
 
-    public String getTabBarInActiveColor() {
-        return tabBarInactiveColor;
+    public String getTabBarSelectedItemColor() {
+        return tabBarSelectedItemColor;
     }
 
-    public void setTabBarInactiveColor(String tabBarInactiveColor) {
-        this.tabBarInactiveColor = tabBarInactiveColor;
+    public void setTabBarSelectedItemColor(String tabBarSelectedItemColor) {
+        this.tabBarSelectedItemColor = tabBarSelectedItemColor;
     }
 
     // ------- toolbar ---------
