@@ -1,6 +1,7 @@
 package me.listenzz.navigation;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -308,15 +309,23 @@ public class AwesomeToolbar extends Toolbar {
         button.setVisibility(View.VISIBLE);
 
         int color = tintColor != 0 ? tintColor : buttonTintColor;
-        if (!enabled) {
-            color = AppUtils.toGrey(color);
-            color = ColorUtils.blendARGB(color, backgroundColor, 0.75f);
-        }
-        button.setEnabled(enabled);
+        int disableColor = ColorUtils.blendARGB(AppUtils.toGrey(color), backgroundColor, 0.75f);
+
+        int[][] states = new int[][] {
+                new int[] { android.R.attr.state_enabled}, // enabled
+                new int[] {-android.R.attr.state_enabled}, // disabled
+        };
+
+        int[] colors = new int[] {
+                color,
+                disableColor
+        };
+
+        ColorStateList colorStateList = new ColorStateList(states, colors);
 
         if (icon != null) {
             icon = DrawableCompat.wrap(icon);
-            DrawableCompat.setTint(icon, color);
+            DrawableCompat.setTintList(icon, colorStateList);
             button.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
             int width = getContentInsetStartWithNavigation();
             int padding = (width - icon.getIntrinsicWidth()) / 2;
@@ -326,9 +335,11 @@ public class AwesomeToolbar extends Toolbar {
             int padding = getContentInset();
             button.setPaddingRelative(padding, 0, padding, 0);
             button.setText(title);
-            button.setTextColor(color);
+            button.setTextColor(colorStateList);
             button.setTextSize(buttonTextSize);
         }
+
+        button.setEnabled(enabled);
 
         TypedValue typedValue = new TypedValue();
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
