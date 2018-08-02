@@ -18,7 +18,7 @@ public class ToolbarButtonItem {
     public final int tintColor;
     public final View.OnClickListener onClickListener;
 
-    public ToolbarButtonItem(String iconUri, int iconRes, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
+    public ToolbarButtonItem(String iconUri, @DrawableRes int iconRes, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
         this.iconUri = iconUri;
         this.iconRes = iconRes;
         this.tintColor = tintColor;
@@ -31,7 +31,7 @@ public class ToolbarButtonItem {
         this(iconUri, 0, title, 0, enabled, onClickListener);
     }
 
-    public ToolbarButtonItem(int iconRes, String title, boolean enabled, View.OnClickListener onClickListener) {
+    public ToolbarButtonItem(@DrawableRes int iconRes, String title, boolean enabled, View.OnClickListener onClickListener) {
         this(null, iconRes, title, 0, enabled, onClickListener);
     }
 
@@ -39,7 +39,7 @@ public class ToolbarButtonItem {
         this(null, 0, title, 0, true, onClickListener);
     }
 
-    public ToolbarButtonItem(int iconRes, View.OnClickListener onClickListener) {
+    public ToolbarButtonItem(@DrawableRes int iconRes, View.OnClickListener onClickListener) {
         this(null, iconRes, null, 0, true, onClickListener);
     }
 

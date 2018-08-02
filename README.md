@@ -588,7 +588,7 @@ protected boolean preferredStatusBarColorAnimated();
   
   BarStyle 是个枚举，有两个值。`LightContent` 表示状态栏文字是白色，如果你想把状态栏文字变成黑色，你需要使用 `DarkContent`。
  
-  > 仅对 6.0 以上版本以及小米、魅族生效
+  > 仅对 6.0 以上版本生效
   
 - preferredStatusBarHidden
 
