@@ -553,7 +553,7 @@ protected void onCustomStyle(Style style) {
      
     // BottomBar
     tabBarBackgroundColor: String    // TabBar 背景，默认值是 #FFFFFF
-    tabBarShadow: Drawable           // TabBar 阴影图片，仅对4.4 以下版本生效 
+    tabBarShadow: Drawable           // TabBar 分割线 
     tabBarItemColor: String          // TabBarItem 颜色，当 tabBarSelectedItemColor 未设置时，该值为选中时的颜色，否则为未选中时的颜色
     tabBarSelectedItemColor: String  // TabBarItem 选中时的颜色
 }
