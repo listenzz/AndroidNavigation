@@ -56,7 +56,10 @@ public class TabBar extends BottomNavigationBar {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        if (shadow != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setElevation(0);
+        }
+        if (shadow != null) {
             int height = (int) getContext().getResources().getDisplayMetrics().density;
             shadow.setBounds(0, 0, getWidth(), height);
             shadow.draw(canvas);
@@ -64,10 +67,8 @@ public class TabBar extends BottomNavigationBar {
     }
 
     public void setShadow(@Nullable Drawable drawable) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            shadow = drawable;
-            postInvalidate();
-        }
+        shadow = drawable;
+        postInvalidate();
     }
 
     @Override
