@@ -131,6 +131,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.executePendingTransactions();
         fragmentManager.beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
+        getContentFragment().setUserVisibleHint(false);
         getMenuFragment().setUserVisibleHint(true);
     }
 
@@ -142,6 +143,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         fragmentManager.executePendingTransactions();
         fragmentManager.beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
         getMenuFragment().setUserVisibleHint(false);
+        getContentFragment().setUserVisibleHint(true);
     }
 
     @Override
