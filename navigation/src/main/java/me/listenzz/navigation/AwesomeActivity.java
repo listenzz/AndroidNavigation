@@ -99,8 +99,8 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         if (presenting == null) {
             ActivityCompat.finishAfterTransition(this);
         } else {
-            presenting.onFragmentResult(fragment.getRequestCode(), fragment.getResultCode(), fragment.getResultData());
             fragmentManager.popBackStack(fragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            presenting.onFragmentResult(fragment.getRequestCode(), fragment.getResultCode(), fragment.getResultData());
         }
     }
 

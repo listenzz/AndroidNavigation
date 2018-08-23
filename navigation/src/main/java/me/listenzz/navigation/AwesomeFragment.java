@@ -404,8 +404,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (target != null) {
             setAnimation(PresentAnimation.Modal);
             target.setAnimation(PresentAnimation.Modal);
-            target.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
             requireFragmentManager().popBackStack(getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            target.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
             return;
         }
 
@@ -832,12 +832,12 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @Override
     public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
         Fragment target = getTargetFragment();
         if (target != null && target instanceof AwesomeFragment && target.isAdded() && !target.isRemoving()) {
             AwesomeFragment fragment = (AwesomeFragment) target;
             fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
         }
-        super.onDismiss(dialog);
     }
 
     /**
