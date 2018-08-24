@@ -1156,11 +1156,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         toolbar.setTitleTextColor(style.getTitleTextColor());
         toolbar.setTitleTextSize(style.getTitleTextSize());
         toolbar.setTitleGravity(style.getTitleGravity());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.setElevation(style.getElevation());
-        } else {
-            toolbar.setShadow(style.getShadow());
-        }
+        toolbar.showShadow(style.getShadow(), style.getElevation());
         if (!isNavigationRoot() && !shouldHideBackButton()) {
             toolbar.setNavigationIcon(style.getBackIcon());
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {

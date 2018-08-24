@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Outline;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.AppCompatImageButton;
@@ -18,6 +21,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewOutlineProvider;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -45,6 +49,8 @@ public class AwesomeToolbar extends Toolbar {
 
     private List<TextView> leftButtons;
     private List<TextView> rightButtons;
+
+    private ViewOutlineProvider outlineProvider;
 
     public AwesomeToolbar(Context context) {
         super(context);
@@ -107,7 +113,7 @@ public class AwesomeToolbar extends Toolbar {
         }
     }
 
-    public void setShadow(@Nullable Drawable drawable) {
+    private void setShadow(@Nullable Drawable drawable) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             divider = drawable;
             postInvalidate();
@@ -116,9 +122,23 @@ public class AwesomeToolbar extends Toolbar {
 
     public void hideShadow() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setElevation(0);
+            if (outlineProvider == null) {
+                outlineProvider = getOutlineProvider();
+            }
+            setOutlineProvider(new DefaultOutlineProdiver());
         } else {
             setShadow(null);
+        }
+    }
+
+    public void showShadow(@NonNull Drawable shadowImage, float elevation) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (outlineProvider != null) {
+                setOutlineProvider(outlineProvider);
+            }
+            setElevation(elevation);
+        } else {
+            setShadow(shadowImage);
         }
     }
 
@@ -348,6 +368,14 @@ public class AwesomeToolbar extends Toolbar {
             if (getContext().getTheme().resolveAttribute(R.attr.actionBarItemBackground, typedValue, true)) {
                 button.setBackgroundResource(typedValue.resourceId);
             }
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private static final class DefaultOutlineProdiver extends ViewOutlineProvider {
+        @Override
+        public void getOutline(View view, Outline outline) {
+
         }
     }
 
