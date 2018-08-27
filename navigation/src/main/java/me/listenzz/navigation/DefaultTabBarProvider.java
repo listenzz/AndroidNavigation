@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
+import com.ashokvarma.bottomnavigation.TabBar;
 import com.ashokvarma.bottomnavigation.TextBadgeItem;
 
 import java.util.ArrayList;

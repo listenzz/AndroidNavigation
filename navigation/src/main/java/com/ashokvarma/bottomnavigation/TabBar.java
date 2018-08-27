@@ -1,4 +1,4 @@
-package me.listenzz.navigation;
+package com.ashokvarma.bottomnavigation;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -9,6 +9,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -18,13 +20,14 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import me.listenzz.navigation.AppUtils;
+import me.listenzz.navigation.AwesomeActivity;
+import me.listenzz.navigation.R;
 
 /**
  * Created by Listen on 2018/1/30.
@@ -33,8 +36,6 @@ import java.util.List;
 public class TabBar extends BottomNavigationBar {
 
     private Drawable shadow = new ColorDrawable(Color.parseColor("#dddddd"));
-    private List<ImageView> imageViews = new ArrayList<>();
-    private List<TextView> badgeViews = new ArrayList<>();
     private List<TextView> redPoints = new ArrayList<>();
 
     public TabBar(Context context) {
@@ -71,34 +72,28 @@ public class TabBar extends BottomNavigationBar {
         postInvalidate();
     }
 
+
+    private boolean isInitialized;
+
     @Override
     public void initialise() {
         super.initialise();
-        LinearLayout itemContainer = findViewById(R.id.bottom_navigation_bar_item_container);
-        int count = itemContainer.getChildCount();
-        imageViews.clear();
-        badgeViews.clear();
+        isInitialized = true;
 
+        int count = mBottomNavigationTabs.size();
         Context context = getContext();
 
         for (int i = 0; i < count; i++) {
-            View itemLayout = itemContainer.getChildAt(i);
-            ImageView iconView = itemLayout.findViewById(R.id.fixed_bottom_navigation_icon);
-            iconView.setScaleType(ImageView.ScaleType.CENTER);
-            imageViews.add(iconView);
-
-            TextView textView = itemLayout.findViewById(R.id.fixed_bottom_navigation_badge);
-            badgeViews.add(textView);
-
+            BottomNavigationTab tab = mBottomNavigationTabs.get(i);
+            tab.iconView.setScaleType(ImageView.ScaleType.CENTER);
             TextView redPoint = new TextView(context);
             int size = AppUtils.dp2px(context, 10);
             FrameLayout.LayoutParams layoutParams = new LayoutParams(size, size);
             layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
             layoutParams.topMargin = AppUtils.dp2px(context, 4);
             layoutParams.rightMargin = AppUtils.dp2px(context, 2);
-            FrameLayout frameLayout = itemLayout.findViewById(R.id.fixed_bottom_navigation_icon_container);
-            frameLayout.addView(redPoint, layoutParams);
-            Drawable drawable = ContextCompat.getDrawable(context, R.drawable.nav_red_point);
+            tab.iconContainerView.addView(redPoint, layoutParams);
+            Drawable drawable = ContextCompat.getDrawable(context, me.listenzz.navigation.R.drawable.nav_red_point);
             if (context instanceof AwesomeActivity && drawable != null) {
                 AwesomeActivity activity = (AwesomeActivity) context;
                 drawable.setColorFilter(Color.parseColor(activity.getStyle().getBadgeColor()), PorterDuff.Mode.SRC_IN);
@@ -110,12 +105,13 @@ public class TabBar extends BottomNavigationBar {
     }
 
     public ImageView imageViewAtTab(int index) {
-        return imageViews.get(index);
+        return mBottomNavigationTabs.get(index).iconView;
     }
 
     // only call this method after #initialise
     public void setTabIcon(int index, Drawable drawable, Drawable inactiveDrawable) {
         ImageView imageView = imageViewAtTab(index);
+        BottomNavigationTab tab = mBottomNavigationTabs.get(index);
         if (inactiveDrawable != null) {
             StateListDrawable states = new StateListDrawable();
             states.addState(new int[]{android.R.attr.state_selected},
@@ -142,8 +138,53 @@ public class TabBar extends BottomNavigationBar {
         }
     }
 
+    public void setTabItemColor(String activeColor, String inActiveColor) {
+
+        setActiveColor(activeColor);
+        setInActiveColor(inActiveColor);
+        int count = mBottomNavigationTabs.size();
+        for (int i = 0; i < count; i++) {
+            setTabItemColor(i, Color.parseColor(activeColor), Color.parseColor(inActiveColor));
+        }
+    }
+
+    public void setTabItemColor(int index, @ColorInt int activeColor, @ColorInt int inActiveColor) {
+        BottomNavigationTab tab = mBottomNavigationTabs.get(index);
+
+        ImageView imageView = imageViewAtTab(index);
+        Drawable drawable = imageView.getDrawable();
+        if (!(drawable instanceof StateListDrawable)) {
+            DrawableCompat.setTintList(drawable, new ColorStateList(
+                    new int[][]{
+                            new int[]{android.R.attr.state_selected}, //1
+                            new int[]{-android.R.attr.state_selected}, //2
+                            new int[]{}
+                    },
+                    new int[]{
+                            activeColor, //1
+                            inActiveColor, //2
+                            inActiveColor //3
+                    }
+            ));
+            imageView.setImageDrawable(drawable);
+        }
+        tab.setActiveColor(activeColor);
+        tab.setInactiveColor(inActiveColor);
+        tab.labelView.setTextColor(tab.isActive ? activeColor : inActiveColor);
+    }
+
+    public void setTabItemColor(@ColorRes int activeColor, @ColorRes int inActiveColor) {
+        setActiveColor(activeColor);
+        setInActiveColor(inActiveColor);
+        int count = mBottomNavigationTabs.size();
+        for (int i = 0; i < count; i++) {
+            setTabItemColor(i, ContextCompat.getColor(getContext(), activeColor), ContextCompat.getColor(getContext(), inActiveColor));
+        }
+    }
+
     public TextView badgeViewAtTab(int index) {
-        return badgeViews.get(index);
+        BottomNavigationTab tab = mBottomNavigationTabs.get(index);
+        return tab.badgeView;
     }
 
     public void setBadge(int index, String text) {
@@ -168,4 +209,14 @@ public class TabBar extends BottomNavigationBar {
             redPoint.setVisibility(VISIBLE);
         }
     }
+
+    public void setTabBarBackgroundColor(String color) {
+        if (isInitialized) {
+            View backgroundView = findViewById(R.id.bottom_navigation_bar_container);
+            backgroundView.setBackgroundColor(Color.parseColor(color));
+        } else {
+            setBarBackgroundColor(color);
+        }
+    }
+
 }
