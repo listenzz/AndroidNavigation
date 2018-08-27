@@ -30,27 +30,27 @@ import me.listenzz.navigation.AwesomeActivity;
 import me.listenzz.navigation.R;
 
 /**
- * Created by Listen on 2018/1/30.
+ * Created by Listen on 2018/8/27.
  */
 
-public class TabBar extends BottomNavigationBar {
+public class InternalTabBar extends BottomNavigationBar {
 
     private Drawable shadow = new ColorDrawable(Color.parseColor("#dddddd"));
     private List<TextView> redPoints = new ArrayList<>();
 
-    public TabBar(Context context) {
+    public InternalTabBar(Context context) {
         super(context);
     }
 
-    public TabBar(Context context, AttributeSet attrs) {
+    public InternalTabBar(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public TabBar(Context context, AttributeSet attrs, int defStyleAttr) {
+    public InternalTabBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public TabBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public InternalTabBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
@@ -88,7 +88,7 @@ public class TabBar extends BottomNavigationBar {
             tab.iconView.setScaleType(ImageView.ScaleType.CENTER);
             TextView redPoint = new TextView(context);
             int size = AppUtils.dp2px(context, 10);
-            FrameLayout.LayoutParams layoutParams = new LayoutParams(size, size);
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(size, size);
             layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
             layoutParams.topMargin = AppUtils.dp2px(context, 4);
             layoutParams.rightMargin = AppUtils.dp2px(context, 2);
@@ -218,5 +218,4 @@ public class TabBar extends BottomNavigationBar {
             setBarBackgroundColor(color);
         }
     }
-
 }
