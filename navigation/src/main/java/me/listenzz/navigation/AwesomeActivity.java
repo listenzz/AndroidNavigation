@@ -96,10 +96,12 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             presenting.setAnimation(PresentAnimation.Modal);
         }
 
+        fragment.setUserVisibleHint(false);
         if (presenting == null) {
             ActivityCompat.finishAfterTransition(this);
         } else {
             fragmentManager.popBackStack(fragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentManager.executePendingTransactions();
             presenting.onFragmentResult(fragment.getRequestCode(), fragment.getResultCode(), fragment.getResultData());
         }
     }
