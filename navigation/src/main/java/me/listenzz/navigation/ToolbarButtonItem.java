@@ -1,6 +1,11 @@
 package me.listenzz.navigation;
 
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
+import android.support.v4.graphics.ColorUtils;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
 import android.widget.TextView;
 
@@ -48,6 +53,29 @@ public class ToolbarButtonItem {
     public void setEnabled(boolean enabled) {
         if (button != null) {
             button.setEnabled(enabled);
+        }
+    }
+
+    public void setTintColor(@ColorInt int tintColor, @ColorInt int backgroundColor) {
+        if (button != null) {
+            int disableColor = ColorUtils.blendARGB(AppUtils.toGrey(tintColor), backgroundColor, 0.75f);
+            int[][] states = new int[][] {
+                    new int[] { android.R.attr.state_enabled}, // enabled
+                    new int[] {-android.R.attr.state_enabled}, // disabled
+            };
+
+            int[] colors = new int[] {
+                    tintColor,
+                    disableColor
+            };
+
+            ColorStateList colorStateList = new ColorStateList(states, colors);
+
+            Drawable[] drawables = button.getCompoundDrawables();
+            if (drawables[0] != null) {
+                DrawableCompat.setTintList(drawables[0], colorStateList);
+            }
+            button.setTextColor(colorStateList);
         }
     }
 

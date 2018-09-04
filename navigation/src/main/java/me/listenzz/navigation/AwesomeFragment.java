@@ -1185,7 +1185,23 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void setNeedsToolbarAppearanceUpdate() {
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
-            toolbar.setBackgroundColor(preferredToolbarColor());
+            customAwesomeToolbar(toolbar);
+
+            if (leftBarButtonItems != null) {
+               for (ToolbarButtonItem item : leftBarButtonItems) {
+                   item.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
+               }
+            } else if (leftBarButtonItem != null) {
+                leftBarButtonItem.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
+            }
+
+            if (rightBarButtonItems != null) {
+                for (ToolbarButtonItem item : rightBarButtonItems) {
+                    item.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
+                }
+            } else if (rightBarButtonItem != null) {
+                rightBarButtonItem.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
+            }
         }
     }
 
@@ -1202,7 +1218,10 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
+    private ToolbarButtonItem[] leftBarButtonItems;
+
     public void setLeftBarButtonItems(ToolbarButtonItem[] barButtonItems) {
+        leftBarButtonItems = barButtonItems;
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
             toolbar.clearLeftButtons();
@@ -1229,7 +1248,13 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
+    public ToolbarButtonItem[] getLeftBarButtonItems() {
+        return leftBarButtonItems;
+    }
+
+    private ToolbarButtonItem[] rightBarButtonItems;
     public void setRightBarButtonItems(ToolbarButtonItem[] barButtonItems) {
+        rightBarButtonItems = barButtonItems;
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
             toolbar.clearRightButtons();
@@ -1243,10 +1268,14 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
-    private ToolbarButtonItem leftToolbarButtonItem;
+    public ToolbarButtonItem[] getRightBarButtonItems() {
+        return rightBarButtonItems;
+    }
+
+    private ToolbarButtonItem leftBarButtonItem;
 
     public void setLeftBarButtonItem(ToolbarButtonItem barButtonItem) {
-        leftToolbarButtonItem = barButtonItem;
+        leftBarButtonItem = barButtonItem;
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
             if (barButtonItem == null) {
@@ -1271,14 +1300,14 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
-    public ToolbarButtonItem getLeftToolbarButtonItem() {
-        return leftToolbarButtonItem;
+    public ToolbarButtonItem getLeftBarButtonItem() {
+        return leftBarButtonItem;
     }
 
-    private ToolbarButtonItem rightToolbarButtonItem;
+    private ToolbarButtonItem rightBarButtonItem;
 
     public void setRightBarButtonItem(ToolbarButtonItem barButtonItem) {
-        rightToolbarButtonItem = barButtonItem;
+        rightBarButtonItem = barButtonItem;
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
             if (barButtonItem == null) {
@@ -1291,8 +1320,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
-    public ToolbarButtonItem getRightToolbarButtonItem() {
-        return rightToolbarButtonItem;
+    public ToolbarButtonItem getRightBarButtonItem() {
+        return rightBarButtonItem;
     }
 
     private Drawable drawableFromBarButtonItem(ToolbarButtonItem barButtonItem) {

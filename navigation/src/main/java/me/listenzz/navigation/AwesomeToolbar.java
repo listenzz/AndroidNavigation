@@ -125,7 +125,7 @@ public class AwesomeToolbar extends Toolbar {
             if (outlineProvider == null) {
                 outlineProvider = getOutlineProvider();
             }
-            setOutlineProvider(new DefaultOutlineProdiver());
+            setOutlineProvider(new DefaultOutlineProvider());
         } else {
             setShadow(null);
         }
@@ -148,12 +148,18 @@ public class AwesomeToolbar extends Toolbar {
 
     public void setTitleTextSize(int titleTextSize) {
         this.titleTextSize = titleTextSize;
+        if (titleView != null) {
+            titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, titleTextSize);
+        }
     }
 
     @Override
     public void setTitleTextColor(int titleTextColor) {
         this.titleTextColor = titleTextColor;
         super.setTitleTextColor(titleTextColor);
+        if (titleView != null) {
+            titleView.setTextColor(titleTextColor);
+        }
     }
 
     public void setAwesomeTitle(int resId) {
@@ -372,7 +378,7 @@ public class AwesomeToolbar extends Toolbar {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private static final class DefaultOutlineProdiver extends ViewOutlineProvider {
+    private static final class DefaultOutlineProvider extends ViewOutlineProvider {
         @Override
         public void getOutline(View view, Outline outline) {
 
