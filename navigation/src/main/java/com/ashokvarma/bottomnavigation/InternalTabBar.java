@@ -139,7 +139,6 @@ public class InternalTabBar extends BottomNavigationBar {
     }
 
     public void setTabItemColor(String activeColor, String inActiveColor) {
-
         setActiveColor(activeColor);
         setInActiveColor(inActiveColor);
         int count = mBottomNavigationTabs.size();

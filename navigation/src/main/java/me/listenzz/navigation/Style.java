@@ -34,6 +34,8 @@ public class Style implements Cloneable {
     private Drawable shadow = defaultShadow;
     private int titleGravity = Gravity.START;
     private int toolbarButtonTextSize = 15;
+    private float toolbarAlpha = 1.f;
+    private boolean toolbarShadowHidden = false;
 
     private String tabBarBackgroundColor = "#FFFFFF";
     private String tabBarItemColor = null;
@@ -220,6 +222,22 @@ public class Style implements Cloneable {
 
     public int getTitleTextSize() {
         return titleTextSize;
+    }
+
+    public float getToolbarAlpha() {
+        return toolbarAlpha;
+    }
+
+    public void setToolbarAlpha(float toolbarAlpha) {
+        this.toolbarAlpha = toolbarAlpha;
+    }
+
+    public boolean isToolbarShadowHidden() {
+        return toolbarShadowHidden;
+    }
+
+    public void setToolbarShadowHidden(boolean toolbarShadowHidden) {
+        this.toolbarShadowHidden = toolbarShadowHidden;
     }
 
     public Drawable getShadow() {

@@ -1159,7 +1159,13 @@ public abstract class AwesomeFragment extends InternalFragment {
         toolbar.setTitleTextColor(style.getTitleTextColor());
         toolbar.setTitleTextSize(style.getTitleTextSize());
         toolbar.setTitleGravity(style.getTitleGravity());
-        toolbar.showShadow(style.getShadow(), style.getElevation());
+        if (style.isToolbarShadowHidden()) {
+            toolbar.hideShadow();
+        } else {
+            toolbar.showShadow(style.getShadow(), style.getElevation());
+        }
+        toolbar.setAlpha(style.getToolbarAlpha());
+
         if (!isNavigationRoot() && !shouldHideBackButton()) {
             toolbar.setNavigationIcon(style.getBackIcon());
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
