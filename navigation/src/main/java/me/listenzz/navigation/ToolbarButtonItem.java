@@ -19,17 +19,23 @@ public class ToolbarButtonItem {
     public final String iconUri;
     @DrawableRes
     public final int iconRes;
+    public final boolean renderOriginal;
     public final boolean enabled;
     public final int tintColor;
     public final View.OnClickListener onClickListener;
 
-    public ToolbarButtonItem(String iconUri, @DrawableRes int iconRes, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
+    public ToolbarButtonItem(String iconUri, @DrawableRes int iconRes, boolean renderOriginal, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
         this.iconUri = iconUri;
         this.iconRes = iconRes;
+        this.renderOriginal = renderOriginal;
         this.tintColor = tintColor;
         this.title = title;
         this.enabled = enabled;
         this.onClickListener = onClickListener;
+    }
+
+    public ToolbarButtonItem(String iconUri, @DrawableRes int iconRes, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
+        this(iconUri, iconRes, false, title, tintColor, enabled, onClickListener);
     }
 
     public ToolbarButtonItem(String iconUri, String title, boolean enabled, View.OnClickListener onClickListener) {
@@ -71,10 +77,13 @@ public class ToolbarButtonItem {
 
             ColorStateList colorStateList = new ColorStateList(states, colors);
 
-            Drawable[] drawables = button.getCompoundDrawables();
-            if (drawables[0] != null) {
-                DrawableCompat.setTintList(drawables[0], colorStateList);
+            if (!renderOriginal) {
+                Drawable[] drawables = button.getCompoundDrawables();
+                if (drawables[0] != null) {
+                    DrawableCompat.setTintList(drawables[0], colorStateList);
+                }
             }
+
             button.setTextColor(colorStateList);
         }
     }

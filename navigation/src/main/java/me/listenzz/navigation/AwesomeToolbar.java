@@ -249,7 +249,7 @@ public class AwesomeToolbar extends Toolbar {
         menu.clear();
     }
 
-    public void addLeftButton(Drawable icon, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
+    public void addLeftButton(ToolbarButtonItem buttonItem) {
         if (leftButton != null) {
             removeView(leftButton);
         }
@@ -260,12 +260,12 @@ public class AwesomeToolbar extends Toolbar {
         button.setGravity(Gravity.CENTER);
         LayoutParams layoutParams = new LayoutParams(-2, -1, Gravity.CENTER_VERTICAL | Gravity.START);
         addView(button, layoutParams);
-        setButton(button, icon, title, tintColor, enabled, onClickListener);
+        setButton(button, buttonItem);
         leftButtons.add(button);
         bringTitleViewToFront();
     }
 
-    public void addRightButton(Drawable icon, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
+    public void addRightButton(ToolbarButtonItem buttonItem) {
         if (rightButton != null) {
             removeView(rightButton);
         }
@@ -277,28 +277,28 @@ public class AwesomeToolbar extends Toolbar {
         button.setGravity(Gravity.CENTER);
         LayoutParams layoutParams = new LayoutParams(-2, -1, Gravity.CENTER_VERTICAL | Gravity.END);
         addView(button, layoutParams);
-        setButton(button, icon, title, tintColor, enabled, onClickListener);
+        setButton(button, buttonItem);
         rightButtons.add(button);
         bringTitleViewToFront();
     }
 
-    public void setLeftButton(Drawable icon, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
+    public void setLeftButton(ToolbarButtonItem buttonItem) {
         if (leftButtons != null && leftButtons.size() > 0) {
             return;
         }
         setNavigationIcon(null);
         setNavigationOnClickListener(null);
         TextView leftButton = getLeftButton();
-        setButton(leftButton, icon, title, tintColor, enabled, onClickListener);
+        setButton(leftButton, buttonItem);
         bringTitleViewToFront();
     }
 
-    public void setRightButton(Drawable icon, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
+    public void setRightButton(ToolbarButtonItem buttonItem) {
         if (rightButtons != null && rightButtons.size() > 0) {
             return;
         }
         TextView rightButton = getRightButton();
-        setButton(rightButton, icon, title, tintColor, enabled, onClickListener);
+        setButton(rightButton, buttonItem);
         bringTitleViewToFront();
     }
 
@@ -327,14 +327,14 @@ public class AwesomeToolbar extends Toolbar {
         }
     }
 
-    private void setButton(TextView button, Drawable icon, String title, int tintColor, boolean enabled, View.OnClickListener onClickListener) {
-        button.setOnClickListener(onClickListener);
+    private void setButton(TextView button,ToolbarButtonItem buttonItem) {
+        button.setOnClickListener(buttonItem.onClickListener);
         button.setText(null);
         button.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         button.setMaxWidth(Integer.MAX_VALUE);
         button.setVisibility(View.VISIBLE);
 
-        int color = tintColor != 0 ? tintColor : buttonTintColor;
+        int color = buttonItem.tintColor != 0 ? buttonItem.tintColor : buttonTintColor;
         int disableColor = ColorUtils.blendARGB(AppUtils.toGrey(color), backgroundColor, 0.75f);
 
         int[][] states = new int[][] {
@@ -349,9 +349,12 @@ public class AwesomeToolbar extends Toolbar {
 
         ColorStateList colorStateList = new ColorStateList(states, colors);
 
+        Drawable icon = drawableFromBarButtonItem(buttonItem);
+
         if (icon != null) {
-            icon = DrawableCompat.wrap(icon);
-            DrawableCompat.setTintList(icon, colorStateList);
+            if (!buttonItem.renderOriginal) {
+                DrawableCompat.setTintList(icon, colorStateList);
+            }
             button.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
             int width = getContentInsetStartWithNavigation();
             int padding = (width - icon.getIntrinsicWidth()) / 2;
@@ -360,12 +363,12 @@ public class AwesomeToolbar extends Toolbar {
         } else {
             int padding = getContentInset();
             button.setPaddingRelative(padding, 0, padding, 0);
-            button.setText(title);
+            button.setText(buttonItem.title);
             button.setTextColor(colorStateList);
             button.setTextSize(buttonTextSize);
         }
 
-        button.setEnabled(enabled);
+        button.setEnabled(buttonItem.enabled);
 
         TypedValue typedValue = new TypedValue();
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
@@ -375,6 +378,22 @@ public class AwesomeToolbar extends Toolbar {
                 button.setBackgroundResource(typedValue.resourceId);
             }
         }
+    }
+
+    private Drawable drawableFromBarButtonItem(ToolbarButtonItem barButtonItem) {
+        if (getContext() == null) {
+            return null;
+        }
+        Drawable drawable = null;
+        if (barButtonItem.iconUri != null) {
+            drawable = DrawableUtils.fromUri(getContext(), barButtonItem.iconUri);
+        } else if (barButtonItem.iconRes != 0) {
+            drawable = getContext().getResources().getDrawable(barButtonItem.iconRes);
+        }
+        if (drawable != null) {
+            drawable = DrawableCompat.wrap(drawable);
+        }
+        return drawable;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

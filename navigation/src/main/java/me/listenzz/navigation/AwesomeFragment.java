@@ -16,7 +16,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.InternalFragment;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -1248,8 +1247,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             }
 
             for (ToolbarButtonItem barButtonItem : barButtonItems) {
-                Drawable drawable = drawableFromBarButtonItem(barButtonItem);
-                toolbar.addLeftButton(drawable, barButtonItem.title, barButtonItem.tintColor, barButtonItem.enabled, barButtonItem.onClickListener);
+                toolbar.addLeftButton(barButtonItem);
             }
         }
     }
@@ -1268,8 +1266,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                 return;
             }
             for (ToolbarButtonItem barButtonItem : barButtonItems) {
-                Drawable drawable = drawableFromBarButtonItem(barButtonItem);
-                toolbar.addRightButton(drawable, barButtonItem.title, barButtonItem.tintColor, barButtonItem.enabled, barButtonItem.onClickListener);
+                toolbar.addRightButton(barButtonItem);
             }
         }
     }
@@ -1300,8 +1297,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                 }
                 return;
             }
-            Drawable drawable = drawableFromBarButtonItem(barButtonItem);
-            toolbar.setLeftButton(drawable, barButtonItem.title, barButtonItem.tintColor, barButtonItem.enabled, barButtonItem.onClickListener);
+            toolbar.setLeftButton(barButtonItem);
             barButtonItem.attach(toolbar.getLeftButton());
         }
     }
@@ -1320,30 +1316,13 @@ public abstract class AwesomeFragment extends InternalFragment {
                 toolbar.clearRightButton();
                 return;
             }
-            Drawable drawable = drawableFromBarButtonItem(barButtonItem);
-            toolbar.setRightButton(drawable, barButtonItem.title, barButtonItem.tintColor, barButtonItem.enabled, barButtonItem.onClickListener);
+            toolbar.setRightButton(barButtonItem);
             barButtonItem.attach(toolbar.getRightButton());
         }
     }
 
     public ToolbarButtonItem getRightBarButtonItem() {
         return rightBarButtonItem;
-    }
-
-    private Drawable drawableFromBarButtonItem(ToolbarButtonItem barButtonItem) {
-        if (getContext() == null) {
-            return null;
-        }
-        Drawable drawable = null;
-        if (barButtonItem.iconUri != null) {
-            drawable = DrawableUtils.fromUri(getContext(), barButtonItem.iconUri);
-        } else if (barButtonItem.iconRes != 0) {
-            drawable = getContext().getResources().getDrawable(barButtonItem.iconRes);
-        }
-        if (drawable != null) {
-            drawable = DrawableCompat.wrap(drawable);
-        }
-        return drawable;
     }
 
     // ------ TabBarFragment -------
