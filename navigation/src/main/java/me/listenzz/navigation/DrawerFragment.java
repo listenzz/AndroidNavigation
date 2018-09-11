@@ -19,11 +19,13 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     private static final String MIN_DRAWER_MARGIN_KEY = "MIN_DRAWER_MARGIN_KEY";
     private static final String MAX_DRAWER_WIDTH_KEY = "MAX_DRAWER_WIDTH_KEY";
+    private static final String HIDE_STATUS_BAR_WHEN_MENU_OPENED_KEY = "HIDE_STATUS_BAR_WHEN_MENU_OPENED_KEY";
 
     private DrawerLayout drawerLayout;
     private boolean closing;
     private int minDrawerMargin = 64; // dp
     private int maxDrawerWidth; // dp
+    private boolean hideStatusBarWhenMenuOpened = true;
 
     @Nullable
     @Override
@@ -35,6 +37,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         if (savedInstanceState != null) {
             minDrawerMargin = savedInstanceState.getInt(MIN_DRAWER_MARGIN_KEY, 64);
             maxDrawerWidth = savedInstanceState.getInt(MAX_DRAWER_WIDTH_KEY);
+            hideStatusBarWhenMenuOpened = savedInstanceState.getBoolean(HIDE_STATUS_BAR_WHEN_MENU_OPENED_KEY);
         }
 
         FrameLayout menuLayout = drawerLayout.findViewById(R.id.drawer_menu);
@@ -78,6 +81,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         super.onSaveInstanceState(outState);
         outState.putInt(MIN_DRAWER_MARGIN_KEY, minDrawerMargin);
         outState.putInt(MAX_DRAWER_WIDTH_KEY, maxDrawerWidth);
+        outState.putBoolean(HIDE_STATUS_BAR_WHEN_MENU_OPENED_KEY, hideStatusBarWhenMenuOpened);
     }
 
     @Override
@@ -99,7 +103,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     @Override
     protected boolean preferredStatusBarHidden() {
         if (isStatusBarTranslucent()) {
-            return isMenuOpened() || super.preferredStatusBarHidden();
+            return (isMenuOpened() && hideStatusBarWhenMenuOpened) || super.preferredStatusBarHidden();
         } else {
             return super.preferredStatusBarHidden();
         }
@@ -118,7 +122,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
         if (isStatusBarTranslucent()) {
             if (!closing) {
-                setStatusBarHidden(slideOffset != 0 || super.preferredStatusBarHidden());
+                setStatusBarHidden((slideOffset != 0 && hideStatusBarWhenMenuOpened) || super.preferredStatusBarHidden());
             }
             // Log.i(TAG, getDebugTag() + " onDrawerSlide");
         }
@@ -150,6 +154,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     private AwesomeFragment contentFragment;
+
     public void setContentFragment(final AwesomeFragment fragment) {
         if (isAdded()) {
             throw new IllegalStateException("DrawerFragment 已处于 added 状态，不可以再设置 contentFragment");
@@ -165,7 +170,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     private AwesomeFragment menuFragment;
-    public void setMenuFragment( AwesomeFragment fragment) {
+
+    public void setMenuFragment(AwesomeFragment fragment) {
         if (isAdded()) {
             throw new IllegalStateException("DrawerFragment 已处于 added 状态，不可以再设置 menuFragment");
         }
@@ -187,10 +193,14 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         this.maxDrawerWidth = dp;
     }
 
+    public void setHideStatusBarWhenMenuOpened(boolean hideStatusBarWhenMenuOpened) {
+        this.hideStatusBarWhenMenuOpened = hideStatusBarWhenMenuOpened;
+    }
+
     public void openMenu() {
         if (drawerLayout != null) {
             drawerLayout.openDrawer(Gravity.START);
-            if (isStatusBarTranslucent()) {
+            if (isStatusBarTranslucent() && hideStatusBarWhenMenuOpened) {
                 setStatusBarHidden(true);
             }
         }
