@@ -805,6 +805,12 @@ public abstract class AwesomeFragment extends InternalFragment {
         } else {
             if (getShowsDialog()) {
                 super.dismiss();
+                Fragment target = getTargetFragment();
+                if (target != null && target instanceof AwesomeFragment && target.isAdded() && !target.isRemoving()) {
+                    requireFragmentManager().executePendingTransactions();
+                    AwesomeFragment fragment = (AwesomeFragment) target;
+                    fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
+                }
             } else {
                 AwesomeFragment parent = getParentAwesomeFragment();
                 parent.setResult(getResultCode(), getResultData());
@@ -828,17 +834,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         } else {
             AppUtils.hideSoftInput(getView());
             dismiss();
-        }
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-        Fragment target = getTargetFragment();
-        if (target != null && target instanceof AwesomeFragment && target.isAdded() && !target.isRemoving()) {
-            requireFragmentManager().executePendingTransactions();
-            AwesomeFragment fragment = (AwesomeFragment) target;
-            fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
         }
     }
 
