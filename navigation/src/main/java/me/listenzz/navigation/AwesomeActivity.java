@@ -1,5 +1,7 @@
 package me.listenzz.navigation;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -157,13 +159,18 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     private void setRootFragmentInternal(AwesomeFragment fragment) {
+        clearFragments();
+        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.None);
+    }
+
+    public void clearFragments() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 0) {
+            getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
             String tag = fragmentManager.getBackStackEntryAt(0).getName();
             fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
-        FragmentHelper.addFragmentToBackStack(fragmentManager, android.R.id.content, fragment, PresentAnimation.None);
     }
 
     @Override
