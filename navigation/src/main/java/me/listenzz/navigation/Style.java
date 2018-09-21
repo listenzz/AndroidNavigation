@@ -184,16 +184,16 @@ public class Style implements Cloneable {
     }
 
     public void setBackIcon(Drawable icon) {
-        backIcon = icon.mutate();
+        backIcon = icon;
     }
 
     public Drawable getBackIcon() {
         if (backIcon == null) {
-            Drawable drawable = context.getResources().getDrawable(R.drawable.nav_ic_arrow_back);
-            backIcon = DrawableCompat.wrap(drawable).mutate();
+            backIcon = context.getResources().getDrawable(R.drawable.nav_ic_arrow_back);
         }
-        DrawableCompat.setTint(backIcon, getToolbarTintColor());
-        return backIcon;
+        Drawable icon = DrawableCompat.wrap(backIcon.mutate());
+        DrawableCompat.setTint(icon, getToolbarTintColor());
+        return icon;
     }
 
     public void setTitleTextColor(int color) {
