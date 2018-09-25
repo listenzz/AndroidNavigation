@@ -51,7 +51,9 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             AwesomeFragment fragment = (AwesomeFragment) fragmentManager.findFragmentByTag(entry.getName());
             if (!fragment.dispatchBackPressed()) {
                 if (count == 1) {
-                    ActivityCompat.finishAfterTransition(this);
+                    if (!handleBackPressed()) {
+                        ActivityCompat.finishAfterTransition(this);
+                    }
                 } else {
                     dismissFragment(fragment);
                 }
@@ -59,6 +61,10 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         } else {
             super.onBackPressed();
         }
+    }
+
+    protected boolean handleBackPressed() {
+        return false;
     }
 
     @Override
