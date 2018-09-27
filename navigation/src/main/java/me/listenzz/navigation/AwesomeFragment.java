@@ -359,7 +359,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     protected boolean onBackPressed() {
         FragmentManager fragmentManager = getChildFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
-        for (int i = count -1; i > -1; i--) {
+        for (int i = count - 1; i > -1; i--) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(i);
             AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
             if (child.definesPresentationContext()) {
@@ -373,18 +373,14 @@ public abstract class AwesomeFragment extends InternalFragment {
         return false;
     }
 
-    public void presentFragment(final AwesomeFragment fragment, int requestCode) {
+    public void presentFragment(AwesomeFragment fragment, int requestCode) {
         if (isInDialog()) {
             throw new IllegalStateException("在 dialog 中， 不能执行此操作, 可以考虑再次使用 `showDialog`");
         }
 
         AwesomeFragment parent = getParentAwesomeFragment();
         if (definesPresentationContext() && parent != null) {
-            Bundle args = FragmentHelper.getArguments(fragment);
-            args.putInt(ARGS_REQUEST_CODE, requestCode);
-            fragment.setTargetFragment(this, requestCode);
-            fragment.setDefinesPresentationContext(true);
-            FragmentHelper.addFragmentToBackStack(requireFragmentManager(), getContainerId(), fragment, PresentAnimation.Modal);
+            presentFragmentInternal(this, fragment, requestCode);
         } else if (parent != null) {
             parent.presentFragment(fragment, requestCode);
         } else if (presentableActivity != null) {
@@ -394,6 +390,19 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
+    private void presentFragmentInternal(final AwesomeFragment target, final AwesomeFragment fragment, final int requestCode) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                Bundle args = FragmentHelper.getArguments(fragment);
+                args.putInt(ARGS_REQUEST_CODE, requestCode);
+                fragment.setTargetFragment(target, requestCode);
+                fragment.setDefinesPresentationContext(true);
+                FragmentHelper.addFragmentToBackStack(requireFragmentManager(), getContainerId(), fragment, PresentAnimation.Modal);
+            }
+        });
+    }
+
     public void dismissFragment() {
         if (isInDialog()) {
             throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `dismissDialog`");
@@ -401,12 +410,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         AwesomeFragment target = (AwesomeFragment) getTargetFragment();
         if (target != null) {
-            setAnimation(PresentAnimation.Modal);
-            target.setAnimation(PresentAnimation.Modal);
-            setUserVisibleHint(false);
-            requireFragmentManager().popBackStack(getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            requireFragmentManager().executePendingTransactions();
-            target.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
+            dismissFragmentInternal(target);
             return;
         }
 
@@ -420,6 +424,20 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (presentableActivity != null) {
             presentableActivity.dismissFragment(this);
         }
+    }
+
+    private void dismissFragmentInternal(@NonNull final AwesomeFragment target) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                setAnimation(PresentAnimation.Modal);
+                target.setAnimation(PresentAnimation.Modal);
+                setUserVisibleHint(false);
+                requireFragmentManager().popBackStack(getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                requireFragmentManager().executePendingTransactions();
+                target.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
+            }
+        });
     }
 
     public AwesomeFragment getPresentedFragment() {
@@ -805,17 +823,22 @@ public abstract class AwesomeFragment extends InternalFragment {
         } else {
             if (getShowsDialog()) {
                 super.dismiss();
-                Fragment target = getTargetFragment();
-                if (target != null && target instanceof AwesomeFragment && target.isAdded() && !target.isRemoving()) {
-                    requireFragmentManager().executePendingTransactions();
-                    AwesomeFragment fragment = (AwesomeFragment) target;
-                    fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
-                }
             } else {
                 AwesomeFragment parent = getParentAwesomeFragment();
                 parent.setResult(getResultCode(), getResultData());
                 parent.dismissDialog();
             }
+        }
+    }
+
+    @Override
+    protected void dismissInternal(boolean allowStateLoss) {
+        super.dismissInternal(allowStateLoss);
+        Fragment target = getTargetFragment();
+        if (target != null && target instanceof AwesomeFragment && target.isAdded() && !target.isRemoving()) {
+            requireFragmentManager().executePendingTransactions();
+            AwesomeFragment fragment = (AwesomeFragment) target;
+            fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
         }
     }
 
@@ -825,16 +848,25 @@ public abstract class AwesomeFragment extends InternalFragment {
      * Dismiss the fragment as dialog.
      */
     public void dismissDialog() {
-        if (animatingOut) {
-            return;
-        }
+        dismissDialogInternal();
+    }
 
-        if (getAnimationType() != AnimationType.None) {
-            animateOut();
-        } else {
-            AppUtils.hideSoftInput(getView());
-            dismiss();
-        }
+    private void dismissDialogInternal() {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                if (animatingOut) {
+                    return;
+                }
+
+                if (getAnimationType() != AnimationType.None) {
+                    animateOut();
+                } else {
+                    AppUtils.hideSoftInput(getView());
+                    dismiss();
+                }
+            }
+        });
     }
 
     /**
@@ -859,8 +891,17 @@ public abstract class AwesomeFragment extends InternalFragment {
      * Present the fragment as dialog
      */
     public void showDialog(@NonNull AwesomeFragment dialog, int requestCode) {
-        dialog.setTargetFragment(this, requestCode);
-        dialog.show(getFragmentManager(), dialog.getSceneId());
+        showDialogInternal(this, dialog, requestCode);
+    }
+
+    private void showDialogInternal(final AwesomeFragment target, final AwesomeFragment dialog, final int requestCode) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                dialog.setTargetFragment(target, requestCode);
+                dialog.show(getFragmentManager(), dialog.getSceneId());
+            }
+        });
     }
 
     /**
@@ -1188,9 +1229,9 @@ public abstract class AwesomeFragment extends InternalFragment {
             customAwesomeToolbar(toolbar);
 
             if (leftBarButtonItems != null) {
-               for (ToolbarButtonItem item : leftBarButtonItems) {
-                   item.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
-               }
+                for (ToolbarButtonItem item : leftBarButtonItems) {
+                    item.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
+                }
             } else if (leftBarButtonItem != null) {
                 leftBarButtonItem.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
             }
@@ -1252,6 +1293,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     private ToolbarButtonItem[] rightBarButtonItems;
+
     public void setRightBarButtonItems(ToolbarButtonItem[] barButtonItems) {
         rightBarButtonItems = barButtonItems;
         AwesomeToolbar toolbar = getAwesomeToolbar();
