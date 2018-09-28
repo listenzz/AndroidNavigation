@@ -2,9 +2,11 @@ package com.navigation;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.navigation.statusbar.TestStatusBarFragment;
 
+import me.listenzz.navigation.AppUtils;
 import me.listenzz.navigation.AwesomeActivity;
 import me.listenzz.navigation.DrawerFragment;
 import me.listenzz.navigation.NavigationFragment;
@@ -21,9 +23,6 @@ public class MainActivity extends AwesomeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // 开启沉浸式
-        setStatusBarTranslucent(true);
 
         if (savedInstanceState == null) {
 
@@ -46,9 +45,18 @@ public class MainActivity extends AwesomeActivity {
             drawerFragment.setContentFragment(tabBarFragment);
             drawerFragment.setMaxDrawerWidth(300); // 设置 menu 的最大宽度
             //drawerFragment.setMinDrawerMargin(0); // 可使 menu 和 drawerLayout 同宽
-            
+
             setActivityRootFragment(drawerFragment);
         }
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        Log.i(TAG, "onAttachedToWindow 是否刘海眉：" + AppUtils.isCutout(this));
+        // 设置沉浸式
+        setStatusBarTranslucent(!AppUtils.isCutout(this));
+        // setStatusBarTranslucent(true);
     }
 
     @Override

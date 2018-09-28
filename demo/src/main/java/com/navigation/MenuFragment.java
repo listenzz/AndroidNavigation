@@ -13,6 +13,7 @@ import com.navigation.toolbar.CoordinatorFragment;
 import com.navigation.toolbar.ToolbarColorTransitionFragment;
 import com.navigation.toolbar.ViewPagerFragment;
 
+import me.listenzz.navigation.AppUtils;
 import me.listenzz.navigation.AwesomeFragment;
 import me.listenzz.navigation.DrawerFragment;
 import me.listenzz.navigation.NavigationFragment;
@@ -86,6 +87,22 @@ public class MenuFragment extends AwesomeFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    protected void onStatusBarTranslucentChanged(boolean translucent) {
+        super.onStatusBarTranslucentChanged(translucent);
+        changeRootViewTopPadding(translucent);
+    }
+
+    private void changeRootViewTopPadding(boolean translucent) {
+        if (AppUtils.isCutout(requireActivity())) {
+            if (translucent) {
+                appendStatusBarPadding(getView(), getView().getLayoutParams().height );
+            } else {
+                removeStatusBarPadding(getView(), getView().getLayoutParams().height);
+            }
+        }
     }
 
     @Override

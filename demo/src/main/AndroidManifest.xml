@@ -10,6 +10,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <meta-data android:name="android.max_aspect" android:value="2.1" />
+
         <activity android:name=".SplashActivity"
             android:theme="@style/SplashTheme"
             android:noHistory="true"

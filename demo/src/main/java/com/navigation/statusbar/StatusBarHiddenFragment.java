@@ -8,7 +8,7 @@ public class StatusBarHiddenFragment extends TestStatusBarFragment {
 
     @Override
     protected boolean preferredStatusBarHidden() {
-        return true;
+        return isStatusBarTranslucent();
     }
 
 }
