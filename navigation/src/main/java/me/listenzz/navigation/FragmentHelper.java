@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ import java.util.List;
  */
 
 public class FragmentHelper {
+
+    private static final String TAG = "Navigation";
 
     @NonNull
     public static Bundle getArguments(Fragment fragment) {
@@ -25,8 +28,16 @@ public class FragmentHelper {
         return args;
     }
 
+    public static void executePendingTransactionsSafe(FragmentManager fragmentManager) {
+        try {
+            fragmentManager.executePendingTransactions();
+        } catch (IllegalStateException e) {
+            Log.wtf(TAG, e);
+        }
+    }
+
     public static void addFragmentToBackStack(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment, PresentAnimation animation) {
-        fragmentManager.executePendingTransactions();
+        executePendingTransactionsSafe(fragmentManager);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
@@ -47,7 +58,7 @@ public class FragmentHelper {
     }
 
     public static void addFragmentToAddedList(FragmentManager fragmentManager, int containerId, AwesomeFragment fragment, boolean primary) {
-        fragmentManager.executePendingTransactions();
+        executePendingTransactionsSafe(fragmentManager);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(containerId, fragment, fragment.getSceneId());

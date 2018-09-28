@@ -434,7 +434,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                 target.setAnimation(PresentAnimation.Modal);
                 setUserVisibleHint(false);
                 requireFragmentManager().popBackStack(getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                requireFragmentManager().executePendingTransactions();
+                FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
                 target.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
             }
         });
@@ -836,7 +836,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         super.dismissInternal(allowStateLoss);
         Fragment target = getTargetFragment();
         if (target != null && target instanceof AwesomeFragment && target.isAdded() && !target.isRemoving()) {
-            requireFragmentManager().executePendingTransactions();
+            FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
             AwesomeFragment fragment = (AwesomeFragment) target;
             fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
         }

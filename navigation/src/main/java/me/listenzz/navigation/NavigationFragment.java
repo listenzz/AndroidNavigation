@@ -127,7 +127,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     private void popToFragmentInternal(AwesomeFragment fragment, boolean animated) {
         FragmentManager fragmentManager = getChildFragmentManager();
-        fragmentManager.executePendingTransactions();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
         AwesomeFragment topFragment = getTopFragment();
         if (topFragment == fragment) {
             return;
@@ -137,7 +137,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
         topFragment.setUserVisibleHint(false);
         fragmentManager.popBackStack(fragment.getSceneId(), 0);
-        fragmentManager.executePendingTransactions();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
 
@@ -182,7 +182,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     private void replaceFragmentInternal(AwesomeFragment fragment) {
         FragmentManager fragmentManager = getChildFragmentManager();
-        fragmentManager.executePendingTransactions();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         AwesomeFragment topFragment = getTopFragment();
         AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, topFragment);
@@ -216,7 +216,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     private void replaceToRootFragmentInternal(AwesomeFragment fragment) {
         FragmentManager fragmentManager = getChildFragmentManager();
-        fragmentManager.executePendingTransactions();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         AwesomeFragment topFragment = getTopFragment();
         AwesomeFragment rootFragment = getRootFragment();
@@ -306,7 +306,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             }
             if (aheadFragment != null && scrollPercent >= 1.0f) {
                 FragmentManager fragmentManager = getChildFragmentManager();
-                fragmentManager.executePendingTransactions();
+                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
                 topFragment.setAnimation(PresentAnimation.None);
                 aheadFragment.setAnimation(PresentAnimation.None);
                 aheadFragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());

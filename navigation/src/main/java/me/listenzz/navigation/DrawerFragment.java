@@ -133,7 +133,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         closing = false;
         setNeedsStatusBarAppearanceUpdate();
         FragmentManager fragmentManager = getChildFragmentManager();
-        fragmentManager.executePendingTransactions();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
         fragmentManager.beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
         getMenuFragment().setUserVisibleHint(true);
     }
@@ -143,7 +143,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         closing = false;
         setNeedsStatusBarAppearanceUpdate();
         FragmentManager fragmentManager = getChildFragmentManager();
-        fragmentManager.executePendingTransactions();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
         fragmentManager.beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
         getMenuFragment().setUserVisibleHint(false);
     }

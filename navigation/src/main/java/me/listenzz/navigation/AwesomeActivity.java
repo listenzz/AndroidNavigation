@@ -93,7 +93,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     private void dismissFragmentInternal(AwesomeFragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.executePendingTransactions();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         AwesomeFragment top = (AwesomeFragment)fragmentManager.findFragmentById(android.R.id.content);
         AwesomeFragment presenting = getPresentingFragment(fragment);
@@ -109,7 +109,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             ActivityCompat.finishAfterTransition(this);
         } else {
             fragmentManager.popBackStack(fragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            fragmentManager.executePendingTransactions();
+            FragmentHelper.executePendingTransactionsSafe(fragmentManager);
             presenting.onFragmentResult(fragment.getRequestCode(), fragment.getResultCode(), fragment.getResultData());
         }
     }
