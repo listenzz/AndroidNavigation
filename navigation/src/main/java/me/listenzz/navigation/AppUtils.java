@@ -31,24 +31,11 @@ public class AppUtils {
     private AppUtils() {
     }
 
-    /**
-     * 判断颜色是否偏黑色
-     *
-     * @param color 颜色
-     * @param level 级别
-     * @return
-     */
     public static boolean isBlackColor(int color, int level) {
         int grey = toGrey(color);
         return grey < level;
     }
 
-    /**
-     * 颜色转换成灰度值
-     *
-     * @param rgb 颜色
-     * @return　灰度值
-     */
     public static int toGrey(int rgb) {
         int blue = rgb & 0x000000FF;
         int green = (rgb & 0x0000FF00) >> 8;
@@ -56,11 +43,6 @@ public class AppUtils {
         return (red * 38 + green * 75 + blue * 15) >> 7;
     }
 
-
-    /**
-     * @param context used to get system services
-     * @return screenWidth in pixels
-     */
     public static int getScreenWidth(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Point size = new Point();
@@ -68,13 +50,6 @@ public class AppUtils {
         return size.x;
     }
 
-    /**
-     * This method can be extended to get all android attributes color, string, dimension ...etc
-     *
-     * @param context          used to fetch android attribute
-     * @param androidAttribute attribute codes like R.attr.colorAccent
-     * @return in this case color of android attribute
-     */
     public static int fetchContextColor(Context context, int androidAttribute) {
         TypedValue typedValue = new TypedValue();
 
@@ -102,12 +77,6 @@ public class AppUtils {
         return resource;
     }
 
-
-    /**
-     * @param context used to fetch display metrics
-     * @param dp      dp value
-     * @return pixel value
-     */
     public static int dp2px(Context context, float dp) {
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
         return (int) px;
