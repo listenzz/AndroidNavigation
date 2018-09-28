@@ -701,8 +701,9 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void setStatusBarTranslucent(boolean translucent) {
         if (getShowsDialog()) {
             AppUtils.setStatusBarTranslucent(getWindow(), translucent);
+        } else {
+            presentableActivity.setStatusBarTranslucent(translucent);
         }
-        presentableActivity.setStatusBarTranslucent(translucent);
     }
 
     public boolean isStatusBarTranslucent() {

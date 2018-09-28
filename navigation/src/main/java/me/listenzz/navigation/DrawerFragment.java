@@ -102,11 +102,15 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     protected boolean preferredStatusBarHidden() {
-        if (isStatusBarTranslucent()) {
-            return (isMenuOpened() && hideStatusBarWhenMenuOpened) || super.preferredStatusBarHidden();
+        if (isMenuOpened()) {
+            return shouldHideStatusBarWhenMenuOpened() || super.preferredStatusBarHidden();
         } else {
             return super.preferredStatusBarHidden();
         }
+    }
+
+    protected boolean shouldHideStatusBarWhenMenuOpened() {
+        return isStatusBarTranslucent() && !AppUtils.isCutout(requireActivity()) && hideStatusBarWhenMenuOpened;
     }
 
     @Override
@@ -120,11 +124,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-        if (isStatusBarTranslucent()) {
-            if (!closing) {
-                setStatusBarHidden((slideOffset != 0 && hideStatusBarWhenMenuOpened) || super.preferredStatusBarHidden());
-            }
-            // Log.i(TAG, getDebugTag() + " onDrawerSlide");
+        if (!closing) {
+            setStatusBarHidden((slideOffset != 0 && shouldHideStatusBarWhenMenuOpened()) || super.preferredStatusBarHidden());
         }
     }
 
@@ -200,7 +201,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     public void openMenu() {
         if (drawerLayout != null) {
             drawerLayout.openDrawer(Gravity.START);
-            if (isStatusBarTranslucent() && hideStatusBarWhenMenuOpened) {
+            if (shouldHideStatusBarWhenMenuOpened()) {
                 setStatusBarHidden(true);
             }
         }

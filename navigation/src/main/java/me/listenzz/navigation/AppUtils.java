@@ -3,7 +3,9 @@ package me.listenzz.navigation;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -13,6 +15,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.TypedValue;
+import android.view.Display;
+import android.view.DisplayCutout;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +26,15 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
+import java.lang.reflect.Method;
+
 /**
  * Created by listen on 2018/2/3.
  */
 
 public class AppUtils {
+
+    private static final String TAG = "Navigation";
 
     private AppUtils() {
     }
@@ -197,6 +205,9 @@ public class AppUtils {
 
     public static void setStatusBarHidden(Window window, boolean hidden) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+
+            setRenderContentInShortEdgeCutoutAreas(window, hidden);
+
             if (hidden) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
@@ -270,4 +281,153 @@ public class AppUtils {
         }
         return statusBarHeight;
     }
+
+
+    private volatile static boolean sHasCheckAllScreen;
+    private volatile static boolean sIsAllScreenDevice;
+
+    // 是否全面屏
+    public static boolean isFullScreenDevice(Context context) {
+        if (sHasCheckAllScreen) {
+            return sIsAllScreenDevice;
+        }
+        sHasCheckAllScreen = true;
+        sIsAllScreenDevice = false;
+        // 低于 API 21的，都不会是全面屏。。。
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return false;
+        }
+
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (windowManager != null) {
+            Display display = windowManager.getDefaultDisplay();
+            Point point = new Point();
+            display.getRealSize(point);
+            float width = Math.min(point.x, point.y);
+            float height = Math.max(point.x, point.y);
+            if (height / width >= 1.97f) {
+                sIsAllScreenDevice = true;
+            }
+        }
+        return sIsAllScreenDevice;
+
+    }
+
+    private volatile static boolean sHasCheckCutout;
+    private volatile static boolean sIsCutout;
+
+    // 是否刘海屏
+    public static boolean isCutout(Activity activity) {
+        if (sHasCheckCutout) {
+            return sIsCutout;
+        }
+
+        sHasCheckCutout = true;
+        sIsCutout = isHuaweiCutout(activity) || isOppoCutout(activity) || isVivoCutout(activity) || isXiaomiCutout(activity);
+
+        if (!sIsCutout && isGoogleCutoutSupport()) {
+            Window window = activity.getWindow();
+            if (window == null) {
+                throw new IllegalStateException("activity has not attach to window");
+            }
+            View decorView = window.getDecorView();
+            if (decorView == null) {
+                throw new IllegalStateException("activity has not attach to window");
+            }
+            sIsCutout = attachHasOfficialNotch(decorView);
+        }
+
+        return sIsCutout;
+    }
+
+
+    @TargetApi(28)
+    private static boolean attachHasOfficialNotch(View view) {
+        WindowInsets windowInsets = view.getRootWindowInsets();
+        if (windowInsets != null) {
+            DisplayCutout displayCutout = windowInsets.getDisplayCutout();
+            return displayCutout != null;
+        } else {
+            throw new IllegalStateException("activity has not yet attach to window, you must call `isCutout` after `Activity#onAttachedToWindow` is called.");
+        }
+    }
+
+    public static boolean isHuaweiCutout(Context context) {
+
+        boolean ret = false;
+
+        try {
+            ClassLoader cl = context.getClassLoader();
+            Class HwNotchSizeUtil = cl.loadClass("com.huawei.android.util.HwNotchSizeUtil");
+            Method get = HwNotchSizeUtil.getMethod("isHuaweiCutout");
+            ret = (boolean) get.invoke(HwNotchSizeUtil);
+        } catch (Exception e) {
+            // ignore
+        }
+
+        return ret;
+    }
+
+    public static boolean isOppoCutout(Context context) {
+        return context.getPackageManager().hasSystemFeature("com.oppo.feature.screen.heteromorphism");
+    }
+
+    public static final int NOTCH_IN_SCREEN_VOIO = 0x00000020;//是否有凹槽
+    public static final int ROUNDED_IN_SCREEN_VOIO = 0x00000008;//是否有圆角
+
+    public static boolean isVivoCutout(Context context) {
+        boolean ret = false;
+
+        try {
+            ClassLoader cl = context.getClassLoader();
+            Class ftFeature = cl.loadClass("android.util.FtFeature");
+            Method[] methods = ftFeature.getDeclaredMethods();
+            if (methods != null) {
+                for (int i = 0; i < methods.length; i++) {
+                    Method method = methods[i];
+                    if (method.getName().equalsIgnoreCase("isFeatureSupport")) {
+                        ret = (boolean) method.invoke(ftFeature, NOTCH_IN_SCREEN_VOIO);
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+
+        return ret;
+    }
+
+    private static final String MIUI_NOTCH = "ro.miui.notch";
+
+    @SuppressLint("PrivateApi")
+    public static boolean isXiaomiCutout(Context context) {
+        try {
+            Class spClass = Class.forName("android.os.SystemProperties");
+            Method getMethod = spClass.getDeclaredMethod("getInt", String.class, int.class);
+            getMethod.setAccessible(true);
+            int hasNotch = (int) getMethod.invoke(null, MIUI_NOTCH, 0);
+            return hasNotch == 1;
+        } catch (Exception e) {
+            // ignore
+        }
+        return false;
+    }
+
+    public static boolean isGoogleCutoutSupport() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
+    }
+
+    public static void setRenderContentInShortEdgeCutoutAreas(Window window, boolean shortEdges) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            WindowManager.LayoutParams layoutParams = window.getAttributes();
+            if (shortEdges) {
+                layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            } else {
+                layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+            }
+            window.setAttributes(layoutParams);
+        }
+    }
+
 }
