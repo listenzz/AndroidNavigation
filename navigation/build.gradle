@@ -12,14 +12,14 @@ ext {
 }
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.1'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode gitVersionCode()
-        versionName "1.8.23"
+        versionName "1.9.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -33,7 +33,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion"
     api 'com.ashokvarma.android:bottom-navigation-bar:2.0.4'
 
     testImplementation 'junit:junit:4.12'
@@ -45,7 +45,7 @@ publish {
     userOrg = 'listenzz'
     groupId = 'me.listenzz'
     artifactId = 'navigation'
-    publishVersion = '1.8.23'
+    publishVersion = '1.9.0'
     desc = 'A library managing nested Fragment, StatusBar, Toolbar for Android.'
     website = 'https://github.com/listenzz/AndroidNavigation'
 }

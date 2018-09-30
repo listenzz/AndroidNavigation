@@ -888,9 +888,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         return super.show(transaction, tag);
     }
 
-    /**
-     * Present the fragment as dialog
-     */
     public void showDialog(@NonNull AwesomeFragment dialog, int requestCode) {
         showDialogInternal(this, dialog, requestCode);
     }
