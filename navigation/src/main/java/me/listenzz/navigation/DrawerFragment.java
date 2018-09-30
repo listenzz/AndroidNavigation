@@ -19,13 +19,11 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     private static final String MIN_DRAWER_MARGIN_KEY = "MIN_DRAWER_MARGIN_KEY";
     private static final String MAX_DRAWER_WIDTH_KEY = "MAX_DRAWER_WIDTH_KEY";
-    private static final String HIDE_STATUS_BAR_WHEN_MENU_OPENED_KEY = "HIDE_STATUS_BAR_WHEN_MENU_OPENED_KEY";
 
     private DrawerLayout drawerLayout;
     private boolean closing;
     private int minDrawerMargin = 64; // dp
     private int maxDrawerWidth; // dp
-    private boolean hideStatusBarWhenMenuOpened = true;
 
     @Nullable
     @Override
@@ -37,7 +35,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         if (savedInstanceState != null) {
             minDrawerMargin = savedInstanceState.getInt(MIN_DRAWER_MARGIN_KEY, 64);
             maxDrawerWidth = savedInstanceState.getInt(MAX_DRAWER_WIDTH_KEY);
-            hideStatusBarWhenMenuOpened = savedInstanceState.getBoolean(HIDE_STATUS_BAR_WHEN_MENU_OPENED_KEY);
         }
 
         FrameLayout menuLayout = drawerLayout.findViewById(R.id.drawer_menu);
@@ -81,7 +78,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         super.onSaveInstanceState(outState);
         outState.putInt(MIN_DRAWER_MARGIN_KEY, minDrawerMargin);
         outState.putInt(MAX_DRAWER_WIDTH_KEY, maxDrawerWidth);
-        outState.putBoolean(HIDE_STATUS_BAR_WHEN_MENU_OPENED_KEY, hideStatusBarWhenMenuOpened);
     }
 
     @Override
@@ -110,7 +106,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     protected boolean shouldHideStatusBarWhenMenuOpened() {
-        return isStatusBarTranslucent() && !AppUtils.isCutout(requireActivity()) && hideStatusBarWhenMenuOpened;
+        return isStatusBarTranslucent() && !AppUtils.isCutout(requireActivity());
     }
 
     @Override
@@ -192,10 +188,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     public void setMaxDrawerWidth(int dp) {
         this.maxDrawerWidth = dp;
-    }
-
-    public void setHideStatusBarWhenMenuOpened(boolean hideStatusBarWhenMenuOpened) {
-        this.hideStatusBarWhenMenuOpened = hideStatusBarWhenMenuOpened;
     }
 
     public void openMenu() {
