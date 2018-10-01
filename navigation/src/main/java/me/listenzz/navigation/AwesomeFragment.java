@@ -85,7 +85,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(SAVED_STATE_BOTTOM_PADDING_KEY, bottomPadding);
         outState.putBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, definesPresentationContext);
@@ -194,7 +194,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @CallSuper
     protected void onViewAppear() {
-        if (childFragmentForAppearance() == null) {
+        if (childFragmentForAppearance() == null && !handleStatusBarColorWhenPushed()) {
             setNeedsStatusBarAppearanceUpdate();
         }
     }
@@ -274,6 +274,12 @@ public abstract class AwesomeFragment extends InternalFragment {
         return parent == null || parent.getUserVisibleHint();
     }
 
+    private Animation.AnimationListener transitionAnimationListener;
+
+    void setTransitionAnimationListener(Animation.AnimationListener listener) {
+        transitionAnimationListener = listener;
+    }
+
     @Override
     @CallSuper
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
@@ -290,14 +296,24 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
-                return AnimationUtils.loadAnimation(getContext(), animation.enter);
+                Animation anim = AnimationUtils.loadAnimation(getContext(), animation.enter);
+                if (transitionAnimationListener != null) {
+                    anim.setAnimationListener(transitionAnimationListener);
+                }
+                return anim;
             } else {
+                transitionAnimationListener = null;
                 return AnimationUtils.loadAnimation(getContext(), animation.exit);
             }
         } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
             if (enter) {
-                return AnimationUtils.loadAnimation(getContext(), animation.popEnter);
+                Animation anim = AnimationUtils.loadAnimation(getContext(), animation.popEnter);
+                if (transitionAnimationListener != null) {
+                    anim.setAnimationListener(transitionAnimationListener);
+                }
+                return anim;
             } else {
+                transitionAnimationListener = null;
                 return AnimationUtils.loadAnimation(getContext(), animation.popExit);
             }
         }
@@ -625,6 +641,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void setNeedsStatusBarAppearanceUpdate() {
+        setNeedsStatusBarAppearanceUpdate(true);
+    }
+
+    public void setNeedsStatusBarAppearanceUpdate(boolean colorAnimated) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             return;
         }
@@ -633,6 +653,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         if (getShowsDialog()) {
             Activity activity = requireActivity();
+
             int activityWindowFlags = activity.getWindow().getAttributes().flags;
             boolean hidden = (activityWindowFlags
                     & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0 || preferredStatusBarHidden();
@@ -659,7 +680,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
-            parent.setNeedsStatusBarAppearanceUpdate();
+            parent.setNeedsStatusBarAppearanceUpdate(colorAnimated);
         } else {
 
             // statusBarHidden
@@ -678,10 +699,8 @@ public abstract class AwesomeFragment extends InternalFragment {
             if (shouldAdjustForWhiteStatusBar) {
                 color = Color.parseColor("#4A4A4A");
             }
-            if (isStatusBarTranslucent() && color == preferredToolbarColor()) {
-                color = Color.TRANSPARENT;
-            }
-            boolean animated = preferredStatusBarColorAnimated();
+
+            boolean animated = preferredStatusBarColorAnimated() && colorAnimated;
             setStatusBarColor(color, animated);
         }
     }
@@ -1081,6 +1100,15 @@ public abstract class AwesomeFragment extends InternalFragment {
     boolean shouldHideTabBarWhenPushed() {
         NavigationFragment navigationFragment = getNavigationFragment();
         return navigationFragment != null && navigationFragment.getRootFragment().hidesBottomBarWhenPushed();
+    }
+
+    boolean handleStatusBarColorWhenPushed() {
+        Fragment parent = getParentFragment();
+        if (parent != null && parent instanceof NavigationFragment) {
+            NavigationFragment navigationFragment = (NavigationFragment) parent;
+            return navigationFragment.shouldHandleStatusBarTransitionWhenPushed(transitionAnimationListener);
+        }
+        return false;
     }
 
     void handleHideBottomBarWhenPushed(int transit, boolean enter, PresentAnimation animation) {

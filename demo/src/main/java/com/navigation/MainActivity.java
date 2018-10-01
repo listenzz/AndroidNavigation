@@ -24,6 +24,8 @@ public class MainActivity extends AwesomeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setStatusBarTranslucent(true);
+
         if (savedInstanceState == null) {
 
             TestNavigationFragment testNavigationFragment = new TestNavigationFragment();
@@ -55,8 +57,7 @@ public class MainActivity extends AwesomeActivity {
         super.onAttachedToWindow();
         Log.i(TAG, "onAttachedToWindow 是否刘海眉：" + AppUtils.isCutout(this));
         // 设置沉浸式
-        setStatusBarTranslucent(!AppUtils.isCutout(this));
-        // setStatusBarTranslucent(true);
+        // setStatusBarTranslucent(!AppUtils.isCutout(this));
     }
 
     @Override
