@@ -194,7 +194,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @CallSuper
     protected void onViewAppear() {
-        if (childFragmentForAppearance() == null && !handleStatusBarColorWhenPushed()) {
+        if (childFragmentForAppearance() == null) {
             setNeedsStatusBarAppearanceUpdate();
         }
     }
@@ -274,12 +274,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         return parent == null || parent.getUserVisibleHint();
     }
 
-    private Animation.AnimationListener transitionAnimationListener;
-
-    void setTransitionAnimationListener(Animation.AnimationListener listener) {
-        transitionAnimationListener = listener;
-    }
-
     @Override
     @CallSuper
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
@@ -296,24 +290,14 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
-                Animation anim = AnimationUtils.loadAnimation(getContext(), animation.enter);
-                if (transitionAnimationListener != null) {
-                    anim.setAnimationListener(transitionAnimationListener);
-                }
-                return anim;
+                return AnimationUtils.loadAnimation(getContext(), animation.enter);
             } else {
-                transitionAnimationListener = null;
                 return AnimationUtils.loadAnimation(getContext(), animation.exit);
             }
         } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
             if (enter) {
-                Animation anim = AnimationUtils.loadAnimation(getContext(), animation.popEnter);
-                if (transitionAnimationListener != null) {
-                    anim.setAnimationListener(transitionAnimationListener);
-                }
-                return anim;
+                return AnimationUtils.loadAnimation(getContext(), animation.popEnter);
             } else {
-                transitionAnimationListener = null;
                 return AnimationUtils.loadAnimation(getContext(), animation.popExit);
             }
         }
@@ -699,6 +683,9 @@ public abstract class AwesomeFragment extends InternalFragment {
             if (shouldAdjustForWhiteStatusBar) {
                 color = Color.parseColor("#4A4A4A");
             }
+            if (isStatusBarTranslucent() && color == preferredToolbarColor()) {
+                color = Color.TRANSPARENT;
+            }
 
             boolean animated = preferredStatusBarColorAnimated() && colorAnimated;
             setStatusBarColor(color, animated);
@@ -729,7 +716,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (isInDialog()) {
             return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP || presentableActivity.isStatusBarTranslucent();
         } else {
-            return presentableActivity.isStatusBarTranslucent();
+            return presentableActivity != null && presentableActivity.isStatusBarTranslucent();
         }
     }
 
@@ -1100,15 +1087,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     boolean shouldHideTabBarWhenPushed() {
         NavigationFragment navigationFragment = getNavigationFragment();
         return navigationFragment != null && navigationFragment.getRootFragment().hidesBottomBarWhenPushed();
-    }
-
-    boolean handleStatusBarColorWhenPushed() {
-        Fragment parent = getParentFragment();
-        if (parent != null && parent instanceof NavigationFragment) {
-            NavigationFragment navigationFragment = (NavigationFragment) parent;
-            return navigationFragment.shouldHandleStatusBarTransitionWhenPushed(transitionAnimationListener);
-        }
-        return false;
     }
 
     void handleHideBottomBarWhenPushed(int transit, boolean enter, PresentAnimation animation) {

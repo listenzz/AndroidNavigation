@@ -100,6 +100,8 @@ public class AppUtils {
 
     public static void setStatusBarTranslucent(Window window, boolean translucent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setRenderContentInShortEdgeCutoutAreas(window, translucent);
+
             View decorView = window.getDecorView();
             if (translucent) {
                 decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
@@ -170,7 +172,7 @@ public class AppUtils {
             if (animated) {
                 Drawable drawable = statusBarView.getBackground();
                 int curColor = Integer.MAX_VALUE;
-                if (drawable != null && drawable instanceof ColorDrawable) {
+                if (drawable instanceof ColorDrawable) {
                     ColorDrawable colorDrawable = (ColorDrawable) drawable;
                     curColor = colorDrawable.getColor();
                 }
@@ -198,16 +200,27 @@ public class AppUtils {
     public static void setStatusBarStyle(Window window, boolean dark) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             View decorView = window.getDecorView();
-            decorView.setSystemUiVisibility(
-                    dark ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
+            int systemUi = decorView.getSystemUiVisibility();
+            if (dark) {
+                systemUi |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            } else {
+                systemUi &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            }
+            decorView.setSystemUiVisibility(systemUi);
         }
     }
 
     public static void setStatusBarHidden(Window window, boolean hidden) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-
-            setRenderContentInShortEdgeCutoutAreas(window, hidden);
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            View decorView = window.getDecorView();
+            int systemUi = decorView.getSystemUiVisibility();
+            if (hidden) {
+                systemUi |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+            } else {
+                systemUi &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
+            }
+            window.getDecorView().setSystemUiVisibility(systemUi);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (hidden) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
@@ -331,9 +344,6 @@ public class AppUtils {
                 throw new IllegalStateException("activity has not attach to window");
             }
             View decorView = window.getDecorView();
-            if (decorView == null) {
-                throw new IllegalStateException("activity has not attach to window");
-            }
             sIsCutout = attachHasOfficialNotch(decorView);
         }
 

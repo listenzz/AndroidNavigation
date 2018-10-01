@@ -3,6 +3,7 @@ package me.listenzz.navigation;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -105,7 +106,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                fragment.setTransitionAnimationListener(new StatusBarAnimationListener(fragment, getTopFragment()));
                 pushFragmentInternal(fragment, animated);
             }
         });
@@ -123,7 +123,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                fragment.setTransitionAnimationListener(new StatusBarAnimationListener(fragment, getTopFragment()));
                 popToFragmentInternal(fragment, animated);
             }
         });
@@ -278,12 +277,13 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         if (state == SwipeBackLayout.STATE_DRAGGING) {
             AwesomeFragment topFragment = getTopFragment();
             AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
+
+            if (aheadFragment != null && shouldTransitionWithStatusBar(topFragment, aheadFragment)) {
+                AppUtils.setStatusBarColor(getWindow(), topFragment.preferredStatusBarColor(), false);
+            }
+
             if (aheadFragment != null && aheadFragment.getView() != null) {
                 aheadFragment.getView().setVisibility(View.VISIBLE);
-
-                if (shouldTransitionWithStatusBar(topFragment, aheadFragment)) {
-                    AppUtils.setStatusBarColor(getWindow(), Color.TRANSPARENT, false);
-                }
             }
 
             if (aheadFragment != null && aheadFragment == getRootFragment() && aheadFragment.shouldHideTabBarWhenPushed()) {
@@ -307,16 +307,13 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             }
 
         } else if (state == SwipeBackLayout.STATE_IDLE) {
-
             AwesomeFragment topFragment = getTopFragment();
             AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
+
             if (aheadFragment != null && aheadFragment.getView() != null) {
                 aheadFragment.getView().setVisibility(View.GONE);
-
-                if (shouldTransitionWithStatusBar(topFragment, aheadFragment)) {
-                    AppUtils.setStatusBarColor(getWindow(), topFragment.preferredStatusBarColor(), false);
-                }
             }
+
             if (aheadFragment != null && scrollPercent >= 1.0f) {
                 FragmentManager fragmentManager = getChildFragmentManager();
                 FragmentHelper.executePendingTransactionsSafe(fragmentManager);
@@ -324,11 +321,12 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
                 aheadFragment.setAnimation(PresentAnimation.None);
                 aheadFragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
                 fragmentManager.popBackStackImmediate(aheadFragment.getSceneId(), 0);
-
-                if (shouldTransitionWithStatusBar(topFragment, aheadFragment)) {
-                    AppUtils.setStatusBarColor(getWindow(), aheadFragment.preferredStatusBarColor(), false);
-                }
             }
+
+            if (aheadFragment != null && shouldTransitionWithStatusBar(topFragment, aheadFragment)) {
+                AppUtils.setStatusBarColor(getWindow(), Color.TRANSPARENT, false);
+            }
+
             swipeBackLayout.setTabBar(null);
         }
     }
@@ -341,51 +339,18 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
                 && getTopFragment().isSwipeBackEnabled();
     }
 
-    private boolean shouldTransitionWithStatusBar(AwesomeFragment topFragment, AwesomeFragment aheadFragment) {
+    private boolean shouldTransitionWithStatusBar(AwesomeFragment expectedFragment, AwesomeFragment referredFragment) {
+        boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
+        }
+
         return isStatusBarTranslucent()
-                && topFragment.preferredStatusBarColor() != aheadFragment.preferredStatusBarColor()
-                && (topFragment.preferredStatusBarColor() == topFragment.preferredToolbarColor() || topFragment.preferredStatusBarColor() == Color.TRANSPARENT)
-                && (aheadFragment.preferredStatusBarColor() == aheadFragment.preferredToolbarColor() || aheadFragment.preferredStatusBarColor() == Color.TRANSPARENT);
-    }
-
-
-    boolean shouldHandleStatusBarTransitionWhenPushed(Animation.AnimationListener listener) {
-        if (listener != null && listener instanceof StatusBarAnimationListener) {
-            StatusBarAnimationListener statusBarAnimationListener = (StatusBarAnimationListener) listener;
-            AwesomeFragment expectFragment = statusBarAnimationListener.expectFragment;
-            AwesomeFragment referredFragment = statusBarAnimationListener.referredFragment;
-            return shouldTransitionWithStatusBar(expectFragment, referredFragment);
-        }
-        return false;
-    }
-
-    class StatusBarAnimationListener implements Animation.AnimationListener {
-
-        AwesomeFragment expectFragment;
-        AwesomeFragment referredFragment;
-
-        StatusBarAnimationListener(@NonNull AwesomeFragment expectFragment, @NonNull AwesomeFragment referredFragment) {
-            this.expectFragment = expectFragment;
-            this.referredFragment = referredFragment;
-        }
-
-        @Override
-        public void onAnimationStart(Animation animation) {
-            if (shouldTransitionWithStatusBar(expectFragment, referredFragment)) {
-                AppUtils.setStatusBarColor(getWindow(), Color.TRANSPARENT, false);
-            }
-        }
-
-        @Override
-        public void onAnimationEnd(Animation animation) {
-            if (shouldTransitionWithStatusBar(expectFragment, referredFragment)) {
-                expectFragment.setNeedsStatusBarAppearanceUpdate(false);
-            }
-        }
-
-        @Override
-        public void onAnimationRepeat(Animation animation) {
-
-        }
+                && !shouldAdjustForWhiteStatusBar
+                && expectedFragment.preferredStatusBarColor() != Color.TRANSPARENT
+                && expectedFragment.preferredStatusBarColor() == referredFragment.preferredStatusBarColor()
+                && expectedFragment.preferredStatusBarColor() == expectedFragment.preferredToolbarColor()
+                && referredFragment.preferredStatusBarColor() == referredFragment.preferredToolbarColor();
     }
 }
