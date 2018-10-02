@@ -324,7 +324,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             }
 
             if (aheadFragment != null && shouldTransitionWithStatusBar(topFragment, aheadFragment)) {
-                AppUtils.setStatusBarColor(getWindow(), Color.TRANSPARENT, false);
+                setNeedsStatusBarAppearanceUpdate(false);
             }
 
             swipeBackLayout.setTabBar(null);
@@ -340,17 +340,11 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     private boolean shouldTransitionWithStatusBar(AwesomeFragment expectedFragment, AwesomeFragment referredFragment) {
-        boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
-        }
-
+        boolean shouldAdjustForWhiteStatusBar = AppUtils.shouldAdjustStatusBarColor(this);
         return isStatusBarTranslucent()
                 && !shouldAdjustForWhiteStatusBar
                 && expectedFragment.preferredStatusBarColor() != Color.TRANSPARENT
                 && expectedFragment.preferredStatusBarColor() == referredFragment.preferredStatusBarColor()
-                && expectedFragment.preferredStatusBarColor() == expectedFragment.preferredToolbarColor()
-                && referredFragment.preferredStatusBarColor() == referredFragment.preferredToolbarColor();
+                && expectedFragment.preferredToolbarAlpha() == referredFragment.preferredToolbarAlpha(); // toolbar 透明度相同
     }
 }

@@ -675,11 +675,8 @@ public abstract class AwesomeFragment extends InternalFragment {
 
             // statusBarColor
             int color = preferredStatusBarColor();
-            boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
+            boolean shouldAdjustForWhiteStatusBar = AppUtils.shouldAdjustStatusBarColor(this);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
-            }
             if (shouldAdjustForWhiteStatusBar) {
                 color = Color.parseColor("#4A4A4A");
             }
@@ -1225,6 +1222,15 @@ public abstract class AwesomeFragment extends InternalFragment {
             return childFragmentForToolbarColor.preferredToolbarColor();
         }
         return style.getToolbarBackgroundColor();
+    }
+
+
+    protected int preferredToolbarAlpha() {
+        AwesomeFragment childFragmentForToolbarColor = childFragmentForAppearance();
+        if (childFragmentForToolbarColor != null) {
+            return childFragmentForToolbarColor.preferredToolbarAlpha();
+        }
+        return (int) (style.getToolbarAlpha() * 255 + 0.5);
     }
 
     public void setNeedsToolbarAppearanceUpdate() {

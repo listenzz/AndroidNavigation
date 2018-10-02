@@ -13,6 +13,7 @@ import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.util.TypedValue;
 import android.view.Display;
@@ -129,6 +130,14 @@ public class AppUtils {
             }
             ViewCompat.requestApplyInsets(window.getDecorView());
         }
+    }
+
+    public static boolean shouldAdjustStatusBarColor(@NonNull AwesomeFragment fragment) {
+        boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(fragment.preferredStatusBarColor(), 176);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && fragment.preferredStatusBarStyle() == BarStyle.LightContent;
+        }
+        return shouldAdjustForWhiteStatusBar;
     }
 
     public static void setStatusBarColor(final Window window, int color, boolean animated) {
