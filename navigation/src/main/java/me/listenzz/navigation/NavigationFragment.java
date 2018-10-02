@@ -278,7 +278,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             AwesomeFragment topFragment = getTopFragment();
             AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
 
-            if (aheadFragment != null && shouldTransitionWithStatusBar(topFragment, aheadFragment)) {
+            if (aheadFragment != null && shouldTransitionWithStatusBar(aheadFragment, topFragment)) {
                 AppUtils.setStatusBarColor(getWindow(), topFragment.preferredStatusBarColor(), false);
             }
 
@@ -323,7 +323,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
                 fragmentManager.popBackStackImmediate(aheadFragment.getSceneId(), 0);
             }
 
-            if (aheadFragment != null && shouldTransitionWithStatusBar(topFragment, aheadFragment)) {
+            if (aheadFragment != null && shouldTransitionWithStatusBar(aheadFragment, topFragment)) {
                 setNeedsStatusBarAppearanceUpdate(false);
             }
 
@@ -339,12 +339,14 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
                 && getTopFragment().isSwipeBackEnabled();
     }
 
-    private boolean shouldTransitionWithStatusBar(AwesomeFragment expectedFragment, AwesomeFragment referredFragment) {
+    private boolean shouldTransitionWithStatusBar(AwesomeFragment aheadFragment, AwesomeFragment topFragment) {
         boolean shouldAdjustForWhiteStatusBar = AppUtils.shouldAdjustStatusBarColor(this);
+
         return isStatusBarTranslucent()
                 && !shouldAdjustForWhiteStatusBar
-                && expectedFragment.preferredStatusBarColor() != Color.TRANSPARENT
-                && expectedFragment.preferredStatusBarColor() == referredFragment.preferredStatusBarColor()
-                && expectedFragment.preferredToolbarAlpha() == referredFragment.preferredToolbarAlpha(); // toolbar 透明度相同
+                && aheadFragment.preferredStatusBarColor() != Color.TRANSPARENT
+                && aheadFragment.preferredStatusBarColor() == topFragment.preferredStatusBarColor()
+                && topFragment.preferredToolbarAlpha() == 255
+                && aheadFragment.preferredToolbarAlpha() == 255;
     }
 }
