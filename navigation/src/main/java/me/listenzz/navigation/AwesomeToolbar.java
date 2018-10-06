@@ -11,6 +11,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.AppCompatImageButton;
@@ -388,10 +389,10 @@ public class AwesomeToolbar extends Toolbar {
         if (barButtonItem.iconUri != null) {
             drawable = DrawableUtils.fromUri(getContext(), barButtonItem.iconUri);
         } else if (barButtonItem.iconRes != 0) {
-            drawable = getContext().getResources().getDrawable(barButtonItem.iconRes);
+            drawable =  ContextCompat.getDrawable(getContext(), barButtonItem.iconRes);
         }
         if (drawable != null) {
-            drawable = DrawableCompat.wrap(drawable);
+            drawable = DrawableCompat.wrap(drawable.mutate());
         }
         return drawable;
     }

@@ -15,6 +15,8 @@ import android.net.Uri;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
 
 import java.io.File;
@@ -71,7 +73,7 @@ public class DrawableUtils {
             drawable = fromFont(context, fontFamily, glyph, fontSize, color);
         } else {
             int resId = fromResourceDrawableId(context, uri);
-            drawable = resId > 0 ? context.getResources().getDrawable(resId) : null;
+            drawable = resId > 0 ? ContextCompat.getDrawable(context, resId) : null;
         }
         return drawable;
     }
