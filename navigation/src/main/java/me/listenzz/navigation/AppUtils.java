@@ -315,7 +315,7 @@ public class AppUtils {
         }
         sHasCheckAllScreen = true;
         sIsAllScreenDevice = false;
-        // 低于 API 21的，都不会是全面屏。。。
+        // 低于 API 21 的，都不会是全面屏
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return false;
         }
@@ -342,6 +342,11 @@ public class AppUtils {
     public static boolean isCutout(Activity activity) {
         if (sHasCheckCutout) {
             return sIsCutout;
+        }
+
+        // 低于 API 26 的，都不会是刘海屏、凹凸屏
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return false;
         }
 
         sHasCheckCutout = true;
@@ -372,18 +377,15 @@ public class AppUtils {
     }
 
     public static boolean isHuaweiCutout(Context context) {
-
         boolean ret = false;
-
         try {
             ClassLoader cl = context.getClassLoader();
             Class HwNotchSizeUtil = cl.loadClass("com.huawei.android.util.HwNotchSizeUtil");
-            Method get = HwNotchSizeUtil.getMethod("isHuaweiCutout");
+            Method get = HwNotchSizeUtil.getMethod("hasNotchInScreen");
             ret = (boolean) get.invoke(HwNotchSizeUtil);
         } catch (Exception e) {
             // ignore
         }
-
         return ret;
     }
 
