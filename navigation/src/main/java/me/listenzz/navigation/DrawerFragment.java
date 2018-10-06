@@ -146,12 +146,12 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             if (closed) {
                 if (!opening) {
                     opening = true;
-                    setNeedsStatusBarAppearanceUpdate(false);
+                    setNeedsStatusBarAppearanceUpdate(true);
                 }
             } else if (opened) {
                 if (!closing) {
                     closing = true;
-                    setNeedsStatusBarAppearanceUpdate(false);
+                    setNeedsStatusBarAppearanceUpdate(true);
                 }
             }
         }
@@ -160,7 +160,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             closed = true;
             opened = false;
             opening = false;
-            setNeedsStatusBarAppearanceUpdate(false);
+            setNeedsStatusBarAppearanceUpdate(true);
         } else if (slideOffset == 1) {
             opened = true;
             closed = false;
