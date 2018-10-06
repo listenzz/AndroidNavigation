@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.Gravity;
 
@@ -187,11 +189,26 @@ public class Style implements Cloneable {
         backIcon = icon;
     }
 
+    @NonNull
+    private Drawable getDefaultBackIcon() {
+        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.nav_ic_arrow_back);
+        if (drawable == null) {
+            throw new NullPointerException("should not happen");
+        }
+        return drawable;
+    }
+
     public Drawable getBackIcon() {
         if (backIcon == null) {
-            backIcon = context.getResources().getDrawable(R.drawable.nav_ic_arrow_back);
+            backIcon = getDefaultBackIcon();
         }
-        Drawable icon = DrawableCompat.wrap(backIcon.mutate());
+        Drawable icon;
+        if (backIcon.getConstantState() != null) {
+            icon = DrawableCompat.wrap(backIcon.getConstantState().newDrawable()).mutate();
+        } else {
+            icon = backIcon;
+        }
+        icon = DrawableCompat.wrap(icon).mutate();
         DrawableCompat.setTint(icon, getToolbarTintColor());
         return icon;
     }
