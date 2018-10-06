@@ -10,7 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <meta-data android:name="android.max_aspect" android:value="2.1" />
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.4" />
+        <meta-data
+            android:name="android.notch_support"
+            android:value="true" />
+        <meta-data
+            android:name="notch.config"
+            android:value="portrait|landscape" />
 
         <activity android:name=".SplashActivity"
             android:theme="@style/SplashTheme"
@@ -25,6 +33,14 @@
         <activity android:name="com.navigation.MainActivity"
             android:windowSoftInputMode="adjustResize|stateHidden"
             >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="nav"
+                    android:scheme="nav" />
+            </intent-filter>
         </activity>
 
     </application>
