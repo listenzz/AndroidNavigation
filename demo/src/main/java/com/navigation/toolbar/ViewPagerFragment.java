@@ -18,6 +18,7 @@ import com.navigation.BaseFragment;
 import com.navigation.R;
 
 import me.listenzz.navigation.AwesomeToolbar;
+import me.listenzz.navigation.BarStyle;
 import me.listenzz.navigation.Style;
 
 
@@ -40,6 +41,12 @@ public class ViewPagerFragment extends BaseFragment {
     protected int preferredStatusBarColor() {
         int[] colors = new int[] {Color.RED, Color.GREEN, Color.BLUE};
         return colors[location];
+    }
+
+    @Override
+    protected BarStyle preferredStatusBarStyle() {
+        BarStyle[] barStyles = new BarStyle[] { BarStyle.LightContent, BarStyle.DarkContent, BarStyle.LightContent};
+        return barStyles[location];
     }
 
     @Override
