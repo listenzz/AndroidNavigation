@@ -668,7 +668,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         } else {
 
             // statusBarHidden
-            setStatusBarHidden(preferredStatusBarHidden());
+            boolean hidden = preferredStatusBarHidden();
+            setStatusBarHidden(hidden);
 
             // statusBarStyle
             setStatusBarStyle(preferredStatusBarStyle());
@@ -680,7 +681,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             if (shouldAdjustForWhiteStatusBar) {
                 color = Color.parseColor("#4A4A4A");
             }
-            if (isStatusBarTranslucent() && color == preferredToolbarColor()) {
+            if (isStatusBarTranslucent() && color == preferredToolbarColor() || hidden) {
                 color = Color.TRANSPARENT;
             }
 

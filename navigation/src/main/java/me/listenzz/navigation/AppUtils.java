@@ -141,10 +141,6 @@ public class AppUtils {
     }
 
     public static void setStatusBarColor(final Window window, int color, boolean animated) {
-        if ((window.getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN) == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
-            color = Color.TRANSPARENT;
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             if (animated) {
@@ -220,23 +216,17 @@ public class AppUtils {
     }
 
     public static void setStatusBarHidden(Window window, boolean hidden) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             View decorView = window.getDecorView();
             int systemUi = decorView.getSystemUiVisibility();
             if (hidden) {
                 systemUi |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+                systemUi |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
             } else {
                 systemUi &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
+                systemUi &= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
             }
             window.getDecorView().setSystemUiVisibility(systemUi);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (hidden) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-            } else {
-                window.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            }
         }
 
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
@@ -304,37 +294,6 @@ public class AppUtils {
         return statusBarHeight;
     }
 
-
-    private volatile static boolean sHasCheckAllScreen;
-    private volatile static boolean sIsAllScreenDevice;
-
-    // 是否全面屏
-    public static boolean isFullScreenDevice(Context context) {
-        if (sHasCheckAllScreen) {
-            return sIsAllScreenDevice;
-        }
-        sHasCheckAllScreen = true;
-        sIsAllScreenDevice = false;
-        // 低于 API 21 的，都不会是全面屏
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            return false;
-        }
-
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        if (windowManager != null) {
-            Display display = windowManager.getDefaultDisplay();
-            Point point = new Point();
-            display.getRealSize(point);
-            float width = Math.min(point.x, point.y);
-            float height = Math.max(point.x, point.y);
-            if (height / width >= 1.97f) {
-                sIsAllScreenDevice = true;
-            }
-        }
-        return sIsAllScreenDevice;
-
-    }
-
     private volatile static boolean sHasCheckCutout;
     private volatile static boolean sIsCutout;
 
@@ -344,8 +303,8 @@ public class AppUtils {
             return sIsCutout;
         }
 
-        // 低于 API 26 的，都不会是刘海屏、凹凸屏
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        // 低于 API 27 的，都不会是刘海屏、凹凸屏
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
             return false;
         }
 
