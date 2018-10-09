@@ -24,6 +24,7 @@ public class Style implements Cloneable {
 
     private BarStyle statusBarStyle = BarStyle.LightContent;
     private int statusBarColor;
+    private Integer navigationBarColor;
     private boolean statusBarColorAnimated = true;
     private boolean statusBarHidden = false;
 
@@ -303,6 +304,14 @@ public class Style implements Cloneable {
 
     public void setBadgeColor(String badgeColor) {
         this.badgeColor = badgeColor;
+    }
+
+    public Integer getNavigationBarColor() {
+        return navigationBarColor;
+    }
+
+    public void setNavigationBarColor(Integer navigationBarColor) {
+        this.navigationBarColor = navigationBarColor;
     }
 
     @Override

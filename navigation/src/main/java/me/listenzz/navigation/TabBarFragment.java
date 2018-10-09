@@ -1,5 +1,6 @@
 package me.listenzz.navigation;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.AnimRes;
 import android.support.annotation.NonNull;
@@ -131,6 +132,11 @@ public class TabBarFragment extends AwesomeFragment {
         return getSelectedFragment();
     }
 
+    @Override
+    protected Integer preferredNavigationBarColor() {
+        return tabBarHidden ? super.preferredNavigationBarColor() : Color.parseColor(style.getTabBarBackgroundColor());
+    }
+
     public void setChildFragments(AwesomeFragment... fragments) {
         setChildFragments(Arrays.asList(fragments));
     }
@@ -222,10 +228,10 @@ public class TabBarFragment extends AwesomeFragment {
         this.tabBarProvider = tabBarProvider;
     }
 
-
     void showTabBarWhenPop(@AnimRes int anim) {
         if (tabBar != null) {
             tabBarHidden = false;
+            setNeedsNavigationBarAppearanceUpdate();
             if (anim != R.anim.nav_none) {
                 Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
                 animation.setAnimationListener(new TabBarAnimationListener(false));
@@ -240,6 +246,7 @@ public class TabBarFragment extends AwesomeFragment {
     void hideTabBarWhenPush(@AnimRes int anim) {
         if (tabBar != null) {
             tabBarHidden = true;
+            setNeedsNavigationBarAppearanceUpdate();
             if (anim != R.anim.nav_none) {
                 Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
                 animation.setAnimationListener(new TabBarAnimationListener(true));

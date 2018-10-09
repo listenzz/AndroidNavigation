@@ -16,7 +16,6 @@ public class SplashActivity extends AwesomeActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStatusBarTranslucent(true);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

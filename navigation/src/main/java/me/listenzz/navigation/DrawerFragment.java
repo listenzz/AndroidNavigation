@@ -101,15 +101,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     protected AwesomeFragment childFragmentForAppearance() {
-        return (opening || opened) && isStatusBarTranslucent() ? null : getContentFragment();
-    }
-
-    @Override
-    protected BarStyle preferredStatusBarStyle() {
-        if (getContentFragment() != null) {
-            return getContentFragment().preferredStatusBarStyle();
-        }
-        return super.preferredStatusBarStyle();
+        return getContentFragment();
     }
 
     @Override

@@ -8,7 +8,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -16,7 +15,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.util.TypedValue;
-import android.view.Display;
 import android.view.DisplayCutout;
 import android.view.Gravity;
 import android.view.View;
@@ -140,13 +138,72 @@ public class AppUtils {
         return shouldAdjustForWhiteStatusBar;
     }
 
+    public static void setNavigationBarColor(final Window window, int color, boolean animated) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int curColor = window.getNavigationBarColor();
+            if (curColor == color) {
+                return;
+            }
+
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+            setNavigationBarStyle(window, !isBlackColor(color, 128));
+            if (animated) {
+                ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
+                colorAnimation.addUpdateListener(
+                        new ValueAnimator.AnimatorUpdateListener() {
+                            @TargetApi(21)
+                            @Override
+                            public void onAnimationUpdate(ValueAnimator animator) {
+                                window.setNavigationBarColor((Integer) animator.getAnimatedValue());
+                            }
+                        });
+                colorAnimation.setDuration(200).setStartDelay(0);
+                colorAnimation.start();
+            } else {
+                window.setNavigationBarColor(color);
+            }
+        }
+    }
+
+    public static void setNavigationBarStyle(Window window, boolean dark) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decorView = window.getDecorView();
+            int systemUi = decorView.getSystemUiVisibility();
+            if (dark) {
+                systemUi |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+            } else {
+                systemUi &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+            }
+            decorView.setSystemUiVisibility(systemUi);
+        }
+    }
+
+    public static void setNavigationBarHidden(Window window, boolean hidden) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decorView = window.getDecorView();
+            int systemUi = decorView.getSystemUiVisibility();
+            if (hidden) {
+                systemUi |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                systemUi |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            } else {
+                systemUi &= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                systemUi &= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            }
+            window.getDecorView().setSystemUiVisibility(systemUi);
+        }
+    }
+
+
     public static void setStatusBarColor(final Window window, int color, boolean animated) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int curColor = window.getStatusBarColor();
+            if (curColor == color) {
+                return;
+            }
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             if (animated) {
-                int curColor = window.getStatusBarColor();
                 ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
-
                 colorAnimation.addUpdateListener(
                         new ValueAnimator.AnimatorUpdateListener() {
                             @TargetApi(21)

@@ -196,6 +196,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     protected void onViewAppear() {
         if (childFragmentForAppearance() == null) {
             setNeedsStatusBarAppearanceUpdate();
+            setNeedsNavigationBarAppearanceUpdate();
         }
     }
 
@@ -688,6 +689,46 @@ public abstract class AwesomeFragment extends InternalFragment {
             boolean animated = preferredStatusBarColorAnimated() && colorAnimated;
             setStatusBarColor(color, animated);
         }
+    }
+
+    protected Integer preferredNavigationBarColor() {
+        AwesomeFragment childFragmentForAppearance = childFragmentForAppearance();
+        if (childFragmentForAppearance != null) {
+            return childFragmentForAppearance.preferredNavigationBarColor();
+        }
+
+        Integer color = style.getNavigationBarColor();
+        if (color != null) {
+            return color;
+        }
+
+        return style.getScreenBackgroundColor();
+    }
+
+    public void setNeedsNavigationBarAppearanceUpdate() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return;
+        }
+
+        if (getShowsDialog()) {
+            Activity activity = requireActivity();
+            setNavigationBarColor(activity.getWindow().getNavigationBarColor(), false);
+            return;
+        }
+
+        AwesomeFragment parent = getParentAwesomeFragment();
+        if (parent != null) {
+            parent.setNeedsNavigationBarAppearanceUpdate();
+        } else {
+            Integer color = preferredNavigationBarColor();
+            if (color != null) {
+                setNavigationBarColor(color, true);
+            }
+        }
+    }
+
+    public void setNavigationBarColor(int color, boolean animated) {
+        AppUtils.setNavigationBarColor(getWindow(), color, animated);
     }
 
     public void setStatusBarStyle(BarStyle barStyle) {
