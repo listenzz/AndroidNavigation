@@ -350,7 +350,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         } else if (count > 0) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count - 1);
             AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-            return child.dispatchBackPressed() || onBackPressed();
+            return (child != null && child.dispatchBackPressed()) || onBackPressed();
         } else {
             return onBackPressed();
         }
@@ -362,7 +362,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         for (int i = count - 1; i > -1; i--) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(i);
             AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-            if (child.definesPresentationContext()) {
+            if (child != null && child.definesPresentationContext()) {
                 AwesomeFragment presented = FragmentHelper.getLatterFragment(fragmentManager, child);
                 if (presented != null) {
                     presented.dismissFragment();
@@ -554,7 +554,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public AwesomeFragment getParentAwesomeFragment() {
         Fragment fragment = getParentFragment();
-        if (fragment != null && fragment instanceof AwesomeFragment) {
+        if (fragment instanceof AwesomeFragment) {
             return (AwesomeFragment) fragment;
         }
         return null;
@@ -839,7 +839,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     protected void dismissInternal(boolean allowStateLoss) {
         super.dismissInternal(allowStateLoss);
         Fragment target = getTargetFragment();
-        if (target != null && target instanceof AwesomeFragment && target.isAdded() && !target.isRemoving()) {
+        if (target instanceof AwesomeFragment && target.isAdded() && !target.isRemoving()) {
             FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
             AwesomeFragment fragment = (AwesomeFragment) target;
             fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
@@ -931,7 +931,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private void animateIn() {
         View root = getView();
-        if (root == null || !(root instanceof DialogFrameLayout)) {
+        if (!(root instanceof DialogFrameLayout)) {
             return;
         }
         AnimationType type = getAnimationType();
@@ -963,7 +963,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     private void animateOut() {
         View root = getView();
         AnimationType type = getAnimationType();
-        boolean shouldAnimated = type != AnimationType.None && root != null && root instanceof DialogFrameLayout;
+        boolean shouldAnimated = type != AnimationType.None && root instanceof DialogFrameLayout;
         if (shouldAnimated) {
             DialogFrameLayout frameLayout = (DialogFrameLayout) root;
             View contentView = frameLayout.getChildAt(0);
@@ -1089,7 +1089,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     void handleHideBottomBarWhenPushed(int transit, boolean enter, PresentAnimation animation) {
         // handle hidesBottomBarWhenPushed
         Fragment parent = getParentFragment();
-        if (parent != null && parent instanceof NavigationFragment) {
+        if (parent instanceof NavigationFragment) {
             NavigationFragment navigationFragment = (NavigationFragment) parent;
             TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
             if (tabBarFragment == null || !enter) {
@@ -1122,7 +1122,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private void handleNavigationFragmentStuff(@NonNull View root) {
         AwesomeFragment parent = getParentAwesomeFragment();
-        boolean hasNavigationParent = parent != null && (parent instanceof NavigationFragment);
+        boolean hasNavigationParent = (parent instanceof NavigationFragment);
         if (hasNavigationParent) {
             // create toolbar if needed
             createToolbarIfNeeded(root);
