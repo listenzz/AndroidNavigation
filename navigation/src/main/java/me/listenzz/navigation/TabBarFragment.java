@@ -101,7 +101,7 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList(SAVED_FRAGMENT_TAGS, fragmentTags);
         outState.putInt(SAVED_SELECTED_INDEX, selectedIndex);

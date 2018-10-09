@@ -2,6 +2,7 @@ package com.navigation.toolbar;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,7 +37,7 @@ public class PageFragment extends BaseFragment {
     private PageAdapter adapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_page, container, false);
         initView(view);
@@ -87,7 +88,7 @@ public class PageFragment extends BaseFragment {
         }
 
         @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = inflater.inflate(R.layout.item_page, parent, false);
             final MyViewHolder holder = new MyViewHolder(view);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +104,7 @@ public class PageFragment extends BaseFragment {
         }
 
         @Override
-        public void onBindViewHolder(MyViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
             String item = items.get(position);
             holder.titleTextView.setText(item);
         }
