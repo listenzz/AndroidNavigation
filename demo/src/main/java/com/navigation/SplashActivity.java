@@ -24,5 +24,4 @@ public class SplashActivity extends AwesomeActivity {
             }
         }, 1500);
     }
-
 }

@@ -139,15 +139,16 @@ public class AppUtils {
     }
 
     public static void setNavigationBarColor(final Window window, int color, boolean animated) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int curColor = window.getNavigationBarColor();
             if (curColor == color) {
                 return;
             }
 
+            setNavigationBarStyle(window, !isBlackColor(color, 176));
+
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
-            setNavigationBarStyle(window, !isBlackColor(color, 128));
             if (animated) {
                 ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
                 colorAnimation.addUpdateListener(
@@ -167,7 +168,7 @@ public class AppUtils {
     }
 
     public static void setNavigationBarStyle(Window window, boolean dark) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             View decorView = window.getDecorView();
             int systemUi = decorView.getSystemUiVisibility();
             if (dark) {

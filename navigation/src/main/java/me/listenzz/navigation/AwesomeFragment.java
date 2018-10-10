@@ -691,28 +691,39 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
+
+    private int computedNavigationBarColor() {
+        Integer color = preferredNavigationBarColor();
+        if (color == null) {
+            AwesomeFragment child = childFragmentForAppearance();
+            if (child != null) {
+                color = child.computedNavigationBarColor();
+            }
+        }
+
+        if (color == null) {
+            color = isInDialog() ? Color.TRANSPARENT : style.getScreenBackgroundColor();
+        }
+
+        return color;
+    }
+
     protected Integer preferredNavigationBarColor() {
-        AwesomeFragment childFragmentForAppearance = childFragmentForAppearance();
-        if (childFragmentForAppearance != null) {
-            return childFragmentForAppearance.preferredNavigationBarColor();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (getShowsDialog() && getAnimationType() == AnimationType.Slide) {
+                return requireActivity().getWindow().getNavigationBarColor();
+            }
         }
-
-        Integer color = style.getNavigationBarColor();
-        if (color != null) {
-            return color;
-        }
-
-        return style.getScreenBackgroundColor();
+        return null;
     }
 
     public void setNeedsNavigationBarAppearanceUpdate() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return;
         }
 
         if (getShowsDialog()) {
-            Activity activity = requireActivity();
-            setNavigationBarColor(activity.getWindow().getNavigationBarColor(), false);
+            setNavigationBarColor(computedNavigationBarColor(), false);
             return;
         }
 
@@ -720,10 +731,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (parent != null) {
             parent.setNeedsNavigationBarAppearanceUpdate();
         } else {
-            Integer color = preferredNavigationBarColor();
-            if (color != null) {
-                setNavigationBarColor(color, true);
-            }
+            setNavigationBarColor(computedNavigationBarColor(), false);
         }
     }
 

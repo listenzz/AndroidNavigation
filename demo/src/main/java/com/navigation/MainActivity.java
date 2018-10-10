@@ -1,5 +1,6 @@
 package com.navigation;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -65,6 +66,7 @@ public class MainActivity extends AwesomeActivity {
         // style.setTitleGravity(Gravity.CENTER);
         // style.setTabBarBackgroundColor("#3F51B5");
         // style.setTabBarBackgroundColor("#FDFFFFFF");
+        style.setScreenBackgroundColor(Color.parseColor("#F8F8F8"));
         style.setSwipeBackEnabled(true); // 开启手势返回
     }
 }
