@@ -361,15 +361,21 @@ public class AppUtils {
             return sIsCutout;
         }
 
+        sHasCheckCutout = true;
+
         // 低于 API 27 的，都不会是刘海屏、凹凸屏
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
+            sIsCutout = false;
             return false;
         }
 
-        sHasCheckCutout = true;
-        sIsCutout = isHuaweiCutout(activity) || isOppoCutout(activity) || isVivoCutout(activity) || isXiaomiCutout(activity);
+       sIsCutout = isHuaweiCutout(activity) || isOppoCutout(activity) || isVivoCutout(activity) || isXiaomiCutout(activity);
 
-        if (!sIsCutout && isGoogleCutoutSupport()) {
+        if (!isGoogleCutoutSupport()) {
+            return sIsCutout;
+        }
+
+        if (!sIsCutout) {
             Window window = activity.getWindow();
             if (window == null) {
                 throw new IllegalStateException("activity has not attach to window");
