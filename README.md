@@ -539,6 +539,7 @@ protected void onCustomStyle(Style style) {
     screenBackgroundColor: int       // 页面背景，默认是白色
     statusBarStyle: BarStyle         // 状态栏和 toolbar 前景色，可选值有 DarkContent 和 LightContent
     statusBarColor: String           // 状态栏背景色，仅对 4.4 以上版本生效， 默认值是 colorPrimaryDark
+    navigationBarColor: Integer.     // 导航栏颜色，仅对 Android O 以上版本生效，建议保留默认设置
     toolbarBackgroundColor: int      // toolbar 背景颜色，默认值是 colorPrimary
     elevation: int                   // toolbar 阴影高度， 仅对 5.0 以上版本生效，默认值为 4 dp
     shadow: Drawable                 // toolbar 阴影图片，仅对 4.4 以下版本生效 
@@ -698,6 +699,24 @@ protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
 demo 中，NoToolbarFragment 返回 null， 表示不需要创建 toolbar。如果需要自定义 toolbar，请优先考虑基于 AwesomeToolbar 进行自定义，并在 onCreateAwesomeToolbar 返回自定义的 toolbar，就像 CoordinatorFragment 和 ViewPagerFragment 所做的那样，你可能还需要重写 onCustomStyle 这个方法，来修改 toolbar 的样式。
 
 如果开启了沉浸式，那么需要使用 `appendStatusBarPadding` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
+
+### 设置导航栏（虚拟键）
+
+仅对 Android O 以上版本生效
+
+- preferredNavigationBarColor
+
+建议保留默认设置，只在个别页面微调。
+
+
+导航栏背景默认规则如下：
+
+- 含「底部Tab」的页面，虚拟键设置为「底部Tab」的颜色
+
+- 不含「底部Tab」的页面，默认使用页面背景颜色，也就是 `style.getScreenBackgroundColor()` 的值
+
+如果页面含有复杂背景/纹理，建议设置为透明，这需要开发者自行复写 `preferredNavigationBarColor`。
+
 
 <a name="using-font-icons"></a>
 
