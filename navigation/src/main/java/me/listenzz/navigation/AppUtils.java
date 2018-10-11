@@ -12,6 +12,7 @@ import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.util.TypedValue;
@@ -48,6 +49,10 @@ public class AppUtils {
         int green = (rgb & 0x0000FF00) >> 8;
         int red = (rgb & 0x00FF0000) >> 16;
         return (red * 38 + green * 75 + blue * 15) >> 7;
+    }
+
+    public static String colorToString(@ColorInt int color) {
+        return String.format("#%08X", color);
     }
 
     public static int getScreenWidth(Context context) {
@@ -418,6 +423,10 @@ public class AppUtils {
     }
 
     public static boolean isHuaweiCutout(Context context) {
+        if (!isHuawei()) {
+            return false;
+        }
+
         boolean ret = false;
         try {
             ClassLoader cl = context.getClassLoader();
@@ -431,6 +440,9 @@ public class AppUtils {
     }
 
     public static boolean isOppoCutout(Context context) {
+        if (!isOppo()) {
+            return false;
+        }
         return context.getPackageManager().hasSystemFeature("com.oppo.feature.screen.heteromorphism");
     }
 
@@ -438,6 +450,10 @@ public class AppUtils {
     public static final int ROUNDED_IN_SCREEN_VOIO = 0x00000008;//是否有圆角
 
     public static boolean isVivoCutout(Context context) {
+        if (!isVivo()) {
+            return false;
+        }
+
         boolean ret = false;
 
         try {
@@ -464,6 +480,9 @@ public class AppUtils {
 
     @SuppressLint("PrivateApi")
     public static boolean isXiaomiCutout(Context context) {
+        if (!isXiaomi()) {
+            return false;
+        }
         try {
             Class spClass = Class.forName("android.os.SystemProperties");
             Method getMethod = spClass.getDeclaredMethod("getInt", String.class, int.class);
