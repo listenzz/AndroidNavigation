@@ -161,7 +161,7 @@ public class AppUtils {
         return shouldAdjustForWhiteStatusBar;
     }
 
-    public static void setNavigationBarColor(final Window window, int color, boolean animated) {
+    public static void setNavigationBarColor(final Window window, int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int curColor = window.getNavigationBarColor();
             if (curColor == color) {
@@ -171,22 +171,9 @@ public class AppUtils {
             if (!isHuawei()) {
                 setNavigationBarStyle(window, !isBlackColor(color, 176));
             }
+
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            if (animated) {
-                ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
-                colorAnimation.addUpdateListener(
-                        new ValueAnimator.AnimatorUpdateListener() {
-                            @TargetApi(21)
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animator) {
-                                window.setNavigationBarColor((Integer) animator.getAnimatedValue());
-                            }
-                        });
-                colorAnimation.setDuration(200).setStartDelay(0);
-                colorAnimation.start();
-            } else {
-                window.setNavigationBarColor(color);
-            }
+            window.setNavigationBarColor(color);
         }
     }
 

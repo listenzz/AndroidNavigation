@@ -723,7 +723,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         if (getShowsDialog()) {
-            setNavigationBarColor(computedNavigationBarColor(), false);
+            setNavigationBarColor(computedNavigationBarColor());
             return;
         }
 
@@ -731,12 +731,12 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (parent != null) {
             parent.setNeedsNavigationBarAppearanceUpdate();
         } else {
-            setNavigationBarColor(computedNavigationBarColor(), false);
+            setNavigationBarColor(computedNavigationBarColor());
         }
     }
 
-    public void setNavigationBarColor(int color, boolean animated) {
-        AppUtils.setNavigationBarColor(getWindow(), color, animated);
+    public void setNavigationBarColor(int color) {
+        AppUtils.setNavigationBarColor(getWindow(), color);
     }
 
     public void setStatusBarStyle(BarStyle barStyle) {
@@ -1150,9 +1150,8 @@ public abstract class AwesomeFragment extends InternalFragment {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
                 if (index == 0) {
                     if (tabBarFragment.getTabBar() != null) {
-                        tabBarFragment.getTabBar().setVisibility(View.VISIBLE);
+                        tabBarFragment.showTabBarWhenPop(R.anim.nav_none);
                     }
-
                 } else if (index == 1 && shouldHideTabBarWhenPushed()) {
                     tabBarFragment.hideTabBarWhenPush(animation.exit);
                 }
