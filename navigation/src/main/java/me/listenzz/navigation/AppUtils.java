@@ -97,6 +97,24 @@ public class AppUtils {
         }
     }
 
+    private static final String BRAND = Build.BRAND.toLowerCase();
+
+    public static boolean isHuawei() {
+        return BRAND.contains("huawei") || BRAND.contains("honor");
+    }
+
+    public static boolean isXiaomi() {
+        return Build.MANUFACTURER.toLowerCase().equals("xiaomi");
+    }
+
+    public static boolean isVivo() {
+        return BRAND.contains("vivo") || BRAND.contains("bbk");
+    }
+
+    public static boolean isOppo() {
+        return BRAND.contains("oppo");
+    }
+
     public static void setStatusBarTranslucent(Window window, boolean translucent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setRenderContentInShortEdgeCutoutAreas(window, translucent);
@@ -145,10 +163,10 @@ public class AppUtils {
                 return;
             }
 
-            setNavigationBarStyle(window, !isBlackColor(color, 176));
-
+            if (!isHuawei()) {
+                setNavigationBarStyle(window, !isBlackColor(color, 176));
+            }
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
             if (animated) {
                 ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
                 colorAnimation.addUpdateListener(
