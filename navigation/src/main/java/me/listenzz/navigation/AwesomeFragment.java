@@ -314,6 +314,21 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     // ------- navigation ------
 
+
+    @Override
+    public void setArguments(@Nullable final Bundle args) {
+        if (isStateSaved()) {
+            scheduleTaskAtStarted(new Runnable() {
+                @Override
+                public void run() {
+                    AwesomeFragment.super.setArguments(args);
+                }
+            });
+        } else {
+            super.setArguments(args);
+        }
+    }
+
     private String sceneId;
 
     @NonNull
