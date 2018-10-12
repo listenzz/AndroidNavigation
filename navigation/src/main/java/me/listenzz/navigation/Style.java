@@ -16,7 +16,7 @@ import android.view.Gravity;
 public class Style implements Cloneable {
 
     private static int INVALID_COLOR = Integer.MAX_VALUE;
-    private static Drawable defaultShadow = new ColorDrawable(Color.parseColor("#DDDDDD"));
+    private static Drawable defaultShadow = new ColorDrawable(Color.parseColor("#F0F0F0"));
 
     private int screenBackgroundColor = Color.WHITE;
 
