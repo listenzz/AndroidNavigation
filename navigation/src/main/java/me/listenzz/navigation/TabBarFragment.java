@@ -207,13 +207,17 @@ public class TabBarFragment extends AwesomeFragment {
                     NavigationFragment navigationFragment = current.getNavigationFragment();
                     if (navigationFragment != null && navigationFragment.shouldHideTabBarWhenPushed()) {
                         if (navigationFragment.getChildFragmentCountAtBackStack() <= 1) {
+                            tabBarHidden = false;
                             tabBar.setVisibility(View.VISIBLE);
                         } else {
+                            tabBarHidden = true;
                             tabBar.setVisibility(View.GONE);
                         }
                     } else {
+                        tabBarHidden = false;
                         tabBar.setVisibility(View.VISIBLE);
                     }
+                    setNeedsNavigationBarAppearanceUpdate();
                 }
             }
         });
