@@ -1,5 +1,6 @@
 package me.listenzz.navigation;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -706,30 +707,13 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
-
-    private int computedNavigationBarColor() {
-        Integer color = preferredNavigationBarColor();
-        if (color == null) {
-            AwesomeFragment child = childFragmentForAppearance();
-            if (child != null) {
-                color = child.computedNavigationBarColor();
-            }
-        }
-
-        if (color == null) {
-            color = isInDialog() ? Color.TRANSPARENT : style.getScreenBackgroundColor();
-        }
-
-        return color;
-    }
-
+    @TargetApi(26)
     protected Integer preferredNavigationBarColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (getShowsDialog() && getAnimationType() == AnimationType.Slide) {
-                return requireActivity().getWindow().getNavigationBarColor();
-            }
+        AwesomeFragment childFragmentForAppearance = childFragmentForAppearance();
+        if (childFragmentForAppearance != null) {
+            return childFragmentForAppearance.preferredNavigationBarColor();
         }
-        return null;
+        return style.getNavigationBarColor();
     }
 
     public void setNeedsNavigationBarAppearanceUpdate() {
@@ -738,7 +722,16 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         if (getShowsDialog()) {
-            setNavigationBarColor(computedNavigationBarColor());
+            Integer color = preferredNavigationBarColor();
+            if (color != null) {
+                setNavigationBarColor(color);
+            } else {
+                if (getAnimationType() == AnimationType.Slide) {
+                    setNavigationBarColor(requireActivity().getWindow().getNavigationBarColor());
+                } else {
+                    setNavigationBarColor(Color.TRANSPARENT);
+                }
+            }
             return;
         }
 
@@ -746,7 +739,18 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (parent != null) {
             parent.setNeedsNavigationBarAppearanceUpdate();
         } else {
-            setNavigationBarColor(computedNavigationBarColor());
+            Integer color = preferredNavigationBarColor();
+            if (color != null) {
+                setNavigationBarColor(color);
+            } else {
+                AwesomeFragment fragmentForColor = this;
+                AwesomeFragment child = fragmentForColor.childFragmentForAppearance();
+                while (child != null) {
+                    fragmentForColor = child;
+                    child = child.childFragmentForAppearance();
+                }
+                setNavigationBarColor(fragmentForColor.style.getScreenBackgroundColor());
+            }
         }
     }
 

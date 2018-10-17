@@ -134,6 +134,10 @@ public class TabBarFragment extends AwesomeFragment {
 
     @Override
     protected Integer preferredNavigationBarColor() {
+        Integer color = super.preferredNavigationBarColor();
+        if (color != null) {
+            return color;
+        }
         return tabBarHidden ? null : Color.parseColor(style.getTabBarBackgroundColor());
     }
 
@@ -225,7 +229,7 @@ public class TabBarFragment extends AwesomeFragment {
 
     @SuppressWarnings("unchecked")
     public <T extends View> T getTabBar() {
-        return (T)tabBar;
+        return (T) tabBar;
     }
 
     public void setTabBarProvider(TabBarProvider tabBarProvider) {

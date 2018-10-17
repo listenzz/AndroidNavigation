@@ -163,15 +163,9 @@ public class AppUtils {
 
     public static void setNavigationBarColor(final Window window, int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            int curColor = window.getNavigationBarColor();
-            if (curColor == color) {
-                return;
-            }
-
             if (!isHuawei()) {
                 setNavigationBarStyle(window, !isBlackColor(color, 176));
             }
-
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setNavigationBarColor(color);
         }
@@ -208,12 +202,9 @@ public class AppUtils {
 
     public static void setStatusBarColor(final Window window, int color, boolean animated) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int curColor = window.getStatusBarColor();
-            if (curColor == color) {
-                return;
-            }
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             if (animated) {
+                int curColor = window.getStatusBarColor();
                 ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
                 colorAnimation.addUpdateListener(
                         new ValueAnimator.AnimatorUpdateListener() {

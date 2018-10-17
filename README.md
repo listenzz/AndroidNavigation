@@ -706,16 +706,18 @@ demo 中，NoToolbarFragment 返回 null， 表示不需要创建 toolbar。如�
 
 - preferredNavigationBarColor
 
-建议保留默认设置，只在个别页面微调。
+ 建议保留默认设置，只在个别页面微调。
 
 
-导航栏背景默认规则如下：
+ 导航栏背景默认规则如下：
 
-- 含「底部Tab」的页面，虚拟键设置为「底部Tab」的颜色
+ - 含「底部Tab」的页面，虚拟键设置为「底部Tab」的颜色
 
-- 不含「底部Tab」的页面，默认使用页面背景颜色，也就是 `style.getScreenBackgroundColor()` 的值
+ - 不含「底部Tab」的页面，默认使用页面背景颜色，也就是 `style.getScreenBackgroundColor()` 的值
 
-如果页面含有复杂背景/纹理，建议设置为透明，这需要开发者自行复写 `preferredNavigationBarColor`。
+ - dialog 为透明色，但如何dialog 的 animationType 设置为 slide, 则使用 activity 当前 navigation bar 的颜色
+
+ 如果页面含有复杂背景/纹理，建议设置为透明，这需要开发者自行复写 `preferredNavigationBarColor`。
 
 
 <a name="using-font-icons"></a>
