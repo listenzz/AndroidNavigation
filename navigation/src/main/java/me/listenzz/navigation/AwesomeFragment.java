@@ -968,6 +968,9 @@ public abstract class AwesomeFragment extends InternalFragment {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
+                if (isFragmentHidden() || !getUserVisibleHint()) {
+                    throw new IllegalStateException("we should not show dialog from an invisible Fragment, use the primary Fragment instead.");
+                }
                 dialog.setTargetFragment(target, requestCode);
                 dialog.show(getFragmentManager(), dialog.getSceneId());
             }
