@@ -57,7 +57,7 @@ public class LifecycleDelegate implements LifecycleObserver {
     }
 
     boolean isAtLeastStarted() {
-        return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED);
+        return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
     }
 
     private Lifecycle getLifecycle() {
