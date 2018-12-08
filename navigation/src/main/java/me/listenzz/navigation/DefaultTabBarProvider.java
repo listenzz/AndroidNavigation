@@ -70,7 +70,8 @@ public class DefaultTabBarProvider implements TabBarProvider {
 
             @Override
             public void onTabReselected(int position) {
-
+                Log.i("Navigation", "tab position:" + position);
+                tabBarFragment.setSelectedIndex(position);
             }
         });
 

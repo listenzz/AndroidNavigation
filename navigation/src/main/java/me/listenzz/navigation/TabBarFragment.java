@@ -196,6 +196,11 @@ public class TabBarFragment extends AwesomeFragment {
                 if (tabBarProvider != null) {
                     tabBarProvider.setSelectedIndex(index);
                 }
+
+                if (selectedIndex == index) {
+                    return;
+                }
+
                 selectedIndex = index;
                 FragmentManager fragmentManager = getChildFragmentManager();
                 FragmentHelper.executePendingTransactionsSafe(fragmentManager);
