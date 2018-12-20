@@ -42,7 +42,7 @@ public class DefaultTabBarProvider implements TabBarProvider {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
 
     }
 
@@ -145,4 +145,8 @@ public class DefaultTabBarProvider implements TabBarProvider {
         tabBar.setShadow(style.getTabBarShadow());
     }
 
+    @Override
+    public void updateTabBar(@NonNull Bundle options) {
+
+    }
 }

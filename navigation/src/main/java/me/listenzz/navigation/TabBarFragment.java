@@ -61,7 +61,6 @@ public class TabBarFragment extends AwesomeFragment {
             selectedIndex = savedInstanceState.getInt(SAVED_SELECTED_INDEX);
             tabBarHidden = savedInstanceState.getBoolean(SAVED_BOTTOM_BAR_HIDDEN, false);
             String providerClassName = savedInstanceState.getString(SAVED_TAB_BAR_PROVIDER_CLASS_NAME);
-            tabBarProvider = null;
             if (providerClassName != null) {
                 try {
                     Class clazz = Class.forName(providerClassName);
@@ -239,6 +238,16 @@ public class TabBarFragment extends AwesomeFragment {
 
     public void setTabBarProvider(TabBarProvider tabBarProvider) {
         this.tabBarProvider = tabBarProvider;
+    }
+
+    public TabBarProvider getTabBarProvider() {
+        return tabBarProvider;
+    }
+
+    public void updateTabbar(Bundle options) {
+        if (this.tabBarProvider != null && options != null) {
+            this.tabBarProvider.updateTabBar(options);
+        }
     }
 
     void showTabBarWhenPop(@AnimRes int anim) {

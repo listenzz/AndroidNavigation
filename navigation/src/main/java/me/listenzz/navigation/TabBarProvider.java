@@ -20,8 +20,10 @@ public interface TabBarProvider {
 
     void onDestroyTabBar();
 
-    void onSaveInstanceState(Bundle outState);
+    void onSaveInstanceState(@NonNull Bundle outState);
 
     void setSelectedIndex(int index);
+
+    void updateTabBar(@NonNull Bundle options);
 
 }
