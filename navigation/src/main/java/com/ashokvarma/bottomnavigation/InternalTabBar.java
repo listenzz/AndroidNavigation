@@ -91,7 +91,7 @@ public class InternalTabBar extends BottomNavigationBar {
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(size, size);
             layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
             layoutParams.topMargin = AppUtils.dp2px(context, 4);
-            layoutParams.rightMargin = AppUtils.dp2px(context, 2);
+            layoutParams.rightMargin = AppUtils.dp2px(context, 7);
             tab.iconContainerView.addView(redPoint, layoutParams);
             Drawable drawable = ContextCompat.getDrawable(context, me.listenzz.navigation.R.drawable.nav_red_point);
             if (context instanceof AwesomeActivity && drawable != null) {
