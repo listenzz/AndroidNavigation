@@ -85,13 +85,17 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public AwesomeFragment getRootFragment() {
-        FragmentManager fragmentManager = getChildFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        if (count > 0) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(0);
-            return (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+        if (isAdded()) {
+            FragmentManager fragmentManager = getChildFragmentManager();
+            int count = fragmentManager.getBackStackEntryCount();
+            if (count > 0) {
+                FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(0);
+                return (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+            }
+            return null;
+        } else {
+            return rootFragment;
         }
-        return null;
     }
 
     private void setRootFragmentInternal(AwesomeFragment fragment) {
