@@ -194,14 +194,14 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     protected void onStatusBarTranslucentChanged(boolean translucent) {
-        List<AwesomeFragment> children = getChildFragmentsAtAddedList();
+        List<AwesomeFragment> children = getFragmentsAtAddedList();
         for (int i = 0, size = children.size(); i < size; i++) {
             AwesomeFragment child = children.get(i);
             child.onStatusBarTranslucentChanged(translucent);
         }
     }
 
-    protected List<AwesomeFragment> getChildFragmentsAtAddedList() {
+    public List<AwesomeFragment> getFragmentsAtAddedList() {
         List<AwesomeFragment> children = new ArrayList<>();
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         for (int i = 0, size = fragments.size(); i < size; i++) {
