@@ -162,18 +162,28 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     public void onDrawerOpened(@NonNull View drawerView) {
-        FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-        fragmentManager.beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
-        getMenuFragment().setUserVisibleHint(true);
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager fragmentManager = getChildFragmentManager();
+                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+                fragmentManager.beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
+                getMenuFragment().setUserVisibleHint(true);
+            }
+        });
     }
 
     @Override
     public void onDrawerClosed(@NonNull View drawerView) {
-        FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-        fragmentManager.beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
-        getMenuFragment().setUserVisibleHint(false);
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager fragmentManager = getChildFragmentManager();
+                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+                fragmentManager.beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
+                getMenuFragment().setUserVisibleHint(false);
+            }
+        });
     }
 
     @Override
