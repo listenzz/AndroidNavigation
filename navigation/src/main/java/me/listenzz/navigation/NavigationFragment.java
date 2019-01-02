@@ -323,8 +323,11 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
                 FragmentHelper.executePendingTransactionsSafe(fragmentManager);
                 topFragment.setAnimation(PresentAnimation.None);
                 aheadFragment.setAnimation(PresentAnimation.None);
+                topFragment.setUserVisibleHint(false);
+                fragmentManager.popBackStack(aheadFragment.getSceneId(), 0);
+                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+
                 aheadFragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
-                fragmentManager.popBackStackImmediate(aheadFragment.getSceneId(), 0);
             }
 
             if (aheadFragment != null && shouldTransitionWithStatusBar(aheadFragment, topFragment)) {
