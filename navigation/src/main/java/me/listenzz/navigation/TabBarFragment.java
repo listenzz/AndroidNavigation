@@ -93,7 +93,7 @@ public class TabBarFragment extends AwesomeFragment {
         }
 
         if (savedInstanceState != null) {
-            setSelectedIndex(selectedIndex);
+            restoreSelectedIndex(selectedIndex);
             if (tabBarHidden && getTabBar() != null) {
                 getTabBar().setVisibility(View.GONE);
             }
@@ -186,6 +186,11 @@ public class TabBarFragment extends AwesomeFragment {
 
     public int getSelectedIndex() {
         return selectedIndex;
+    }
+
+
+    protected void restoreSelectedIndex(int index) {
+        setSelectedIndex(index);
     }
 
     public void setSelectedIndex(final int index) {
