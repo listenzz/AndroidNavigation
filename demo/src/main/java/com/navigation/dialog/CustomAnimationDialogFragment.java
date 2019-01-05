@@ -3,7 +3,6 @@ package com.navigation.dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,19 +80,10 @@ public class CustomAnimationDialogFragment extends AwesomeFragment {
             @Override
             public void onAnimationEnd(Animation animation) {
                 mIsAnimating = false;
-                /**
-                 * Bugfix： Attempting to destroy the window while drawing!
-                 */
                 mContentView.post(new Runnable() {
                     @Override
                     public void run() {
-                        // java.lang.IllegalArgumentException: View=com.android.internal.policy.PhoneWindow$DecorView{22dbf5b V.E...... R......D 0,0-1080,1083} not attached to window manager
-                        // 在dismiss的时候可能已经detach了，简单try-catch一下
-                        try {
-                           CustomAnimationDialogFragment.super.dismissDialog();
-                        } catch (Exception e) {
-                            Log.w(TAG, "dismiss error\n" + Log.getStackTraceString(e));
-                        }
+                        CustomAnimationDialogFragment.super.dismissDialog();
                     }
                 });
             }

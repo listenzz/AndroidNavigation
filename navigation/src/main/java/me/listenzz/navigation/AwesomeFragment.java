@@ -17,7 +17,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.InternalFragment;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -430,6 +429,9 @@ public abstract class AwesomeFragment extends InternalFragment {
 
                 AwesomeFragment target = (AwesomeFragment) getTargetFragment();
                 if (target != null) {
+                    if (!target.isAdded()) {
+                        throw new IllegalStateException("should not present a Fragment (" + getClass().getSimpleName() + ") on a dismissed Fragment (" + getClass().getSimpleName() + ").");
+                    }
                     dismissFragmentInternal(target);
                     return;
                 }
@@ -896,7 +898,9 @@ public abstract class AwesomeFragment extends InternalFragment {
             throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
         } else {
             if (getShowsDialog()) {
-                super.dismiss();
+                if (isAdded()) {
+                    super.dismiss();
+                }
             } else {
                 AwesomeFragment parent = getParentAwesomeFragment();
                 parent.setResult(getResultCode(), getResultData());
@@ -909,7 +913,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     protected void dismissInternal(boolean allowStateLoss) {
         super.dismissInternal(allowStateLoss);
         Fragment target = getTargetFragment();
-        if (target instanceof AwesomeFragment && target.isAdded() && !target.isRemoving()) {
+        if (target instanceof AwesomeFragment) {
+            if (!target.isAdded()) {
+                throw new IllegalStateException("should not show dialog (" + getClass().getSimpleName() + ") over a dismissed dialog (" + target.getClass().getSimpleName() + ").");
+            }
             FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
             AwesomeFragment fragment = (AwesomeFragment) target;
             fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
@@ -1084,19 +1091,10 @@ public abstract class AwesomeFragment extends InternalFragment {
             @Override
             public void onAnimationEnd(Animation animation) {
                 animatingOut = false;
-                /**
-                 * Bugfix： Attempting to destroy the window while drawing!
-                 */
                 animationView.post(new Runnable() {
                     @Override
                     public void run() {
-                        // java.lang.IllegalArgumentException: View=com.android.internal.policy.PhoneWindow$DecorView{22dbf5b V.E...... R......D 0,0-1080,1083} not attached to window manager
-                        // 在dismiss的时候可能已经detach了，简单try-catch一下
-                        try {
-                            dismiss();
-                        } catch (Exception e) {
-                            Log.w(TAG, "dismiss error\n" + Log.getStackTraceString(e));
-                        }
+                        dismiss();
                     }
                 });
             }
