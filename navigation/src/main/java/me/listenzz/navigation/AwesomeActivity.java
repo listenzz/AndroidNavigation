@@ -4,10 +4,13 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Window;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -211,6 +214,20 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             }
         }
         return children;
+    }
+
+    @Nullable
+    public DialogFragment getDialogFragment() {
+        return FragmentHelper.getDialogFragment(getSupportFragmentManager());
+    }
+
+    public Window getCurrentWindow() {
+        DialogFragment dialogFragment = getDialogFragment();
+        if (dialogFragment != null && dialogFragment.isAdded()) {
+            return dialogFragment.getDialog().getWindow();
+        } else {
+            return getWindow();
+        }
     }
 
     protected void scheduleTaskAtStarted(Runnable runnable) {

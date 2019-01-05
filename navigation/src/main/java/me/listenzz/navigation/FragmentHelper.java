@@ -3,6 +3,7 @@ package me.listenzz.navigation;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -127,6 +128,40 @@ public class FragmentHelper {
             }
         }
         return target;
+    }
+
+    @Nullable
+    public static DialogFragment getDialogFragment(@NonNull FragmentManager fragmentManager) {
+        Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
+        if (fragment instanceof DialogFragment) {
+            DialogFragment dialogFragment = (DialogFragment) fragment;
+            if (dialogFragment.getShowsDialog()) {
+                return dialogFragment;
+            }
+        }
+
+        if (fragment != null) {
+            return getDialogFragment(fragment.getChildFragmentManager());
+        }
+
+        List<Fragment> fragments = fragmentManager.getFragments();
+        int count = fragments.size();
+        if (count > 0) {
+            fragment = fragments.get(count -1);
+
+            if (fragment instanceof DialogFragment) {
+                DialogFragment dialogFragment = (DialogFragment) fragment;
+                if (dialogFragment.getShowsDialog()) {
+                    return dialogFragment;
+                }
+            }
+
+            if (fragment != null) {
+                return getDialogFragment(fragment.getChildFragmentManager());
+            }
+        }
+
+        return null;
     }
 
 }
