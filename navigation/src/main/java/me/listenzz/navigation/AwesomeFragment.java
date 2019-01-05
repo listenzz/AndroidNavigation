@@ -218,6 +218,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     @CallSuper
     public void onPause() {
         super.onPause();
+        Fragment target = getTargetFragment();
+        if (target != null && !target.isAdded() && getShowsDialog()) {
+            setTargetFragment(null, getTargetRequestCode());
+        }
         notifyViewAppear(false);
     }
 
@@ -913,10 +917,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     protected void dismissInternal(boolean allowStateLoss) {
         super.dismissInternal(allowStateLoss);
         Fragment target = getTargetFragment();
-        if (target instanceof AwesomeFragment) {
-            if (!target.isAdded()) {
-                throw new IllegalStateException("should not show dialog (" + getClass().getSimpleName() + ") over a dismissed dialog (" + target.getClass().getSimpleName() + ").");
-            }
+        if (target instanceof AwesomeFragment && target.isAdded()) {
             FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
             AwesomeFragment fragment = (AwesomeFragment) target;
             fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
