@@ -402,11 +402,16 @@ public abstract class AwesomeFragment extends InternalFragment {
                 }
 
                 AwesomeFragment parent = getParentAwesomeFragment();
-                if (definesPresentationContext() && parent != null) {
-                    presentFragmentInternal(AwesomeFragment.this, fragment, requestCode);
-                } else if (parent != null) {
-                    parent.presentFragment(fragment, requestCode);
-                } else if (presentableActivity != null) {
+                if (parent != null) {
+                    if (definesPresentationContext()) {
+                        presentFragmentInternal(AwesomeFragment.this, fragment, requestCode);
+                    } else {
+                        parent.presentFragment(fragment, requestCode);
+                    }
+                    return;
+                }
+
+                if (presentableActivity != null) {
                     Bundle args = FragmentHelper.getArguments(fragment);
                     args.putInt(ARGS_REQUEST_CODE, requestCode);
                     presentableActivity.presentFragment(fragment);
@@ -431,19 +436,22 @@ public abstract class AwesomeFragment extends InternalFragment {
                     throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `dismissDialog`");
                 }
 
-                AwesomeFragment target = (AwesomeFragment) getTargetFragment();
-                if (target != null) {
-                    if (!target.isAdded()) {
-                        throw new IllegalStateException("should not present a Fragment (" + getClass().getSimpleName() + ") on a dismissed Fragment (" + getClass().getSimpleName() + ").");
-                    }
-                    dismissFragmentInternal(target);
-                    return;
-                }
-
                 AwesomeFragment parent = getParentAwesomeFragment();
                 if (parent != null) {
-                    parent.setResult(resultCode, result);
-                    parent.dismissFragment();
+                    if (definesPresentationContext()) {
+                        AwesomeFragment presented = getPresentedFragment();
+                        if (presented != null) {
+                            dismissFragmentInternal(null);
+                            return;
+                        }
+                        AwesomeFragment target = (AwesomeFragment) getTargetFragment();
+                        if (target != null) {
+                            dismissFragmentInternal(target);
+                        }
+                    } else {
+                        parent.setResult(resultCode, result);
+                        parent.dismissFragment();
+                    }
                     return;
                 }
 
@@ -455,41 +463,80 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     }
 
-    private void dismissFragmentInternal(@NonNull final AwesomeFragment target) {
-        setAnimation(PresentAnimation.Modal);
-        target.setAnimation(PresentAnimation.Modal);
-        setUserVisibleHint(false);
-        requireFragmentManager().popBackStack(getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
-        target.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
+    private void dismissFragmentInternal(@Nullable AwesomeFragment target) {
+        if (target == null) {
+            AwesomeFragment presented = getPresentedFragment();
+            int count = requireFragmentManager().getBackStackEntryCount();
+            FragmentManager.BackStackEntry backStackEntry = requireFragmentManager().getBackStackEntryAt(count - 1);
+            AwesomeFragment top = (AwesomeFragment) requireFragmentManager().findFragmentByTag(backStackEntry.getName());
+            if (top == null || presented == null) {
+                return;
+            }
+            setAnimation(PresentAnimation.Modal);
+            top.setAnimation(PresentAnimation.Modal);
+            top.setUserVisibleHint(false);
+            requireFragmentManager().popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
+            onFragmentResult(top.getRequestCode(), top.getResultCode(), top.getResultData());
+        } else {
+            setAnimation(PresentAnimation.Modal);
+            target.setAnimation(PresentAnimation.Modal);
+            setUserVisibleHint(false);
+            requireFragmentManager().popBackStack(getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
+            target.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
+        }
     }
 
+    @Nullable
     public AwesomeFragment getPresentedFragment() {
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (definesPresentationContext() && parent != null) {
-            return FragmentHelper.getLatterFragment(requireFragmentManager(), this);
-        } else if (parent != null) {
-            return parent.getPresentedFragment();
+        if (parent != null) {
+            if (definesPresentationContext()) {
+                if (FragmentHelper.findIndexAtBackStack(requireFragmentManager(), this) == -1) {
+                    if (parent.getChildFragmentCountAtBackStack() == 0) {
+                        return null;
+                    } else {
+                        FragmentManager.BackStackEntry backStackEntry = requireFragmentManager().getBackStackEntryAt(0);
+                        return (AwesomeFragment) requireFragmentManager().findFragmentByTag(backStackEntry.getName());
+                    }
+                } else {
+                    return FragmentHelper.getLatterFragment(requireFragmentManager(), this);
+                }
+            } else {
+                return parent.getPresentedFragment();
+            }
         }
-        return presentableActivity.getPresentedFragment(this);
+
+        if (presentableActivity != null) {
+            return presentableActivity.getPresentedFragment(this);
+        }
+
+        return null;
     }
 
+    @Nullable
     public AwesomeFragment getPresentingFragment() {
-        AwesomeFragment target = (AwesomeFragment) getTargetFragment();
-        if (target != null) {
-            return target;
-        }
-
         AwesomeFragment parent = getParentAwesomeFragment();
-
         if (parent != null) {
-            return parent.getPresentingFragment();
+            if (definesPresentationContext()) {
+                return (AwesomeFragment) getTargetFragment();
+            } else {
+                return parent.getPresentingFragment();
+            }
         }
-        return presentableActivity.getPresentingFragment(this);
+
+        if (presentableActivity != null) {
+            return presentableActivity.getPresentingFragment(this);
+        }
+
+        return null;
     }
 
     public void setActivityRootFragment(AwesomeFragment root) {
-        presentableActivity.setActivityRootFragment(root);
+        if (presentableActivity != null) {
+            presentableActivity.setActivityRootFragment(root);
+        }
     }
 
     private int requestCode;

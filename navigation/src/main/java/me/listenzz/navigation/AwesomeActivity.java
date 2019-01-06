@@ -52,7 +52,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         if (count > 0) {
             FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(count - 1);
             AwesomeFragment fragment = (AwesomeFragment) fragmentManager.findFragmentByTag(entry.getName());
-            if (!fragment.dispatchBackPressed()) {
+            if (fragment != null && !fragment.dispatchBackPressed()) {
                 if (count == 1) {
                     if (!handleBackPressed()) {
                         ActivityCompat.finishAfterTransition(this);
@@ -99,21 +99,30 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         AwesomeFragment top = (AwesomeFragment)fragmentManager.findFragmentById(android.R.id.content);
-        AwesomeFragment presenting = getPresentingFragment(fragment);
-
-        top.setAnimation(PresentAnimation.Modal);
-
-        if (presenting != null) {
-            presenting.setAnimation(PresentAnimation.Modal);
+        if (top == null) {
+            return;
         }
-
-        fragment.setUserVisibleHint(false);
-        if (presenting == null) {
-            ActivityCompat.finishAfterTransition(this);
+        top.setAnimation(PresentAnimation.Modal);
+        AwesomeFragment presented = getPresentedFragment(fragment);
+        if (presented != null) {
+            fragment.setAnimation(PresentAnimation.Modal);
+            top.setUserVisibleHint(false);
+            getSupportFragmentManager().popBackStack(fragment.getSceneId(), 0);
+            FragmentHelper.executePendingTransactionsSafe(getSupportFragmentManager());
+            fragment.onFragmentResult(top.getRequestCode(), top.getResultCode(), top.getResultData());
         } else {
-            fragmentManager.popBackStack(fragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-            presenting.onFragmentResult(fragment.getRequestCode(), fragment.getResultCode(), fragment.getResultData());
+            AwesomeFragment presenting = getPresentingFragment(fragment);
+            if (presenting != null) {
+                presenting.setAnimation(PresentAnimation.Modal);
+            }
+            fragment.setUserVisibleHint(false);
+            if (presenting == null) {
+                ActivityCompat.finishAfterTransition(this);
+            } else {
+                fragmentManager.popBackStack(fragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+                presenting.onFragmentResult(fragment.getRequestCode(), fragment.getResultCode(), fragment.getResultData());
+            }
         }
     }
 
