@@ -1,5 +1,6 @@
 package com.navigation.dialog;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,4 +31,8 @@ public class SlideAnimationDialogFragment extends AwesomeFragment {
         return inflater.inflate(R.layout.fragment_bottom_sheet, container, false);
     }
 
+    @Override
+    protected Integer preferredNavigationBarColor() {
+        return Color.WHITE;
+    }
 }
