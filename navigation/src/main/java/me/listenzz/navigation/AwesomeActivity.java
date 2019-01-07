@@ -107,7 +107,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         if (presented != null) {
             fragment.setAnimation(PresentAnimation.Modal);
             top.setUserVisibleHint(false);
-            getSupportFragmentManager().popBackStack(fragment.getSceneId(), 0);
+            getSupportFragmentManager().popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
             FragmentHelper.executePendingTransactionsSafe(getSupportFragmentManager());
             fragment.onFragmentResult(top.getRequestCode(), top.getResultCode(), top.getResultData());
         } else {
