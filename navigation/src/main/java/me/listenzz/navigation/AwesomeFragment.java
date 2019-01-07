@@ -82,6 +82,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             bottomPadding = savedInstanceState.getInt(SAVED_STATE_BOTTOM_PADDING_KEY);
             definesPresentationContext = savedInstanceState.getBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, false);
         }
+        setResult(0, null);
     }
 
     @Override
@@ -449,7 +450,6 @@ public abstract class AwesomeFragment extends InternalFragment {
                             dismissFragmentInternal(target);
                         }
                     } else {
-                        parent.setResult(resultCode, result);
                         parent.dismissFragment();
                     }
                     return;
@@ -546,6 +546,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void setResult(int resultCode, Bundle data) {
         this.result = data;
         this.resultCode = resultCode;
+        AwesomeFragment parent = getParentAwesomeFragment();
+        if (parent != null && !definesPresentationContext() && !getShowsDialog()) {
+            parent.setResult(resultCode, data);
+        }
     }
 
     public int getRequestCode() {
@@ -954,7 +958,6 @@ public abstract class AwesomeFragment extends InternalFragment {
                 }
             } else {
                 AwesomeFragment parent = getParentAwesomeFragment();
-                parent.setResult(getResultCode(), getResultData());
                 parent.dismissDialog();
             }
         }
