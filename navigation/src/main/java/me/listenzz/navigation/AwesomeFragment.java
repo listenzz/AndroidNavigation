@@ -44,12 +44,12 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public static final String TAG = "Navigation";
 
-    private static final String ARGS_SCENE_ID = "nav_scene_id";
     private static final String ARGS_REQUEST_CODE = "nav_request_code";
-    private static final String ARGS_ANIMATION = "nav_animation";
-    private static final String ARGS_ANIMATION_TYPE = "nav_animation_type";
+
+    private static final String SAVED_TAB_BAR_ITEM = "nav_tab_bar_item";
+    private static final String SAVED_ANIMATION_TYPE = "nav_animation_type";
+    private static final String SAVED_SCENE_ID = "nav_scene_id";
     private static final String SAVED_STATE_DEFINES_PRESENTATION_CONTEXT = "defines_presentation_context";
-    private static final String ARGS_TAB_BAR_ITEM = "nav_tab_bar_item";
     private static final String SAVED_STATE_BOTTOM_PADDING_KEY = "bottom_padding";
 
     // ------- lifecycle methods -------
@@ -79,6 +79,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
+            sceneId = savedInstanceState.getString(SAVED_SCENE_ID);
+            String animationName = savedInstanceState.getString(SAVED_ANIMATION_TYPE);
+            this.animationType = AnimationType.valueOf(animationName);
+            tabBarItem = savedInstanceState.getParcelable(SAVED_TAB_BAR_ITEM);
             bottomPadding = savedInstanceState.getInt(SAVED_STATE_BOTTOM_PADDING_KEY);
             definesPresentationContext = savedInstanceState.getBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, false);
         }
@@ -88,6 +92,9 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString(SAVED_SCENE_ID, sceneId);
+        outState.putString(SAVED_ANIMATION_TYPE, animationType.name());
+        outState.putParcelable(SAVED_TAB_BAR_ITEM, tabBarItem);
         outState.putInt(SAVED_STATE_BOTTOM_PADDING_KEY, bottomPadding);
         outState.putBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, definesPresentationContext);
     }
@@ -319,34 +326,12 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     // ------- navigation ------
 
-
-    @Override
-    public void setArguments(@Nullable final Bundle args) {
-        if (isStateSaved()) {
-            scheduleTaskAtStarted(new Runnable() {
-                @Override
-                public void run() {
-                    AwesomeFragment.super.setArguments(args);
-                }
-            });
-        } else {
-            super.setArguments(args);
-        }
-    }
-
     private String sceneId;
 
     @NonNull
     public String getSceneId() {
         if (this.sceneId == null) {
-            Bundle args = FragmentHelper.getArguments(this);
-            String sceneId = args.getString(ARGS_SCENE_ID);
-            if (sceneId == null) {
-                sceneId = UUID.randomUUID().toString();
-                args.putString(ARGS_SCENE_ID, sceneId);
-            }
-
-            this.sceneId = sceneId;
+            this.sceneId = UUID.randomUUID().toString();
         }
         return this.sceneId;
     }
@@ -638,22 +623,14 @@ public abstract class AwesomeFragment extends InternalFragment {
     private PresentAnimation animation = null;
 
     public void setAnimation(PresentAnimation animation) {
-        Bundle bundle = FragmentHelper.getArguments(this);
-        bundle.putString(ARGS_ANIMATION, animation.name());
         this.animation = animation;
     }
 
     public PresentAnimation getAnimation() {
-        if (animation == null) {
-            Bundle bundle = FragmentHelper.getArguments(this);
-            String animationName = bundle.getString(ARGS_ANIMATION);
-            if (animationName != null) {
-                animation = PresentAnimation.valueOf(animationName);
-            } else {
-                animation = PresentAnimation.None;
-            }
+        if (this.animation == null) {
+            this.animation = PresentAnimation.None;
         }
-        return animation;
+        return this.animation;
     }
 
     public boolean isParentFragment() {
@@ -970,7 +947,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (target instanceof AwesomeFragment && target.isAdded()) {
             FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
             AwesomeFragment fragment = (AwesomeFragment) target;
-            fragment.onFragmentResult(getTargetRequestCode(), getResultCode(), getResultData());
+            fragment.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
         }
     }
 
@@ -1029,32 +1006,20 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     private void showDialogInternal(final AwesomeFragment target, final AwesomeFragment dialog, final int requestCode) {
+        Bundle args = FragmentHelper.getArguments(dialog);
+        args.putInt(ARGS_REQUEST_CODE, requestCode);
         dialog.setTargetFragment(target, requestCode);
         dialog.show(getFragmentManager(), dialog.getSceneId());
     }
 
-    /**
-     * set the animation for dialog
-     *
-     * @param type animation type
-     */
+    private AnimationType animationType = AnimationType.None;
+
     public void setAnimationType(AnimationType type) {
-        Bundle args = FragmentHelper.getArguments(this);
-        args.putString(ARGS_ANIMATION_TYPE, type.name());
+        this.animationType = type;
     }
 
-    /**
-     * get the dialog animation type
-     *
-     * @return dialog animation type
-     */
     public AnimationType getAnimationType() {
-        Bundle args = FragmentHelper.getArguments(this);
-        String animationType = args.getString(ARGS_ANIMATION_TYPE);
-        if (animationType == null) {
-            return AnimationType.None;
-        }
-        return AnimationType.valueOf(animationType);
+        return this.animationType;
     }
 
     private void animateIn() {
@@ -1066,17 +1031,13 @@ public abstract class AwesomeFragment extends InternalFragment {
         boolean shouldAnimated = type != AnimationType.None;
 
         if (!shouldAnimated) {
-            Bundle args = FragmentHelper.getArguments(this);
-            String animationType = args.getString(ARGS_ANIMATION_TYPE);
-            if (animationType == null) {
-                DialogFrameLayout frameLayout = (DialogFrameLayout) root;
-                View contentView = frameLayout.getChildAt(0);
-                FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
-                if (layoutParams.gravity == Gravity.BOTTOM) {
-                    shouldAnimated = true;
-                    type = AnimationType.Slide;
-                    setAnimationType(type);
-                }
+            DialogFrameLayout frameLayout = (DialogFrameLayout) root;
+            View contentView = frameLayout.getChildAt(0);
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
+            if (layoutParams.gravity == Gravity.BOTTOM) {
+                shouldAnimated = true;
+                type = AnimationType.Slide;
+                setAnimationType(type);
             }
         }
         if (shouldAnimated) {
@@ -1513,15 +1474,9 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public void setTabBarItem(TabBarItem item) {
         tabBarItem = item;
-        Bundle args = FragmentHelper.getArguments(this);
-        args.putParcelable(ARGS_TAB_BAR_ITEM, tabBarItem);
     }
 
     public TabBarItem getTabBarItem() {
-        if (tabBarItem == null) {
-            Bundle args = FragmentHelper.getArguments(this);
-            tabBarItem = args.getParcelable(ARGS_TAB_BAR_ITEM);
-        }
         return tabBarItem;
     }
 
