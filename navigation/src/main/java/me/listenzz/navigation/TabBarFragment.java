@@ -98,12 +98,7 @@ public class TabBarFragment extends AwesomeFragment {
         if (savedInstanceState != null) {
             restoreSelectedIndex(selectedIndex);
             if (tabBarHidden && getTabBar() != null) {
-                tabBar.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideTabBar();
-                    }
-                });
+                hideTabBar();
             }
         }
     }
@@ -297,8 +292,14 @@ public class TabBarFragment extends AwesomeFragment {
     private void hideTabBar() {
         if (tabBar != null) {
             tabBarHidden = true;
-            tabBar.setTranslationY(tabBar.getHeight());
-            setNeedsNavigationBarAppearanceUpdate();
+            int height = tabBar.getHeight();
+            if (height == 0) {
+                height = (int) (getResources().getDimension(R.dimen.bottom_navigation_height) * 2);
+            }
+            tabBar.setTranslationY(height);
+            if (isResumed()) {
+                setNeedsNavigationBarAppearanceUpdate();
+            }
         }
     }
 
@@ -320,7 +321,7 @@ public class TabBarFragment extends AwesomeFragment {
         @Override
         public void onAnimationEnd(Animation animation) {
             if (tabBar != null && hidden) {
-                tabBar.setTranslationY(tabBar.getHeight());
+                tabBar.setTranslationY(tabBar.getHeight()*2);
             }
         }
 
