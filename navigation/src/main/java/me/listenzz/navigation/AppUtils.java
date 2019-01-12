@@ -8,6 +8,9 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -53,6 +56,21 @@ public class AppUtils {
 
     public static String colorToString(@ColorInt int color) {
         return String.format("#%08X", color);
+    }
+
+    public static Bitmap createBitmapFromView(View view) {
+        view.clearFocus();
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),view.getHeight(), Bitmap.Config.ARGB_8888);
+        if (bitmap != null) {
+            Canvas canvas = new Canvas();
+            canvas.setBitmap(bitmap);
+            canvas.save();
+            canvas.drawColor(Color.TRANSPARENT);
+            view.draw(canvas);
+            canvas.restore();
+            canvas.setBitmap(null);
+        }
+        return bitmap;
     }
 
     public static int getScreenWidth(Context context) {
@@ -370,7 +388,7 @@ public class AppUtils {
             return false;
         }
 
-       sIsCutout = isHuaweiCutout(activity) || isOppoCutout(activity) || isVivoCutout(activity) || isXiaomiCutout(activity);
+        sIsCutout = isHuaweiCutout(activity) || isOppoCutout(activity) || isVivoCutout(activity) || isXiaomiCutout(activity);
 
         if (!isGoogleCutoutSupport()) {
             return sIsCutout;

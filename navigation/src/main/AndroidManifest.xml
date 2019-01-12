@@ -1,2 +1,1 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="me.listenzz.navigation" />
+<manifest package="me.listenzz.navigation" />

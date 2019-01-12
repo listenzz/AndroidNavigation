@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 /**
  * Created by Listen on 2018/1/11.
  */
@@ -86,7 +89,7 @@ public class TabBarFragment extends AwesomeFragment {
             }
             View tabBar = tabBarProvider.onCreateTabBar(tabBarItems, this, savedInstanceState);
             FrameLayout frameLayout = (FrameLayout) root;
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
             layoutParams.gravity = Gravity.BOTTOM;
             frameLayout.addView(tabBar, layoutParams);
             this.tabBar = tabBar;
@@ -95,7 +98,12 @@ public class TabBarFragment extends AwesomeFragment {
         if (savedInstanceState != null) {
             restoreSelectedIndex(selectedIndex);
             if (tabBarHidden && getTabBar() != null) {
-                getTabBar().setVisibility(View.GONE);
+                tabBar.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideTabBar();
+                    }
+                });
             }
         }
     }
@@ -188,7 +196,6 @@ public class TabBarFragment extends AwesomeFragment {
         return selectedIndex;
     }
 
-
     protected void restoreSelectedIndex(int index) {
         setSelectedIndex(index);
     }
@@ -220,17 +227,13 @@ public class TabBarFragment extends AwesomeFragment {
                     NavigationFragment navigationFragment = current.getNavigationFragment();
                     if (navigationFragment != null && navigationFragment.shouldHideTabBarWhenPushed()) {
                         if (navigationFragment.getChildFragmentCountAtBackStack() <= 1) {
-                            tabBarHidden = false;
-                            tabBar.setVisibility(View.VISIBLE);
+                            showTabBar();
                         } else {
-                            tabBarHidden = true;
-                            tabBar.setVisibility(View.GONE);
+                            hideTabBar();
                         }
                     } else {
-                        tabBarHidden = false;
-                        tabBar.setVisibility(View.VISIBLE);
+                        showTabBar();
                     }
-                    setNeedsNavigationBarAppearanceUpdate();
                 }
             }
         });
@@ -249,7 +252,7 @@ public class TabBarFragment extends AwesomeFragment {
         return tabBarProvider;
     }
 
-    public void updateTabbar(Bundle options) {
+    public void updateTabBar(Bundle options) {
         if (this.tabBarProvider != null && options != null) {
             this.tabBarProvider.updateTabBar(options);
         }
@@ -264,10 +267,9 @@ public class TabBarFragment extends AwesomeFragment {
                 animation.setAnimationListener(new TabBarAnimationListener(false));
                 tabBar.startAnimation(animation);
             } else {
-                tabBar.setVisibility(View.VISIBLE);
+                tabBar.setTranslationY(0);
             }
         }
-
     }
 
     void hideTabBarWhenPush(@AnimRes int anim) {
@@ -279,8 +281,24 @@ public class TabBarFragment extends AwesomeFragment {
                 animation.setAnimationListener(new TabBarAnimationListener(true));
                 tabBar.startAnimation(animation);
             } else {
-                tabBar.setVisibility(View.GONE);
+                tabBar.setTranslationY(tabBar.getHeight());
             }
+        }
+    }
+
+    private void showTabBar() {
+        if (tabBar != null) {
+            tabBarHidden = false;
+            tabBar.setTranslationY(0);
+            setNeedsNavigationBarAppearanceUpdate();
+        }
+    }
+
+    private void hideTabBar() {
+        if (tabBar != null) {
+            tabBarHidden = true;
+            tabBar.setTranslationY(tabBar.getHeight());
+            setNeedsNavigationBarAppearanceUpdate();
         }
     }
 
@@ -294,15 +312,15 @@ public class TabBarFragment extends AwesomeFragment {
 
         @Override
         public void onAnimationStart(Animation animation) {
-            if (hidden && tabBar != null) {
-                tabBar.setVisibility(View.GONE);
+            if (tabBar != null && !hidden) {
+                tabBar.setTranslationY(0);
             }
         }
 
         @Override
         public void onAnimationEnd(Animation animation) {
-            if (!hidden && tabBar != null) {
-                tabBar.setVisibility(View.VISIBLE);
+            if (tabBar != null && hidden) {
+                tabBar.setTranslationY(tabBar.getHeight());
             }
         }
 

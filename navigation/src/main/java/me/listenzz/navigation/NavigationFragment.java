@@ -3,7 +3,6 @@ package me.listenzz.navigation;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,7 +11,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 
 import java.util.List;
 
@@ -294,17 +292,14 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
                 TabBarFragment tabBarFragment = getTabBarFragment();
                 if (tabBarFragment != null && tabBarFragment.getTabBar() != null && tabBarFragment.getView() != null) {
                     View tabBar = tabBarFragment.getTabBar();
-                    tabBar.setDrawingCacheEnabled(true);
-                    tabBar.buildDrawingCache(true);
                     if (tabBar.getMeasuredWidth() == 0) {
                         tabBar.measure(View.MeasureSpec.makeMeasureSpec(tabBarFragment.getView().getWidth(), View.MeasureSpec.EXACTLY),
                                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
                         tabBar.layout(0, 0, tabBar.getMeasuredWidth(), tabBar.getMeasuredHeight());
                     }
-                    Bitmap bitmap = Bitmap.createBitmap(tabBar.getDrawingCache());
-                    tabBar.setDrawingCacheEnabled(false);
-                    BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
-                    bitmapDrawable.setBounds(0, tabBarFragment.getView().getHeight() - tabBar.getMeasuredHeight(),
+                    Bitmap bitmap = AppUtils.createBitmapFromView(tabBar);
+                    BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
+                    bitmapDrawable.setBounds(0, tabBarFragment.getView().getHeight() - tabBar.getHeight(),
                             tabBar.getMeasuredWidth(), tabBarFragment.getView().getHeight());
                     swipeBackLayout.setTabBar(bitmapDrawable);
                 }

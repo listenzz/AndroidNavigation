@@ -50,13 +50,11 @@ public abstract class AwesomeFragment extends InternalFragment {
     private static final String SAVED_ANIMATION_TYPE = "nav_animation_type";
     private static final String SAVED_SCENE_ID = "nav_scene_id";
     private static final String SAVED_STATE_DEFINES_PRESENTATION_CONTEXT = "defines_presentation_context";
-    private static final String SAVED_STATE_BOTTOM_PADDING_KEY = "bottom_padding";
 
     // ------- lifecycle methods -------
     private PresentableActivity presentableActivity;
     private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
     protected Style style;
-    private int bottomPadding;
 
     @Override
     public void onAttach(Context context) {
@@ -83,7 +81,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             String animationName = savedInstanceState.getString(SAVED_ANIMATION_TYPE);
             this.animationType = AnimationType.valueOf(animationName);
             tabBarItem = savedInstanceState.getParcelable(SAVED_TAB_BAR_ITEM);
-            bottomPadding = savedInstanceState.getInt(SAVED_STATE_BOTTOM_PADDING_KEY);
             definesPresentationContext = savedInstanceState.getBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, false);
         }
         setResult(0, null);
@@ -95,7 +92,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         outState.putString(SAVED_SCENE_ID, sceneId);
         outState.putString(SAVED_ANIMATION_TYPE, animationType.name());
         outState.putParcelable(SAVED_TAB_BAR_ITEM, tabBarItem);
-        outState.putInt(SAVED_STATE_BOTTOM_PADDING_KEY, bottomPadding);
         outState.putBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, definesPresentationContext);
     }
 
@@ -1227,12 +1223,8 @@ public abstract class AwesomeFragment extends InternalFragment {
                     public void run() {
                         TabBarFragment tabBarFragment = getTabBarFragment();
                         if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
-                            if (tabBarFragment.getTabBar().getHeight() != 0) {
-                                bottomPadding = tabBarFragment.getTabBar().getHeight();
-                                root.setPadding(0, 0, 0, bottomPadding);
-                            } else {
-                                root.setPadding(0, 0, 0, bottomPadding);
-                            }
+                            int bottomPadding = (int) getResources().getDimension(R.dimen.bottom_navigation_height);
+                            root.setPadding(0, 0, 0, bottomPadding);
                         }
                     }
                 });
