@@ -140,7 +140,7 @@ public class FragmentHelper {
             }
         }
 
-        if (fragment != null) {
+        if (fragment != null && fragment.isAdded()) {
             return getDialogFragment(fragment.getChildFragmentManager());
         }
 
@@ -156,7 +156,7 @@ public class FragmentHelper {
                 }
             }
 
-            if (fragment != null) {
+            if (fragment != null && fragment.isAdded()) {
                 return getDialogFragment(fragment.getChildFragmentManager());
             }
         }
