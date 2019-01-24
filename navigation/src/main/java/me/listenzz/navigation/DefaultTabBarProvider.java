@@ -37,8 +37,7 @@ public class DefaultTabBarProvider implements TabBarProvider {
 
     @Override
     public void onDestroyTabBar() {
-        tabBar = null;
-        tabBarFragment = null;
+        tabBar.setTabSelectedListener(null);
     }
 
     @Override
@@ -48,9 +47,7 @@ public class DefaultTabBarProvider implements TabBarProvider {
 
     @Override
     public void setSelectedIndex(int index) {
-        if (tabBar != null) {
-            tabBar.selectTab(index, false);
-        }
+        tabBar.selectTab(index, false);
     }
 
     private void initialise(List<TabBarItem> tabBarItems) {
