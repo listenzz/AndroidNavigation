@@ -50,7 +50,7 @@ implementation 'me.listenzz:navigation:2.1.5'
 
 你的 Fragment 需要继承 AwesomeFragment。
 
-你的 Acvitity 需要继承 AwesomeActivity，然后设置 rootFragment。
+你的 Activity 需要继承 AwesomeActivity，然后设置 rootFragment。
 
 ```java
 public class MainActivity extends AwesomeActivity {
@@ -71,7 +71,7 @@ public class MainActivity extends AwesomeActivity {
 
 AwesomeFragment 同样部署了 setActivityRootFragment 接口，方便你随时随地切换 activity 的根。
 
-你通常还需要另外一个 Activity 来做为闪屏页（Splash），这个页面则不必继承 AweseomActivity。
+你通常还需要另外一个 Activity 来做为闪屏页（Splash），这个页面则不必继承 AwesomeActivity。
 
 为了处理常见的 Fragment 嵌套问题，提供了 `NavigationFragment`、`TabBarFragment`、`DrawerFragment` 三个容器类。它们可以作为 Activity 的 rootFragment 使用。这三个容器为 Fragment 嵌套提供了非常便利的操作。
 
@@ -96,7 +96,7 @@ public class MainActivity extends AwesomeActivity {
 }
 ```
 
-如果 TestFragment 的根布局是 LinearLayout 或 FrameLayout，会自动帮你创建 Toolbar，当由 A 页面跳转到 B 页面时，会为 B 页面的 Toolbar 添加返回按钮。更多关于 Toobar 的配置，请参考 [**设置 Toolbar**](#setting-toolbar) 一章。
+如果 TestFragment 的根布局是 LinearLayout 或 FrameLayout，会自动帮你创建 Toolbar，当由 A 页面跳转到 B 页面时，会为 B 页面的 Toolbar 添加返回按钮。更多关于 Toolbar 的配置，请参考 [**设置 Toolbar**](#setting-toolbar) 一章。
 
 在 TestFragment 中，我们可以通过 `getNavigationFragment` 来获取套在它外面的 NavigationFragment，然后通过 NavigationFragment 提供的 `pushFragment` 跳转到其它页面，或通过 `popFragment` 返回到前一个页面。关于导航的更多细节，请参考 [**导航**](#navigation) 一章。
 
@@ -136,7 +136,7 @@ public class MainActivity extends AwesomeActivity {
 
 可以通过 TabBarFragment 的 `setSelectedIndex` 方法来动态切换 tab，通过 `getTabBar` 可以获取 TabBar, 然后可以调用 TabBar 提供的方法来设置红点，未读消息数等。
 
-如果对提供的默认 TabBar 不满意，可以通过实现 `TabBarProvider` 来自定义 TabBar , 在设置 TabBarFragment 为其它容器的根前，调用 `TabBarFragament#setTabBarProvider` 来设置自定义的 TabBar, 参数可以为 null, 表示不需要 TabBar.
+如果对提供的默认 TabBar 不满意，可以通过实现 `TabBarProvider` 来自定义 TabBar , 在设置 TabBarFragment 为其它容器的根前，调用 `TabBarFragment#setTabBarProvider` 来设置自定义的 TabBar, 参数可以为 null, 表示不需要 TabBar.
 
 
 如果 HomeFragment 或 ContactsFragment 需要有导航的能力，可以先把它们嵌套到 NavigationFragment 中。
@@ -151,9 +151,9 @@ public class MainActivity extends AwesomeActivity {
             
             // 首页
             HomeFragment homeFragment = new HomeFragment();
-            NavigationFragment homeNavigatoinFragment = new NavigationFragment();
-            homeNavigationFraggment.setRootFragment(homeFragment);
-            homeNavigatoinFragment.setTabBarItem(new TabBarItem(R.drawable.icon_home, "首页"));
+            NavigationFragment homeNavigationFragment = new NavigationFragment();
+            homeNavigationFragment.setRootFragment(homeFragment);
+            homeNavigationFragment.setTabBarItem(new TabBarItem(R.drawable.icon_home, "首页"));
             
             // 通讯录
             ContactsFragment contactsFragment = new ContactsFragment();
@@ -163,7 +163,7 @@ public class MainActivity extends AwesomeActivity {
             
             // 添加 tab 到 TabBarFragment 
             TabBarFragment tabBarFragment = new TabBarFragment();
-            tabBarFragment.setFragments(homeNavigatoinFragment, contactsNavigationFragment);
+            tabBarFragment.setFragments(homeNavigationFragment, contactsNavigationFragment);
             
             // 把 TabBarFragment 设置为 Activity 的根
             setActivityRootFragment(tabBarFragment);
@@ -309,7 +309,7 @@ AwesomeActivity 和 AwesomeFragment 提供了两个基础的导航功能 present
 	
 	```java
     //AFragment.java
-    NavigatoinFragment navigationFragment = new NavigationFragment();
+    NavigationFragment navigationFragment = new NavigationFragment();
     AlbumListFragment albumListFragment = new AlbumListFragment();
     navigationFragment.setRootFragment(albumListFragment);
     presentFragment(navigationFragment, 1)
@@ -625,7 +625,7 @@ AwesomeFragment 中有一个 `onStatusBarTranslucentChanged(boolean translucent)
 ### 设置 Toolbar
 
 
-当 fragment 的 parent fragment 是一个 NavigationFragemnt 时，会自动为该 fragment 创建 Toolbar。
+当 fragment 的 parent fragment 是一个 NavigationFragment 时，会自动为该 fragment 创建 Toolbar。
 
 你可以调用 AwesomeFragment 的以下方法来设置 Toolbar
 
@@ -740,7 +740,7 @@ public static String fromCharCode(int... codePoints) {
 font://fontName/glyph/size/color
 ```
 
-其中 fontName 就是你放在 aseets/fonts 文件夹中的字体文件名，但不包括后缀。size 是字体大小，如 24，color 是字体颜色，可选，只支持 RRGGBB 格式。
+其中 fontName 就是你放在 assets/fonts 文件夹中的字体文件名，但不包括后缀。size 是字体大小，如 24，color 是字体颜色，可选，只支持 RRGGBB 格式。
 
 可以参考 demo 中 MainActivity 中是怎样构建一个 fontUri 的。
 
@@ -761,7 +761,7 @@ font://fontName/glyph/size/color
     设置
     
     ```java
-    TargetFragemnt target = new TargetFragemnt();
+    TargetFragment target = new TargetFragment();
     Bundle args = FragmentHelper.getArguments(target);
     args.putInt("id", 1);
     getNavigationFragment().pushFragment(target);
