@@ -181,7 +181,8 @@ public class TestNavigationFragment extends BaseFragment {
         if (isNavigationRoot()) {
             if (getPresentingFragment() == null) {
                 String iconUri = "font://FontAwesome/" + fromCharCode(61641) + "/24";
-                setLeftBarButtonItem(new ToolbarButtonItem(iconUri, "Menu", true, new View.OnClickListener() {
+                ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
+                builder.icon(iconUri).listener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         DrawerFragment drawerFragment = getDrawerFragment();
@@ -189,14 +190,17 @@ public class TestNavigationFragment extends BaseFragment {
                             drawerFragment.toggleMenu();
                         }
                     }
-                }));
+                });
+                setLeftBarButtonItem(builder.build());
             } else {
-                setLeftBarButtonItem(new ToolbarButtonItem(null, "关闭", true, new View.OnClickListener() {
+                ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
+                builder.title("关闭").listener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         dismissFragment();
                     }
-                }));
+                });
+                setLeftBarButtonItem(builder.build());
             }
         }
     }

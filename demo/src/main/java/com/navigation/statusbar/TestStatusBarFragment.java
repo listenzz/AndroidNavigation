@@ -113,7 +113,8 @@ public class TestStatusBarFragment extends BaseFragment {
         setTitle("状态栏");
         if (isNavigationRoot()) {
             String iconUri = "font://FontAwesome/" + fromCharCode(61641) + "/24";
-            ToolbarButtonItem item = new ToolbarButtonItem(iconUri, "Menu", true, new View.OnClickListener() {
+            ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
+            builder.icon(iconUri).listener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     DrawerFragment drawerFragment = getDrawerFragment();
@@ -122,7 +123,7 @@ public class TestStatusBarFragment extends BaseFragment {
                     }
                 }
             });
-            setLeftBarButtonItem(item);
+            setLeftBarButtonItem(builder.build());
         }
     }
 }
