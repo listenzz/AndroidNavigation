@@ -674,7 +674,7 @@ protected boolean shouldHideBackButton() {
 如果你希望禁止用户通过返回键（物理的或虚拟的）或者手势退出当前页面，你可以重写以下方法，并返回 false。
 
 ```java
-protected boolean backInteractive() {
+protected boolean isBackInteractive() {
     return false;
 }
 ```
