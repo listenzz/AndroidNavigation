@@ -19,6 +19,7 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
 
     private BarStyle barStyle = BarStyle.DarkContent;
 
+    @NonNull
     @Override
     protected BarStyle preferredStatusBarStyle() {
         return barStyle;

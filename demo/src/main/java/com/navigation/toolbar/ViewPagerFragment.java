@@ -43,6 +43,7 @@ public class ViewPagerFragment extends BaseFragment {
         return colors[location];
     }
 
+    @NonNull
     @Override
     protected BarStyle preferredStatusBarStyle() {
         BarStyle[] barStyles = new BarStyle[] { BarStyle.LightContent, BarStyle.DarkContent, BarStyle.LightContent};

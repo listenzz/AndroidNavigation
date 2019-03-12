@@ -53,6 +53,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         return true;
     }
 
+    @Nullable
     @Override
     protected AwesomeFragment childFragmentForAppearance() {
         return getTopFragment();
@@ -64,7 +65,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 1) {
             AwesomeFragment topFragment = getTopFragment();
-            if (topFragment.isBackInteractive()) {
+            if (topFragment != null && topFragment.isBackInteractive()) {
                 popFragment();
             }
             return true;
@@ -75,13 +76,14 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     private AwesomeFragment rootFragment;
 
-    public void setRootFragment(@NonNull final AwesomeFragment fragment) {
+    public void setRootFragment(@NonNull AwesomeFragment fragment) {
         if (isAdded()) {
             throw new IllegalStateException("NavigationFragment 已经出于 added 状态，不可以再设置 rootFragment");
         }
         this.rootFragment = fragment;
     }
 
+    @Nullable
     public AwesomeFragment getRootFragment() {
         if (isAdded()) {
             FragmentManager fragmentManager = getChildFragmentManager();
@@ -100,7 +102,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
     }
 
-    public void pushFragment(@NonNull final AwesomeFragment fragment) {
+    public void pushFragment(@NonNull AwesomeFragment fragment) {
         pushFragment(fragment, true);
     }
 
@@ -133,11 +135,11 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     private void popToFragmentInternal(AwesomeFragment fragment, boolean animated) {
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+
         AwesomeFragment topFragment = getTopFragment();
-        if (topFragment == fragment) {
+        if (topFragment == null || topFragment == fragment) {
             return;
         }
-
         topFragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
         fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
         topFragment.setUserVisibleHint(false);
@@ -145,7 +147,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
-
     }
 
     public void popFragment() {
@@ -153,13 +154,18 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void popFragment(boolean animated) {
-        AwesomeFragment after = FragmentHelper.getLatterFragment(getChildFragmentManager(), getTopFragment());
+        AwesomeFragment top = getTopFragment();
+        if (top == null) {
+            return;
+        }
+
+        AwesomeFragment after = FragmentHelper.getLatterFragment(getChildFragmentManager(), top);
         if (after != null) {
             popToFragment(this, animated);
             return;
         }
 
-        AwesomeFragment before = FragmentHelper.getAheadFragment(getChildFragmentManager(), getTopFragment());
+        AwesomeFragment before = FragmentHelper.getAheadFragment(getChildFragmentManager(), top);
         if (before != null) {
             popToFragment(before, animated);
         }
@@ -190,6 +196,9 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         AwesomeFragment topFragment = getTopFragment();
+        if (topFragment == null) {
+            return;
+        }
         AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, topFragment);
         topFragment.setAnimation(PresentAnimation.Fade);
         topFragment.setUserVisibleHint(false);
@@ -225,6 +234,10 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
         AwesomeFragment topFragment = getTopFragment();
         AwesomeFragment rootFragment = getRootFragment();
+        if (topFragment == null || rootFragment == null) {
+            return;
+        }
+
         topFragment.setAnimation(PresentAnimation.Fade);
         rootFragment.setAnimation(PresentAnimation.Fade);
         topFragment.setUserVisibleHint(false);
@@ -246,6 +259,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         // 添加所有新的 fragment
     }
 
+    @Nullable
     public AwesomeFragment getTopFragment() {
         if (isAdded()) {
             return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.navigation_content);
@@ -276,8 +290,12 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     @Override
     public void onViewDragStateChanged(int state, float scrollPercent) {
+        AwesomeFragment topFragment = getTopFragment();
+        if (topFragment == null) {
+            return;
+        }
+
         if (state == SwipeBackLayout.STATE_DRAGGING) {
-            AwesomeFragment topFragment = getTopFragment();
             AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
 
             if (aheadFragment != null && shouldTransitionWithStatusBar(aheadFragment, topFragment)) {
@@ -306,7 +324,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             }
 
         } else if (state == SwipeBackLayout.STATE_IDLE) {
-            AwesomeFragment topFragment = getTopFragment();
             AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
 
             if (aheadFragment != null && aheadFragment.getView() != null) {
@@ -335,10 +352,14 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     @Override
     public boolean shouldSwipeBack() {
+        AwesomeFragment top = getTopFragment();
+        if (top == null) {
+            return false;
+        }
         return style.isSwipeBackEnabled()
                 && getChildFragmentCountAtBackStack() > 1
-                && getTopFragment().isBackInteractive()
-                && getTopFragment().isSwipeBackEnabled();
+                && top.isBackInteractive()
+                && top.isSwipeBackEnabled();
     }
 
     private boolean shouldTransitionWithStatusBar(AwesomeFragment aheadFragment, AwesomeFragment topFragment) {

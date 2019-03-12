@@ -179,6 +179,7 @@ public class TabBarFragment extends AwesomeFragment {
         setSelectedIndex(index);
     }
 
+    @Nullable
     public AwesomeFragment getSelectedFragment() {
         AwesomeFragment selectedFragment = fragments.get(getSelectedIndex());
         if (selectedFragment.isAdded()) {

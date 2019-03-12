@@ -104,7 +104,9 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         super.onGetLayoutInflater(savedInstanceState);
         LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
-        if (getShowsDialog() && !getWindow().isFloating()) {
+        Window window = getWindow();
+        boolean isFloating = window != null && window.isFloating();
+        if (getShowsDialog() && !isFloating) {
             layoutInflater = new DialogLayoutInflater(requireContext(), layoutInflater,
                     new DialogFrameLayout.OnTouchOutsideListener() {
                         @Override
@@ -179,7 +181,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     private void setBackgroundDrawable(View root, Drawable drawable) {
         root.setBackground(drawable);
         if (!isInDialog()) {
-            getWindow().setBackgroundDrawable(null);
+            Window window = getWindow();
+            if (window != null) {
+                window.setBackgroundDrawable(null);
+            }
         }
     }
 
@@ -375,7 +380,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         return false;
     }
 
-    public void presentFragment(final AwesomeFragment fragment, final int requestCode) {
+    public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
@@ -553,13 +558,19 @@ public abstract class AwesomeFragment extends InternalFragment {
         // Log.i(TAG, toString() + "#onFragmentResult requestCode=" + requestCode + " resultCode=" + resultCode + " data=" + data);
         if (this instanceof TabBarFragment) {
             AwesomeFragment child = ((TabBarFragment) this).getSelectedFragment();
-            child.onFragmentResult(requestCode, resultCode, data);
+            if (child != null) {
+                child.onFragmentResult(requestCode, resultCode, data);
+            }
         } else if (this instanceof NavigationFragment) {
             AwesomeFragment child = ((NavigationFragment) this).getTopFragment();
-            child.onFragmentResult(requestCode, resultCode, data);
+            if (child != null) {
+                child.onFragmentResult(requestCode, resultCode, data);
+            }
         } else if (this instanceof DrawerFragment) {
             AwesomeFragment child = ((DrawerFragment) this).getContentFragment();
-            child.onFragmentResult(requestCode, resultCode, data);
+            if (child != null) {
+                child.onFragmentResult(requestCode, resultCode, data);
+            }
         } else {
             List<AwesomeFragment> fragments = getChildFragmentsAtAddedList();
             for (AwesomeFragment child : fragments) {
@@ -594,6 +605,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         return fragments.indexOf(this);
     }
 
+    @NonNull
     public List<AwesomeFragment> getChildFragmentsAtAddedList() {
         List<AwesomeFragment> children = new ArrayList<>();
         if (isAdded()) {
@@ -608,6 +620,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         return children;
     }
 
+    @Nullable
     public AwesomeFragment getParentAwesomeFragment() {
         Fragment fragment = getParentFragment();
         if (fragment instanceof AwesomeFragment) {
@@ -618,10 +631,11 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private PresentAnimation animation = null;
 
-    public void setAnimation(PresentAnimation animation) {
+    public void setAnimation(@Nullable PresentAnimation animation) {
         this.animation = animation;
     }
 
+    @NonNull
     public PresentAnimation getAnimation() {
         if (this.animation == null) {
             this.animation = PresentAnimation.None;
@@ -635,6 +649,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     // ------- statusBar --------
 
+    @NonNull
     protected BarStyle preferredStatusBarStyle() {
         // Log.w(TAG, getDebugTag() + " #preferredStatusBarStyle");
         AwesomeFragment childFragmentForStatusBarStyle = childFragmentForAppearance();
@@ -668,6 +683,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         return getAnimation() != PresentAnimation.None && style.isStatusBarColorAnimated();
     }
 
+    @Nullable
     protected AwesomeFragment childFragmentForAppearance() {
         return null;
     }
@@ -738,6 +754,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
+
+    @Nullable
     @TargetApi(26)
     protected Integer preferredNavigationBarColor() {
         AwesomeFragment childFragmentForAppearance = childFragmentForAppearance();
@@ -869,13 +887,17 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     // ------ dialog -----
 
+    @Nullable
     public Window getWindow() {
         if (isInDialog()) {
             AwesomeFragment fragment = this;
-            while (!fragment.getShowsDialog()) {
+            while (fragment != null && !fragment.getShowsDialog()) {
                 fragment = fragment.getParentAwesomeFragment();
             }
-            return fragment.getDialog().getWindow();
+
+            if (fragment != null) {
+                return fragment.getDialog().getWindow();
+            }
         }
 
         if (getActivity() != null) {
@@ -901,7 +923,9 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         Window window = getWindow();
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        if (window != null) {
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        }
         getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent event) {
@@ -931,7 +955,9 @@ public abstract class AwesomeFragment extends InternalFragment {
                 }
             } else {
                 AwesomeFragment parent = getParentAwesomeFragment();
-                parent.dismissDialog();
+                if (parent != null) {
+                    parent.dismissDialog();
+                }
             }
         }
     }
@@ -1010,10 +1036,11 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private AnimationType animationType = AnimationType.None;
 
-    public void setAnimationType(AnimationType type) {
+    public void setAnimationType(@NonNull AnimationType type) {
         this.animationType = type;
     }
 
+    @NonNull
     public AnimationType getAnimationType() {
         return this.animationType;
     }
@@ -1159,7 +1186,14 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     boolean shouldHideTabBarWhenPushed() {
         NavigationFragment navigationFragment = getNavigationFragment();
-        return navigationFragment != null && navigationFragment.getRootFragment().hidesBottomBarWhenPushed();
+        AwesomeFragment root;
+        if (navigationFragment != null) {
+            root = navigationFragment.getRootFragment();
+            if (root != null) {
+                return root.hidesBottomBarWhenPushed();
+            }
+        }
+        return true;
     }
 
     void handleHideBottomBarWhenPushed(int transit, boolean enter, PresentAnimation animation) {
@@ -1232,6 +1266,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
+    @Nullable
     protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
         if (getView() == null || getContext() == null) return null;
 
@@ -1342,7 +1377,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private ToolbarButtonItem[] leftBarButtonItems;
 
-    public void setLeftBarButtonItems(ToolbarButtonItem[] barButtonItems) {
+    public void setLeftBarButtonItems(@Nullable ToolbarButtonItem[] barButtonItems) {
         leftBarButtonItems = barButtonItems;
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
@@ -1369,13 +1404,14 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
+    @Nullable
     public ToolbarButtonItem[] getLeftBarButtonItems() {
         return leftBarButtonItems;
     }
 
     private ToolbarButtonItem[] rightBarButtonItems;
 
-    public void setRightBarButtonItems(ToolbarButtonItem[] barButtonItems) {
+    public void setRightBarButtonItems(@Nullable ToolbarButtonItem[] barButtonItems) {
         rightBarButtonItems = barButtonItems;
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
@@ -1389,13 +1425,14 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
+    @Nullable
     public ToolbarButtonItem[] getRightBarButtonItems() {
         return rightBarButtonItems;
     }
 
     private ToolbarButtonItem leftBarButtonItem;
 
-    public void setLeftBarButtonItem(ToolbarButtonItem barButtonItem) {
+    public void setLeftBarButtonItem(@Nullable ToolbarButtonItem barButtonItem) {
         leftBarButtonItem = barButtonItem;
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
@@ -1420,13 +1457,14 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
+    @Nullable
     public ToolbarButtonItem getLeftBarButtonItem() {
         return leftBarButtonItem;
     }
 
     private ToolbarButtonItem rightBarButtonItem;
 
-    public void setRightBarButtonItem(ToolbarButtonItem barButtonItem) {
+    public void setRightBarButtonItem(@Nullable ToolbarButtonItem barButtonItem) {
         rightBarButtonItem = barButtonItem;
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
@@ -1439,6 +1477,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
+    @Nullable
     public ToolbarButtonItem getRightBarButtonItem() {
         return rightBarButtonItem;
     }
@@ -1464,10 +1503,11 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private TabBarItem tabBarItem;
 
-    public void setTabBarItem(TabBarItem item) {
+    public void setTabBarItem(@Nullable TabBarItem item) {
         tabBarItem = item;
     }
 
+    @Nullable
     public TabBarItem getTabBarItem() {
         return tabBarItem;
     }

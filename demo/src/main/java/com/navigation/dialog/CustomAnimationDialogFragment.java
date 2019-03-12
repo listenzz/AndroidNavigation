@@ -22,6 +22,7 @@ import me.listenzz.navigation.AwesomeFragment;
  */
 public class CustomAnimationDialogFragment extends AwesomeFragment {
 
+    @NonNull
     @Override
     public AnimationType getAnimationType() {
         return AnimationType.None;

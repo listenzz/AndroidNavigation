@@ -199,6 +199,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         contentFragment = fragment;
     }
 
+    @Nullable
     public AwesomeFragment getContentFragment() {
         if (!isAdded()) {
             return null;
@@ -215,6 +216,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         menuFragment = fragment;
     }
 
+    @Nullable
     public AwesomeFragment getMenuFragment() {
         if (!isAdded()) {
             return null;
