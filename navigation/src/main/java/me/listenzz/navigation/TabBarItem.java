@@ -10,34 +10,44 @@ import android.support.annotation.DrawableRes;
 
 public class TabBarItem implements Parcelable {
 
-    public String title;
-    public String iconUri;
-    public String selectedIconUri;
+    public final String title;
+    public final String iconUri;
+    public final String selectedIconUri;
     @DrawableRes
-    public int iconRes = -1;
+    public final int iconRes;
     @DrawableRes
-    public int selectedIconRes = -1;
+    public final int selectedIconRes;
 
     public TabBarItem(@DrawableRes int iconRes, @DrawableRes int selectedIconRes, String title) {
+        this.title = title;
         this.iconRes = iconRes;
         this.selectedIconRes = selectedIconRes;
-        this.title = title;
+        this.iconUri = null;
+        this.selectedIconUri = null;
     }
 
     public TabBarItem(@DrawableRes int iconRes, String title) {
-        this.iconRes = iconRes;
         this.title = title;
+        this.iconRes = iconRes;
+        this.selectedIconRes = -1;
+        this.iconUri = null;
+        this.selectedIconUri = null;
     }
 
     public TabBarItem(String iconUri, String selectedIconUri, String title) {
+        this.title = title;
+        this.iconRes = -1;
+        this.selectedIconRes = -1;
         this.iconUri = iconUri;
         this.selectedIconUri = selectedIconUri;
-        this.title = title;
     }
 
     public TabBarItem(String iconUri, String title) {
-        this.iconUri = iconUri;
         this.title = title;
+        this.iconRes = -1;
+        this.selectedIconRes = -1;
+        this.iconUri = iconUri;
+        this.selectedIconUri = null;
     }
 
     @Override
