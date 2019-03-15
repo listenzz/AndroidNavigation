@@ -37,7 +37,7 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_custom_statusbar, container, false);
         toolbar = root.findViewById(R.id.toolbar);
 
