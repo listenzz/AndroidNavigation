@@ -181,6 +181,9 @@ public class TabBarFragment extends AwesomeFragment {
 
     @Nullable
     public AwesomeFragment getSelectedFragment() {
+        if (fragments == null) {
+            return null;
+        }
         AwesomeFragment selectedFragment = fragments.get(getSelectedIndex());
         if (selectedFragment.isAdded()) {
             return selectedFragment;
