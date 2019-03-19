@@ -13,6 +13,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -351,7 +352,12 @@ public abstract class AwesomeFragment extends InternalFragment {
         FragmentManager fragmentManager = getChildFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
-        if (fragment != null) {
+
+        if (fragment instanceof AwesomeFragment && ((AwesomeFragment)fragment).definesPresentationContext() && count > 0) {
+            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count - 1);
+            AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+            return (child != null && child.dispatchBackPressed()) || onBackPressed();
+        } else if (fragment instanceof AwesomeFragment) {
             AwesomeFragment child = (AwesomeFragment) fragment;
             return child.dispatchBackPressed() || onBackPressed();
         } else if (count > 0) {
@@ -364,15 +370,12 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     protected boolean onBackPressed() {
-        FragmentManager fragmentManager = getChildFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        for (int i = count - 1; i > -1; i--) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(i);
-            AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-            if (child != null && child.definesPresentationContext()) {
-                AwesomeFragment presented = FragmentHelper.getLatterFragment(fragmentManager, child);
-                if (presented != null) {
-                    presented.dismissFragment();
+        if (definesPresentationContext) {
+            AwesomeFragment parent = getParentAwesomeFragment();
+            if (parent != null) {
+                int count = parent.getChildFragmentCountAtBackStack();
+                if (count > 0 ) {
+                    dismissFragment();
                     return true;
                 }
             }
@@ -412,7 +415,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         fragment.setTargetFragment(target, requestCode);
         fragment.setDefinesPresentationContext(true);
-        FragmentHelper.addFragmentToBackStack(requireFragmentManager(), getContainerId(), fragment, PresentAnimation.Modal);
+        FragmentHelper.addFragmentToBackStack(target.requireFragmentManager(), target.getContainerId(), fragment, PresentAnimation.Modal);
     }
 
     public void dismissFragment() {
@@ -1031,7 +1034,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         Bundle args = FragmentHelper.getArguments(dialog);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         dialog.setTargetFragment(target, requestCode);
-        dialog.show(getFragmentManager(), dialog.getSceneId());
+        dialog.show(target.requireFragmentManager(), dialog.getSceneId());
     }
 
     private AnimationType animationType = AnimationType.None;
