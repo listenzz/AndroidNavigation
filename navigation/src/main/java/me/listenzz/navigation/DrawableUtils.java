@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.StrictMode;
@@ -33,6 +32,7 @@ public class DrawableUtils {
 
     private static final String TAG = "Navigation";
 
+    @Nullable
     public static Drawable fromUri(@NonNull Context context, @NonNull String uri) {
         Drawable drawable = null;
         if (uri.startsWith("http")) {
@@ -52,24 +52,11 @@ public class DrawableUtils {
             Bitmap bitmap = BitmapFactory.decodeFile(Uri.parse(uri).getPath());
             drawable = new BitmapDrawable(context.getResources(), bitmap);
         } else if (uri.startsWith("font")) {
-            Uri u = Uri.parse(uri);
-            String fontFamily = u.getHost();
-            List<String> fragments = u.getPathSegments();
-            if (fragments.size() < 2) {
-                return new ColorDrawable();
+            String filepath = filepathFromFont(context, uri);
+            if (filepath != null) {
+                Bitmap bitmap = BitmapFactory.decodeFile(Uri.parse(filepath).getPath());
+                drawable = new BitmapDrawable(context.getResources(), bitmap);
             }
-            String glyph = fragments.get(0);
-            Integer fontSize = Integer.valueOf(fragments.get(1));
-
-            int color = Color.WHITE;
-
-            if (fragments.size() == 3) {
-                String hex = fragments.get(2);
-                color = Color.parseColor("#" + hex);
-            }
-
-            Log.d(TAG, "fontFamily: " + u.getHost() + " glyph:" + glyph + " fontSize:" + fontSize + " color:" + color);
-            drawable = fromFont(context, fontFamily, glyph, fontSize, color);
         } else {
             int resId = fromResourceDrawableId(context, uri);
             drawable = resId > 0 ? ContextCompat.getDrawable(context, resId) : null;
@@ -77,7 +64,7 @@ public class DrawableUtils {
         return drawable;
     }
 
-    public static int fromResourceDrawableId(Context context, @Nullable String name) {
+    public static int fromResourceDrawableId(@NonNull Context context, @Nullable String name) {
         if (name == null || name.isEmpty()) {
             return 0;
         }
@@ -87,7 +74,28 @@ public class DrawableUtils {
                 context.getPackageName());
     }
 
-    public static Drawable fromFont(Context context, String fontFamily, String glyph, Integer fontSize, Integer color) {
+    @Nullable
+    public static String filepathFromFont(@NonNull Context context, @NonNull String fontUri) {
+        Uri u = Uri.parse(fontUri);
+        String fontFamily = u.getHost();
+        List<String> fragments = u.getPathSegments();
+        if (fontFamily == null || fragments.size() < 2) {
+            throw new IllegalArgumentException("font uri 格式不对。");
+        }
+        String glyph = fragments.get(0);
+        Integer fontSize = Integer.valueOf(fragments.get(1));
+
+        int color = Color.WHITE;
+
+        if (fragments.size() == 3) {
+            String hex = fragments.get(2);
+            color = Color.parseColor("#" + hex);
+        }
+        return filepathFromFont(context, fontFamily, glyph, fontSize, color);
+    }
+
+    @Nullable
+    public static String filepathFromFont(@NonNull Context context, @NonNull String fontFamily, @NonNull String glyph, @NonNull Integer fontSize, @NonNull Integer color) {
         File cacheFolder = context.getCacheDir();
         String cacheFolderPath = cacheFolder.getAbsolutePath() + "/";
 
@@ -101,9 +109,7 @@ public class DrawableUtils {
         File cacheFile = new File(cacheFilePath);
 
         if (cacheFile.exists()) {
-            Bitmap bitmap = BitmapFactory.decodeFile(Uri.parse(cacheFileUrl).getPath());
-            return new BitmapDrawable(context.getResources(), bitmap);
-
+            return cacheFileUrl;
         } else {
             FileOutputStream fos = null;
             Typeface typeface = FontManager.getInstance().getTypeface(fontFamily, 0, context.getAssets());
@@ -125,7 +131,7 @@ public class DrawableUtils {
                 fos.flush();
                 fos.close();
                 fos = null;
-                return new BitmapDrawable(context.getResources(), bitmap);
+                return cacheFileUrl;
             } catch (FileNotFoundException e) {
                 Log.e(TAG, "", e);
             } catch (IOException e) {
