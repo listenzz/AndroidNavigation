@@ -171,6 +171,7 @@ public class TabBarFragment extends AwesomeFragment {
             }
         }
         transaction.commit();
+        setSelectedIndex(selectedIndex);
     }
 
     public void setSelectedFragment(AwesomeFragment fragment) {
