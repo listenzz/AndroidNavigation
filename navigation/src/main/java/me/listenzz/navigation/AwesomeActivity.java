@@ -182,10 +182,11 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 0) {
             String tag = fragmentManager.getBackStackEntryAt(0).getName();
-            AwesomeFragment root = (AwesomeFragment) fragmentManager.findFragmentByTag(tag);
-            if (root != null && root.isAdded()) {
-                root.setAnimation(PresentAnimation.Fade);
+            AwesomeFragment former = (AwesomeFragment) fragmentManager.findFragmentByTag(tag);
+            if (former != null && former.isAdded()) {
+                former.setAnimation(PresentAnimation.Fade);
                 fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                hasFormerRoot = true;
             }
         }
 
@@ -205,12 +206,19 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 
             String tag = fragmentManager.getBackStackEntryAt(0).getName();
-            AwesomeFragment root = (AwesomeFragment) fragmentManager.findFragmentByTag(tag);
-            if (root != null && root.isAdded()) {
-                root.setAnimation(PresentAnimation.Fade);
+            AwesomeFragment former = (AwesomeFragment) fragmentManager.findFragmentByTag(tag);
+            if (former != null && former.isAdded()) {
+                former.setAnimation(PresentAnimation.Fade);
                 fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
         }
+    }
+
+    private boolean hasFormerRoot;
+
+    @Override
+    public boolean activityHasFormerRoot() {
+        return hasFormerRoot;
     }
 
     @Override

@@ -234,6 +234,13 @@ public abstract class AwesomeFragment extends InternalFragment {
         notifyViewAppear(false);
     }
 
+    public boolean activityHasFormerRoot() {
+        if (presentableActivity != null) {
+            return presentableActivity.activityHasFormerRoot();
+        }
+        return false;
+    }
+
     @Override
     @CallSuper
     public void onHiddenChanged(boolean hidden) {
@@ -352,7 +359,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         int count = fragmentManager.getBackStackEntryCount();
         Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
 
-        if (fragment instanceof AwesomeFragment && ((AwesomeFragment)fragment).definesPresentationContext() && count > 0) {
+        if (fragment instanceof AwesomeFragment && ((AwesomeFragment) fragment).definesPresentationContext() && count > 0) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count - 1);
             AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
             return (child != null && child.dispatchBackPressed()) || onBackPressed();
@@ -373,7 +380,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             AwesomeFragment parent = getParentAwesomeFragment();
             if (parent != null) {
                 int count = parent.getChildFragmentCountAtBackStack();
-                if (count > 0 ) {
+                if (count > 0) {
                     dismissFragment();
                     return true;
                 }

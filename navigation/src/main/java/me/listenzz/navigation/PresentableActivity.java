@@ -25,4 +25,6 @@ public interface PresentableActivity {
 
     boolean isStatusBarTranslucent();
 
+    boolean activityHasFormerRoot();
+
 }
