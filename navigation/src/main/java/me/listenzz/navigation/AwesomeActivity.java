@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 
@@ -177,8 +178,24 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     private void setRootFragmentInternal(AwesomeFragment fragment) {
-        clearFragments();
-        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.None);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        int count = fragmentManager.getBackStackEntryCount();
+        if (count > 0) {
+            String tag = fragmentManager.getBackStackEntryAt(0).getName();
+            AwesomeFragment root = (AwesomeFragment) fragmentManager.findFragmentByTag(tag);
+            if (root != null && root.isAdded()) {
+                root.setAnimation(PresentAnimation.Fade);
+                fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
+        }
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setReorderingAllowed(true);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragment.setAnimation(PresentAnimation.None);
+        transaction.add(android.R.id.content, fragment, fragment.getSceneId());
+        transaction.addToBackStack(fragment.getSceneId());
+        transaction.commit();
     }
 
     public void clearFragments() {
@@ -186,8 +203,13 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 0) {
             getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+
             String tag = fragmentManager.getBackStackEntryAt(0).getName();
-            fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            AwesomeFragment root = (AwesomeFragment) fragmentManager.findFragmentByTag(tag);
+            if (root != null && root.isAdded()) {
+                root.setAnimation(PresentAnimation.Fade);
+                fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
         }
     }
 
