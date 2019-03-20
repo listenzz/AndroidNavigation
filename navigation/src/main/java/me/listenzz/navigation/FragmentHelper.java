@@ -47,7 +47,7 @@ public class FragmentHelper {
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentById(containerId);
-        if (topFragment != null) {
+        if (topFragment != null && topFragment.isAdded()) {
             topFragment.setAnimation(animation);
             transaction.hide(topFragment);
         }
