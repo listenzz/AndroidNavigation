@@ -96,7 +96,6 @@ public class TabBarFragment extends AwesomeFragment {
         }
 
         if (savedInstanceState != null) {
-            restoreSelectedIndex(selectedIndex);
             if (tabBarHidden && getTabBar() != null) {
                 hideTabBar();
             }
@@ -165,7 +164,7 @@ public class TabBarFragment extends AwesomeFragment {
             AwesomeFragment fragment = fragments.get(i);
             fragmentTags.add(fragment.getSceneId());
             transaction.add(R.id.tabs_content, fragment, fragment.getSceneId());
-            if (i == 0) {
+            if (i == selectedIndex) {
                 transaction.setPrimaryNavigationFragment(fragment);
             } else {
                 transaction.hide(fragment);
@@ -195,47 +194,51 @@ public class TabBarFragment extends AwesomeFragment {
         return selectedIndex;
     }
 
-    protected void restoreSelectedIndex(int index) {
-        setSelectedIndex(index);
+    public void setSelectedIndex(final int index) {
+        if (isAdded()) {
+            scheduleTaskAtStarted(new Runnable() {
+                @Override
+                public void run() {
+                    setSelectedIndexInternal(index);
+                }
+            });
+        } else {
+            selectedIndex = index;
+        }
     }
 
-    public void setSelectedIndex(final int index) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                if (tabBarProvider != null) {
-                    tabBarProvider.setSelectedIndex(index);
-                }
+    private void setSelectedIndexInternal(int index) {
+        if (tabBarProvider != null) {
+            tabBarProvider.setSelectedIndex(index);
+        }
 
-                if (selectedIndex == index) {
-                    return;
-                }
+        if (selectedIndex == index) {
+            return;
+        }
 
-                selectedIndex = index;
-                FragmentManager fragmentManager = getChildFragmentManager();
-                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-                Fragment previous = fragmentManager.getPrimaryNavigationFragment();
-                AwesomeFragment current = fragments.get(index);
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.setPrimaryNavigationFragment(current);
-                transaction.hide(previous);
-                transaction.show(current);
-                transaction.commit();
+        selectedIndex = index;
+        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+        Fragment previous = fragmentManager.getPrimaryNavigationFragment();
+        AwesomeFragment current = fragments.get(index);
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setPrimaryNavigationFragment(current);
+        transaction.hide(previous);
+        transaction.show(current);
+        transaction.commit();
 
-                if (tabBar != null) {
-                    NavigationFragment navigationFragment = current.getNavigationFragment();
-                    if (navigationFragment != null && navigationFragment.shouldHideTabBarWhenPushed()) {
-                        if (navigationFragment.getChildFragmentCountAtBackStack() <= 1) {
-                            showTabBar();
-                        } else {
-                            hideTabBar();
-                        }
-                    } else {
-                        showTabBar();
-                    }
+        if (tabBar != null) {
+            NavigationFragment navigationFragment = current.getNavigationFragment();
+            if (navigationFragment != null && navigationFragment.shouldHideTabBarWhenPushed()) {
+                if (navigationFragment.getChildFragmentCountAtBackStack() <= 1) {
+                    showTabBar();
+                } else {
+                    hideTabBar();
                 }
+            } else {
+                showTabBar();
             }
-        });
+        }
     }
 
     @SuppressWarnings("unchecked")
