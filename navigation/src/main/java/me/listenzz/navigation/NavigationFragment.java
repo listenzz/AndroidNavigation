@@ -44,6 +44,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
                 throw new IllegalArgumentException("必须通过 `setRootFragment` 指定 rootFragment");
             } else {
                 setRootFragmentInternal(rootFragment);
+                rootFragment = null;
             }
         }
     }
@@ -92,10 +93,8 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
                 FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(0);
                 return (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
             }
-            return null;
-        } else {
-            return rootFragment;
         }
+        return rootFragment;
     }
 
     private void setRootFragmentInternal(AwesomeFragment fragment) {
