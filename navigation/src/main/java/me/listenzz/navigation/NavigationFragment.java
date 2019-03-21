@@ -176,15 +176,15 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             return;
         }
 
-        AwesomeFragment after = FragmentHelper.getLatterFragment(getChildFragmentManager(), top);
-        if (after != null) {
+        AwesomeFragment latter = FragmentHelper.getLatterFragment(getChildFragmentManager(), top);
+        if (latter != null) {
             popToFragment(this, animated);
             return;
         }
 
-        AwesomeFragment before = FragmentHelper.getAheadFragment(getChildFragmentManager(), top);
-        if (before != null) {
-            popToFragment(before, animated);
+        AwesomeFragment ahead = FragmentHelper.getAheadFragment(getChildFragmentManager(), top);
+        if (ahead != null) {
+            popToFragment(ahead, animated);
         }
     }
 

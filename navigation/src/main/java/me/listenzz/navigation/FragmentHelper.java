@@ -81,7 +81,10 @@ public class FragmentHelper {
         int index = findIndexAtBackStack(fragmentManager, fragment);
         if (index > -1 && index < count - 1) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(index + 1);
-            return (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+            AwesomeFragment latter = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+            if (latter != null && latter.isAdded()) {
+                return latter;
+            }
         }
         return null;
     }
@@ -92,7 +95,10 @@ public class FragmentHelper {
         int index = findIndexAtBackStack(fragmentManager, fragment);
         if (index > 0 && index < count) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(index - 1);
-            return (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+            AwesomeFragment ahead = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+            if (ahead != null && ahead.isAdded()) {
+                return ahead;
+            }
         }
         return null;
     }
@@ -102,7 +108,8 @@ public class FragmentHelper {
         int index = -1;
         for (int i = 0; i < count; i++) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(i);
-            if (fragment.getTag().equals(backStackEntry.getName())) {
+            String tag = fragment.getTag();
+            if (tag != null && tag.equals(backStackEntry.getName())) {
                 index = i;
             }
         }
@@ -117,19 +124,21 @@ public class FragmentHelper {
             int count = fragments.size();
             for (int i = count - 1; i > -1; i--) {
                 Fragment f = fragments.get(i);
-                if (f instanceof AwesomeFragment) {
-                    AwesomeFragment af = (AwesomeFragment) f;
-                    if (af.getSceneId().equals(tag)) {
-                        target = af;
+                if (f.isAdded()) {
+                    if (f instanceof AwesomeFragment) {
+                        AwesomeFragment af = (AwesomeFragment) f;
+                        if (af.getSceneId().equals(tag)) {
+                            target = af;
+                        }
                     }
-                }
 
-                if (target == null) {
-                    target = findDescendantFragment(f.getChildFragmentManager(), tag);
-                }
+                    if (target == null) {
+                        target = findDescendantFragment(f.getChildFragmentManager(), tag);
+                    }
 
-                if (target != null) {
-                    break;
+                    if (target != null) {
+                        break;
+                    }
                 }
             }
         }
@@ -139,30 +148,29 @@ public class FragmentHelper {
     @Nullable
     public static DialogFragment getDialogFragment(@NonNull FragmentManager fragmentManager) {
         Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
-        if (fragment instanceof DialogFragment) {
-            DialogFragment dialogFragment = (DialogFragment) fragment;
-            if (dialogFragment.getShowsDialog()) {
-                return dialogFragment;
-            }
-        }
 
         if (fragment != null && fragment.isAdded()) {
-            return getDialogFragment(fragment.getChildFragmentManager());
-        }
-
-        List<Fragment> fragments = fragmentManager.getFragments();
-        int count = fragments.size();
-        if (count > 0) {
-            fragment = fragments.get(count -1);
-
             if (fragment instanceof DialogFragment) {
                 DialogFragment dialogFragment = (DialogFragment) fragment;
                 if (dialogFragment.getShowsDialog()) {
                     return dialogFragment;
                 }
             }
+            return getDialogFragment(fragment.getChildFragmentManager());
+        }
 
-            if (fragment != null && fragment.isAdded()) {
+        List<Fragment> fragments = fragmentManager.getFragments();
+        int count = fragments.size();
+
+        for (int i = count - 1; i > -1; i--) {
+            fragment = fragments.get(i);
+            if (fragment.isAdded()) {
+                if (fragment instanceof DialogFragment) {
+                    DialogFragment dialogFragment = (DialogFragment) fragment;
+                    if (dialogFragment.getShowsDialog()) {
+                        return dialogFragment;
+                    }
+                }
                 return getDialogFragment(fragment.getChildFragmentManager());
             }
         }

@@ -52,7 +52,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         if (count > 0) {
             FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(count - 1);
             AwesomeFragment fragment = (AwesomeFragment) fragmentManager.findFragmentByTag(entry.getName());
-            if (fragment != null && !fragment.dispatchBackPressed()) {
+            if (fragment != null && fragment.isAdded() && !fragment.dispatchBackPressed()) {
                 if (count == 1) {
                     if (!handleBackPressed()) {
                         ActivityCompat.finishAfterTransition(this);
@@ -95,10 +95,14 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     private void dismissFragmentInternal(AwesomeFragment fragment) {
+        if (!fragment.isAdded()) {
+            return;
+        }
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
-        AwesomeFragment top = (AwesomeFragment)fragmentManager.findFragmentById(android.R.id.content);
+        AwesomeFragment top = (AwesomeFragment) fragmentManager.findFragmentById(android.R.id.content);
         if (top == null) {
             return;
         }
@@ -149,9 +153,9 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             Fragment fragment = fragmentManager.findFragmentById(android.R.id.content);
-           if (fragment != null) {
-               dialog.setTargetFragment(fragment, requestCode);
-           }
+            if (fragment != null && fragment.isAdded()) {
+                dialog.setTargetFragment(fragment, requestCode);
+            }
         }
         dialog.show(fragmentManager, dialog.getSceneId());
     }

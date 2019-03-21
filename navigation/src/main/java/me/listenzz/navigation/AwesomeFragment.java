@@ -2,6 +2,7 @@ package me.listenzz.navigation;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -64,7 +65,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             throw new IllegalArgumentException("Activity must implements PresentableActivity!");
         }
         presentableActivity = (PresentableActivity) activity;
-        // Log.i(TAG, getDebugTag() + "#onAttach");
     }
 
     @Override
@@ -230,6 +230,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     @CallSuper
     public void onPause() {
         super.onPause();
+        // 修复当一个 dialog 盖在另一个已经 dismiss 的 dialog 时带来的问题
         Fragment target = getTargetFragment();
         if (target != null && !target.isAdded() && getShowsDialog()) {
             setTargetFragment(null, getTargetRequestCode());
@@ -496,7 +497,11 @@ public abstract class AwesomeFragment extends InternalFragment {
                         return null;
                     } else {
                         FragmentManager.BackStackEntry backStackEntry = requireFragmentManager().getBackStackEntryAt(0);
-                        return (AwesomeFragment) requireFragmentManager().findFragmentByTag(backStackEntry.getName());
+                        AwesomeFragment presented = (AwesomeFragment) requireFragmentManager().findFragmentByTag(backStackEntry.getName());
+                        if (presented != null && presented.isAdded()) {
+                            return presented;
+                        }
+                        return null;
                     }
                 } else {
                     return FragmentHelper.getLatterFragment(requireFragmentManager(), this);
@@ -518,7 +523,11 @@ public abstract class AwesomeFragment extends InternalFragment {
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             if (definesPresentationContext()) {
-                return (AwesomeFragment) getTargetFragment();
+                AwesomeFragment target = (AwesomeFragment) getTargetFragment();
+                if (target != null && target.isAdded()) {
+                    return target;
+                }
+                return null;
             } else {
                 return parent.getPresentingFragment();
             }
@@ -624,7 +633,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             List<Fragment> fragments = getChildFragmentManager().getFragments();
             for (int i = 0, size = fragments.size(); i < size; i++) {
                 Fragment fragment = fragments.get(i);
-                if (fragment instanceof AwesomeFragment) {
+                if (fragment instanceof AwesomeFragment && fragment.isAdded()) {
                     children.add((AwesomeFragment) fragment);
                 }
             }
@@ -908,7 +917,10 @@ public abstract class AwesomeFragment extends InternalFragment {
             }
 
             if (fragment != null) {
-                return fragment.getDialog().getWindow();
+                Dialog dialog = fragment.getDialog();
+                if (dialog != null) {
+                    return dialog.getWindow();
+                }
             }
         }
 
