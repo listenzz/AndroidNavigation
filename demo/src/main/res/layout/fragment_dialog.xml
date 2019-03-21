@@ -13,4 +13,9 @@
         android:layout_height="200dp"
         android:scaleType="centerCrop"
         android:src="@drawable/panda" />
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="关闭并弹出新的对话框"/>
 </LinearLayout>

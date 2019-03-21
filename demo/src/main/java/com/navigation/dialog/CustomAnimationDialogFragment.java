@@ -45,6 +45,13 @@ public class CustomAnimationDialogFragment extends AwesomeFragment {
                 animateScaleIn();
             }
         });
+        root.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog(new AlertDialogFragment(), 1);
+                dismissDialog();
+            }
+        });
     }
 
     private final static int mAnimationDuration = 300;
