@@ -166,6 +166,9 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void onDestroyView() {
         if (getView() != null) {
             AppUtils.hideSoftInput(getView());
+            if (globalLayoutListener != null) {
+                getView().getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);
+            }
         }
         super.onDestroyView();
     }
