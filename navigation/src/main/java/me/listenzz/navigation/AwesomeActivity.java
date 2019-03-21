@@ -203,7 +203,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         FragmentManager fragmentManager = getSupportFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 0) {
-            getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            getWindow().setBackgroundDrawable(new ColorDrawable(style.getScreenBackgroundColor()));
 
             String tag = fragmentManager.getBackStackEntryAt(0).getName();
             AwesomeFragment former = (AwesomeFragment) fragmentManager.findFragmentByTag(tag);

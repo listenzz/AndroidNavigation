@@ -3,6 +3,7 @@ package me.listenzz.navigation;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -98,22 +99,23 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     private void setRootFragmentInternal(AwesomeFragment fragment) {
-        if (getAnimation() == PresentAnimation.Modal) {
-            FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
-            return;
-        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            if (getAnimation() == PresentAnimation.Modal) {
+                FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
+                return;
+            }
 
-        if (activityHasFormerRoot()) {
-            FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Fade);
-            return;
-        }
+            if (activityHasFormerRoot()) {
+                FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Fade);
+                return;
+            }
 
-        TabBarFragment tabBarFragment = getTabBarFragment();
-        if (tabBarFragment != null && tabBarFragment.getSelectedFragment() != this) {
-            FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Fade);
-            return;
+            TabBarFragment tabBarFragment = getTabBarFragment();
+            if (tabBarFragment != null && tabBarFragment.getSelectedFragment() != this) {
+                FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Fade);
+                return;
+            }
         }
-
         FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
     }
 
@@ -225,7 +227,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        if (aheadFragment != null) {
+        if (aheadFragment != null && aheadFragment.isAdded()) {
             transaction.hide(aheadFragment);
         }
         fragment.setAnimation(PresentAnimation.None);
