@@ -99,7 +99,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     private void setRootFragmentInternal(AwesomeFragment fragment) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) {
             if (getAnimation() == PresentAnimation.Modal) {
                 FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
                 return;
