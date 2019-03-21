@@ -224,7 +224,9 @@ public class TabBarFragment extends AwesomeFragment {
         AwesomeFragment current = fragments.get(index);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setPrimaryNavigationFragment(current);
-        transaction.hide(previous);
+        if (previous != null && previous.isAdded()) {
+            transaction.hide(previous);
+        }
         transaction.show(current);
         transaction.commit();
 
