@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.InternalFragment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -84,7 +85,23 @@ public abstract class AwesomeFragment extends InternalFragment {
             definesPresentationContext = savedInstanceState.getBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, false);
         }
         setResult(0, null);
+        requireFragmentManager().registerFragmentLifecycleCallbacks(fragmentLifecycleCallbacks, true);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        requireFragmentManager().unregisterFragmentLifecycleCallbacks(fragmentLifecycleCallbacks);
+    }
+
+    FragmentManager.FragmentLifecycleCallbacks fragmentLifecycleCallbacks = new FragmentManager.FragmentLifecycleCallbacks() {
+        @Override
+        public void onFragmentDestroyed(@NonNull FragmentManager fm, @NonNull Fragment f) {
+            if (fm == f.getFragmentManager() && getTargetFragment() == f) {
+                setTargetFragment(f.getTargetFragment(), f.getTargetRequestCode());
+            }
+        }
+    };
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -230,11 +247,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     @CallSuper
     public void onPause() {
         super.onPause();
-        // 修复当一个 dialog 盖在另一个已经 dismiss 的 dialog 时带来的问题
-        Fragment target = getTargetFragment();
-        if (target != null && !target.isAdded() && getShowsDialog()) {
-            setTargetFragment(null, getTargetRequestCode());
-        }
         notifyViewAppear(false);
     }
 
