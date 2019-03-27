@@ -199,16 +199,25 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         }
     }
 
-    public void replaceFragment(@NonNull final AwesomeFragment fragment) {
+    public void replaceFragment(@NonNull final AwesomeFragment substitution) {
         scheduleTaskAtStarted(new Runnable() {
             @Override
             public void run() {
-                replaceFragmentInternal(fragment);
+                replaceFragmentInternal(substitution, null);
             }
         });
     }
 
-    private void replaceFragmentInternal(AwesomeFragment fragment) {
+    public void replaceFragment(@NonNull final AwesomeFragment substitution, @NonNull final AwesomeFragment target) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                replaceFragmentInternal(substitution, target);
+            }
+        });
+    }
+
+    private void replaceFragmentInternal(AwesomeFragment fragment, AwesomeFragment target) {
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
@@ -216,13 +225,19 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         if (topFragment == null) {
             return;
         }
-        AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, topFragment);
+
+        if (target == null) {
+            target = topFragment;
+        }
+
+        AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, target);
+
         topFragment.setAnimation(PresentAnimation.Fade);
         topFragment.setUserVisibleHint(false);
         if (aheadFragment != null) {
             aheadFragment.setAnimation(PresentAnimation.Fade);
         }
-        fragmentManager.popBackStack();
+        fragmentManager.popBackStack(target.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
