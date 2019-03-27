@@ -76,7 +76,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     @Override
     protected void onViewAppear() {
         opened = opening = isMenuOpened();
-        closed =  !isMenuOpened();
+        closed = !isMenuOpened();
         super.onViewAppear();
     }
 

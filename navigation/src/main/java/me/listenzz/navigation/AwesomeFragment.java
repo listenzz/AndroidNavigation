@@ -689,6 +689,15 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (childFragmentForStatusBarStyle != null) {
             return childFragmentForStatusBarStyle.preferredStatusBarStyle();
         }
+
+        if (getShowsDialog()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Activity activity = requireActivity();
+                boolean isDark = (activity.getWindow().getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
+                return isDark ? BarStyle.DarkContent : BarStyle.LightContent;
+            }
+        }
+
         return style.getStatusBarStyle();
     }
 
@@ -697,6 +706,13 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (childFragmentForStatusBarHidden != null) {
             return childFragmentForStatusBarHidden.preferredStatusBarHidden();
         }
+
+        if (getShowsDialog()) {
+            Activity activity = requireActivity();
+            int activityWindowFlags = activity.getWindow().getAttributes().flags;
+            return (activityWindowFlags & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0;
+        }
+
         return style.isStatusBarHidden();
     }
 
@@ -705,7 +721,12 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (childFragmentForStatusBarColor != null) {
             return childFragmentForStatusBarColor.preferredStatusBarColor();
         }
-        return getShowsDialog() ? Color.TRANSPARENT : style.getStatusBarColor();
+
+        if (getShowsDialog()) {
+            return Color.TRANSPARENT;
+        }
+
+        return style.getStatusBarColor();
     }
 
     protected boolean preferredStatusBarColorAnimated() {
@@ -725,68 +746,49 @@ public abstract class AwesomeFragment extends InternalFragment {
         setNeedsStatusBarAppearanceUpdate(true);
     }
 
+
     public void setNeedsStatusBarAppearanceUpdate(boolean colorAnimated) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             return;
         }
 
-        // Log.i(TAG, getDebugTag() + "#setNeedsStatusBarAppearanceUpdate");
-
-        if (getShowsDialog()) {
-            Activity activity = requireActivity();
-
-            int activityWindowFlags = activity.getWindow().getAttributes().flags;
-            boolean hidden = (activityWindowFlags
-                    & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0 || preferredStatusBarHidden();
-            setStatusBarHidden(hidden);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                boolean isDark = preferredStatusBarStyle() == BarStyle.DarkContent || (activity.getWindow().getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
-                setStatusBarStyle(isDark ? BarStyle.DarkContent : BarStyle.LightContent);
-            }
-
-            int color = preferredStatusBarColor();
-            if (color != Color.TRANSPARENT) {
-                boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(preferredStatusBarColor(), 176);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && preferredStatusBarStyle() == BarStyle.LightContent;
-                }
-                if (shouldAdjustForWhiteStatusBar) {
-                    color = Color.parseColor("#4A4A4A");
-                }
-            }
-            setStatusBarColor(color, false);
+        AwesomeFragment parent = getParentAwesomeFragment();
+        if (!getShowsDialog() && parent != null) {
+            parent.setNeedsStatusBarAppearanceUpdate(colorAnimated);
             return;
         }
 
-        AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
-            parent.setNeedsStatusBarAppearanceUpdate(colorAnimated);
+        // statusBarHidden
+        boolean hidden = preferredStatusBarHidden();
+        setStatusBarHidden(hidden);
+
+        // statusBarStyle
+        BarStyle statusBarStyle = preferredStatusBarStyle();
+        setStatusBarStyle(statusBarStyle);
+
+        // statusBarColor
+        boolean animated = preferredStatusBarColorAnimated() && colorAnimated;
+        if (hidden) {
+            setStatusBarColor(Color.TRANSPARENT, animated);
         } else {
+            int statusBarColor = preferredStatusBarColor();
+            boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(statusBarColor, 176);
 
-            // statusBarHidden
-            boolean hidden = preferredStatusBarHidden();
-            setStatusBarHidden(hidden);
-
-            // statusBarStyle
-            setStatusBarStyle(preferredStatusBarStyle());
-
-            // statusBarColor
-            int color = preferredStatusBarColor();
-            boolean shouldAdjustForWhiteStatusBar = AppUtils.shouldAdjustStatusBarColor(this);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && statusBarStyle == BarStyle.LightContent;
+            }
 
             if (shouldAdjustForWhiteStatusBar) {
-                color = Color.parseColor("#4A4A4A");
-            }
-            if (isStatusBarTranslucent() && color == preferredToolbarColor() || hidden) {
-                color = Color.TRANSPARENT;
+                statusBarColor = Color.parseColor("#4A4A4A");
             }
 
-            boolean animated = preferredStatusBarColorAnimated() && colorAnimated;
-            setStatusBarColor(color, animated);
+            if (!getShowsDialog() && isStatusBarTranslucent() && statusBarColor == preferredToolbarColor()) {
+                statusBarColor = Color.TRANSPARENT;
+            }
+
+            setStatusBarColor(statusBarColor, animated);
         }
     }
-
 
     @Nullable
     @TargetApi(26)

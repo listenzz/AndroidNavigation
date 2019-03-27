@@ -37,48 +37,48 @@ public class MenuFragment extends AwesomeFragment {
         root.findViewById(R.id.toolbar_color_transition).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDrawerFragment().closeMenu();
                 getNavigationFragment().pushFragment(new ToolbarColorTransitionFragment());
+                getDrawerFragment().closeMenu();
             }
         });
 
         root.findViewById(R.id.coordinator).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDrawerFragment().closeMenu();
                 getNavigationFragment().pushFragment(new CoordinatorFragment());
+                getDrawerFragment().closeMenu();
             }
         });
 
         root.findViewById(R.id.view_pager).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDrawerFragment().closeMenu();
                 getNavigationFragment().pushFragment(new ViewPagerFragment());
+                getDrawerFragment().closeMenu();
             }
         });
 
         root.findViewById(R.id.shared_element).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDrawerFragment().closeMenu();
                 getNavigationFragment().pushFragment(new GridFragment());
+                getDrawerFragment().closeMenu();
             }
         });
 
         root.findViewById(R.id.web).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDrawerFragment().closeMenu();
                 getNavigationFragment().pushFragment(new WebFragment());
+                getDrawerFragment().closeMenu();
             }
         });
 
         root.findViewById(R.id.dialog).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDrawerFragment().closeMenu();
                 getNavigationFragment().pushFragment(new DialogEntryFragment());
+                getDrawerFragment().closeMenu();
             }
         });
 
