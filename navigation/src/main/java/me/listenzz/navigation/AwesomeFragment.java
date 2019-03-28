@@ -18,7 +18,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.InternalFragment;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -345,7 +344,11 @@ public abstract class AwesomeFragment extends InternalFragment {
     // ------ lifecycle arch -------
 
     public void scheduleTaskAtStarted(Runnable runnable) {
-        lifecycleDelegate.scheduleTaskAtStarted(runnable);
+        scheduleTaskAtStarted(runnable, false);
+    }
+
+    public void scheduleTaskAtStarted(Runnable runnable, boolean deferred) {
+        lifecycleDelegate.scheduleTaskAtStarted(runnable, deferred);
     }
 
     // ------- navigation ------
@@ -429,7 +432,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                     presentableActivity.presentFragment(fragment);
                 }
             }
-        });
+        }, true);
     }
 
     private void presentFragmentInternal(final AwesomeFragment target, final AwesomeFragment fragment, final int requestCode) {
@@ -470,7 +473,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                     presentableActivity.dismissFragment(AwesomeFragment.this);
                 }
             }
-        });
+        }, true);
 
     }
 
@@ -1022,7 +1025,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             public void run() {
                 dismissDialogInternal();
             }
-        });
+        }, true);
     }
 
     private void dismissDialogInternal() {
@@ -1062,7 +1065,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             public void run() {
                 showDialogInternal(AwesomeFragment.this, dialog, requestCode);
             }
-        });
+        }, true);
     }
 
     private void showDialogInternal(final AwesomeFragment target, final AwesomeFragment dialog, final int requestCode) {

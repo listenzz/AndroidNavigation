@@ -77,7 +77,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             public void run() {
                 presentFragmentInternal(fragment);
             }
-        });
+        }, true);
     }
 
     private void presentFragmentInternal(AwesomeFragment fragment) {
@@ -91,7 +91,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             public void run() {
                 dismissFragmentInternal(fragment);
             }
-        });
+        }, true);
     }
 
     private void dismissFragmentInternal(AwesomeFragment fragment) {
@@ -273,7 +273,11 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     protected void scheduleTaskAtStarted(Runnable runnable) {
-        lifecycleDelegate.scheduleTaskAtStarted(runnable);
+        scheduleTaskAtStarted(runnable, false);
+    }
+
+    protected void scheduleTaskAtStarted(Runnable runnable, boolean deferred) {
+        lifecycleDelegate.scheduleTaskAtStarted(runnable, deferred);
     }
 
 }

@@ -1,13 +1,7 @@
 package me.listenzz.navigation;
 
-import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.OnLifecycleEvent;
-import android.os.Looper;
-
-import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * Created by Listen on 2018/1/31.
@@ -15,63 +9,24 @@ import java.util.Queue;
 
 public class LifecycleDelegate implements LifecycleObserver {
 
-    private Queue<Runnable> tasks = new LinkedList<>();
-
-    private final LifecycleOwner lifecycleOwner;
+    private final ImmediateLifecycleDelegate immediateLifecycleDelegate;
+    private final DeferredLifecycleDelegate deferredLifecycleDelegate;
 
     public LifecycleDelegate(LifecycleOwner lifecycleOwner) {
-        this.lifecycleOwner = lifecycleOwner;
-        lifecycleOwner.getLifecycle().addObserver(this);
+        immediateLifecycleDelegate = new ImmediateLifecycleDelegate(lifecycleOwner);
+        deferredLifecycleDelegate = new DeferredLifecycleDelegate(lifecycleOwner);
     }
 
     public void scheduleTaskAtStarted(Runnable runnable) {
-        if (getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
-            assertMainThread();
-            tasks.add(runnable);
-            considerExecute();
-        }
+        scheduleTaskAtStarted(runnable, false);
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
-    void onStateChange() {
-        if (getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
-            tasks.clear();
-            getLifecycle().removeObserver(this);
+    public void scheduleTaskAtStarted(Runnable runnable, boolean deferred) {
+        if (deferred) {
+            deferredLifecycleDelegate.scheduleTaskAtStarted(runnable);
         } else {
-            considerExecute();
+            immediateLifecycleDelegate.scheduleTaskAtStarted(runnable);
         }
-    }
-
-    private boolean executing;
-
-    void considerExecute() {
-        if (isAtLeastStarted() && !executing) {
-            executing = true;
-            Runnable runnable = tasks.poll();
-            while (runnable != null) {
-                runnable.run();
-                runnable = tasks.poll();
-            }
-            executing = false;
-        }
-    }
-
-    boolean isAtLeastStarted() {
-        return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
-    }
-
-    private Lifecycle getLifecycle() {
-        return lifecycleOwner.getLifecycle();
-    }
-
-    private void assertMainThread() {
-        if (!isMainThread()) {
-            throw new IllegalStateException("you should perform the task at main thread.");
-        }
-    }
-
-    static boolean isMainThread() {
-        return Looper.getMainLooper().getThread() == Thread.currentThread();
     }
 
 }

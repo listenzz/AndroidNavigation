@@ -111,7 +111,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             public void run() {
                 pushFragmentInternal(fragment, animated);
             }
-        });
+        }, true);
     }
 
     private void pushFragmentInternal(AwesomeFragment fragment, boolean animated) {
@@ -128,7 +128,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             public void run() {
                 popToFragmentInternal(fragment, animated);
             }
-        });
+        }, true);
     }
 
     private void popToFragmentInternal(AwesomeFragment fragment, boolean animated) {
@@ -152,7 +152,16 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         popFragment(true);
     }
 
-    public void popFragment(boolean animated) {
+    public void popFragment(final boolean animated) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                popFragmentInternal(animated);
+            }
+        }, true);
+    }
+
+    private void popFragmentInternal(boolean animated) {
         AwesomeFragment top = getTopFragment();
         if (top == null) {
             return;
@@ -160,13 +169,13 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
         AwesomeFragment latter = FragmentHelper.getLatterFragment(getChildFragmentManager(), top);
         if (latter != null) {
-            popToFragment(this, animated);
+            popToFragmentInternal(this, animated);
             return;
         }
 
         AwesomeFragment ahead = FragmentHelper.getAheadFragment(getChildFragmentManager(), top);
         if (ahead != null) {
-            popToFragment(ahead, animated);
+            popToFragmentInternal(ahead, animated);
         }
     }
 
@@ -174,10 +183,19 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         popToRootFragment(true);
     }
 
-    public void popToRootFragment(boolean animated) {
+    public void popToRootFragment(final boolean animated) {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                popToRootFragmentInternal(animated);
+            }
+        }, true);
+    }
+
+    private void popToRootFragmentInternal(boolean animated) {
         AwesomeFragment awesomeFragment = getRootFragment();
         if (awesomeFragment != null) {
-            popToFragment(getRootFragment(), animated);
+            popToFragmentInternal(getRootFragment(), animated);
         }
     }
 
@@ -187,7 +205,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             public void run() {
                 replaceFragmentInternal(substitution, null);
             }
-        });
+        }, true);
     }
 
     public void replaceFragment(@NonNull final AwesomeFragment substitution, @NonNull final AwesomeFragment target) {
@@ -196,7 +214,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             public void run() {
                 replaceFragmentInternal(substitution, target);
             }
-        });
+        }, true);
     }
 
     private void replaceFragmentInternal(AwesomeFragment fragment, AwesomeFragment target) {
@@ -239,7 +257,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             public void run() {
                 replaceToRootFragmentInternal(fragment);
             }
-        });
+        }, true);
     }
 
     private void replaceToRootFragmentInternal(AwesomeFragment fragment) {
