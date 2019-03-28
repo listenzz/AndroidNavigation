@@ -3,7 +3,6 @@ package me.listenzz.navigation;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -99,23 +98,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     private void setRootFragmentInternal(AwesomeFragment fragment) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) {
-            if (getAnimation() == PresentAnimation.Modal) {
-                FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
-                return;
-            }
-
-            if (activityHasFormerRoot()) {
-                FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Fade);
-                return;
-            }
-
-            TabBarFragment tabBarFragment = getTabBarFragment();
-            if (tabBarFragment != null && tabBarFragment.getSelectedFragment() != this) {
-                FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.Fade);
-                return;
-            }
-        }
         FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
     }
 
