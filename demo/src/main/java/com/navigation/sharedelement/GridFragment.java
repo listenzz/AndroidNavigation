@@ -55,13 +55,22 @@ public class GridFragment extends BaseFragment implements KittenClickListener {
             kittenDetails.setSharedElementReturnTransition(new DetailsTransition());
         }
 
+        // 如果是通过异步回调的方式来触发转场，以下代码需要包裹在 scheduleTaskAtStarted 中
+
+        // 将要显示的 Fragment 是 this 的兄弟
         requireFragmentManager()
                 .beginTransaction()
+                // 很重要
                 .setReorderingAllowed(true)
+                // 因为开启了共享元素转场，就不要设置 FragmentTransaction#setTransition 或者 FragmentTransaction#setCustomAnimations 了
                 .addSharedElement(holder.image, "kittenImage")
+                // 在添加新的 Fragment 之前先隐藏旧的
                 .hide(this)
+                // 使用具有三个参数的 add
                 .add(R.id.navigation_content, kittenDetails, kittenDetails.getSceneId())
+                // 因为 NavigationFragment 以栈的形式管理子 Fragment
                 .addToBackStack(kittenDetails.getSceneId()/*important*/)
+                // 使用 commit 而不是 commitAllowingStateLoss 是个好习惯
                 .commit();
     }
 
