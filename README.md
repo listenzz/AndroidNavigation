@@ -12,6 +12,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 
 - 一行代码实现 Fragment 嵌套，一次性构建好嵌套层级
 - 一行代码实现 Fragment 跳转，不再需要写一大堆操作 fragment 的代码了，不用担心用错 FragmentManager 了
+- 可扩展性强，允许自定义容器和路由
 - 一行代码开关沉浸式状态栏，兼容到 Android 4.4 并解决了相关 BUG
 - 自动为你创建 Toolbar，一行代码设置标题、按钮，支持关闭自动创建功能以实现定制
 - 一处设置全局样式，到处使用，并且支持不同页面个性化
@@ -29,6 +30,8 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 
 ```groovy
 implementation 'me.listenzz:navigation:2.4.0'
+// or with androidx
+implementation 'me.listenzz:navigation:3.0.0'
 ```
 
 ## Usage 
@@ -231,15 +234,15 @@ public boolean isParentFragment() {
 ```java
 @Override
 protected AwesomeFragment childFragmentForAppearance() {
-    // 这个方法用来控制当前的 statusbar 的样式是由哪个子 fragment 决定的    
+    // 这个方法用来控制当前的 status bar 的样式是由哪个子 fragment 决定的
     // 如果不重写，则由容器自身决定
     // 可以参考 NavigationFragment、TabBarFragment
-    // 是如何决定让哪个子 fragment 来决定 statusbar 样式的
+    // 是如何决定让哪个子 fragment 来决定 status bar 样式的
     return 一个恰当的子 fragment;
 }
 ```
 
-如何使不同 fragment 拥有不同的 statusbar 样式，请参考 [**设置状态栏**](#setting-statusbar) 一章
+如何使不同 fragment 拥有不同的 status bar 样式，请参考 [**设置状态栏**](#setting-statusbar) 一章
 
 
 <a name="navigation"></a>
@@ -348,7 +351,7 @@ AwesomeActivity 和 AwesomeFragment 提供了两个基础的导航功能 present
     把一个 fragment 作为 dialog 显示。showDialog 的参数列表和 present 是一样的，使用方式也基本相同。作为 dialog 的 fragment 可以通过 setResult 返回结果给把它作为 dialog show 出来的那个 fragment。
     
     
-- dismissDialog
+- hideDialog
 
     关闭作为 dialog 的 fragment
     
@@ -482,7 +485,7 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 
 - 设置正确的 tag
 
-  总是使用有三个参数的 add、replace 等方法，最后一个 tag 传入目标 fragment 的 `getSceneId` 的值。
+  总是使用有三个参数的 add 方法，最后一个 tag 传入目标 fragment 的 `getSceneId` 的值。
   
 - 正确使用 addToBackStack
 
@@ -497,11 +500,35 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
     ```
     
 - 一个容器中的子 fragment 要不都添加到返回栈中，就像 NavigationFragment 那样，要不都不添加到返回栈中，就像 TabBarFragment 和 DrawerFragment 那样，切勿混用这两种模式。
+
+- `FragmentTransaction#addSharedElement`、`FragmentTransaction#setTransition`、`FragmentTransaction#setCustomAnimations` 不可以同时使用，其中 `setTransition` 要配合 `AwesomeFragment#setAnimation` 一起使用
     
 可以参考 demo 中 GridFragment 这个类，看如何实现自定义导航的，它遵循了 NavigationFragment 管理子 fragment 的规则。
 
 ![](./screenshot/shared_element_transition.gif)
 <!--<img src="./screenshot/shared_element_transition.gif" width="280px"/>-->
+
+
+```java
+// 如果是通过异步回调的方式来触发转场，以下代码需要包裹在 scheduleTaskAtStarted 中
+
+// 将要显示的 Fragment 是 this 的兄弟
+requireFragmentManager()
+        .beginTransaction()
+        // 很重要
+        .setReorderingAllowed(true)
+        // 因为开启了共享元素转场，就不要设置 FragmentTransaction#setTransition 或者 FragmentTransaction#setCustomAnimations 了
+        .addSharedElement(holder.image, "kittenImage")
+        // 在添加新的 Fragment 之前先隐藏旧的
+        .hide(this)
+        // 使用具有三个参数的 add
+        .add(R.id.navigation_content, kittenDetails, kittenDetails.getSceneId())
+        // 因为 NavigationFragment 以栈的形式管理子 Fragment
+        .addToBackStack(kittenDetails.getSceneId()/*important*/)
+        // 使用 commit 而不是 commitAllowingStateLoss 是个好习惯
+        .commit();
+```
+
 
 
 <a name="lazy-load"></a>
@@ -573,10 +600,10 @@ protected void onCustomStyle(Style style) {
 
 ![](./screenshot/statusbar.gif)
 
-设置方式非常简单，只需要有选择地重写 AwesomeFragmet 中的方法即可。
+设置方式非常简单，只需要有选择地重写 AwesomeFragment 中的方法即可。
 
 ```java
-// AwesomFragment.java
+// AwesomeFragment.java
 protected BarStyle preferredStatusBarStyle();
 protected boolean preferredStatusBarHidden();
 protected int preferredStatusBarColor();
