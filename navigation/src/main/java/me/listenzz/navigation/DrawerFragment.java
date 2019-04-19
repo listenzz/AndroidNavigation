@@ -185,7 +185,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
                 fragmentManager.beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
                 AwesomeFragment menu = getMenuFragment();
                 if (menu != null) {
-                    menu.setUserVisibleHint(true);
+                    menu.setUserVisibleHint(false);
                 }
             }
         });
