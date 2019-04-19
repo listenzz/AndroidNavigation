@@ -381,8 +381,16 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (fragment instanceof AwesomeFragment && ((AwesomeFragment) fragment).definesPresentationContext() && count > 0) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count - 1);
             AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-            return (child != null && child.dispatchBackPressed()) || onBackPressed();
-        } else if (fragment instanceof AwesomeFragment) {
+            if (child != null) {
+                boolean processed = child.dispatchBackPressed() || onBackPressed();
+                if (!processed) {
+                    child.dismissFragment();
+                }
+                return true;
+            }
+        }
+
+        if (fragment instanceof AwesomeFragment) {
             AwesomeFragment child = (AwesomeFragment) fragment;
             return child.dispatchBackPressed() || onBackPressed();
         } else if (count > 0) {
@@ -395,16 +403,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     protected boolean onBackPressed() {
-        if (definesPresentationContext) {
-            AwesomeFragment parent = getParentAwesomeFragment();
-            if (parent != null) {
-                int count = parent.getChildFragmentCountAtBackStack();
-                if (count > 0) {
-                    dismissFragment();
-                    return true;
-                }
-            }
-        }
         return false;
     }
 
