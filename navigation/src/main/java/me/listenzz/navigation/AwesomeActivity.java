@@ -203,6 +203,15 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     public void clearFragments() {
+        scheduleTaskAtStarted(new Runnable() {
+            @Override
+            public void run() {
+                clearFragmentsInternal();
+            }
+        });
+    }
+
+    private void clearFragmentsInternal() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 0) {
