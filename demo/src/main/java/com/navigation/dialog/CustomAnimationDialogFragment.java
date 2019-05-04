@@ -39,18 +39,10 @@ public class CustomAnimationDialogFragment extends AwesomeFragment {
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
         mContentView = root.findViewById(R.id.dialog_content);
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                animateScaleIn();
-            }
-        });
-        root.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDialog(new AlertDialogFragment(), 1);
-                dismissDialog();
-            }
+        scheduleTaskAtStarted(this::animateScaleIn);
+        root.findViewById(R.id.button).setOnClickListener(v -> {
+            showDialog(new AlertDialogFragment(), 1);
+            dismissDialog();
         });
     }
 
@@ -88,12 +80,7 @@ public class CustomAnimationDialogFragment extends AwesomeFragment {
             @Override
             public void onAnimationEnd(Animation animation) {
                 mIsAnimating = false;
-                mContentView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        CustomAnimationDialogFragment.super.dismissDialog();
-                    }
-                });
+                mContentView.post(CustomAnimationDialogFragment.super::dismissDialog);
             }
 
             @Override

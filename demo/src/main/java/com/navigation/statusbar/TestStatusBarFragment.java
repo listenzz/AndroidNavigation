@@ -53,52 +53,24 @@ public class TestStatusBarFragment extends BaseFragment {
         TextView tagView = root.findViewById(R.id.tag);
         tagView.setText(getDebugTag());
 
-        root.findViewById(R.id.pop_to_root).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavigationFragment navigationFragment = getNavigationFragment();
-                if (navigationFragment != null) {
-                    navigationFragment.popToRootFragment();
-                }
+        root.findViewById(R.id.pop_to_root).setOnClickListener(v -> {
+            NavigationFragment navigationFragment = getNavigationFragment();
+            if (navigationFragment != null) {
+                navigationFragment.popToRootFragment();
             }
         });
 
-        root.findViewById(R.id.status_bar_style).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new StatusBarStyleFragment());
-            }
-        });
+        root.findViewById(R.id.status_bar_style).setOnClickListener(v -> getNavigationFragment().pushFragment(new StatusBarStyleFragment()));
 
 
-        root.findViewById(R.id.status_bar_hidden).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               getNavigationFragment().pushFragment(new StatusBarHiddenFragment());
-            }
-        });
+        root.findViewById(R.id.status_bar_hidden).setOnClickListener(v -> getNavigationFragment().pushFragment(new StatusBarHiddenFragment()));
 
 
-        root.findViewById(R.id.status_bar_color).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new StatusBarColorFragment());
-            }
-        });
+        root.findViewById(R.id.status_bar_color).setOnClickListener(v -> getNavigationFragment().pushFragment(new StatusBarColorFragment()));
 
-        root.findViewById(R.id.no_toolbar).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new NoToolbarFragment());
-            }
-        });
+        root.findViewById(R.id.no_toolbar).setOnClickListener(v -> getNavigationFragment().pushFragment(new NoToolbarFragment()));
 
-        root.findViewById(R.id.custom).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new CustomStatusBarFragment());
-            }
-        });
+        root.findViewById(R.id.custom).setOnClickListener(v -> getNavigationFragment().pushFragment(new CustomStatusBarFragment()));
 
         if (isNavigationRoot()) {
             root.findViewById(R.id.pop_to_root).setEnabled(false);
@@ -114,13 +86,10 @@ public class TestStatusBarFragment extends BaseFragment {
         if (isNavigationRoot()) {
             String iconUri = "font://FontAwesome/" + fromCharCode(61641) + "/24";
             ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
-            builder.icon(iconUri).listener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    DrawerFragment drawerFragment = getDrawerFragment();
-                    if (drawerFragment != null) {
-                        drawerFragment.toggleMenu();
-                    }
+            builder.icon(iconUri).listener(view -> {
+                DrawerFragment drawerFragment = getDrawerFragment();
+                if (drawerFragment != null) {
+                    drawerFragment.toggleMenu();
                 }
             });
             setLeftBarButtonItem(builder.build());

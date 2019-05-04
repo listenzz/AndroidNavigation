@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AwesomeActivity extends AppCompatActivity implements PresentableActivity {
@@ -37,6 +36,16 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             statusBarTranslucent = savedInstanceState.getBoolean(SAVED_STATE_STATUS_BAR_TRANSLUCENT);
             AppUtils.setStatusBarTranslucent(getWindow(), statusBarTranslucent);
         }
+    }
+
+    @Override
+    @NonNull
+    public Style getStyle() {
+        return style;
+    }
+
+    protected void onCustomStyle(@NonNull Style style) {
+
     }
 
     @Override
@@ -70,14 +79,51 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         return false;
     }
 
+
+    @Override
+    public void setActivityRootFragment(@NonNull final AwesomeFragment rootFragment) {
+        if (getSupportFragmentManager().isStateSaved()) {
+            scheduleTaskAtStarted(() -> setRootFragmentInternal(rootFragment));
+        } else {
+            if (!isFinishing()) {
+                setRootFragmentInternal(rootFragment);
+            }
+        }
+    }
+
+    private void setRootFragmentInternal(AwesomeFragment fragment) {
+        clearFragmentsInternal();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setReorderingAllowed(true);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragment.setAnimation(PresentAnimation.None);
+        transaction.add(android.R.id.content, fragment, fragment.getSceneId());
+        transaction.addToBackStack(fragment.getSceneId());
+        transaction.commit();
+    }
+
+    public void clearFragments() {
+        scheduleTaskAtStarted(this::clearFragmentsInternal);
+    }
+
+    private void clearFragmentsInternal() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        int count = fragmentManager.getBackStackEntryCount();
+        if (count > 0) {
+            getWindow().setBackgroundDrawable(new ColorDrawable(style.getScreenBackgroundColor()));
+            String tag = fragmentManager.getBackStackEntryAt(0).getName();
+            AwesomeFragment former = (AwesomeFragment) fragmentManager.findFragmentByTag(tag);
+            if (former != null && former.isAdded()) {
+                former.setAnimation(PresentAnimation.Fade);
+                fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
+        }
+    }
+
     @Override
     public void presentFragment(@NonNull final AwesomeFragment fragment) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                presentFragmentInternal(fragment);
-            }
-        }, true);
+        scheduleTaskAtStarted(() -> presentFragmentInternal(fragment), true);
     }
 
     private void presentFragmentInternal(AwesomeFragment fragment) {
@@ -86,12 +132,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     @Override
     public void dismissFragment(@NonNull final AwesomeFragment fragment) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                dismissFragmentInternal(fragment);
-            }
-        }, true);
+        scheduleTaskAtStarted(() -> dismissFragmentInternal(fragment), true);
     }
 
     private void dismissFragmentInternal(AwesomeFragment fragment) {
@@ -141,12 +182,11 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     public void showDialog(@NonNull final AwesomeFragment dialog, final int requestCode) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                showDialogInternal(dialog, requestCode);
-            }
-        });
+        if (getSupportFragmentManager().isStateSaved()) {
+            scheduleTaskAtStarted(() -> showDialogInternal(dialog, requestCode));
+        } else {
+            showDialogInternal(dialog, requestCode);
+        }
     }
 
     private void showDialogInternal(AwesomeFragment dialog, int requestCode) {
@@ -160,77 +200,18 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         dialog.show(fragmentManager, dialog.getSceneId());
     }
 
-    @Override
-    @NonNull
-    public Style getStyle() {
-        return style;
+    @Nullable
+    public DialogFragment getDialogFragment() {
+        return FragmentHelper.getDialogFragment(getSupportFragmentManager());
     }
 
-    protected void onCustomStyle(@NonNull Style style) {
-
-    }
-
-    @Override
-    public void setActivityRootFragment(@NonNull final AwesomeFragment rootFragment) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                setRootFragmentInternal(rootFragment);
-            }
-        });
-    }
-
-    private void setRootFragmentInternal(AwesomeFragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        if (count > 0) {
-            String tag = fragmentManager.getBackStackEntryAt(0).getName();
-            AwesomeFragment former = (AwesomeFragment) fragmentManager.findFragmentByTag(tag);
-            if (former != null && former.isAdded()) {
-                former.setAnimation(PresentAnimation.Fade);
-                fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                hasFormerRoot = true;
-            }
+    public Window getCurrentWindow() {
+        DialogFragment dialogFragment = getDialogFragment();
+        if (dialogFragment != null && dialogFragment.isAdded()) {
+            return dialogFragment.getDialog().getWindow();
+        } else {
+            return getWindow();
         }
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setReorderingAllowed(true);
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        fragment.setAnimation(PresentAnimation.None);
-        transaction.add(android.R.id.content, fragment, fragment.getSceneId());
-        transaction.addToBackStack(fragment.getSceneId());
-        transaction.commit();
-    }
-
-    public void clearFragments() {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                clearFragmentsInternal();
-            }
-        });
-    }
-
-    private void clearFragmentsInternal() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        if (count > 0) {
-            getWindow().setBackgroundDrawable(new ColorDrawable(style.getScreenBackgroundColor()));
-
-            String tag = fragmentManager.getBackStackEntryAt(0).getName();
-            AwesomeFragment former = (AwesomeFragment) fragmentManager.findFragmentByTag(tag);
-            if (former != null && former.isAdded()) {
-                former.setAnimation(PresentAnimation.Fade);
-                fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            }
-        }
-    }
-
-    private boolean hasFormerRoot;
-
-    @Override
-    public boolean activityHasFormerRoot() {
-        return hasFormerRoot;
     }
 
     @Override
@@ -248,36 +229,10 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     protected void onStatusBarTranslucentChanged(boolean translucent) {
-        List<AwesomeFragment> children = getFragmentsAtAddedList();
+        List<AwesomeFragment> children = FragmentHelper.getFragmentsAtAddedList(getSupportFragmentManager());
         for (int i = 0, size = children.size(); i < size; i++) {
             AwesomeFragment child = children.get(i);
             child.onStatusBarTranslucentChanged(translucent);
-        }
-    }
-
-    public List<AwesomeFragment> getFragmentsAtAddedList() {
-        List<AwesomeFragment> children = new ArrayList<>();
-        List<Fragment> fragments = getSupportFragmentManager().getFragments();
-        for (int i = 0, size = fragments.size(); i < size; i++) {
-            Fragment fragment = fragments.get(i);
-            if (fragment instanceof AwesomeFragment) {
-                children.add((AwesomeFragment) fragment);
-            }
-        }
-        return children;
-    }
-
-    @Nullable
-    public DialogFragment getDialogFragment() {
-        return FragmentHelper.getDialogFragment(getSupportFragmentManager());
-    }
-
-    public Window getCurrentWindow() {
-        DialogFragment dialogFragment = getDialogFragment();
-        if (dialogFragment != null && dialogFragment.isAdded()) {
-            return dialogFragment.getDialog().getWindow();
-        } else {
-            return getWindow();
         }
     }
 

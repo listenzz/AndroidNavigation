@@ -65,12 +65,7 @@ public class KittenGridAdapter extends RecyclerView.Adapter<KittenViewHolder> {
         // grid cell in the future.
         ViewCompat.setTransitionName(viewHolder.image, String.valueOf(position) + "_image");
 
-        viewHolder.image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onKittenClicked(viewHolder, position);
-            }
-        });
+        viewHolder.image.setOnClickListener(v -> mListener.onKittenClicked(viewHolder, position));
     }
 
     @Override

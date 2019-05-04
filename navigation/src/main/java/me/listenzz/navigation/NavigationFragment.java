@@ -106,12 +106,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void pushFragment(@NonNull final AwesomeFragment fragment, final boolean animated) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                pushFragmentInternal(fragment, animated);
-            }
-        }, animated);
+        scheduleTaskAtStarted(() -> pushFragmentInternal(fragment, animated), animated);
     }
 
     private void pushFragmentInternal(AwesomeFragment fragment, boolean animated) {
@@ -123,12 +118,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void popToFragment(@NonNull final AwesomeFragment fragment, final boolean animated) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                popToFragmentInternal(fragment, animated);
-            }
-        }, animated);
+        scheduleTaskAtStarted(() -> popToFragmentInternal(fragment, animated), animated);
     }
 
     private void popToFragmentInternal(AwesomeFragment fragment, boolean animated) {
@@ -153,12 +143,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void popFragment(final boolean animated) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                popFragmentInternal(animated);
-            }
-        }, animated);
+        scheduleTaskAtStarted(() -> popFragmentInternal(animated), animated);
     }
 
     private void popFragmentInternal(boolean animated) {
@@ -184,12 +169,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void popToRootFragment(final boolean animated) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                popToRootFragmentInternal(animated);
-            }
-        }, animated);
+        scheduleTaskAtStarted(() -> popToRootFragmentInternal(animated), animated);
     }
 
     private void popToRootFragmentInternal(boolean animated) {
@@ -200,21 +180,11 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void replaceFragment(@NonNull final AwesomeFragment substitution) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                replaceFragmentInternal(substitution, null);
-            }
-        }, true);
+        scheduleTaskAtStarted(() -> replaceFragmentInternal(substitution, null), true);
     }
 
     public void replaceFragment(@NonNull final AwesomeFragment substitution, @NonNull final AwesomeFragment target) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                replaceFragmentInternal(substitution, target);
-            }
-        }, true);
+        scheduleTaskAtStarted(() -> replaceFragmentInternal(substitution, target), true);
     }
 
     private void replaceFragmentInternal(AwesomeFragment fragment, AwesomeFragment target) {
@@ -252,12 +222,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void replaceToRootFragment(@NonNull final AwesomeFragment fragment) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                replaceToRootFragmentInternal(fragment);
-            }
-        }, true);
+        scheduleTaskAtStarted(() -> replaceToRootFragmentInternal(fragment), true);
     }
 
     private void replaceToRootFragmentInternal(AwesomeFragment fragment) {

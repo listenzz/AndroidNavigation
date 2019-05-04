@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -33,7 +32,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -124,12 +123,9 @@ public abstract class AwesomeFragment extends InternalFragment {
         boolean isFloating = window != null && window.isFloating();
         if (getShowsDialog() && !isFloating) {
             layoutInflater = new DialogLayoutInflater(requireContext(), layoutInflater,
-                    new DialogFrameLayout.OnTouchOutsideListener() {
-                        @Override
-                        public void onTouchOutside() {
-                            if (isCancelable()) {
-                                dismissDialog();
-                            }
+                    () -> {
+                        if (isCancelable()) {
+                            dismissDialog();
                         }
                     });
         }
@@ -163,12 +159,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             handleNavigationFragmentStuff(root);
         } else {
             setupDialog();
-            scheduleTaskAtStarted(new Runnable() {
-                @Override
-                public void run() {
-                    animateIn();
-                }
-            });
+            scheduleTaskAtStarted(this::animateIn);
         }
 
         if (getParentAwesomeFragment() == null || getShowsDialog()) {
@@ -247,13 +238,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void onPause() {
         super.onPause();
         notifyViewAppear(false);
-    }
-
-    public boolean activityHasFormerRoot() {
-        if (presentableActivity != null) {
-            return presentableActivity.activityHasFormerRoot();
-        }
-        return false;
     }
 
     @Override
@@ -407,28 +391,25 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                if (isInDialog()) {
-                    throw new IllegalStateException("在 dialog 中， 不能执行此操作, 可以考虑再次使用 `showDialog`");
-                }
+        scheduleTaskAtStarted(() -> {
+            if (isInDialog()) {
+                throw new IllegalStateException("在 dialog 中， 不能执行此操作, 可以考虑再次使用 `showDialog`");
+            }
 
-                AwesomeFragment parent = getParentAwesomeFragment();
-                if (parent != null) {
-                    if (definesPresentationContext()) {
-                        presentFragmentInternal(AwesomeFragment.this, fragment, requestCode);
-                    } else {
-                        parent.presentFragment(fragment, requestCode);
-                    }
-                    return;
+            AwesomeFragment parent = getParentAwesomeFragment();
+            if (parent != null) {
+                if (definesPresentationContext()) {
+                    presentFragmentInternal(AwesomeFragment.this, fragment, requestCode);
+                } else {
+                    parent.presentFragment(fragment, requestCode);
                 }
+                return;
+            }
 
-                if (presentableActivity != null) {
-                    Bundle args = FragmentHelper.getArguments(fragment);
-                    args.putInt(ARGS_REQUEST_CODE, requestCode);
-                    presentableActivity.presentFragment(fragment);
-                }
+            if (presentableActivity != null) {
+                Bundle args = FragmentHelper.getArguments(fragment);
+                args.putInt(ARGS_REQUEST_CODE, requestCode);
+                presentableActivity.presentFragment(fragment);
             }
         }, true);
     }
@@ -442,62 +423,53 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void dismissFragment() {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                if (isInDialog()) {
-                    throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `dismissDialog`");
-                }
+        scheduleTaskAtStarted(() -> {
+            if (isInDialog()) {
+                throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `dismissDialog`");
+            }
 
-                AwesomeFragment parent = getParentAwesomeFragment();
-                if (parent != null) {
-                    if (definesPresentationContext()) {
-                        AwesomeFragment presented = getPresentedFragment();
-                        if (presented != null) {
-                            dismissFragmentInternal(null);
-                            return;
-                        }
-                        AwesomeFragment target = (AwesomeFragment) getTargetFragment();
-                        if (target != null) {
-                            dismissFragmentInternal(target);
-                        }
-                    } else {
-                        parent.dismissFragment();
+            AwesomeFragment parent = getParentAwesomeFragment();
+            if (parent != null) {
+                if (definesPresentationContext()) {
+                    AwesomeFragment presented = getPresentedFragment();
+                    if (presented != null) {
+                        dismissFragmentInternal(this, presented, null);
+                        return;
                     }
-                    return;
+                    AwesomeFragment target = (AwesomeFragment) getTargetFragment();
+                    if (target != null) {
+                        dismissFragmentInternal(target, this, this);
+                    }
+                } else {
+                    parent.dismissFragment();
                 }
+                return;
+            }
 
-                if (presentableActivity != null) {
-                    presentableActivity.dismissFragment(AwesomeFragment.this);
-                }
+            if (presentableActivity != null) {
+                presentableActivity.dismissFragment(this);
             }
         }, true);
 
     }
 
-    private void dismissFragmentInternal(@Nullable AwesomeFragment target) {
-        if (target == null) {
-            AwesomeFragment presented = getPresentedFragment();
-            int count = requireFragmentManager().getBackStackEntryCount();
-            FragmentManager.BackStackEntry backStackEntry = requireFragmentManager().getBackStackEntryAt(count - 1);
-            AwesomeFragment top = (AwesomeFragment) requireFragmentManager().findFragmentByTag(backStackEntry.getName());
-            if (top == null || presented == null) {
-                return;
-            }
-            setAnimation(PresentAnimation.Modal);
-            top.setAnimation(PresentAnimation.Modal);
-            top.setUserVisibleHint(false);
-            requireFragmentManager().popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
-            onFragmentResult(top.getRequestCode(), top.getResultCode(), top.getResultData());
-        } else {
-            setAnimation(PresentAnimation.Modal);
-            target.setAnimation(PresentAnimation.Modal);
-            setUserVisibleHint(false);
-            requireFragmentManager().popBackStack(getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
-            target.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
+    private static void dismissFragmentInternal(@NonNull AwesomeFragment target, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top) {
+        FragmentManager fragmentManager = target.requireFragmentManager();
+        target.setAnimation(PresentAnimation.Modal);
+
+        if (top == null) {
+            top = (AwesomeFragment) fragmentManager.findFragmentById(target.getContainerId());
         }
+
+        if (top == null) {
+            return;
+        }
+
+        top.setAnimation(PresentAnimation.Modal);
+        top.setUserVisibleHint(false);
+        fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+        target.onFragmentResult(top.getRequestCode(), top.getResultCode(), top.getResultData());
     }
 
     @Nullable
@@ -641,17 +613,10 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @NonNull
     public List<AwesomeFragment> getChildFragmentsAtAddedList() {
-        List<AwesomeFragment> children = new ArrayList<>();
         if (isAdded()) {
-            List<Fragment> fragments = getChildFragmentManager().getFragments();
-            for (int i = 0, size = fragments.size(); i < size; i++) {
-                Fragment fragment = fragments.get(i);
-                if (fragment instanceof AwesomeFragment && fragment.isAdded()) {
-                    children.add((AwesomeFragment) fragment);
-                }
-            }
+            return FragmentHelper.getFragmentsAtAddedList(getChildFragmentManager());
         }
-        return children;
+        return Collections.emptyList();
     }
 
     @Nullable
@@ -965,17 +930,14 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (window != null) {
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
-        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (!dispatchBackPressed() && isCancelable()) {
-                        dismissDialog();
-                    }
-                    return true;
+        getDialog().setOnKeyListener((dialogInterface, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                if (!dispatchBackPressed() && isCancelable()) {
+                    dismissDialog();
                 }
-                return false;
+                return true;
             }
+            return false;
         });
     }
 
@@ -1018,12 +980,7 @@ public abstract class AwesomeFragment extends InternalFragment {
      * Dismiss the fragment as dialog.
      */
     public void dismissDialog() {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                dismissDialogInternal();
-            }
-        }, true);
+        scheduleTaskAtStarted(this::dismissDialogInternal, true);
     }
 
     private void dismissDialogInternal() {
@@ -1058,12 +1015,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void showDialog(@NonNull final AwesomeFragment dialog, final int requestCode) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                showDialogInternal(AwesomeFragment.this, dialog, requestCode);
-            }
-        }, true);
+        scheduleTaskAtStarted(() -> showDialogInternal(AwesomeFragment.this, dialog, requestCode), true);
     }
 
     private void showDialogInternal(final AwesomeFragment target, final AwesomeFragment dialog, final int requestCode) {
@@ -1165,12 +1117,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             @Override
             public void onAnimationEnd(Animation animation) {
                 animatingOut = false;
-                animationView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        dismiss();
-                    }
-                });
+                animationView.post(AwesomeFragment.this::dismiss);
             }
 
             @Override
@@ -1291,14 +1238,11 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (index == 0 || !shouldHideTabBarWhenPushed()) {
             int color = Color.parseColor(style.getTabBarBackgroundColor());
             if (Color.alpha(color) == 255) {
-                root.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        TabBarFragment tabBarFragment = getTabBarFragment();
-                        if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
-                            int bottomPadding = (int) getResources().getDimension(R.dimen.bottom_navigation_height);
-                            root.setPadding(0, 0, 0, bottomPadding);
-                        }
+                root.post(() -> {
+                    TabBarFragment tabBarFragment = getTabBarFragment();
+                    if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
+                        int bottomPadding = (int) getResources().getDimension(R.dimen.bottom_navigation_height);
+                        root.setPadding(0, 0, 0, bottomPadding);
                     }
                 });
             }
@@ -1349,13 +1293,10 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         if (!isNavigationRoot() && !shouldHideBackButton()) {
             toolbar.setNavigationIcon(style.getBackIcon());
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    NavigationFragment navigationFragment = getNavigationFragment();
-                    if (navigationFragment != null) {
-                        getNavigationFragment().dispatchBackPressed();
-                    }
+            toolbar.setNavigationOnClickListener(view -> {
+                NavigationFragment navigationFragment = getNavigationFragment();
+                if (navigationFragment != null) {
+                    getNavigationFragment().dispatchBackPressed();
                 }
             });
         }
@@ -1424,13 +1365,10 @@ public abstract class AwesomeFragment extends InternalFragment {
             if (barButtonItems == null) {
                 if (!isNavigationRoot() && !shouldHideBackButton()) {
                     toolbar.setNavigationIcon(style.getBackIcon());
-                    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            NavigationFragment navigationFragment = getNavigationFragment();
-                            if (navigationFragment != null) {
-                                navigationFragment.popFragment();
-                            }
+                    toolbar.setNavigationOnClickListener(view -> {
+                        NavigationFragment navigationFragment = getNavigationFragment();
+                        if (navigationFragment != null) {
+                            navigationFragment.popFragment();
                         }
                     });
                 }
@@ -1479,13 +1417,10 @@ public abstract class AwesomeFragment extends InternalFragment {
                 toolbar.clearLeftButton();
                 if (!isNavigationRoot() && !shouldHideBackButton()) {
                     toolbar.setNavigationIcon(style.getBackIcon());
-                    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            NavigationFragment navigationFragment = getNavigationFragment();
-                            if (navigationFragment != null) {
-                                getNavigationFragment().dispatchBackPressed();
-                            }
+                    toolbar.setNavigationOnClickListener(view -> {
+                        NavigationFragment navigationFragment = getNavigationFragment();
+                        if (navigationFragment != null) {
+                            getNavigationFragment().dispatchBackPressed();
                         }
                     });
                 }

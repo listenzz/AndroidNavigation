@@ -58,102 +58,75 @@ public class TestNavigationFragment extends BaseFragment {
         TextView tagView = root.findViewById(R.id.tag);
         tagView.setText(getDebugTag());
 
-        root.findViewById(R.id.present).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavigationFragment navigationFragment = new NavigationFragment();
-                navigationFragment.setRootFragment(new TestNavigationFragment());
-                presentFragment(navigationFragment, REQUEST_CODE);
+        root.findViewById(R.id.present).setOnClickListener(v -> {
+            NavigationFragment navigationFragment = new NavigationFragment();
+            navigationFragment.setRootFragment(new TestNavigationFragment());
+            presentFragment(navigationFragment, REQUEST_CODE);
+        });
+
+        root.findViewById(R.id.dismiss).setOnClickListener(v -> {
+            Bundle result = new Bundle();
+            result.putString("text", resultEditText.getText().toString());
+            setResult(Activity.RESULT_OK, result);
+            dismissFragment();
+        });
+
+        root.findViewById(R.id.push).setOnClickListener(v -> {
+            NavigationFragment navigationFragment = getNavigationFragment();
+            if (navigationFragment != null) {
+                navigationFragment.pushFragment(new TestNavigationFragment());
             }
         });
 
-        root.findViewById(R.id.dismiss).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        root.findViewById(R.id.pop).setOnClickListener(v -> {
+            NavigationFragment navigationFragment = getNavigationFragment();
+            if (navigationFragment != null) {
                 Bundle result = new Bundle();
                 result.putString("text", resultEditText.getText().toString());
                 setResult(Activity.RESULT_OK, result);
-                dismissFragment();
+                navigationFragment.popFragment();
             }
         });
 
-        root.findViewById(R.id.push).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavigationFragment navigationFragment = getNavigationFragment();
-                if (navigationFragment != null) {
-                    navigationFragment.pushFragment(new TestNavigationFragment());
-                }
+        root.findViewById(R.id.pop_to_root).setOnClickListener(v -> {
+            NavigationFragment navigationFragment = getNavigationFragment();
+            if (navigationFragment != null) {
+                Bundle result = new Bundle();
+                result.putString("text", resultEditText.getText().toString());
+                setResult(Activity.RESULT_OK, result);
+                navigationFragment.popToRootFragment();
             }
         });
 
-        root.findViewById(R.id.pop).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavigationFragment navigationFragment = getNavigationFragment();
-                if (navigationFragment != null) {
-                    Bundle result = new Bundle();
-                    result.putString("text", resultEditText.getText().toString());
-                    setResult(Activity.RESULT_OK, result);
-                    navigationFragment.popFragment();
-                }
+        root.findViewById(R.id.replace).setOnClickListener(v -> {
+            NavigationFragment navigationFragment = getNavigationFragment();
+            if (navigationFragment != null) {
+                navigationFragment.replaceFragment(new TestNavigationFragment());
             }
         });
 
-        root.findViewById(R.id.pop_to_root).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavigationFragment navigationFragment = getNavigationFragment();
-                if (navigationFragment != null) {
-                    Bundle result = new Bundle();
-                    result.putString("text", resultEditText.getText().toString());
-                    setResult(Activity.RESULT_OK, result);
-                    navigationFragment.popToRootFragment();
-                }
+        root.findViewById(R.id.replace_to_root).setOnClickListener(v -> {
+            NavigationFragment navigationFragment = getNavigationFragment();
+            if (navigationFragment != null) {
+                navigationFragment.replaceToRootFragment(new TestNavigationFragment());
             }
         });
 
-        root.findViewById(R.id.replace).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavigationFragment navigationFragment = getNavigationFragment();
-                if (navigationFragment != null) {
-                    navigationFragment.replaceFragment(new TestNavigationFragment());
-                }
+        root.findViewById(R.id.show_badge).setOnClickListener(view -> {
+            TabBarFragment tabBarFragment = getTabBarFragment();
+            if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
+                TabBar tabBar = tabBarFragment.getTabBar();
+                tabBar.setBadge(0, "12");
+                tabBar.setRedPoint(1, true);
             }
         });
 
-        root.findViewById(R.id.replace_to_root).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavigationFragment navigationFragment = getNavigationFragment();
-                if (navigationFragment != null) {
-                    navigationFragment.replaceToRootFragment(new TestNavigationFragment());
-                }
-            }
-        });
-
-        root.findViewById(R.id.show_badge).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TabBarFragment tabBarFragment = getTabBarFragment();
-                if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
-                    TabBar tabBar = tabBarFragment.getTabBar();
-                    tabBar.setBadge(0, "12");
-                    tabBar.setRedPoint(1, true);
-                }
-            }
-        });
-
-        root.findViewById(R.id.hide_badge).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TabBarFragment tabBarFragment = getTabBarFragment();
-                if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
-                    TabBar tabBar = tabBarFragment.getTabBar();
-                    tabBar.setBadge(0, null);
-                    tabBar.setRedPoint(1, false);
-                }
+        root.findViewById(R.id.hide_badge).setOnClickListener(view -> {
+            TabBarFragment tabBarFragment = getTabBarFragment();
+            if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
+                TabBar tabBar = tabBarFragment.getTabBar();
+                tabBar.setBadge(0, null);
+                tabBar.setRedPoint(1, false);
             }
         });
 
@@ -182,24 +155,16 @@ public class TestNavigationFragment extends BaseFragment {
             if (getPresentingFragment() == null) {
                 String iconUri = "font://FontAwesome/" + fromCharCode(61641) + "/24";
                 ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
-                builder.icon(iconUri).listener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        DrawerFragment drawerFragment = getDrawerFragment();
-                        if (drawerFragment != null) {
-                            drawerFragment.toggleMenu();
-                        }
+                builder.icon(iconUri).listener(view -> {
+                    DrawerFragment drawerFragment = getDrawerFragment();
+                    if (drawerFragment != null) {
+                        drawerFragment.toggleMenu();
                     }
                 });
                 setLeftBarButtonItem(builder.build());
             } else {
                 ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
-                builder.title("关闭").listener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dismissFragment();
-                    }
-                });
+                builder.title("关闭").listener(view -> dismissFragment());
                 setLeftBarButtonItem(builder.build());
             }
         }

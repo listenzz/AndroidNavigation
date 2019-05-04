@@ -161,32 +161,26 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     public void onDrawerOpened(@NonNull View drawerView) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                FragmentManager fragmentManager = getChildFragmentManager();
-                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-                fragmentManager.beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
-                AwesomeFragment menu = getMenuFragment();
-                if (menu != null) {
-                    menu.setUserVisibleHint(true);
-                }
+        scheduleTaskAtStarted(() -> {
+            FragmentManager fragmentManager = getChildFragmentManager();
+            FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+            fragmentManager.beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
+            AwesomeFragment menu = getMenuFragment();
+            if (menu != null) {
+                menu.setUserVisibleHint(true);
             }
         });
     }
 
     @Override
     public void onDrawerClosed(@NonNull View drawerView) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                FragmentManager fragmentManager = getChildFragmentManager();
-                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-                fragmentManager.beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
-                AwesomeFragment menu = getMenuFragment();
-                if (menu != null) {
-                    menu.setUserVisibleHint(false);
-                }
+        scheduleTaskAtStarted(() -> {
+            FragmentManager fragmentManager = getChildFragmentManager();
+            FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+            fragmentManager.beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
+            AwesomeFragment menu = getMenuFragment();
+            if (menu != null) {
+                menu.setUserVisibleHint(false);
             }
         });
     }
@@ -251,12 +245,9 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     public void setDrawerLockMode(final int lockMode) {
-        scheduleTaskAtStarted(new Runnable() {
-            @Override
-            public void run() {
-                if (drawerLayout != null) {
-                    drawerLayout.setDrawerLockMode(lockMode);
-                }
+        scheduleTaskAtStarted(() -> {
+            if (drawerLayout != null) {
+                drawerLayout.setDrawerLockMode(lockMode);
             }
         });
     }

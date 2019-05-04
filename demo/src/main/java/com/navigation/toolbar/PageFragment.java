@@ -48,20 +48,12 @@ public class PageFragment extends BaseFragment {
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 
-        adapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(int position, View view) {
+        adapter.setOnItemClickListener((position, view1) -> {
 
-            }
         });
 
         dataAsyncTask = new DataAsyncTask();
-        dataAsyncTaskListener = new DataAsyncTask.DataAsyncTaskListener() {
-            @Override
-            public void onResult(List<String> items) {
-                adapter.setData(items);
-            }
-        };
+        dataAsyncTaskListener = items -> adapter.setData(items);
         dataAsyncTask.setListener(dataAsyncTaskListener);
         Bundle args = FragmentHelper.getArguments(PageFragment.this);
         String title = args.getString(ARG_TITLE);
@@ -130,13 +122,10 @@ public class PageFragment extends BaseFragment {
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = inflater.inflate(R.layout.item_page, parent, false);
             final MyViewHolder holder = new MyViewHolder(view);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = holder.getAdapterPosition();
-                    if (itemClickListener != null) {
-                        itemClickListener.onItemClick(position, v);
-                    }
+            holder.itemView.setOnClickListener(v -> {
+                int position = holder.getAdapterPosition();
+                if (itemClickListener != null) {
+                    itemClickListener.onItemClick(position, v);
                 }
             });
             return holder;

@@ -16,12 +16,9 @@ public class SplashActivity extends AwesomeActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                overridePendingTransition(R.anim.nav_fade_in, R.anim.nav_fade_out);
-            }
+        new Handler().postDelayed(() -> {
+            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+            overridePendingTransition(R.anim.nav_fade_in, R.anim.nav_fade_out);
         }, 1500);
     }
 }

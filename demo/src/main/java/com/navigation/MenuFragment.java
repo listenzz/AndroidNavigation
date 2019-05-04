@@ -34,52 +34,34 @@ public class MenuFragment extends AwesomeFragment {
         TextView tagView = root.findViewById(R.id.tag);
         tagView.setText(getDebugTag());
 
-        root.findViewById(R.id.toolbar_color_transition).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new ToolbarColorTransitionFragment());
-                getDrawerFragment().closeMenu();
-            }
+        root.findViewById(R.id.toolbar_color_transition).setOnClickListener(v -> {
+            getNavigationFragment().pushFragment(new ToolbarColorTransitionFragment());
+            getDrawerFragment().closeMenu();
         });
 
-        root.findViewById(R.id.coordinator).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new CoordinatorFragment());
-                getDrawerFragment().closeMenu();
-            }
+        root.findViewById(R.id.coordinator).setOnClickListener(v -> {
+            getNavigationFragment().pushFragment(new CoordinatorFragment());
+            getDrawerFragment().closeMenu();
         });
 
-        root.findViewById(R.id.view_pager).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new ViewPagerFragment());
-                getDrawerFragment().closeMenu();
-            }
+        root.findViewById(R.id.view_pager).setOnClickListener(v -> {
+            getNavigationFragment().pushFragment(new ViewPagerFragment());
+            getDrawerFragment().closeMenu();
         });
 
-        root.findViewById(R.id.shared_element).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new GridFragment());
-                getDrawerFragment().closeMenu();
-            }
+        root.findViewById(R.id.shared_element).setOnClickListener(v -> {
+            getNavigationFragment().pushFragment(new GridFragment());
+            getDrawerFragment().closeMenu();
         });
 
-        root.findViewById(R.id.web).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new WebFragment());
-                getDrawerFragment().closeMenu();
-            }
+        root.findViewById(R.id.web).setOnClickListener(v -> {
+            getNavigationFragment().pushFragment(new WebFragment());
+            getDrawerFragment().closeMenu();
         });
 
-        root.findViewById(R.id.dialog).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().pushFragment(new DialogEntryFragment());
-                getDrawerFragment().closeMenu();
-            }
+        root.findViewById(R.id.dialog).setOnClickListener(v -> {
+            getNavigationFragment().pushFragment(new DialogEntryFragment());
+            getDrawerFragment().closeMenu();
         });
 
         return root;

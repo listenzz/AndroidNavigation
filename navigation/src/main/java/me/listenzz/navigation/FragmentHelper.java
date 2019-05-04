@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -176,6 +177,19 @@ public class FragmentHelper {
         }
 
         return null;
+    }
+
+    @NonNull
+    public static List<AwesomeFragment> getFragmentsAtAddedList(@NonNull FragmentManager fragmentManager) {
+        List<AwesomeFragment> children = new ArrayList<>();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        for (int i = 0, size = fragments.size(); i < size; i++) {
+            Fragment fragment = fragments.get(i);
+            if (fragment instanceof AwesomeFragment && fragment.isAdded()) {
+                children.add((AwesomeFragment) fragment);
+            }
+        }
+        return children;
     }
 
 }

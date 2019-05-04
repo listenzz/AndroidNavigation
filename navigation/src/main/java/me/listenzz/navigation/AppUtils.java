@@ -144,17 +144,13 @@ public class AppUtils {
 
             View decorView = window.getDecorView();
             if (translucent) {
-                decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-                    @Override
-                    public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
-                        WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
-                        return defaultInsets.replaceSystemWindowInsets(
-                                defaultInsets.getSystemWindowInsetLeft(),
-                                0,
-                                defaultInsets.getSystemWindowInsetRight(),
-                                defaultInsets.getSystemWindowInsetBottom());
-                    }
+                decorView.setOnApplyWindowInsetsListener((v, insets) -> {
+                    WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
+                    return defaultInsets.replaceSystemWindowInsets(
+                            defaultInsets.getSystemWindowInsetLeft(),
+                            0,
+                            defaultInsets.getSystemWindowInsetRight(),
+                            defaultInsets.getSystemWindowInsetBottom());
                 });
             } else {
                 decorView.setOnApplyWindowInsetsListener(null);
@@ -225,13 +221,7 @@ public class AppUtils {
                 int curColor = window.getStatusBarColor();
                 ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
                 colorAnimation.addUpdateListener(
-                        new ValueAnimator.AnimatorUpdateListener() {
-                            @TargetApi(21)
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animator) {
-                                window.setStatusBarColor((Integer) animator.getAnimatedValue());
-                            }
-                        });
+                        animator -> window.setStatusBarColor((Integer) animator.getAnimatedValue()));
                 colorAnimation.setDuration(200).setStartDelay(0);
                 colorAnimation.start();
             } else {
@@ -262,12 +252,7 @@ public class AppUtils {
                     final View barView = statusBarView;
                     ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
                     colorAnimation.addUpdateListener(
-                            new ValueAnimator.AnimatorUpdateListener() {
-                                @Override
-                                public void onAnimationUpdate(ValueAnimator animator) {
-                                    barView.setBackground(new ColorDrawable((Integer) animator.getAnimatedValue()));
-                                }
-                            });
+                            animator -> barView.setBackground(new ColorDrawable((Integer) animator.getAnimatedValue())));
                     colorAnimation.setDuration(200).setStartDelay(0);
                     colorAnimation.start();
                 } else {

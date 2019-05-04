@@ -65,12 +65,7 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         toolbar.setNavigationIcon(style.getBackIcon());
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getNavigationFragment().popFragment();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> getNavigationFragment().popFragment());
     }
 
     int statusBarColor = Color.MAGENTA;

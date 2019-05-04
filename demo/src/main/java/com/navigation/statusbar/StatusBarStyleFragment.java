@@ -37,16 +37,13 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
-        builder.title("切换").tintColor(Color.RED).listener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (preferredStatusBarStyle() == BarStyle.DarkContent) {
-                    barStyle = BarStyle.LightContent;
-                } else {
-                    barStyle = BarStyle.DarkContent;
-                }
-                setNeedsStatusBarAppearanceUpdate();
+        builder.title("切换").tintColor(Color.RED).listener(view -> {
+            if (preferredStatusBarStyle() == BarStyle.DarkContent) {
+                barStyle = BarStyle.LightContent;
+            } else {
+                barStyle = BarStyle.DarkContent;
             }
+            setNeedsStatusBarAppearanceUpdate();
         });
         setRightBarButtonItem(builder.build());
     }

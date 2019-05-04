@@ -197,12 +197,7 @@ public class TabBarFragment extends AwesomeFragment {
 
     public void setSelectedIndex(final int index) {
         if (isAdded()) {
-            scheduleTaskAtStarted(new Runnable() {
-                @Override
-                public void run() {
-                    setSelectedIndexInternal(index);
-                }
-            });
+            scheduleTaskAtStarted(() -> setSelectedIndexInternal(index));
         } else {
             selectedIndex = index;
         }
