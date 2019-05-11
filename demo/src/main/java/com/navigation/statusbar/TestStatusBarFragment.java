@@ -34,11 +34,6 @@ public class TestStatusBarFragment extends BaseFragment {
     }
 
     @Override
-    protected boolean hidesBottomBarWhenPushed() {
-        return false;
-    }
-
-    @Override
     public void appendStatusBarPadding(View view, int viewHeight) {
         if (!isInDialog()) {
             super.appendStatusBarPadding(view, viewHeight);
