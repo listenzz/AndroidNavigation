@@ -297,6 +297,11 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Override
     @CallSuper
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        Context context = getContext();
+        if (context == null) {
+            return null;
+        }
+
         PresentAnimation animation = getAnimation();
 
         handleHideBottomBarWhenPushed(transit, enter, animation);
@@ -305,20 +310,20 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null && parent.isRemoving()) {
-            return AnimationUtils.loadAnimation(getContext(), R.anim.nav_delay);
+            return AnimationUtils.loadAnimation(context, R.anim.nav_delay);
         }
 
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
-                return AnimationUtils.loadAnimation(getContext(), animation.enter);
+                return AnimationUtils.loadAnimation(context, animation.enter);
             } else {
-                return AnimationUtils.loadAnimation(getContext(), animation.exit);
+                return AnimationUtils.loadAnimation(context, animation.exit);
             }
         } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
             if (enter) {
-                return AnimationUtils.loadAnimation(getContext(), animation.popEnter);
+                return AnimationUtils.loadAnimation(context, animation.popEnter);
             } else {
-                return AnimationUtils.loadAnimation(getContext(), animation.popExit);
+                return AnimationUtils.loadAnimation(context, animation.popExit);
             }
         }
 
