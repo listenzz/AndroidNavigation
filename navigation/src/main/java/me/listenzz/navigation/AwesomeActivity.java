@@ -91,7 +91,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         }
     }
 
-    private void setRootFragmentInternal(AwesomeFragment fragment) {
+    protected void setRootFragmentInternal(AwesomeFragment fragment) {
         clearFragmentsInternal();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -107,7 +107,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         scheduleTaskAtStarted(this::clearFragmentsInternal);
     }
 
-    private void clearFragmentsInternal() {
+    protected void clearFragmentsInternal() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 0) {
@@ -135,7 +135,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         scheduleTaskAtStarted(() -> dismissFragmentInternal(fragment), true);
     }
 
-    private void dismissFragmentInternal(AwesomeFragment fragment) {
+    protected void dismissFragmentInternal(AwesomeFragment fragment) {
         if (!fragment.isAdded()) {
             return;
         }
@@ -189,7 +189,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         }
     }
 
-    private void showDialogInternal(AwesomeFragment dialog, int requestCode) {
+    protected void showDialogInternal(AwesomeFragment dialog, int requestCode) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             Fragment fragment = fragmentManager.findFragmentById(android.R.id.content);
