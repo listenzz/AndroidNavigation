@@ -148,8 +148,12 @@ public class FragmentHelper {
 
     @Nullable
     public static DialogFragment getDialogFragment(@NonNull FragmentManager fragmentManager) {
-        Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
+        if (fragmentManager.isDestroyed()) {
+            return null;
+        }
+        executePendingTransactionsSafe(fragmentManager);
 
+        Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
         if (fragment != null && fragment.isAdded()) {
             if (fragment instanceof DialogFragment) {
                 DialogFragment dialogFragment = (DialogFragment) fragment;
