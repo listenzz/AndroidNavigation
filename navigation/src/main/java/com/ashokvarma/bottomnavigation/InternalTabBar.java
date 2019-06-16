@@ -36,7 +36,7 @@ import me.listenzz.navigation.R;
 public class InternalTabBar extends BottomNavigationBar {
 
     private Drawable shadow = new ColorDrawable(Color.parseColor("#dddddd"));
-    private List<TextView> redPoints = new ArrayList<>();
+    private List<TextView> dotBadges = new ArrayList<>();
 
     public InternalTabBar(Context context) {
         super(context);
@@ -100,7 +100,7 @@ public class InternalTabBar extends BottomNavigationBar {
             }
             redPoint.setBackground(drawable);
             redPoint.setVisibility(GONE);
-            redPoints.add(redPoint);
+            dotBadges.add(redPoint);
         }
     }
 
@@ -186,7 +186,7 @@ public class InternalTabBar extends BottomNavigationBar {
         return tab.badgeView;
     }
 
-    public void setBadge(int index, String text) {
+    public void setBadgeText(int index, String text) {
         TextView badgeView = badgeViewAtTab(index);
         if (TextUtils.isEmpty(text)) {
             badgeView.setVisibility(GONE);
@@ -196,13 +196,13 @@ public class InternalTabBar extends BottomNavigationBar {
         }
     }
 
-    public TextView redPointAtTab(int index) {
-        return redPoints.get(index);
+    public TextView dotBadgeAtTab(int index) {
+        return dotBadges.get(index);
     }
 
-    public void setRedPoint(int index, boolean visible) {
-        TextView redPoint = redPointAtTab(index);
-        if (!visible) {
+    public void showDotBadge(int index, boolean hidden) {
+        TextView redPoint = dotBadgeAtTab(index);
+        if (hidden) {
             redPoint.setVisibility(GONE);
         } else {
             redPoint.setVisibility(VISIBLE);
