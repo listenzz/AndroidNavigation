@@ -1296,14 +1296,19 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
         toolbar.setAlpha(style.getToolbarAlpha());
 
-        if (!isNavigationRoot() && !shouldHideBackButton()) {
-            toolbar.setNavigationIcon(style.getBackIcon());
-            toolbar.setNavigationOnClickListener(view -> {
-                NavigationFragment navigationFragment = getNavigationFragment();
-                if (navigationFragment != null) {
-                    getNavigationFragment().dispatchBackPressed();
-                }
-            });
+        if (!isNavigationRoot()) {
+            if (shouldHideBackButton()) {
+                toolbar.setNavigationIcon(null);
+                toolbar.setNavigationOnClickListener(null);
+            } else if (leftBarButtonItem == null && leftBarButtonItems == null) {
+                toolbar.setNavigationIcon(style.getBackIcon());
+                toolbar.setNavigationOnClickListener(view -> {
+                    NavigationFragment navigationFragment = getNavigationFragment();
+                    if (navigationFragment != null) {
+                        getNavigationFragment().dispatchBackPressed();
+                    }
+                });
+            }
         }
     }
 
