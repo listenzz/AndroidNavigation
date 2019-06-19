@@ -96,6 +96,7 @@ public class TabBarFragment extends AwesomeFragment {
         }
 
         if (savedInstanceState != null) {
+            setSelectedIndex(selectedIndex);
             if (tabBarHidden && getTabBar() != null) {
                 hideTabBar();
             }
