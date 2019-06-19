@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 
@@ -81,36 +80,26 @@ public class DefaultTabBarProvider implements TabBarProvider {
             BottomNavigationItem bottomNavigationItem;
             if (tabBarItem != null) {
                 Drawable icon = new ColorDrawable();
-                Drawable inActiveIcon = null;
-                if (tabBarItem.selectedIconRes != -1 || tabBarItem.selectedIconUri != null) {
-                    if (tabBarItem.selectedIconRes != -1) {
-                        icon = ContextCompat.getDrawable(context, tabBarItem.selectedIconRes);
-                    } else  {
-                        icon = DrawableUtils.fromUri(context, tabBarItem.selectedIconUri);
+                if (tabBarItem.iconRes != -1) {
+                    bottomNavigationItem = new BottomNavigationItem(tabBarItem.iconRes, tabBarItem.title);
+                    if (tabBarItem.unselectedIconRes != -1) {
+                        bottomNavigationItem.setInactiveIconResource(tabBarItem.unselectedIconRes);
                     }
+                } else if (tabBarItem.iconUri != null){
+                    icon = DrawableUtils.fromUri(context, tabBarItem.iconUri);
                     bottomNavigationItem = new BottomNavigationItem(icon, tabBarItem.title);
-                    if (tabBarItem.iconRes != -1) {
-                        inActiveIcon = ContextCompat.getDrawable(context, tabBarItem.iconRes);
-
-                    } else if (tabBarItem.iconUri != null) {
-                        inActiveIcon = DrawableUtils.fromUri(context, tabBarItem.iconUri);
+                    if (tabBarItem.unselectedIconUri != null) {
+                        bottomNavigationItem.setInactiveIcon(DrawableUtils.fromUri(context, tabBarItem.unselectedIconUri));
                     }
-                    bottomNavigationItem.setInactiveIcon(inActiveIcon);
                 } else {
-                    if (tabBarItem.iconRes != -1) {
-                        icon = ContextCompat.getDrawable(context, tabBarItem.iconRes);
-                    } else if (tabBarItem.iconUri != null) {
-                        icon = DrawableUtils.fromUri(context, tabBarItem.iconUri);
-                    }
                     bottomNavigationItem = new BottomNavigationItem(icon, tabBarItem.title);
                 }
-
             } else {
                 bottomNavigationItem = new BottomNavigationItem(new ColorDrawable(), "Tab");
             }
 
             TextBadgeItem textBadgeItem = new TextBadgeItem();
-            textBadgeItem.setBackgroundColor(tabBarFragment.style.getBadgeColor());
+            textBadgeItem.setBackgroundColor(tabBarFragment.style.getTabBarBadgeColor());
             textBadgeItems.add(textBadgeItem);
             bottomNavigationItem.setBadgeItem(textBadgeItem);
             tabBar.addItem(bottomNavigationItem);
@@ -128,14 +117,10 @@ public class DefaultTabBarProvider implements TabBarProvider {
         Style style = tabBarFragment.style;
         tabBar.setBarBackgroundColor(style.getTabBarBackgroundColor());
 
-        if (style.getTabBarSelectedItemColor() != null) {
-            tabBar.setActiveColor(style.getTabBarSelectedItemColor());
-            if (style.getTabBarItemColor() != null) {
-                tabBar.setInActiveColor(style.getTabBarItemColor());
-            }
-        } else {
-            if (style.getTabBarItemColor() != null) {
-                tabBar.setActiveColor(style.getTabBarItemColor());
+        if (style.getTabBarItemColor() != null) {
+            tabBar.setActiveColor(style.getTabBarItemColor());
+            if (style.getTabBarUnselectedItemColor() != null) {
+                tabBar.setInActiveColor(style.getTabBarUnselectedItemColor());
             }
         }
 

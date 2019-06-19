@@ -3,6 +3,7 @@ package me.listenzz.navigation;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 
 /**
  * Created by Listen on 2018/1/11.
@@ -10,44 +11,45 @@ import android.support.annotation.DrawableRes;
 
 public class TabBarItem implements Parcelable {
 
+    @NonNull
     public final String title;
     public final String iconUri;
-    public final String selectedIconUri;
+    public final String unselectedIconUri;
     @DrawableRes
     public final int iconRes;
     @DrawableRes
-    public final int selectedIconRes;
+    public final int unselectedIconRes;
 
-    public TabBarItem(@DrawableRes int iconRes, @DrawableRes int selectedIconRes, String title) {
+    public TabBarItem(@DrawableRes int iconRes, @DrawableRes int unselectedIconRes, @NonNull String title) {
         this.title = title;
         this.iconRes = iconRes;
-        this.selectedIconRes = selectedIconRes;
+        this.unselectedIconRes = unselectedIconRes;
         this.iconUri = null;
-        this.selectedIconUri = null;
+        this.unselectedIconUri = null;
     }
 
-    public TabBarItem(@DrawableRes int iconRes, String title) {
+    public TabBarItem(@DrawableRes int iconRes, @NonNull String title) {
         this.title = title;
         this.iconRes = iconRes;
-        this.selectedIconRes = -1;
+        this.unselectedIconRes = -1;
         this.iconUri = null;
-        this.selectedIconUri = null;
+        this.unselectedIconUri = null;
     }
 
-    public TabBarItem(String iconUri, String selectedIconUri, String title) {
+    public TabBarItem(String iconUri, String unselectedIconUri, @NonNull String title) {
         this.title = title;
         this.iconRes = -1;
-        this.selectedIconRes = -1;
+        this.unselectedIconRes = -1;
         this.iconUri = iconUri;
-        this.selectedIconUri = selectedIconUri;
+        this.unselectedIconUri = unselectedIconUri;
     }
 
-    public TabBarItem(String iconUri, String title) {
+    public TabBarItem(String iconUri, @NonNull String title) {
         this.title = title;
         this.iconRes = -1;
-        this.selectedIconRes = -1;
+        this.unselectedIconRes = -1;
         this.iconUri = iconUri;
-        this.selectedIconUri = null;
+        this.unselectedIconUri = null;
     }
 
     @Override
@@ -59,17 +61,17 @@ public class TabBarItem implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.title);
         dest.writeString(this.iconUri);
-        dest.writeString(this.selectedIconUri);
+        dest.writeString(this.unselectedIconUri);
         dest.writeInt(this.iconRes);
-        dest.writeInt(this.selectedIconRes);
+        dest.writeInt(this.unselectedIconRes);
     }
 
     protected TabBarItem(Parcel in) {
         this.title = in.readString();
         this.iconUri = in.readString();
-        this.selectedIconUri = in.readString();
+        this.unselectedIconUri = in.readString();
         this.iconRes = in.readInt();
-        this.selectedIconRes = in.readInt();
+        this.unselectedIconRes = in.readInt();
     }
 
     public static final Creator<TabBarItem> CREATOR = new Creator<TabBarItem>() {

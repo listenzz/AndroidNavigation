@@ -11,6 +11,7 @@ import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -96,7 +97,7 @@ public class InternalTabBar extends BottomNavigationBar {
             Drawable drawable = ContextCompat.getDrawable(context, me.listenzz.navigation.R.drawable.nav_red_point);
             if (context instanceof AwesomeActivity && drawable != null) {
                 AwesomeActivity activity = (AwesomeActivity) context;
-                drawable.setColorFilter(Color.parseColor(activity.getStyle().getBadgeColor()), PorterDuff.Mode.SRC_IN);
+                drawable.setColorFilter(Color.parseColor(activity.getStyle().getTabBarBadgeColor()), PorterDuff.Mode.SRC_IN);
             }
             redPoint.setBackground(drawable);
             redPoint.setVisibility(GONE);
@@ -111,7 +112,6 @@ public class InternalTabBar extends BottomNavigationBar {
     // only call this method after #initialise
     public void setTabIcon(int index, Drawable drawable, Drawable inactiveDrawable) {
         ImageView imageView = imageViewAtTab(index);
-        BottomNavigationTab tab = mBottomNavigationTabs.get(index);
         if (inactiveDrawable != null) {
             StateListDrawable states = new StateListDrawable();
             states.addState(new int[]{android.R.attr.state_selected},
@@ -138,12 +138,14 @@ public class InternalTabBar extends BottomNavigationBar {
         }
     }
 
-    public void setTabItemColor(String activeColor, String inActiveColor) {
+    public void setTabItemColor(@NonNull String activeColor, @Nullable String inActiveColor) {
         setActiveColor(activeColor);
-        setInActiveColor(inActiveColor);
+        if (inActiveColor != null) {
+            setInActiveColor(inActiveColor);
+        }
         int count = mBottomNavigationTabs.size();
         for (int i = 0; i < count; i++) {
-            setTabItemColor(i, Color.parseColor(activeColor), Color.parseColor(inActiveColor));
+            setTabItemColor(i, getActiveColor(), getInActiveColor());
         }
     }
 

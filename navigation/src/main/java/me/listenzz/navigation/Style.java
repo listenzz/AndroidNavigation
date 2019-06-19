@@ -42,13 +42,13 @@ public class Style implements Cloneable {
 
     private String tabBarBackgroundColor = "#FFFFFF";
     private String tabBarItemColor = null;
-    private String tabBarSelectedItemColor = null;
+    private String tabBarUnselectedItemColor = null;
     private Drawable tabBarShadow = defaultShadow;
 
     private Context context;
 
     private boolean swipeBackEnabled;
-    private String badgeColor = "#FF3B30";
+    private String tabBarBadgeColor = "#FF3B30";
 
     protected Style(Context context) {
         this.context = context;
@@ -93,12 +93,12 @@ public class Style implements Cloneable {
         return tabBarItemColor;
     }
 
-    public String getTabBarSelectedItemColor() {
-        return tabBarSelectedItemColor;
+    public String getTabBarUnselectedItemColor() {
+        return tabBarUnselectedItemColor;
     }
 
-    public void setTabBarSelectedItemColor(String tabBarSelectedItemColor) {
-        this.tabBarSelectedItemColor = tabBarSelectedItemColor;
+    public void setTabBarUnselectedItemColor(String tabBarUnselectedItemColor) {
+        this.tabBarUnselectedItemColor = tabBarUnselectedItemColor;
     }
 
     // ------- toolbar ---------
@@ -298,12 +298,12 @@ public class Style implements Cloneable {
         this.swipeBackEnabled = swipeBackEnabled;
     }
 
-    public String getBadgeColor() {
-        return badgeColor;
+    public String getTabBarBadgeColor() {
+        return tabBarBadgeColor;
     }
 
-    public void setBadgeColor(String badgeColor) {
-        this.badgeColor = badgeColor;
+    public void setTabBarBadgeColor(String badgeColor) {
+        this.tabBarBadgeColor = badgeColor;
     }
 
     public Integer getNavigationBarColor() {
