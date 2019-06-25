@@ -407,8 +407,8 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode) {
         scheduleTaskAtStarted(() -> {
-            if (isInDialog()) {
-                throw new IllegalStateException("在 dialog 中， 不能执行此操作, 可以考虑再次使用 `showDialog`");
+            if (!FragmentHelper.canPresentFragment(this, requireActivity())) {
+                return;
             }
 
             AwesomeFragment parent = getParentAwesomeFragment();
@@ -1011,7 +1011,11 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void showDialog(@NonNull final AwesomeFragment dialog, final int requestCode) {
-        scheduleTaskAtStarted(() -> showDialogInternal(AwesomeFragment.this, dialog, requestCode), true);
+        scheduleTaskAtStarted(() -> {
+            if (FragmentHelper.canShowDialog(this, requireActivity())) {
+                showDialogInternal(AwesomeFragment.this, dialog, requestCode);
+            }
+        }, true);
     }
 
     private void showDialogInternal(final AwesomeFragment target, final AwesomeFragment dialog, final int requestCode) {
