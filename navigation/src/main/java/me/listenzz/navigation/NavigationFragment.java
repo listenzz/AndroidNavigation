@@ -123,7 +123,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     private void popToFragmentInternal(AwesomeFragment fragment, boolean animated) {
         FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         AwesomeFragment topFragment = getTopFragment();
         if (topFragment == null || topFragment == fragment) {
@@ -134,7 +133,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         topFragment.setUserVisibleHint(false);
         fragmentManager.popBackStack(fragment.getSceneId(), 0);
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-
         fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
     }
 
@@ -189,7 +187,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     private void replaceFragmentInternal(AwesomeFragment fragment, AwesomeFragment target) {
         FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         AwesomeFragment topFragment = getTopFragment();
         if (topFragment == null) {
@@ -219,6 +216,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
     }
 
     public void replaceToRootFragment(@NonNull final AwesomeFragment fragment) {
@@ -227,7 +225,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     private void replaceToRootFragmentInternal(AwesomeFragment fragment) {
         FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         AwesomeFragment topFragment = getTopFragment();
         AwesomeFragment rootFragment = getRootFragment();
@@ -247,6 +244,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
     }
 
     public void setChildFragments(List<AwesomeFragment> fragments) {
@@ -329,13 +327,11 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
             if (aheadFragment != null && scrollPercent >= 1.0f) {
                 FragmentManager fragmentManager = getChildFragmentManager();
-                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
                 topFragment.setAnimation(PresentAnimation.None);
                 aheadFragment.setAnimation(PresentAnimation.None);
                 topFragment.setUserVisibleHint(false);
                 fragmentManager.popBackStack(aheadFragment.getSceneId(), 0);
                 FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-
                 aheadFragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
             }
 

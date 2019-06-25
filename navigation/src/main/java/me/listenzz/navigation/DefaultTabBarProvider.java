@@ -46,7 +46,9 @@ public class DefaultTabBarProvider implements TabBarProvider {
 
     @Override
     public void setSelectedIndex(int index) {
-        tabBar.selectTab(index, false);
+        if (tabBar != null) {
+            tabBar.selectTab(index, false);
+        }
     }
 
     private void initialise(List<TabBarItem> tabBarItems) {

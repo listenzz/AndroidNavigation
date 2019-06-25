@@ -12,16 +12,18 @@ import java.util.Queue;
 
 public class DeferredLifecycleDelegate implements LifecycleObserver {
 
+    private static final String TAG = "Navigation";
+
     private static final long INTERVAL = 400;
 
     private Queue<Runnable> tasks = new LinkedList<>();
 
     private final LifecycleOwner lifecycleOwner;
+    private final Handler handler;
 
-    private Handler handler = new Handler(Looper.getMainLooper());
-
-    public DeferredLifecycleDelegate(LifecycleOwner lifecycleOwner) {
+    public DeferredLifecycleDelegate(LifecycleOwner lifecycleOwner, Handler handler) {
         this.lifecycleOwner = lifecycleOwner;
+        this.handler = handler;
         lifecycleOwner.getLifecycle().addObserver(this);
     }
 
@@ -33,6 +35,9 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
         }
     }
 
+    private boolean shouldDelay;
+    private boolean executing;
+
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onStateChange() {
         if (getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
@@ -40,21 +45,25 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
             tasks.clear();
             getLifecycle().removeObserver(this);
         } else {
+            shouldDelay = true;
             considerExecute();
         }
     }
 
-    private boolean executing;
-
     void considerExecute() {
         if (isAtLeastStarted() && !executing) {
             executing = true;
-            Runnable runnable = tasks.poll();
-            if (runnable != null) {
-                runnable.run();
-                handler.postDelayed(executeTask, INTERVAL);
+            if (shouldDelay) {
+                shouldDelay = false;
+                handler.post(executeTask);
             } else {
-                executing = false;
+                Runnable runnable = tasks.poll();
+                if (runnable != null) {
+                    runnable.run();
+                    handler.postDelayed(executeTask, INTERVAL);
+                } else {
+                    executing = false;
+                }
             }
         }
     }

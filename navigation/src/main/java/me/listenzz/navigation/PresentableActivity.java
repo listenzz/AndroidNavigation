@@ -1,6 +1,7 @@
 package me.listenzz.navigation;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  * Created by Listen on 2018/1/11.
@@ -18,7 +19,7 @@ public interface PresentableActivity {
 
     void setActivityRootFragment(AwesomeFragment root);
 
-    @NonNull
+    @Nullable
     Style getStyle();
 
     void setStatusBarTranslucent(boolean under);

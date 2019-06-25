@@ -64,6 +64,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             throw new IllegalArgumentException("Activity must implements PresentableActivity!");
         }
         presentableActivity = (PresentableActivity) activity;
+        inflateStyle();
     }
 
     @Override
@@ -130,7 +131,13 @@ public abstract class AwesomeFragment extends InternalFragment {
                     });
         }
 
-        if (style == null) {
+        inflateStyle();
+
+        return layoutInflater;
+    }
+
+    private void inflateStyle() {
+        if (style == null && presentableActivity != null && presentableActivity.getStyle() != null) {
             try {
                 style = presentableActivity.getStyle().clone();
                 onCustomStyle(style);
@@ -139,7 +146,6 @@ public abstract class AwesomeFragment extends InternalFragment {
                 style = presentableActivity.getStyle();
             }
         }
-        return layoutInflater;
     }
 
     protected void onCustomStyle(@NonNull Style style) {
@@ -199,6 +205,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     private boolean viewAppear;
+
+    protected boolean isViewAppear() {
+        return viewAppear;
+    }
 
     private void notifyViewAppear(boolean appear) {
         if (viewAppear != appear) {
@@ -438,12 +448,12 @@ public abstract class AwesomeFragment extends InternalFragment {
                 if (definesPresentationContext()) {
                     AwesomeFragment presented = getPresentedFragment();
                     if (presented != null) {
-                        dismissFragmentInternal(this, presented, null);
+                        FragmentHelper.handleDismissFragment(this, presented, null);
                         return;
                     }
                     AwesomeFragment target = (AwesomeFragment) getTargetFragment();
                     if (target != null) {
-                        dismissFragmentInternal(target, this, this);
+                        FragmentHelper.handleDismissFragment(target, this, this);
                     }
                 } else {
                     parent.dismissFragment();
@@ -456,25 +466,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             }
         }, true);
 
-    }
-
-    private static void dismissFragmentInternal(@NonNull AwesomeFragment target, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top) {
-        FragmentManager fragmentManager = target.requireFragmentManager();
-        target.setAnimation(PresentAnimation.Modal);
-
-        if (top == null) {
-            top = (AwesomeFragment) fragmentManager.findFragmentById(target.getContainerId());
-        }
-
-        if (top == null) {
-            return;
-        }
-
-        top.setAnimation(PresentAnimation.Modal);
-        top.setUserVisibleHint(false);
-        fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-        target.onFragmentResult(top.getRequestCode(), top.getResultCode(), top.getResultData());
     }
 
     @Nullable
@@ -1028,6 +1019,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         dialog.setTargetFragment(target, requestCode);
         dialog.show(target.requireFragmentManager(), dialog.getSceneId());
+        FragmentHelper.executePendingTransactionsSafe(target.requireFragmentManager());
     }
 
     private AnimationType animationType = AnimationType.None;

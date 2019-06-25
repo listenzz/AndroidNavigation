@@ -92,6 +92,7 @@ public class TabBarFragment extends AwesomeFragment {
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
             layoutParams.gravity = Gravity.BOTTOM;
             frameLayout.addView(tabBar, layoutParams);
+            tabBarProvider.setSelectedIndex(selectedIndex);
             this.tabBar = tabBar;
         }
 
@@ -172,7 +173,7 @@ public class TabBarFragment extends AwesomeFragment {
             }
         }
         transaction.commit();
-        setSelectedIndex(selectedIndex);
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
     }
 
     public void setSelectedFragment(AwesomeFragment fragment) {
@@ -215,7 +216,6 @@ public class TabBarFragment extends AwesomeFragment {
 
         selectedIndex = index;
         FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
         Fragment previous = fragmentManager.getPrimaryNavigationFragment();
         AwesomeFragment current = fragments.get(index);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -225,6 +225,7 @@ public class TabBarFragment extends AwesomeFragment {
         }
         transaction.show(current);
         transaction.commit();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         if (tabBar != null) {
             NavigationFragment navigationFragment = current.getNavigationFragment();

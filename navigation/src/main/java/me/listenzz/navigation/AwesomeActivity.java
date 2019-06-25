@@ -39,7 +39,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     @Override
-    @NonNull
+    @Nullable
     public Style getStyle() {
         return style;
     }
@@ -101,10 +101,14 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         transaction.add(android.R.id.content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
     }
 
     public void clearFragments() {
-        scheduleTaskAtStarted(this::clearFragmentsInternal);
+        scheduleTaskAtStarted(() -> {
+            clearFragmentsInternal();
+            FragmentHelper.executePendingTransactionsSafe(getSupportFragmentManager());
+        });
     }
 
     protected void clearFragmentsInternal() {
@@ -136,38 +140,14 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     protected void dismissFragmentInternal(AwesomeFragment fragment) {
-        if (!fragment.isAdded()) {
-            return;
-        }
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-
-        AwesomeFragment top = (AwesomeFragment) fragmentManager.findFragmentById(android.R.id.content);
-        if (top == null) {
-            return;
-        }
-        top.setAnimation(PresentAnimation.Modal);
         AwesomeFragment presented = getPresentedFragment(fragment);
         if (presented != null) {
-            fragment.setAnimation(PresentAnimation.Modal);
-            top.setUserVisibleHint(false);
-            getSupportFragmentManager().popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            FragmentHelper.executePendingTransactionsSafe(getSupportFragmentManager());
-            fragment.onFragmentResult(top.getRequestCode(), top.getResultCode(), top.getResultData());
-        } else {
-            AwesomeFragment presenting = getPresentingFragment(fragment);
-            if (presenting != null) {
-                presenting.setAnimation(PresentAnimation.Modal);
-            }
-            fragment.setUserVisibleHint(false);
-            if (presenting == null) {
-                ActivityCompat.finishAfterTransition(this);
-            } else {
-                fragmentManager.popBackStack(fragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-                presenting.onFragmentResult(fragment.getRequestCode(), fragment.getResultCode(), fragment.getResultData());
-            }
+            FragmentHelper.handleDismissFragment(fragment, presented, null);
+            return;
+        }
+        AwesomeFragment presenting = getPresentingFragment(fragment);
+        if (presenting != null) {
+            FragmentHelper.handleDismissFragment(presenting, fragment, fragment);
         }
     }
 
@@ -198,6 +178,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             }
         }
         dialog.show(fragmentManager, dialog.getSceneId());
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
     }
 
     @Nullable
@@ -236,11 +217,11 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         }
     }
 
-    protected void scheduleTaskAtStarted(Runnable runnable) {
+    public void scheduleTaskAtStarted(Runnable runnable) {
         scheduleTaskAtStarted(runnable, false);
     }
 
-    protected void scheduleTaskAtStarted(Runnable runnable, boolean deferred) {
+    public void scheduleTaskAtStarted(Runnable runnable, boolean deferred) {
         lifecycleDelegate.scheduleTaskAtStarted(runnable, deferred);
     }
 

@@ -4,6 +4,7 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.OnLifecycleEvent;
+import android.os.Handler;
 import android.os.Looper;
 
 import java.util.LinkedList;
@@ -14,9 +15,11 @@ public class ImmediateLifecycleDelegate implements LifecycleObserver {
     private Queue<Runnable> tasks = new LinkedList<>();
 
     private final LifecycleOwner lifecycleOwner;
+    private final Handler handler;
 
-    public ImmediateLifecycleDelegate(LifecycleOwner lifecycleOwner) {
+    public ImmediateLifecycleDelegate(LifecycleOwner lifecycleOwner, Handler handler) {
         this.lifecycleOwner = lifecycleOwner;
+        this.handler = handler;
         lifecycleOwner.getLifecycle().addObserver(this);
     }
 
@@ -28,29 +31,45 @@ public class ImmediateLifecycleDelegate implements LifecycleObserver {
         }
     }
 
+    private boolean executing;
+    private boolean shouldDelay;
+
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onStateChange() {
         if (getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
+            handler.removeCallbacks(executeTask);
             tasks.clear();
             getLifecycle().removeObserver(this);
         } else {
+            shouldDelay = true;
             considerExecute();
         }
     }
 
-    private boolean executing;
-
     void considerExecute() {
         if (isAtLeastStarted() && !executing) {
             executing = true;
-            Runnable runnable = tasks.poll();
-            while (runnable != null) {
-                runnable.run();
-                runnable = tasks.poll();
+            if (shouldDelay) {
+                shouldDelay = false;
+                handler.post(executeTask);
+            } else {
+                Runnable runnable = tasks.poll();
+                while (runnable != null) {
+                    runnable.run();
+                    runnable = tasks.poll();
+                }
+                executing = false;
             }
-            executing = false;
         }
     }
+
+    private Runnable executeTask = new Runnable() {
+        @Override
+        public void run() {
+            executing = false;
+            considerExecute();
+        }
+    };
 
     boolean isAtLeastStarted() {
         return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);

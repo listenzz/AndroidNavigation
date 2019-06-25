@@ -163,8 +163,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     public void onDrawerOpened(@NonNull View drawerView) {
         scheduleTaskAtStarted(() -> {
             FragmentManager fragmentManager = getChildFragmentManager();
-            FragmentHelper.executePendingTransactionsSafe(fragmentManager);
             fragmentManager.beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
+            FragmentHelper.executePendingTransactionsSafe(fragmentManager);
             AwesomeFragment menu = getMenuFragment();
             if (menu != null) {
                 menu.setUserVisibleHint(true);
@@ -176,8 +176,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     public void onDrawerClosed(@NonNull View drawerView) {
         scheduleTaskAtStarted(() -> {
             FragmentManager fragmentManager = getChildFragmentManager();
-            FragmentHelper.executePendingTransactionsSafe(fragmentManager);
             fragmentManager.beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
+            FragmentHelper.executePendingTransactionsSafe(fragmentManager);
             AwesomeFragment menu = getMenuFragment();
             if (menu != null) {
                 menu.setUserVisibleHint(false);

@@ -32,6 +32,7 @@ public class FragmentHelper {
 
     public static void executePendingTransactionsSafe(@NonNull FragmentManager fragmentManager) {
         try {
+            Log.w(TAG, "executePendingTransactionsSafe:" + fragmentManager);
             fragmentManager.executePendingTransactions();
         } catch (IllegalStateException e) {
             Log.wtf(TAG, e);
@@ -42,7 +43,6 @@ public class FragmentHelper {
         if (fragmentManager.isDestroyed()) {
             return;
         }
-        executePendingTransactionsSafe(fragmentManager);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
@@ -56,6 +56,7 @@ public class FragmentHelper {
         transaction.add(containerId, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
+        executePendingTransactionsSafe(fragmentManager);
     }
 
     public static void addFragmentToAddedList(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment) {
@@ -66,7 +67,6 @@ public class FragmentHelper {
         if (fragmentManager.isDestroyed()) {
             return;
         }
-        executePendingTransactionsSafe(fragmentManager);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(containerId, fragment, fragment.getSceneId());
@@ -74,6 +74,7 @@ public class FragmentHelper {
             transaction.setPrimaryNavigationFragment(fragment); // primary
         }
         transaction.commit();
+        executePendingTransactionsSafe(fragmentManager);
     }
 
     @Nullable
@@ -151,7 +152,6 @@ public class FragmentHelper {
         if (fragmentManager.isDestroyed()) {
             return null;
         }
-        executePendingTransactionsSafe(fragmentManager);
 
         Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
         if (fragment != null && fragment.isAdded()) {
@@ -194,6 +194,25 @@ public class FragmentHelper {
             }
         }
         return children;
+    }
+
+    public static void handleDismissFragment(@NonNull AwesomeFragment target, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top) {
+        FragmentManager fragmentManager = target.requireFragmentManager();
+        target.setAnimation(PresentAnimation.Modal);
+
+        if (top == null) {
+            top = (AwesomeFragment) fragmentManager.findFragmentById(target.getContainerId());
+        }
+
+        if (top == null) {
+            return;
+        }
+
+        top.setAnimation(PresentAnimation.Modal);
+        top.setUserVisibleHint(false);
+        fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+        target.onFragmentResult(top.getRequestCode(), top.getResultCode(), top.getResultData());
     }
 
 }
