@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nav_tab_item_container"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/nav_tab_bar_height"
+    android:background="?selectableItemBackgroundBorderless"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/nav_tab_item_width_padding"
+    android:paddingRight="@dimen/nav_tab_item_width_padding">
+
+    <FrameLayout
+        android:id="@+id/nav_tab_item_icon_container"
+        android:layout_width="@dimen/nav_tab_icon_badge_grid_width"
+        android:layout_height="@dimen/nav_tab_icon_badge_grid_height"
+        android:layout_gravity="center_horizontal|top">
+
+        <ImageView
+            android:id="@+id/nav_tab_item_icon"
+            android:layout_width="@dimen/nav_tab_item_icon_grid"
+            android:layout_height="@dimen/nav_tab_item_icon_grid"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/nav_tab_item_icon_grid_margin_top"
+            android:contentDescription="@string/icon"
+            android:gravity="center"
+            android:scaleType="centerInside" />
+
+        <TextView
+            android:id="@+id/nav_tab_item_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textColor="@android:color/white"
+             />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/nav_tab_item_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:lines="1"
+        android:textSize="@dimen/nav_tab_item_title_size" />
+
+</LinearLayout>

@@ -116,8 +116,8 @@ public class TestNavigationFragment extends BaseFragment {
             TabBarFragment tabBarFragment = getTabBarFragment();
             if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
                 TabBar tabBar = tabBarFragment.getTabBar();
-                tabBar.setBadgeText(0, "12");
-                tabBar.showDotBadge(1, false);
+                tabBar.showTextBadgeAtIndex(0, "88");
+                tabBar.showDotBadgeAtIndex(1);
             }
         });
 
@@ -125,8 +125,8 @@ public class TestNavigationFragment extends BaseFragment {
             TabBarFragment tabBarFragment = getTabBarFragment();
             if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
                 TabBar tabBar = tabBarFragment.getTabBar();
-                tabBar.setBadgeText(0, null);
-                tabBar.showDotBadge(1, true);
+                tabBar.hideBadgeAtIndex(0);
+                tabBar.hideBadgeAtIndex(1);
             }
         });
 

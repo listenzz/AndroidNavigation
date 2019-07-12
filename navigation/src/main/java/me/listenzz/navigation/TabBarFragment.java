@@ -301,7 +301,7 @@ public class TabBarFragment extends AwesomeFragment {
             tabBarHidden = true;
             int height = tabBar.getHeight();
             if (height == 0) {
-                height = (int) (getResources().getDimension(R.dimen.bottom_navigation_height) * 2);
+                height = (int) (getResources().getDimension(R.dimen.nav_tab_bar_height) * 2);
             }
             tabBar.setTranslationY(height);
             if (isResumed()) {

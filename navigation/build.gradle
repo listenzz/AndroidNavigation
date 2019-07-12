@@ -28,7 +28,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "com.android.support:appcompat-v7:$rootProject.ext.supportLibVersion"
-    api 'com.ashokvarma.android:bottom-navigation-bar:2.1.0'
 }
 
 publish {

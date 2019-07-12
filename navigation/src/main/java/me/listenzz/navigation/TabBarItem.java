@@ -12,13 +12,15 @@ import android.support.annotation.NonNull;
 public class TabBarItem implements Parcelable {
 
     @NonNull
-    public final String title;
-    public final String iconUri;
-    public final String unselectedIconUri;
+    public String title;
+    public String iconUri;
+    public String unselectedIconUri;
     @DrawableRes
-    public final int iconRes;
+    public int iconRes;
     @DrawableRes
-    public final int unselectedIconRes;
+    public int unselectedIconRes;
+    public String badgeText;
+    public boolean showDotBadge;
 
     public TabBarItem(@DrawableRes int iconRes, @DrawableRes int unselectedIconRes, @NonNull String title) {
         this.title = title;

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">navigation</string>
+    <string name="icon">icon</string>
 </resources>

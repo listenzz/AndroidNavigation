@@ -1242,7 +1242,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                 root.post(() -> {
                     TabBarFragment tabBarFragment = getTabBarFragment();
                     if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
-                        int bottomPadding = (int) getResources().getDimension(R.dimen.bottom_navigation_height);
+                        int bottomPadding = (int) getResources().getDimension(R.dimen.nav_tab_bar_height);
                         root.setPadding(0, 0, 0, bottomPadding);
                     }
                 });
