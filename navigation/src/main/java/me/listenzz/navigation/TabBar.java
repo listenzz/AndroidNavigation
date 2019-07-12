@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Listen on 2018/1/30.
- * forked from https://github.com/Ashok-Varma/BottomNavigation/blob/master/bottom-navigation-bar/src/main/java/com/ashokvarma/bottomnavigation/BottomNavigationBar.java
+ * fork from https://github.com/Ashok-Varma/BottomNavigation/blob/master/bottom-navigation-bar/src/main/java/com/ashokvarma/bottomnavigation/BottomNavigationBar.java
  */
 
 public class TabBar extends FrameLayout {

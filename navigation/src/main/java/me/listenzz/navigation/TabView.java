@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 /**
  * Created by Listen on 2019/7/12.
- * forked from https://github.com/Ashok-Varma/BottomNavigation/blob/master/bottom-navigation-bar/src/main/java/com/ashokvarma/bottomnavigation/BottomNavigationTab.java
+ * fork from https://github.com/Ashok-Varma/BottomNavigation/blob/master/bottom-navigation-bar/src/main/java/com/ashokvarma/bottomnavigation/BottomNavigationTab.java
  */
 public class TabView extends FrameLayout {
 
