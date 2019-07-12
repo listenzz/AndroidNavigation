@@ -29,7 +29,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 ## Installation
 
 ```groovy
-implementation 'me.listenzz:navigation:2.6.0'
+implementation 'me.listenzz:navigation:2.6.1'
 // or with androidx
 implementation 'com.navigation.androidx:androidx:3.1.0'
 implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
