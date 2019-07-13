@@ -316,10 +316,10 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         handleHideBottomBarWhenPushed(transit, enter, animation);
         // ---------
-        // Log.d(TAG, getDebugTag() + "  " + animation.name() + " transit:" + transit + " enter:" + enter + " nextAnim:" + nextAnim);
+        // Log.d(TAG, getDebugTag() + "  " + animation.name() + " transit:" + transit + " enter:" + enter);
 
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null && parent.isRemoving()) {
+        if (parent != null && FragmentHelper.isRemovingAlongWithParent(parent)) {
             return AnimationUtils.loadAnimation(context, R.anim.nav_delay);
         }
 

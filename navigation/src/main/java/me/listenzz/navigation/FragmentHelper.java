@@ -148,6 +148,16 @@ public class FragmentHelper {
         return target;
     }
 
+    public static boolean isRemovingAlongWithParent(@NonNull AwesomeFragment parent) {
+        while (parent != null) {
+            if (parent.isRemoving()) {
+                return true;
+            }
+            parent = parent.getParentAwesomeFragment();
+        }
+        return false;
+    }
+
     @Nullable
     public static DialogFragment getDialogFragment(@NonNull FragmentManager fragmentManager) {
         if (fragmentManager.isDestroyed()) {
