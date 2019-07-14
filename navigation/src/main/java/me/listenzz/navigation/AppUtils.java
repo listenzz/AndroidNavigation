@@ -277,6 +277,13 @@ public class AppUtils {
         }
     }
 
+    public static boolean isDarkStatusBarStyle(Window window) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
+        }
+        return false;
+    }
+
     public static void setStatusBarHidden(Window window, boolean hidden) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             View decorView = window.getDecorView();
@@ -314,6 +321,10 @@ public class AppUtils {
                 }
             }
         }
+    }
+
+    public static boolean isStatusBarHidden(Window window) {
+        return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0;
     }
 
     public static void appendStatusBarPadding(View view, int viewHeight) {

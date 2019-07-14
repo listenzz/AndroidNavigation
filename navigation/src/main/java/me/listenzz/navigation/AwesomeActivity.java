@@ -116,11 +116,16 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 0) {
             getWindow().setBackgroundDrawable(new ColorDrawable(style.getScreenBackgroundColor()));
-            String tag = fragmentManager.getBackStackEntryAt(0).getName();
-            AwesomeFragment former = (AwesomeFragment) fragmentManager.findFragmentByTag(tag);
-            if (former != null && former.isAdded()) {
-                former.setAnimation(PresentAnimation.Fade);
-                fragmentManager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            String root = fragmentManager.getBackStackEntryAt(0).getName();
+            String top = fragmentManager.getBackStackEntryAt(count - 1).getName();
+            AwesomeFragment rootFragment = (AwesomeFragment) fragmentManager.findFragmentByTag(root);
+            AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentByTag(top);
+            if (topFragment != null) {
+                topFragment.setAnimation(PresentAnimation.Fade);
+            }
+            if (rootFragment != null) {
+                rootFragment.setAnimation(PresentAnimation.Fade);
+                fragmentManager.popBackStack(root, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
         }
     }
