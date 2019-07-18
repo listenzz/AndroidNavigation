@@ -38,7 +38,7 @@ public class TabBarItem implements Parcelable {
         this.unselectedIconUri = null;
     }
 
-    public TabBarItem(String iconUri, String unselectedIconUri, @NonNull String title) {
+    public TabBarItem(@NonNull String iconUri, @NonNull String unselectedIconUri, @NonNull String title) {
         this.title = title;
         this.iconRes = -1;
         this.unselectedIconRes = -1;
@@ -46,7 +46,7 @@ public class TabBarItem implements Parcelable {
         this.unselectedIconUri = unselectedIconUri;
     }
 
-    public TabBarItem(String iconUri, @NonNull String title) {
+    public TabBarItem(@NonNull String iconUri, @NonNull String title) {
         this.title = title;
         this.iconRes = -1;
         this.unselectedIconRes = -1;
@@ -69,7 +69,9 @@ public class TabBarItem implements Parcelable {
     }
 
     protected TabBarItem(Parcel in) {
-        this.title = in.readString();
+        String title = in.readString();
+        assert title != null;
+        this.title = title;
         this.iconUri = in.readString();
         this.unselectedIconUri = in.readString();
         this.iconRes = in.readInt();

@@ -320,7 +320,7 @@ public class TabBar extends FrameLayout {
         if (tabBarItem.unselectedIconRes != -1) {
             tab.setUnselectedIcon(ContextCompat.getDrawable(context, tabBarItem.unselectedIconRes));
         } else if (tabBarItem.unselectedIconUri != null) {
-            tab.setIcon(DrawableUtils.fromUri(context, tabBarItem.unselectedIconUri));
+            tab.setUnselectedIcon(DrawableUtils.fromUri(context, tabBarItem.unselectedIconUri));
         }
 
         tab.setBadgeColor(tabBar.badgeColor);
