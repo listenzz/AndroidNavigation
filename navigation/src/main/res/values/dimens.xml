@@ -6,6 +6,6 @@
     <dimen name="nav_tab_item_icon_grid">24dp</dimen>
     <dimen name="nav_tab_item_icon_grid_margin_top">2dp</dimen>
     <dimen name="nav_tab_icon_badge_grid_height">36dp</dimen>
-    <dimen name="nav_tab_icon_badge_grid_width">48dp</dimen>
+    <dimen name="nav_tab_icon_badge_grid_width">52dp</dimen>
     <dimen name="nav_tab_bar_height">56dp</dimen>
 </resources>

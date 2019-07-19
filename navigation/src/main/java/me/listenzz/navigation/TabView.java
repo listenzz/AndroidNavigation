@@ -132,10 +132,16 @@ public class TabView extends FrameLayout {
     public void showTextBadge(String text) {
         if (!TextUtils.isEmpty(text)) {
             FrameLayout.LayoutParams layoutParams = (LayoutParams) badgeView.getLayoutParams();
-            layoutParams.topMargin = AppUtils.dp2px(getContext(), 2);
-            layoutParams.rightMargin = AppUtils.dp2px(getContext(), 4);
-            badgeView.setMinWidth(AppUtils.dp2px(getContext(), 16));
-            badgeView.setHeight(AppUtils.dp2px(getContext(), 16));
+            layoutParams.topMargin = AppUtils.dp2px(getContext(), 4);
+            layoutParams.rightMargin = AppUtils.dp2px(getContext(), 0);
+            badgeView.setMinWidth(AppUtils.dp2px(getContext(), 18));
+            badgeView.setHeight(AppUtils.dp2px(getContext(), 18));
+            if (text != null && text.length() > 1) {
+                int padding = AppUtils.dp2px(getContext(), 6);
+                badgeView.setPadding(padding, 0, padding, 0);
+            } else {
+                badgeView.setPadding(0, 0, 0, 0);
+            }
             Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.nav_text_badge_background);
             assert drawable != null;
             DrawableCompat.setTint(drawable, badgeColor);
@@ -144,7 +150,7 @@ public class TabView extends FrameLayout {
             } else {
                 badgeView.setBackgroundDrawable(drawable);
             }
-            badgeView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
+            badgeView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
             badgeView.setText(text);
             badgeView.setVisibility(VISIBLE);
         } else {
@@ -154,10 +160,11 @@ public class TabView extends FrameLayout {
 
     public void showDotBadge() {
         FrameLayout.LayoutParams layoutParams = (LayoutParams) badgeView.getLayoutParams();
-        layoutParams.topMargin = AppUtils.dp2px(getContext(), 4);
-        layoutParams.rightMargin = AppUtils.dp2px(getContext(), 7);
+        layoutParams.topMargin = AppUtils.dp2px(getContext(), 6);
+        layoutParams.rightMargin = AppUtils.dp2px(getContext(), 5);
         badgeView.setMinWidth(AppUtils.dp2px(getContext(), 10));
         badgeView.setHeight(AppUtils.dp2px(getContext(), 10));
+        badgeView.setPadding(0, 0, 0, 0);
         Drawable drawable =ContextCompat.getDrawable(getContext(), R.drawable.nav_dot_badge_background);
         assert drawable != null;
         DrawableCompat.setTint(drawable, badgeColor);

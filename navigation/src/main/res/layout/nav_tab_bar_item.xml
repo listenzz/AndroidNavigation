@@ -31,8 +31,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
             android:gravity="center"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
             android:textColor="@android:color/white"
              />
     </FrameLayout>
