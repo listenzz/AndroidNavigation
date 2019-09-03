@@ -33,7 +33,6 @@ public class FragmentHelper {
 
     public static void executePendingTransactionsSafe(@NonNull FragmentManager fragmentManager) {
         try {
-            Log.w(TAG, "executePendingTransactionsSafe:" + fragmentManager);
             fragmentManager.executePendingTransactions();
         } catch (IllegalStateException e) {
             Log.wtf(TAG, e);
