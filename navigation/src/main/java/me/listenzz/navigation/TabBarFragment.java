@@ -248,6 +248,7 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     @SuppressWarnings("unchecked")
+    @Nullable
     public <T extends View> T getTabBar() {
         return (T) tabBar;
     }
