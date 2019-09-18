@@ -1,10 +1,11 @@
 package com.navigation.sharedelement;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.navigation.R;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * ViewHolder for kitten cells in our grid

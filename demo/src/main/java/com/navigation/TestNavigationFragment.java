@@ -2,21 +2,22 @@ package com.navigation;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import me.listenzz.navigation.BarStyle;
-import me.listenzz.navigation.DrawerFragment;
-import me.listenzz.navigation.NavigationFragment;
-import me.listenzz.navigation.Style;
-import me.listenzz.navigation.TabBar;
-import me.listenzz.navigation.TabBarFragment;
-import me.listenzz.navigation.ToolbarButtonItem;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.navigation.androidx.BarStyle;
+import com.navigation.androidx.DrawerFragment;
+import com.navigation.androidx.NavigationFragment;
+import com.navigation.androidx.Style;
+import com.navigation.androidx.TabBar;
+import com.navigation.androidx.TabBarFragment;
+import com.navigation.androidx.ToolbarButtonItem;
 
 
 /**

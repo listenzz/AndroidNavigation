@@ -1,7 +1,7 @@
 package com.navigation.dialog;
 
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
 
 import com.navigation.BR;
 

@@ -2,8 +2,6 @@ package com.navigation.toolbar;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +9,10 @@ import android.view.ViewGroup;
 import com.navigation.BaseFragment;
 import com.navigation.R;
 
-import me.listenzz.navigation.AwesomeToolbar;
-import me.listenzz.navigation.Style;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.navigation.androidx.AwesomeToolbar;
+import com.navigation.androidx.Style;
 
 
 /**

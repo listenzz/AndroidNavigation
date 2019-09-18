@@ -5,7 +5,7 @@ import android.view.View;
 
 import com.navigation.statusbar.TestStatusBarFragment;
 
-import me.listenzz.navigation.AwesomeToolbar;
+import com.navigation.androidx.AwesomeToolbar;
 
 /**
  * Created by Listen on 2018/2/1.

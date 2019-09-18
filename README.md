@@ -32,7 +32,8 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 implementation 'me.listenzz:navigation:2.6.6'
 // or with androidx
 implementation 'com.navigation.androidx:androidx:3.2.1'
-implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
+implementation 'androidx.appcompat:appcompat:1.1.0'
+
 ```
 
 ## Usage 

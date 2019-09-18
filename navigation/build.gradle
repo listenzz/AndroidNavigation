@@ -14,7 +14,7 @@ android {
         minSdkVersion 16
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "2.6.6"
+        versionName "3.2.1"
     }
 
     buildTypes {
@@ -27,14 +27,14 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "com.android.support:appcompat-v7:$rootProject.ext.supportLibVersion"
+    implementation "androidx.appcompat:appcompat:$rootProject.supportLibVersion"
 }
 
 publish {
     userOrg = 'listenzz'
-    groupId = 'me.listenzz'
-    artifactId = 'navigation'
-    publishVersion = '2.6.6'
+    groupId = 'com.navigation.androidx'
+    artifactId = 'androidx'
+    publishVersion = '3.2.1'
     desc = 'A library managing nested Fragment, StatusBar, Toolbar for Android.'
     website = 'https://github.com/listenzz/AndroidNavigation'
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<me.listenzz.navigation.SwipeBackLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.navigation.androidx.SwipeBackLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/navigation_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</me.listenzz.navigation.SwipeBackLayout>
+</com.navigation.androidx.SwipeBackLayout>

@@ -2,18 +2,18 @@ package com.navigation;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.navigation.androidx.AppUtils;
+import com.navigation.androidx.AwesomeActivity;
+import com.navigation.androidx.DrawerFragment;
+import com.navigation.androidx.NavigationFragment;
+import com.navigation.androidx.Style;
+import com.navigation.androidx.TabBarFragment;
+import com.navigation.androidx.TabBarItem;
 import com.navigation.statusbar.TestStatusBarFragment;
 
-import me.listenzz.navigation.AppUtils;
-import me.listenzz.navigation.AwesomeActivity;
-import me.listenzz.navigation.DrawerFragment;
-import me.listenzz.navigation.NavigationFragment;
-import me.listenzz.navigation.Style;
-import me.listenzz.navigation.TabBarFragment;
-import me.listenzz.navigation.TabBarItem;
+import androidx.annotation.NonNull;
 
 public class MainActivity extends AwesomeActivity {
 

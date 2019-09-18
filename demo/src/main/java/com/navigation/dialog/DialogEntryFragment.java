@@ -1,8 +1,6 @@
 package com.navigation.dialog;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +11,9 @@ import com.navigation.BaseFragment;
 import com.navigation.R;
 import com.navigation.statusbar.TestStatusBarFragment;
 
-import me.listenzz.navigation.NavigationFragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.navigation.androidx.NavigationFragment;
 
 
 /**

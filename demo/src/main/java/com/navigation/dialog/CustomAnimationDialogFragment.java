@@ -1,8 +1,6 @@
 package com.navigation.dialog;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +12,10 @@ import android.view.animation.ScaleAnimation;
 
 import com.navigation.R;
 
-import me.listenzz.navigation.AnimationType;
-import me.listenzz.navigation.AwesomeFragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.navigation.androidx.AnimationType;
+import com.navigation.androidx.AwesomeFragment;
 
 /**
  * Created by Listen on 2018/2/2.

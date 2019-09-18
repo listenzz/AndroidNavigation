@@ -1,24 +1,24 @@
 package com.navigation;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.navigation.androidx.AppUtils;
+import com.navigation.androidx.AwesomeFragment;
+import com.navigation.androidx.DrawerFragment;
+import com.navigation.androidx.NavigationFragment;
+import com.navigation.androidx.TabBarFragment;
 import com.navigation.dialog.DialogEntryFragment;
 import com.navigation.sharedelement.GridFragment;
 import com.navigation.toolbar.CoordinatorFragment;
 import com.navigation.toolbar.ToolbarColorTransitionFragment;
 import com.navigation.toolbar.ViewPagerFragment;
 
-import me.listenzz.navigation.AppUtils;
-import me.listenzz.navigation.AwesomeFragment;
-import me.listenzz.navigation.DrawerFragment;
-import me.listenzz.navigation.NavigationFragment;
-import me.listenzz.navigation.TabBarFragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Created by listen on 2018/1/13.

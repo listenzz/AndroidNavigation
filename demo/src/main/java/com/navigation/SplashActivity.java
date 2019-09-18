@@ -3,9 +3,10 @@ package com.navigation;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 
-import me.listenzz.navigation.AwesomeActivity;
+import androidx.annotation.Nullable;
+
+import com.navigation.androidx.AwesomeActivity;
 
 /**
  * Created by Listen on 2018/2/9.

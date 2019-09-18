@@ -1,7 +1,7 @@
 package com.navigation;
 
-import me.listenzz.navigation.AwesomeFragment;
-import me.listenzz.navigation.DrawerFragment;
+import com.navigation.androidx.AwesomeFragment;
+import com.navigation.androidx.DrawerFragment;
 
 public class BaseFragment extends AwesomeFragment {
 
