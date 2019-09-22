@@ -328,8 +328,4 @@ public class TabBar extends FrameLayout {
         tab.setBadgeText(tabBarItem.badgeText);
         tab.setShowDotBadge(tabBarItem.showDotBadge);
     }
-
-
-
-
 }
