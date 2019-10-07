@@ -63,6 +63,9 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     @Override
     protected boolean onBackPressed() {
+        if (dragging) {
+            return true;
+        }
         FragmentManager fragmentManager = getChildFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 1) {
@@ -283,6 +286,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         return swipeBackLayout;
     }
 
+    private boolean dragging = false;
 
     @Override
     public void onViewDragStateChanged(int state, float scrollPercent) {
@@ -292,6 +296,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         }
 
         if (state == SwipeBackLayout.STATE_DRAGGING) {
+            dragging = true;
             AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
 
             if (aheadFragment != null && shouldTransitionWithStatusBar(aheadFragment, topFragment)) {
@@ -341,6 +346,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             }
 
             swipeBackLayout.setTabBar(null);
+            dragging = false;
         }
     }
 
