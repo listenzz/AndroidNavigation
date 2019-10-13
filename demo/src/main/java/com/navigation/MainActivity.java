@@ -66,7 +66,7 @@ public class MainActivity extends AwesomeActivity {
         // style.setTitleGravity(Gravity.CENTER);
         // style.setTabBarBackgroundColor("#3F51B5");
         // style.setTabBarBackgroundColor("#FDFFFFFF");
-        style.setScreenBackgroundColor(Color.parseColor("#F8F8F8"));
+        style.setScreenBackgroundColor(Color.parseColor("#EDEDED"));
         style.setSwipeBackEnabled(true); // 开启手势返回
     }
 }

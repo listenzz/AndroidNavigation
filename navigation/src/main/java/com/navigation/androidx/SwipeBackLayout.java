@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
 
@@ -27,6 +26,8 @@ public class SwipeBackLayout extends FrameLayout {
      * Minimum velocity that will be detected as a fling
      */
     private static final int MIN_FLING_VELOCITY = 400; // dips per second
+
+    private static final int DEFAULT_SCRIM_COLOR = 0x10000000;
 
     private static final int FULL_ALPHA = 255;
 
@@ -76,17 +77,15 @@ public class SwipeBackLayout extends FrameLayout {
      */
     private SwipeListener mListener;
 
-    private Drawable mShadowLeft;
-
     private Drawable mTabBar;
 
     private Rect mTabBarOriginBounds;
 
-    private float mShadowOpacity;
+    private float mScrimOpacity;
+
+    private int mScrimColor = DEFAULT_SCRIM_COLOR;
 
     private boolean mInLayout;
-
-    private Rect mTmpRect = new Rect();
 
     public SwipeBackLayout(Context context) {
         this(context, null);
@@ -98,8 +97,6 @@ public class SwipeBackLayout extends FrameLayout {
 
     public SwipeBackLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
-        mShadowLeft = ContextCompat.getDrawable(context, R.drawable.nav_shadow_left);
-
         mDragHelper = ViewDragHelper.create(this, new ViewDragCallback());
         final float density = getResources().getDisplayMetrics().density;
         final float minVelocity = MIN_FLING_VELOCITY * density;
@@ -201,26 +198,25 @@ public class SwipeBackLayout extends FrameLayout {
             drawTabBar(canvas, child);
         }
 
-        if (mShadowOpacity > 0 && drawContent
+        if (mScrimOpacity > 0 && drawContent
                 && mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE) {
-            drawShadow(canvas, child);
+            drawScrim(canvas, child);
         }
         return ret;
     }
 
-    private void drawShadow(Canvas canvas, View child) {
-        final Rect childRect = mTmpRect;
-        child.getHitRect(childRect);
-        mShadowLeft.setBounds(childRect.left - mShadowLeft.getIntrinsicWidth(), childRect.top,
-                childRect.left, childRect.bottom);
-        mShadowLeft.setAlpha((int) (mShadowOpacity * FULL_ALPHA));
-        mShadowLeft.draw(canvas);
+    private void drawScrim(Canvas canvas, View child) {
+        final int baseAlpha = (mScrimColor & 0xff000000) >>> 24;
+        final int alpha = (int) (baseAlpha * mScrimOpacity);
+        final int color = alpha << 24 | (mScrimColor & 0xffffff);
+        canvas.clipRect(0, 0, child.getLeft(), getHeight());
+        canvas.drawColor(color);
     }
 
     private void drawTabBar(Canvas canvas, View child) {
         canvas.save();
         canvas.clipRect(0, 0, child.getLeft(), getHeight());
-        int leftOffset = (int) ((mCapturedView.getLeft() - getWidth()) * mParallaxOffset * mShadowOpacity);
+        int leftOffset = (int) ((mCapturedView.getLeft() - getWidth()) * mParallaxOffset * mScrimOpacity);
         mTabBar.setBounds(leftOffset, mTabBarOriginBounds.top, mTabBarOriginBounds.right + leftOffset, mTabBarOriginBounds.bottom);
         mTabBar.draw(canvas);
         canvas.restore();
@@ -228,14 +224,14 @@ public class SwipeBackLayout extends FrameLayout {
 
     @Override
     public void computeScroll() {
-        mShadowOpacity = 1 - mScrollPercent;
+        mScrimOpacity = 1 - mScrollPercent;
         if (mDragHelper.continueSettling(true)) {
             ViewCompat.postInvalidateOnAnimation(this);
         }
 
         int count = getChildCount();
-        if (mShadowOpacity >= 0 && mCapturedView != null && count > 1) {
-            int leftOffset = (int) ((mCapturedView.getLeft() - getWidth()) * mParallaxOffset * mShadowOpacity);
+        if (mScrimOpacity >= 0 && mCapturedView != null && count > 1) {
+            int leftOffset = (int) ((mCapturedView.getLeft() - getWidth()) * mParallaxOffset * mScrimOpacity);
             View underlying = getChildAt(count - 2);
             underlying.setX(leftOffset > 0 ? 0 : leftOffset);
         }
