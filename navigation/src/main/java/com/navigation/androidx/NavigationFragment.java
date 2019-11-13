@@ -182,11 +182,11 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void replaceFragment(@NonNull final AwesomeFragment substitution) {
-        scheduleTaskAtStarted(() -> replaceFragmentInternal(substitution, null), true);
+        scheduleTaskAtStarted(() -> replaceFragmentInternal(substitution, null), false);
     }
 
     public void replaceFragment(@NonNull final AwesomeFragment substitution, @NonNull final AwesomeFragment target) {
-        scheduleTaskAtStarted(() -> replaceFragmentInternal(substitution, target), true);
+        scheduleTaskAtStarted(() -> replaceFragmentInternal(substitution, target), false);
     }
 
     private void replaceFragmentInternal(AwesomeFragment fragment, AwesomeFragment target) {
@@ -224,7 +224,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void replaceToRootFragment(@NonNull final AwesomeFragment fragment) {
-        scheduleTaskAtStarted(() -> replaceToRootFragmentInternal(fragment), true);
+        scheduleTaskAtStarted(() -> replaceToRootFragmentInternal(fragment), false);
     }
 
     private void replaceToRootFragmentInternal(AwesomeFragment fragment) {
