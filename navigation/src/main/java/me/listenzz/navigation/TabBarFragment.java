@@ -276,6 +276,7 @@ public class TabBarFragment extends AwesomeFragment {
                 animation.setAnimationListener(new TabBarAnimationListener(false));
                 tabBar.startAnimation(animation);
             } else {
+                tabBar.setVisibility(View.VISIBLE);
                 tabBar.setTranslationY(0);
             }
         }
@@ -290,6 +291,7 @@ public class TabBarFragment extends AwesomeFragment {
                 animation.setAnimationListener(new TabBarAnimationListener(true));
                 tabBar.startAnimation(animation);
             } else {
+                tabBar.setVisibility(View.GONE);
                 tabBar.setTranslationY(tabBar.getHeight());
             }
         }
@@ -298,6 +300,7 @@ public class TabBarFragment extends AwesomeFragment {
     private void showTabBar() {
         if (tabBar != null) {
             tabBarHidden = false;
+            tabBar.setVisibility(View.VISIBLE);
             tabBar.setTranslationY(0);
             setNeedsNavigationBarAppearanceUpdate();
         }
@@ -310,6 +313,7 @@ public class TabBarFragment extends AwesomeFragment {
             if (height == 0) {
                 height = (int) (getResources().getDimension(R.dimen.nav_tab_bar_height) * 2);
             }
+            tabBar.setVisibility(View.GONE);
             tabBar.setTranslationY(height);
             if (isResumed()) {
                 setNeedsNavigationBarAppearanceUpdate();
@@ -328,6 +332,7 @@ public class TabBarFragment extends AwesomeFragment {
         @Override
         public void onAnimationStart(Animation animation) {
             if (tabBar != null && !hidden) {
+                tabBar.setVisibility(View.VISIBLE);
                 tabBar.setTranslationY(0);
             }
         }
@@ -335,7 +340,8 @@ public class TabBarFragment extends AwesomeFragment {
         @Override
         public void onAnimationEnd(Animation animation) {
             if (tabBar != null && hidden) {
-                tabBar.setTranslationY(tabBar.getHeight()*2);
+                tabBar.setVisibility(View.GONE);
+                tabBar.setTranslationY(tabBar.getHeight() * 2);
             }
         }
 

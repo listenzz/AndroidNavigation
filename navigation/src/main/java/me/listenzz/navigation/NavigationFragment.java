@@ -60,8 +60,13 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         return getTopFragment();
     }
 
+    private boolean dragging = false;
+
     @Override
     protected boolean onBackPressed() {
+        if (dragging) {
+            return true;
+        }
         FragmentManager fragmentManager = getChildFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 1) {
@@ -178,11 +183,11 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void replaceFragment(@NonNull final AwesomeFragment substitution) {
-        scheduleTaskAtStarted(() -> replaceFragmentInternal(substitution, null), true);
+        scheduleTaskAtStarted(() -> replaceFragmentInternal(substitution, null), false);
     }
 
     public void replaceFragment(@NonNull final AwesomeFragment substitution, @NonNull final AwesomeFragment target) {
-        scheduleTaskAtStarted(() -> replaceFragmentInternal(substitution, target), true);
+        scheduleTaskAtStarted(() -> replaceFragmentInternal(substitution, target), false);
     }
 
     private void replaceFragmentInternal(AwesomeFragment fragment, AwesomeFragment target) {
@@ -220,7 +225,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void replaceToRootFragment(@NonNull final AwesomeFragment fragment) {
-        scheduleTaskAtStarted(() -> replaceToRootFragmentInternal(fragment), true);
+        scheduleTaskAtStarted(() -> replaceToRootFragmentInternal(fragment), false);
     }
 
     private void replaceToRootFragmentInternal(AwesomeFragment fragment) {
@@ -291,6 +296,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         }
 
         if (state == SwipeBackLayout.STATE_DRAGGING) {
+            dragging = true;
             AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
 
             if (aheadFragment != null && shouldTransitionWithStatusBar(aheadFragment, topFragment)) {
@@ -340,6 +346,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             }
 
             swipeBackLayout.setTabBar(null);
+            dragging = false;
         }
     }
 

@@ -36,7 +36,6 @@ public class TabView extends FrameLayout {
 
     protected Drawable icon;
     protected Drawable unselectedIcon;
-    protected boolean isUnselectedIconSet = false;
     protected String label;
 
     boolean selected = false;
@@ -92,7 +91,6 @@ public class TabView extends FrameLayout {
         if (icon != null) {
             unselectedIcon = DrawableCompat.wrap(icon);
         }
-        isUnselectedIconSet = icon != null;
     }
 
     public void setLabel(String label) {
@@ -196,7 +194,7 @@ public class TabView extends FrameLayout {
     @CallSuper
     public void initialise() {
         iconView.setSelected(false);
-        if (isUnselectedIconSet) {
+        if (icon != null && unselectedIcon != null) {
             StateListDrawable states = new StateListDrawable();
             states.addState(new int[]{android.R.attr.state_selected},
                     icon);
