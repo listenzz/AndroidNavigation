@@ -965,8 +965,8 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     @Override
-    protected void dismissInternal(boolean allowStateLoss) {
-        super.dismissInternal(allowStateLoss);
+    protected void dismissInternal(boolean allowStateLoss, boolean fromOnDismiss) {
+        super.dismissInternal(allowStateLoss, fromOnDismiss);
         Fragment target = getTargetFragment();
         if (target instanceof AwesomeFragment && target.isAdded()) {
             FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());

@@ -6,13 +6,13 @@ public class InternalFragment extends DialogFragment {
         return mContainerId;
     }
 
-//    @Override
-//    protected void dismissInternal(boolean allowStateLoss, boolean fromOnDismiss) {
-//        super.dismissInternal(allowStateLoss, fromOnDismiss);
-//    }
-
     @Override
-    protected void dismissInternal(boolean allowStateLoss) {
-        super.dismissInternal(allowStateLoss);
+    protected void dismissInternal(boolean allowStateLoss, boolean fromOnDismiss) {
+        super.dismissInternal(allowStateLoss, fromOnDismiss);
     }
+
+//    @Override
+//    protected void dismissInternal(boolean allowStateLoss) {
+//        super.dismissInternal(allowStateLoss);
+//    }
 }
