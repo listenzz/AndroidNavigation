@@ -127,7 +127,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             layoutInflater = new DialogLayoutInflater(requireContext(), layoutInflater,
                     () -> {
                         if (isCancelable()) {
-                            dismissDialog();
+                            hideDialog();
                         }
                     });
         }
@@ -441,7 +441,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void dismissFragment() {
         scheduleTaskAtStarted(() -> {
             if (isInDialog()) {
-                throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `dismissDialog`");
+                throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `hideDialog`");
             }
 
             AwesomeFragment parent = getParentAwesomeFragment();
@@ -933,7 +933,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             dialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
                     if (!dispatchBackPressed() && isCancelable()) {
-                        dismissDialog();
+                        hideDialog();
                     }
                     return true;
                 }
@@ -943,7 +943,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     /**
-     * @deprecated call {@link #dismissDialog()} instead of this method.
+     * @deprecated call {@link #hideDialog()} instead of this method.
      */
     @Deprecated
     @Override
@@ -958,7 +958,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             } else {
                 AwesomeFragment parent = getParentAwesomeFragment();
                 if (parent != null) {
-                    parent.dismissDialog();
+                    parent.hideDialog();
                 }
             }
         }
@@ -980,11 +980,19 @@ public abstract class AwesomeFragment extends InternalFragment {
     /**
      * Dismiss the fragment as dialog.
      */
-    public void dismissDialog() {
-        scheduleTaskAtStarted(this::dismissDialogInternal, true);
+    public void hideDialog() {
+        scheduleTaskAtStarted(this::hideDialogInternal, true);
     }
 
-    private void dismissDialogInternal() {
+    /**
+     * @deprecated call {@link #hideDialog()} instead of this method.
+     */
+    @Deprecated
+    public void dismissDialog() {
+        hideDialog();
+    }
+
+    private void hideDialogInternal() {
         if (animatingOut) {
             return;
         }
