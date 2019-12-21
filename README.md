@@ -39,6 +39,7 @@ implementation 'androidx.appcompat:appcompat:1.0.2'
 ## Usage 
 
 #### [构建UI层级](#building-hierarchy)
+#### [所见即所得 Dialog](#WYSIWYG-dialog)
 #### [导航](#navigation)
 #### [懒加载](#lazy-load)
 #### [全局样式设置](#setting-style)
@@ -247,7 +248,7 @@ protected AwesomeFragment childFragmentForAppearance() {
 如何使不同 fragment 拥有不同的 status bar 样式，请参考 [**设置状态栏**](#setting-statusbar) 一章
 
 
-<a name="navigation"></a>
+<a name="WYSIWYG-dialog"></a>
 
 ```java
 @Override
@@ -259,6 +260,13 @@ protected boolean onBackPressed() {
 }
 ```
 > 非容器页面也可以重写 `onBackPressed` 来处理用户点击返回按钮事件。
+
+<a name="navigation"></a>
+
+
+### 所见即所得 Dialog
+
+Fragment 可以作为 Dialog 显示，本库做了特殊处理，使得显示出来的 Dialog 布局和在 xml 预览中所见一模一样。实现细节请看[这篇文章](https://juejin.im/post/5b3f6e33e51d4519503af921)。
 
 
 ### 导航
