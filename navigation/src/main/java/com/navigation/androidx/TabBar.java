@@ -223,7 +223,7 @@ public class TabBar extends FrameLayout {
     private void selectTabInternal(int newPosition, boolean callListener) {
         int oldPosition = selectedPosition;
         if (selectedPosition != newPosition) {
-            if (selectedPosition != -1) {
+            if (selectedPosition != DEFAULT_SELECTED_POSITION) {
                 tabs.get(selectedPosition).unSelect();
             }
             tabs.get(newPosition).select();
@@ -241,7 +241,7 @@ public class TabBar extends FrameLayout {
                 tabSelectedListener.onTabReselected(newPosition);
             } else {
                 tabSelectedListener.onTabSelected(newPosition);
-                if (oldPosition != -1) {
+                if (oldPosition != DEFAULT_SELECTED_POSITION) {
                     tabSelectedListener.onTabUnselected(oldPosition);
                 }
             }
@@ -312,13 +312,13 @@ public class TabBar extends FrameLayout {
         tab.setSelectedColor(tabBar.selectedItemColor);
         tab.setUnselectedColor(tabBar.unselectedItemColor);
 
-        if (tabBarItem.iconRes != -1) {
+        if (tabBarItem.iconRes > 0) {
             tab.setIcon(ContextCompat.getDrawable(context, tabBarItem.iconRes));
         } else if (tabBarItem.iconUri != null) {
             tab.setIcon(DrawableUtils.fromUri(context, tabBarItem.iconUri));
         }
 
-        if (tabBarItem.unselectedIconRes != -1) {
+        if (tabBarItem.unselectedIconRes > 0) {
             tab.setUnselectedIcon(ContextCompat.getDrawable(context, tabBarItem.unselectedIconRes));
         } else if (tabBarItem.unselectedIconUri != null) {
             tab.setUnselectedIcon(DrawableUtils.fromUri(context, tabBarItem.unselectedIconUri));

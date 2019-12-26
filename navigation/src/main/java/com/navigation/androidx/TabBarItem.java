@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 
 /**
@@ -24,7 +25,23 @@ public class TabBarItem implements Parcelable {
     public String badgeText;
     public boolean showDotBadge;
 
-    public TabBarItem(@DrawableRes int iconRes, @DrawableRes int unselectedIconRes, @NonNull String title) {
+    public TabBarItem(@NonNull String title) {
+        this.title = title;
+        this.iconRes = 0;
+        this.unselectedIconRes = 0;
+        this.iconUri = null;
+        this.unselectedIconUri = null;
+    }
+
+    public TabBarItem(@NonNull String title, @DrawableRes int iconRes) {
+        this.title = title;
+        this.iconRes = iconRes;
+        this.unselectedIconRes = 0;
+        this.iconUri = null;
+        this.unselectedIconUri = null;
+    }
+
+    public TabBarItem(@NonNull String title, @DrawableRes int iconRes, @DrawableRes int unselectedIconRes) {
         this.title = title;
         this.iconRes = iconRes;
         this.unselectedIconRes = unselectedIconRes;
@@ -32,28 +49,20 @@ public class TabBarItem implements Parcelable {
         this.unselectedIconUri = null;
     }
 
-    public TabBarItem(@DrawableRes int iconRes, @NonNull String title) {
+    public TabBarItem(@NonNull String title, @NonNull String iconUri) {
         this.title = title;
-        this.iconRes = iconRes;
-        this.unselectedIconRes = -1;
-        this.iconUri = null;
+        this.iconRes = -1;
+        this.unselectedIconRes = 0;
+        this.iconUri = iconUri;
         this.unselectedIconUri = null;
     }
 
-    public TabBarItem(@NonNull String iconUri, @NonNull String unselectedIconUri, @NonNull String title) {
+    public TabBarItem( @NonNull String title, @NonNull String iconUri, @Nullable String unselectedIconUri) {
         this.title = title;
         this.iconRes = -1;
-        this.unselectedIconRes = -1;
+        this.unselectedIconRes = 0;
         this.iconUri = iconUri;
         this.unselectedIconUri = unselectedIconUri;
-    }
-
-    public TabBarItem(@NonNull String iconUri, @NonNull String title) {
-        this.title = title;
-        this.iconRes = -1;
-        this.unselectedIconRes = -1;
-        this.iconUri = iconUri;
-        this.unselectedIconUri = null;
     }
 
     @Override
