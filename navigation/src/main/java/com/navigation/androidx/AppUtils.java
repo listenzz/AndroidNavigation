@@ -178,9 +178,6 @@ public class AppUtils {
 
     public static void setNavigationBarColor(final Window window, int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (!isHuawei()) {
-                setNavigationBarStyle(window, !isBlackColor(color, 176));
-            }
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setNavigationBarColor(color);
         }

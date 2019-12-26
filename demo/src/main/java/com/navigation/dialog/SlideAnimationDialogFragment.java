@@ -32,7 +32,7 @@ public class SlideAnimationDialogFragment extends AwesomeFragment {
     }
 
     @Override
-    protected Integer preferredNavigationBarColor() {
+    protected int preferredNavigationBarColor() {
         return Color.WHITE;
     }
 }

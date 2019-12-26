@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.navigation.BaseFragment;
 import com.navigation.R;
+import com.navigation.androidx.BarStyle;
+import com.navigation.androidx.Style;
 import com.navigation.statusbar.TestStatusBarFragment;
 
 import androidx.annotation.NonNull;
@@ -76,5 +78,11 @@ public class DialogEntryFragment extends BaseFragment {
             String words = data.getString("text", "");
             resultText.setText(words);
         }
+    }
+
+
+    @Override
+    protected void onCustomStyle(@NonNull Style style) {
+        style.setStatusBarStyle(BarStyle.DarkContent);
     }
 }

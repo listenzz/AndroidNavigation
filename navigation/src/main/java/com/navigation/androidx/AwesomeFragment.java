@@ -25,6 +25,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -36,6 +37,8 @@ import androidx.fragment.app.InternalFragment;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
+import static com.navigation.androidx.AppUtils.isHuawei;
 
 /**
  * Created by Listen on 2018/1/11.
@@ -58,7 +61,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     protected Style style;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         Activity activity = getActivity();
         if (!(activity instanceof PresentableActivity)) {
@@ -700,6 +703,44 @@ public abstract class AwesomeFragment extends InternalFragment {
         return getAnimation() != PresentAnimation.None && style.isStatusBarColorAnimated();
     }
 
+    @ColorInt
+    @TargetApi(26)
+    protected int preferredNavigationBarColor() {
+        AwesomeFragment childFragmentForAppearance = childFragmentForAppearance();
+        if (childFragmentForAppearance != null) {
+            return childFragmentForAppearance.preferredNavigationBarColor();
+        }
+
+        if (getShowsDialog()) {
+            if (getAnimationType() == AnimationType.Slide) {
+                return requireActivity().getWindow().getNavigationBarColor();
+            } else {
+                return Color.TRANSPARENT;
+            }
+        }
+
+        return style.getNavigationBarColor();
+    }
+
+    @NonNull
+    protected BarStyle preferredNavigationBarStyle() {
+        AwesomeFragment childFragmentForAppearance = childFragmentForAppearance();
+        if (childFragmentForAppearance != null) {
+            return childFragmentForAppearance.preferredNavigationBarStyle();
+        }
+
+        if (getShowsDialog()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Activity activity = requireActivity();
+                boolean isDark = (activity.getWindow().getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR) != 0;
+                return isDark ? BarStyle.DarkContent : BarStyle.LightContent;
+            }
+        }
+
+        return !isHuawei() &&
+                !AppUtils.isBlackColor(preferredNavigationBarColor(), 176) ? BarStyle.DarkContent : BarStyle.LightContent;
+    }
+
     @Nullable
     protected AwesomeFragment childFragmentForAppearance() {
         return null;
@@ -753,52 +794,23 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
-    @Nullable
-    @TargetApi(26)
-    protected Integer preferredNavigationBarColor() {
-        AwesomeFragment childFragmentForAppearance = childFragmentForAppearance();
-        if (childFragmentForAppearance != null) {
-            return childFragmentForAppearance.preferredNavigationBarColor();
-        }
-        return style.getNavigationBarColor();
-    }
-
     public void setNeedsNavigationBarAppearanceUpdate() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return;
         }
 
-        if (getShowsDialog()) {
-            Integer color = preferredNavigationBarColor();
-            if (color != null) {
-                setNavigationBarColor(color);
-            } else {
-                if (getAnimationType() == AnimationType.Slide) {
-                    setNavigationBarColor(requireActivity().getWindow().getNavigationBarColor());
-                } else {
-                    setNavigationBarColor(Color.TRANSPARENT);
-                }
-            }
+        AwesomeFragment parent = getParentAwesomeFragment();
+        if (!getShowsDialog() && parent != null) {
+            parent.setNeedsNavigationBarAppearanceUpdate();
             return;
         }
 
-        AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
-            parent.setNeedsNavigationBarAppearanceUpdate();
-        } else {
-            Integer color = preferredNavigationBarColor();
-            if (color != null) {
-                setNavigationBarColor(color);
-            } else {
-                AwesomeFragment fragmentForColor = this;
-                AwesomeFragment child = fragmentForColor.childFragmentForAppearance();
-                while (child != null) {
-                    fragmentForColor = child;
-                    child = child.childFragmentForAppearance();
-                }
-                setNavigationBarColor(fragmentForColor.style.getScreenBackgroundColor());
-            }
-        }
+        setNavigationBarColor(preferredNavigationBarColor());
+        setNavigationBarStyle(preferredNavigationBarStyle());
+    }
+
+    public void setNavigationBarStyle(BarStyle barStyle) {
+        AppUtils.setNavigationBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
     }
 
     public void setNavigationBarColor(int color) {

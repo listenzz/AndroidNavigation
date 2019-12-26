@@ -20,10 +20,10 @@ public class NestedFragmentDialogFragment extends AwesomeFragment {
         return true;
     }
 
-    @Override
-    protected AwesomeFragment childFragmentForAppearance() {
-        return getContentFragment();
-    }
+//    @Override
+//    protected AwesomeFragment childFragmentForAppearance() {
+//        return getContentFragment();
+//    }
 
     @Nullable
     @Override

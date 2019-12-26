@@ -68,5 +68,6 @@ public class MainActivity extends AwesomeActivity {
         // style.setTabBarBackgroundColor("#FDFFFFFF");
         style.setScreenBackgroundColor(Color.parseColor("#EDEDED"));
         style.setSwipeBackEnabled(true); // 开启手势返回
+        style.setNavigationBarColor(Color.WHITE);
     }
 }

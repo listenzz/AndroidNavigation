@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -25,7 +26,7 @@ public class Style implements Cloneable {
 
     private BarStyle statusBarStyle = BarStyle.LightContent;
     private int statusBarColor;
-    private Integer navigationBarColor;
+    private int navigationBarColor = INVALID_COLOR;
     private boolean statusBarColorAnimated = true;
     private boolean statusBarHidden = false;
 
@@ -307,12 +308,16 @@ public class Style implements Cloneable {
         this.tabBarBadgeColor = badgeColor;
     }
 
-    public Integer getNavigationBarColor() {
+    @ColorInt
+    public int getNavigationBarColor() {
+        if (navigationBarColor == INVALID_COLOR) {
+            return getScreenBackgroundColor();
+        }
         return navigationBarColor;
     }
 
-    public void setNavigationBarColor(Integer navigationBarColor) {
-        this.navigationBarColor = navigationBarColor;
+    public void setNavigationBarColor(@ColorInt int color) {
+        this.navigationBarColor = color;
     }
 
     @Override
