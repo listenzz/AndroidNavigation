@@ -114,7 +114,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @Override
     @NonNull
-    public LayoutInflater onGetLayoutInflater(Bundle savedInstanceState) {
+    public LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
         if (getShowsDialog()) {
             setStyle(STYLE_NORMAL, R.style.Theme_Nav_FullScreenDialog);
         }
@@ -188,7 +188,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getView() != null && !callSuperOnViewCreated) {
             throw new IllegalStateException("you should call super when override `onViewCreated`");

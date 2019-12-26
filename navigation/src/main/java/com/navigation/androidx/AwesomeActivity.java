@@ -28,7 +28,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     private boolean statusBarTranslucent;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         style = new Style(this);
         onCustomStyle(style);
@@ -50,7 +50,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SAVED_STATE_STATUS_BAR_TRANSLUCENT, statusBarTranslucent);
     }
