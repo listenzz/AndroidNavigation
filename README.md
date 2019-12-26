@@ -286,61 +286,80 @@ AwesomeActivity 和 AwesomeFragment 提供了两个基础的导航功能 present
 
 - present
 
-      	present 是一种模态交互方式，只有关闭被 present 的页面，才可以回到上一个页面，通常要求 presented 的页面给 presenting 的页面返回结果，类似于 `startActivityForResult`。
+  present 是一种模态交互方式，只有关闭被 present 的页面，才可以回到上一个页面，通常要求 presented 的页面给 presenting 的页面返回结果，类似于 `startActivityForResult`。
 
-      	比如 A 页面 present 出 B 页面
+  比如 A 页面 present 出 B 页面
 
-      	```java
-
+  ```java
   // A.java
   presentFragment(testFragment, REQUEST_CODE);
-  `B 页面返回结果给 A 页面`java
+  ```
+
+  B 页面返回结果给 A 页面
+
+  ```java
   // B.java
   Bundle result = new Bundle();
   result.putString("text", resultEditText.getText().toString());
   setResult(Activity.RESULT_OK, result);
   dismissFragment();
-  `` A 页面实现 `onFragmentResult` 来接收这个结果 ``java
+  ```
+
+  A 页面实现 `onFragmentResult` 来接收这个结果
+
+  ```java
   // A.java
   @Override
   public void onFragmentResult(int requestCode, int resultCode, Bundle data) {
-  super.onFragmentResult(requestCode, resultCode, data);
-  if (requestCode == REQUEST_CODE) {
-  if (resultCode != 0) {
-  String text = data.getString("text", "");
-  resultText.setText("present result：" + text);
-  } else {
-  resultText.setText("ACTION CANCEL");
+      super.onFragmentResult(requestCode, resultCode, data);
+      if (requestCode == REQUEST_CODE) {
+          if (resultCode != 0) {
+              String text = data.getString("text", "");
+              resultText.setText("present result：" + text);
+          } else {
+              resultText.setText("ACTION CANCEL");
+          }
+      }
   }
-  }
-  }
-  `有些时候，比如选择一张照片，我们先要跳到相册列表页面，然后进入某个相册选择相片返回。这也是没有问题的。 A 页面 present 出相册列表页面`java
+  ```
+
+  有些时候，比如选择一张照片，我们先要跳到相册列表页面，然后进入某个相册选择相片返回。这也是没有问题的。 A 页面 present 出相册列表页面
+
+  ```java
   //AFragment.java
   NavigationFragment navigationFragment = new NavigationFragment();
   AlbumListFragment albumListFragment = new AlbumListFragment();
   navigationFragment.setRootFragment(albumListFragment);
   presentFragment(navigationFragment, 1)
-  `相册列表页面 push 到某个相册 > push 是 NavigationFragment 的能力，要使用这个功能，你的 fragment 外层必须有一个 NavigationFragment 做为容器。`java
+  ```
+
+  相册列表页面 push 到某个相册
+
+  > push 是 NavigationFragment 的能力，要使用这个功能，你的 fragment 外层必须有一个 NavigationFragment 做为容器。
+
+  ```java
   // AlbumListFragment.java
   AlbumFragment albumFragment = new AlbumFragment();
   getNavigationFragment.pushFragment(albumFragment);
-  `在相册页面选好相片后返回结果给 A 页面`java
+  ```
+
+  在相册页面选好相片后返回结果给 A 页面
+
+  ```java
   // AlbumFragment.java
   Bundle result = new Bundle();
   result.putString("uri", "file://...");
   setResult(Activity.RESULT_OK, result);
   dismissFragment();
-
   ```
+
   在 A 页面接收返回的结果（略）。
-
-  ```
 
 - dismiss
 
-      	关闭 present 出来的 Fragment，可以在该 Fragment 的任意子 Fragment 中调用，请参看上面相册的例子。
+  关闭 present 出来的 Fragment，可以在该 Fragment 的任意子 Fragment 中调用，请参看上面相册的例子。
 
-> present 所使用的 FragmentManager 是 Activity 的 `getSupportFragmentManager`，因此 present 出来的 fragment 是属于 Activity 的，它不属于任何 fragment 的子 fragment，这样就确保了 present 出来的 fragment 是模态的。
+  > present 所使用的 FragmentManager 是 Activity 的 `getSupportFragmentManager`，因此 present 出来的 fragment 是属于 Activity 的，它不属于任何 fragment 的子 fragment，这样就确保了 present 出来的 fragment 是模态的。
 
 - showDialog
 
@@ -365,19 +384,19 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 - push
 
   入栈，由 A 页面跳转到 B 页面。
-  `java // AFragment.java getNavigationFragment.pushFragment(bFragment);`
+
+  ```java
+  // AFragment.java
+  getNavigationFragment.pushFragment(bFragment);
+  ```
 
 - pop
 
-      	出栈，返回到前一个页面。比如你由 A 页面 push 到 B 页面，现在想返回到 A 页面。
+  出栈，返回到前一个页面。比如你由 A 页面 push 到 B 页面，现在想返回到 A 页面。
 
-      	```java
-
+  ```java
   // BFragment.java
   getNavigationFragment.popFragment();
-
-  ```
-
   ```
 
 - 手势返回
@@ -386,88 +405,81 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 
 - popToRoot
 
-      	出栈，返回到当前导航栈根页面。比如 A 页面是根页面，你由 A 页面 push 到 B 页面，由 B 页面 push 到 C 页面，由 C 页面 push 到 D 页面，现在想返回到根部，也就是 A 页面。
+  出栈，返回到当前导航栈根页面。比如 A 页面是根页面，你由 A 页面 push 到 B 页面，由 B 页面 push 到 C 页面，由 C 页面 push 到 D 页面，现在想返回到根部，也就是 A 页面。
 
-      	```java
-
+  ```java
   // DFragment.java
   getNavigationFragment.popToRootFragment();
-
-  ```
-
   ```
 
 - popTo
 
-      	出栈，返回到之前的指定页面。比如你由 A 页面 push 到 B 页面，由 B 页面 push 到 C 页面，由 C 页面 push到 D 页面，现在想返回 B 页面。你可以把 B 页面的 `sceneId` 一直传递到 D 页面，然后调用 `popToFragment("bSceneId")` 返回到 B 页面。
+  出栈，返回到之前的指定页面。比如你由 A 页面 push 到 B 页面，由 B 页面 push 到 C 页面，由 C 页面 push 到 D 页面，现在想返回 B 页面。你可以把 B 页面的 `sceneId` 一直传递到 D 页面，然后调用 `popToFragment("bSceneId")` 返回到 B 页面。
 
-      	从 B 页面跳转到 C 页面时
+  从 B 页面跳转到 C 页面时
 
-      	```java
-
+  ```java
   // BFragment.java
   CFragment cFragment = new CFragment();
   Bundle args = FragmentHelper.getArguments(cFragment);
   // 把 bSceneId 传递给 C 页面
   args.putString("bSceneId", getSceneId());
   getNavigationFragment().pushFragment(cFragment);
-  `从 C 页面跳到 D 页面时`java
+  ```
+
+  从 C 页面跳到 D 页面时
+
+  ```java
   // CFragment.java
   DFragment dFragment = new DFragment();
   Bundle args = FragmentHelper.getArguments(dFragment);
   // 把 bSceneId 传递给 D 页面
   args.putString("bSceneId", getArguments().getString("bSceneId"));
   getNavigationFragment().pushFragment(dFragment);
-  `现在想从 D 页面 返回到 B 页面`java
+  ```
+
+  现在想从 D 页面 返回到 B 页面
+
+  ```java
   // DFragment.java
   String bSceneId = getArguments().getString("bSceneId");
   BFragment bFragment = (AwesomeFragment)getFragmentManager().findFragmentByTag(bSceneId);
   getNavigationFragment().popToFragment(bFragment);
-
   ```
 
   > 你可能已经猜到，pop 和 popToRoot 都是通过 popTo 来实现的。pop 的时候也可以通过 setResult 设置返回值，不过此时 requestCode 的值总是 0。
 
-  ```
-
 - replace
 
-      	出栈然后入栈，用指定页面取代当前页面，比如当前页面是 A，想要替换成 B
+  出栈然后入栈，用指定页面取代当前页面，比如当前页面是 A，想要替换成 B
 
-      	```java
-
+  ```java
   // AFragment.java
   BFragment bFragment = new BFragment();
   getNavigationFragment().replaceFragment(bFragment);
-
-  ```
-
   ```
 
 - replaceToRoot
 
-      	出栈然后入栈，把 NavigationFragment 的所有子 Fragment 替换成一个 Fragment。譬如 A 页面是根页面，然后 push 到 B、C、D 页面，此时 NavigationFragment 里有 A、B、C、D 四个页面。如果想要重置NavigationFragment ，把 E 页面设置成根页面。
+  出栈然后入栈，把 NavigationFragment 的所有子 Fragment 替换成一个 Fragment。譬如 A 页面是根页面，然后 push 到 B、C、D 页面，此时 NavigationFragment 里有 A、B、C、D 四个页面。如果想要重置 NavigationFragment ，把 E 页面设置成根页面。
 
-      	```java
-
+  ```java
   // DFragment.java
   EFragment eFragment = new EFragment();
   getNavigationFragment().replaceToRootFragment(eFragment);
-
   ```
+
   现在 NavigationFragment 里只有 EFragment 这么一个子 Fragment 了。
-
-  ```
 
 - isNavigationRoot
 
   通过这个方法，可以判断当前 fragment 是不是 NavigationFragment 的 rootFragment
 
-上面这些操作所使用的 FragmentManager，是 NavigationFragment 的 `getChildFragmentManager`，所有出栈或入栈的 fragment 都是 NavigationFragment 的子 fragment.
+  上面这些操作所使用的 FragmentManager，是 NavigationFragment 的 `getChildFragmentManager`，所有出栈或入栈的 fragment 都是 NavigationFragment 的子 fragment.
 
-![navigation-stack](./screenshot/navigation_stack.png)
+  ![navigation-stack](./screenshot/navigation_stack.png)
 
-如上图，A fragment 嵌套在 NavigationFragment 中，A1 fragment 嵌套在 A fragment 中，当我们从 A1 push B fragment 时，B fragment 会成为 NavigationFragment 的子 fragment，而不是 A 的子 fragment，它和 A 是兄弟，它是 A1 的叔叔。
+  如上图，A fragment 嵌套在 NavigationFragment 中，A1 fragment 嵌套在 A fragment 中，当我们从 A1 push B fragment 时，B fragment 会成为 NavigationFragment 的子 fragment，而不是 A 的子 fragment，它和 A 是兄弟，它是 A1 的叔叔。
 
 #### 自定义导航
 
@@ -503,31 +515,29 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 
 - `FragmentTransaction#addSharedElement`、`FragmentTransaction#setTransition`、`FragmentTransaction#setCustomAnimations` 不可以同时使用，其中 `setTransition` 要配合 `AwesomeFragment#setAnimation` 一起使用
 
-可以参考 demo 中 GridFragment 这个类，看如何实现自定义导航的，它遵循了 NavigationFragment 管理子 fragment 的规则。
+  可以参考 demo 中 GridFragment 这个类，看如何实现自定义导航的，它遵循了 NavigationFragment 管理子 fragment 的规则。
 
-![](./screenshot/shared_element_transition.gif)
+  ![](./screenshot/shared_element_transition.gif)
 
-<!--<img src="./screenshot/shared_element_transition.gif" width="280px"/>-->
+  ```java
+  // 如果是通过异步回调的方式来触发转场，以下代码需要包裹在 scheduleTaskAtStarted 中
 
-```java
-// 如果是通过异步回调的方式来触发转场，以下代码需要包裹在 scheduleTaskAtStarted 中
-
-// 将要显示的 Fragment 是 this 的兄弟
-requireFragmentManager()
-        .beginTransaction()
-        // 很重要
-        .setReorderingAllowed(true)
-        // 因为开启了共享元素转场，就不要设置 FragmentTransaction#setTransition 或者 FragmentTransaction#setCustomAnimations 了
-        .addSharedElement(holder.image, "kittenImage")
-        // 在添加新的 Fragment 之前先隐藏旧的
-        .hide(this)
-        // 使用具有三个参数的 add
-        .add(R.id.navigation_content, kittenDetails, kittenDetails.getSceneId())
-        // 因为 NavigationFragment 以栈的形式管理子 Fragment
-        .addToBackStack(kittenDetails.getSceneId()/*important*/)
-        // 使用 commit 而不是 commitAllowingStateLoss 是个好习惯
-        .commit();
-```
+  // 将要显示的 Fragment 是 this 的兄弟
+  requireFragmentManager()
+          .beginTransaction()
+          // 很重要
+          .setReorderingAllowed(true)
+          // 因为开启了共享元素转场，就不要设置 FragmentTransaction#setTransition 或者 FragmentTransaction#setCustomAnimations 了
+          .addSharedElement(holder.image, "kittenImage")
+          // 在添加新的 Fragment 之前先隐藏旧的
+          .hide(this)
+          // 使用具有三个参数的 add
+          .add(R.id.navigation_content, kittenDetails, kittenDetails.getSceneId())
+          // 因为 NavigationFragment 以栈的形式管理子 Fragment
+          .addToBackStack(kittenDetails.getSceneId()/*important*/)
+          // 使用 commit 而不是 commitAllowingStateLoss 是个好习惯
+          .commit();
+  ```
 
 <a name="lazy-load"></a>
 
@@ -640,29 +650,6 @@ AwesomeFragment 中有一个 `onStatusBarTranslucentChanged(boolean translucent)
 我们的 demo 在 MainActivity 中开启了沉浸式，你可以在 CustomStatusBarFragment 这个界面开关沉浸式
 
 ![statusbar_custom](./screenshot/statusbar_custom.gif)
-<a name="setting-navigationbar"></a>
-
-### 设置导航栏（虚拟键）
-
-仅对 Android O 以上版本生效
-
-- preferredNavigationBarColor
-
-  建议保留默认设置，只在个别页面微调。
-
-  导航栏背景默认规则如下：
-
-  - 含「底部 Tab」的页面，虚拟键设置为「底部 Tab」的颜色
-
-  - 不含「底部 Tab」的页面，默认使用页面背景颜色，也就是 `style.getScreenBackgroundColor()` 的值
-
-  - dialog 为透明色，但如果 dialog 的 animationType 设置为 slide, 则使用 activity 当前 navigation bar 的颜色
-
-如果页面含有复杂背景/纹理，建议设置为透明，这需要开发者自行覆写 `preferredNavigationBarColor`。
-
-- preferredNavigationBarStyle
-
-默认根据 preferredNavigationBarColor 的返回值自动计算
 
 <a name="setting-toolbar"></a>
 
@@ -741,6 +728,30 @@ protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
 demo 中，NoToolbarFragment 返回 null， 表示不需要创建 toolbar。如果需要自定义 toolbar，请优先考虑基于 AwesomeToolbar 进行自定义，并在 onCreateAwesomeToolbar 返回自定义的 toolbar，就像 CoordinatorFragment 和 ViewPagerFragment 所做的那样，你可能还需要重写 onCustomStyle 这个方法，来修改 toolbar 的样式。
 
 如果开启了沉浸式，那么需要使用 `appendStatusBarPadding` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
+
+<a name="setting-navigationbar"></a>
+
+### 设置导航栏（虚拟键）
+
+仅对 Android O 以上版本生效
+
+- preferredNavigationBarColor
+
+  建议保留默认设置，只在个别页面微调。
+
+  导航栏背景默认规则如下：
+
+  - 含「底部 Tab」的页面，虚拟键设置为「底部 Tab」的颜色
+
+  - 不含「底部 Tab」的页面，默认使用页面背景颜色，也就是 `style.getScreenBackgroundColor()` 的值
+
+  - dialog 为透明色，但如果 dialog 的 animationType 设置为 slide, 则使用 activity 当前 navigation bar 的颜色
+
+  如果页面含有复杂背景/纹理，建议设置为透明，这需要开发者自行覆写 `preferredNavigationBarColor`。
+
+- preferredNavigationBarStyle
+
+  自动根据 preferredNavigationBarColor 的值计算，如有特别需要，可覆盖该方法。
 
 <a name="using-font-icons"></a>
 
