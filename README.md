@@ -130,11 +130,11 @@ public class MainActivity extends AwesomeActivity {
 
             // 首页
             HomeFragment homeFragment = new HomeFragment();
-            homeFragment.setTabBarItem(new TabBarItem(R.drawable.icon_home, "首页"));
+            homeFragment.setTabBarItem(new TabBarItem("首页", R.drawable.icon_home));
 
             // 通讯录
             ContactsFragment contactsFragment = new ContactsFragment();
-            contactsFragment.setTabBarItem(new TabBarItem(R.drawable.icon_contacts, "通讯录"));
+            contactsFragment.setTabBarItem(new TabBarItem("通讯录", R.drawable.icon_contacts));
 
             // 添加 tab 到 TabBarFragment
             TabBarFragment tabBarFragment = new TabBarFragment();
@@ -168,13 +168,13 @@ public class MainActivity extends AwesomeActivity {
             HomeFragment homeFragment = new HomeFragment();
             NavigationFragment homeNavigationFragment = new NavigationFragment();
             homeNavigationFragment.setRootFragment(homeFragment);
-            homeNavigationFragment.setTabBarItem(new TabBarItem(R.drawable.icon_home, "首页"));
+            homeNavigationFragment.setTabBarItem(new TabBarItem("首页", R.drawable.icon_home));
 
             // 通讯录
             ContactsFragment contactsFragment = new ContactsFragment();
             NavigationFragment contactsNavigationFragment = new NavigationFragment();
             contactsNavigationFragment.setRootFragment(contactsFragment);
-            contactsNavigationFragment.setTabBarItem(new TabBarItem(R.drawable.icon_contacts, "通讯录"));
+            contactsNavigationFragment.setTabBarItem(new TabBarItem("通讯录", R.drawable.icon_contacts));
 
             // 添加 tab 到 TabBarFragment
             TabBarFragment tabBarFragment = new TabBarFragment();
