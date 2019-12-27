@@ -786,7 +786,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                 statusBarColor = Color.parseColor("#4A4A4A");
             }
 
-            if (!getShowsDialog() && isStatusBarTranslucent() && statusBarColor == preferredToolbarColor()) {
+            if (!getShowsDialog() && isStatusBarTranslucent() && toolbar != null && statusBarColor == preferredToolbarColor()) {
                 statusBarColor = Color.TRANSPARENT;
             }
 
