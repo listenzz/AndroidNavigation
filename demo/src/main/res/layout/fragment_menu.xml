@@ -35,6 +35,16 @@
     <Button
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
+        android:id="@+id/search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Toolbar with SearchBar"
+        android:textAllCaps="false" />
+
+    <Button
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

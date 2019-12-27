@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp">
+
+    <EditText
+        android:id="@+id/search_input"
+        android:drawableLeft="@mipmap/search_icon"
+        android:drawablePadding="4dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/search_bar_background"
+        android:layout_gravity="center_vertical"
+        android:textColor="#333333"
+        android:textSize="13dp"
+        android:hint="搜索提示"
+        android:textColorHint="#999999"
+        android:layout_width="match_parent"
+        android:layout_height="26dp" />
+
+    <ImageView
+        android:id="@+id/search_clear"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:scaleType="center"
+        android:src="@mipmap/search_bar_clear_icon"
+        android:layout_gravity="right|center_vertical"
+        />
+
+</FrameLayout>

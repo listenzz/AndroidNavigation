@@ -14,6 +14,7 @@ import com.navigation.androidx.TabBarFragment;
 import com.navigation.dialog.DialogEntryFragment;
 import com.navigation.sharedelement.GridFragment;
 import com.navigation.toolbar.CoordinatorFragment;
+import com.navigation.toolbar.SearchFragment;
 import com.navigation.toolbar.ToolbarColorTransitionFragment;
 import com.navigation.toolbar.ViewPagerFragment;
 
@@ -41,6 +42,11 @@ public class MenuFragment extends AwesomeFragment {
 
         root.findViewById(R.id.coordinator).setOnClickListener(v -> {
             getNavigationFragment().pushFragment(new CoordinatorFragment());
+            getDrawerFragment().closeMenu();
+        });
+
+        root.findViewById(R.id.search).setOnClickListener(v -> {
+            getNavigationFragment().pushFragment(new SearchFragment());
             getDrawerFragment().closeMenu();
         });
 
