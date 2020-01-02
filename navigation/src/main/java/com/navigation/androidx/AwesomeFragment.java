@@ -980,7 +980,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     protected void dismissInternal(boolean allowStateLoss, boolean fromOnDismiss) {
         super.dismissInternal(allowStateLoss, fromOnDismiss);
         Fragment target = getTargetFragment();
-        if (target instanceof AwesomeFragment && target.isAdded()) {
+        if (target instanceof AwesomeFragment && target.isAdded() && fromOnDismiss) {
             FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
             AwesomeFragment fragment = (AwesomeFragment) target;
             fragment.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
