@@ -605,7 +605,20 @@ protected void onCustomStyle(Style style) {
 
 ![](./screenshot/statusbar.gif)
 
-设置方式非常简单，只需要有选择地重写 AwesomeFragment 中的方法即可。
+设置方式非常简单，重写 AwesomeFragment 中的 onCustomStyle 方法即可。
+
+```java
+@Override
+protected void onCustomStyle(@NonNull Style style) {
+    super.onCustomStyle(style);
+    style.setToolbarTintColor(Color.WHITE);
+    style.setToolbarBackgroundColor(Color.TRANSPARENT);
+    style.setStatusBarStyle(BarStyle.LightContent);
+    style.setStatusBarColor(Color.TRANSPARENT);
+}
+```
+
+或者通过重写以下方法，返回期望值：
 
 ```java
 // AwesomeFragment.java
@@ -656,6 +669,8 @@ AwesomeFragment 中有一个 `onStatusBarTranslucentChanged(boolean translucent)
 ### 设置 Toolbar
 
 当 fragment 的 parent fragment 是一个 NavigationFragment 时，会自动为该 fragment 创建 Toolbar。
+
+> 当 Fragment 的根布局是 LinearLayout 时，Toolbar 作为 LinearLayout 的第一个子元素添加。当 Fragment 的根布局是 FrameLayout 时，Toolbar 作为 FrameLayout 的最后一个子元素添加，覆盖在其余子元素最上面。
 
 你可以调用 AwesomeFragment 的以下方法来设置 Toolbar
 
@@ -725,7 +740,20 @@ protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
 }
 ```
 
-demo 中，NoToolbarFragment 返回 null， 表示不需要创建 toolbar。如果需要自定义 toolbar，请优先考虑基于 AwesomeToolbar 进行自定义，并在 onCreateAwesomeToolbar 返回自定义的 toolbar，就像 CoordinatorFragment 和 ViewPagerFragment 所做的那样，你可能还需要重写 onCustomStyle 这个方法，来修改 toolbar 的样式。
+demo 中，NoToolbarFragment 返回 null， 表示不需要创建 toolbar。如果需要自定义 toolbar，请优先考虑基于 AwesomeToolbar 进行自定义，并在 onCreateAwesomeToolbar 返回自定义的 toolbar，就像 CoordinatorFragment 和 ViewPagerFragment 所做的那样。
+
+你还可以重写 onCustomStyle 这个方法，来修改 toolbar 的样式。
+
+```java
+@Override
+protected void onCustomStyle(@NonNull Style style) {
+    super.onCustomStyle(style);
+    style.setToolbarTintColor(Color.WHITE);
+    style.setToolbarBackgroundColor(Color.TRANSPARENT);
+    style.setStatusBarStyle(BarStyle.LightContent);
+    style.setStatusBarColor(Color.TRANSPARENT);
+}
+```
 
 如果开启了沉浸式，那么需要使用 `appendStatusBarPadding` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
 
