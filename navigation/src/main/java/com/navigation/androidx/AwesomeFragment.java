@@ -1154,6 +1154,15 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     // ------ NavigationFragment -----
+    @NonNull
+    public NavigationFragment requireNavigationFragment() {
+        NavigationFragment navigationFragment = getNavigationFragment();
+        if (navigationFragment == null) {
+            throw new NullPointerException("NavigationFragment is null, make sure this fragment is wrapped in A NavigationFragment.");
+        }
+        return navigationFragment;
+    }
+
     @Nullable
     public NavigationFragment getNavigationFragment() {
         if (this instanceof NavigationFragment) {
@@ -1489,6 +1498,15 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     // ------ TabBarFragment -------
 
+    @NonNull
+    public TabBarFragment requireTabBarFragment() {
+        TabBarFragment tabBarFragment = getTabBarFragment();
+        if (tabBarFragment == null) {
+            throw new NullPointerException("TabBarFragment is null, make sure this fragment is wrapped in a TabBarFragment.");
+        }
+        return tabBarFragment;
+    }
+
     @Nullable
     public TabBarFragment getTabBarFragment() {
         if (this instanceof TabBarFragment) {
@@ -1518,6 +1536,15 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     // ------ DrawerFragment -------
+
+    @NonNull
+    public DrawerFragment requireDrawerFragment() {
+        DrawerFragment drawerFragment = getDrawerFragment();
+        if (drawerFragment == null) {
+            throw new NullPointerException("DrawerFragment is null, make sure this fragment is wrapped in a DrawerFragment.");
+        }
+        return drawerFragment;
+    }
 
     @Nullable
     public DrawerFragment getDrawerFragment() {

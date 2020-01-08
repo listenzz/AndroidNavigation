@@ -55,17 +55,17 @@ public class TestStatusBarFragment extends BaseFragment {
             }
         });
 
-        root.findViewById(R.id.status_bar_style).setOnClickListener(v -> getNavigationFragment().pushFragment(new StatusBarStyleFragment()));
+        root.findViewById(R.id.status_bar_style).setOnClickListener(v -> requireNavigationFragment().pushFragment(new StatusBarStyleFragment()));
 
 
-        root.findViewById(R.id.status_bar_hidden).setOnClickListener(v -> getNavigationFragment().pushFragment(new StatusBarHiddenFragment()));
+        root.findViewById(R.id.status_bar_hidden).setOnClickListener(v -> requireNavigationFragment().pushFragment(new StatusBarHiddenFragment()));
 
 
-        root.findViewById(R.id.status_bar_color).setOnClickListener(v -> getNavigationFragment().pushFragment(new StatusBarColorFragment()));
+        root.findViewById(R.id.status_bar_color).setOnClickListener(v -> requireNavigationFragment().pushFragment(new StatusBarColorFragment()));
 
-        root.findViewById(R.id.no_toolbar).setOnClickListener(v -> getNavigationFragment().pushFragment(new NoToolbarFragment()));
+        root.findViewById(R.id.no_toolbar).setOnClickListener(v -> requireNavigationFragment().pushFragment(new NoToolbarFragment()));
 
-        root.findViewById(R.id.custom).setOnClickListener(v -> getNavigationFragment().pushFragment(new CustomStatusBarFragment()));
+        root.findViewById(R.id.custom).setOnClickListener(v -> requireNavigationFragment().pushFragment(new CustomStatusBarFragment()));
 
         if (isNavigationRoot()) {
             root.findViewById(R.id.pop_to_root).setEnabled(false);
