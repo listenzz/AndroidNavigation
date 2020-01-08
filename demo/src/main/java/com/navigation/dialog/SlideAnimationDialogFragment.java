@@ -31,8 +31,8 @@ public class SlideAnimationDialogFragment extends AwesomeFragment {
         return inflater.inflate(R.layout.fragment_bottom_sheet, container, false);
     }
 
-    @Override
-    protected int preferredNavigationBarColor() {
-        return Color.WHITE;
-    }
+//    @Override
+//    protected int preferredNavigationBarColor() {
+//        return Color.WHITE;
+//    }
 }

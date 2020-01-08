@@ -169,7 +169,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             handleNavigationFragmentStuff(root);
         } else {
             setupDialog();
-            scheduleTaskAtStarted(this::animateIn);
+            animateIn();
         }
 
         if (getParentAwesomeFragment() == null || getShowsDialog()) {
@@ -1067,6 +1067,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (!(root instanceof DialogFrameLayout)) {
             return;
         }
+
         AnimationType type = getAnimationType();
         boolean shouldAnimated = type != AnimationType.None;
 
@@ -1080,6 +1081,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                 setAnimationType(type);
             }
         }
+
         if (shouldAnimated) {
             DialogFrameLayout frameLayout = (DialogFrameLayout) root;
             View contentView = frameLayout.getChildAt(0);
