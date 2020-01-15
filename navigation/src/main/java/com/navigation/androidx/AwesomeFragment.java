@@ -651,9 +651,9 @@ public abstract class AwesomeFragment extends InternalFragment {
     @NonNull
     protected BarStyle preferredStatusBarStyle() {
         // Log.w(TAG, getDebugTag() + " #preferredStatusBarStyle");
-        AwesomeFragment childFragmentForStatusBarStyle = childFragmentForAppearance();
-        if (childFragmentForStatusBarStyle != null) {
-            return childFragmentForStatusBarStyle.preferredStatusBarStyle();
+        AwesomeFragment fragmentForAppearance = childFragmentForAppearance();
+        if (fragmentForAppearance != null) {
+            return fragmentForAppearance.preferredStatusBarStyle();
         }
 
         if (getShowsDialog()) {
@@ -668,9 +668,9 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     protected boolean preferredStatusBarHidden() {
-        AwesomeFragment childFragmentForStatusBarHidden = childFragmentForAppearance();
-        if (childFragmentForStatusBarHidden != null) {
-            return childFragmentForStatusBarHidden.preferredStatusBarHidden();
+        AwesomeFragment fragmentForAppearance = childFragmentForAppearance();
+        if (fragmentForAppearance != null) {
+            return fragmentForAppearance.preferredStatusBarHidden();
         }
 
         if (getShowsDialog()) {
@@ -683,9 +683,9 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     protected int preferredStatusBarColor() {
-        AwesomeFragment childFragmentForStatusBarColor = childFragmentForAppearance();
-        if (childFragmentForStatusBarColor != null) {
-            return childFragmentForStatusBarColor.preferredStatusBarColor();
+        AwesomeFragment fragmentForAppearance = childFragmentForAppearance();
+        if (fragmentForAppearance != null) {
+            return fragmentForAppearance.preferredStatusBarColor();
         }
 
         if (getShowsDialog()) {
@@ -695,10 +695,18 @@ public abstract class AwesomeFragment extends InternalFragment {
         return style.getStatusBarColor();
     }
 
+    protected boolean preferredStatusBarColorAlongWithToolbarColor() {
+        AwesomeFragment fragmentForAppearance = childFragmentForAppearance();
+        if (fragmentForAppearance != null) {
+            return fragmentForAppearance.preferredStatusBarColorAlongWithToolbarColor();
+        }
+        return true;
+    }
+
     protected boolean preferredStatusBarColorAnimated() {
-        AwesomeFragment childFragmentForStatusBarColor = childFragmentForAppearance();
-        if (childFragmentForStatusBarColor != null) {
-            return childFragmentForStatusBarColor.preferredStatusBarColorAnimated();
+        AwesomeFragment fragmentForAppearance = childFragmentForAppearance();
+        if (fragmentForAppearance != null) {
+            return fragmentForAppearance.preferredStatusBarColorAnimated();
         }
         return getAnimation() != PresentAnimation.None && style.isStatusBarColorAnimated();
     }
@@ -706,9 +714,9 @@ public abstract class AwesomeFragment extends InternalFragment {
     @ColorInt
     @TargetApi(26)
     protected int preferredNavigationBarColor() {
-        AwesomeFragment childFragmentForAppearance = childFragmentForAppearance();
-        if (childFragmentForAppearance != null) {
-            return childFragmentForAppearance.preferredNavigationBarColor();
+        AwesomeFragment fragmentForAppearance = childFragmentForAppearance();
+        if (fragmentForAppearance != null) {
+            return fragmentForAppearance.preferredNavigationBarColor();
         }
 
         if (getShowsDialog()) {
@@ -724,9 +732,9 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @NonNull
     protected BarStyle preferredNavigationBarStyle() {
-        AwesomeFragment childFragmentForAppearance = childFragmentForAppearance();
-        if (childFragmentForAppearance != null) {
-            return childFragmentForAppearance.preferredNavigationBarStyle();
+        AwesomeFragment fragmentForAppearance = childFragmentForAppearance();
+        if (fragmentForAppearance != null) {
+            return fragmentForAppearance.preferredNavigationBarStyle();
         }
 
         if (getShowsDialog()) {
@@ -776,6 +784,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             setStatusBarColor(Color.TRANSPARENT, animated);
         } else {
             int statusBarColor = preferredStatusBarColor();
+
             boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(statusBarColor, 176);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -786,7 +795,10 @@ public abstract class AwesomeFragment extends InternalFragment {
                 statusBarColor = Color.parseColor("#4A4A4A");
             }
 
-            if (!getShowsDialog() && isStatusBarTranslucent() && statusBarColor == preferredToolbarColor()) {
+            int toolbarColor = preferredToolbarColor();
+            animated = animated & statusBarColor != toolbarColor;
+
+            if (!getShowsDialog() && isStatusBarTranslucent() && statusBarColor == toolbarColor && preferredStatusBarColorAlongWithToolbarColor()) {
                 statusBarColor = Color.TRANSPARENT;
             }
 
@@ -850,9 +862,9 @@ public abstract class AwesomeFragment extends InternalFragment {
         AwesomeToolbar toolbar = getAwesomeToolbar();
         if (toolbar != null) {
             if (translucent) {
-                appendStatusBarPadding(toolbar, getToolbarHeight());
+                appendStatusBarPadding(toolbar);
             } else {
-                removeStatusBarPadding(toolbar, getToolbarHeight());
+                removeStatusBarPadding(toolbar);
             }
         }
 
@@ -867,12 +879,12 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
-    public void appendStatusBarPadding(View view, int viewHeight) {
-        AppUtils.appendStatusBarPadding(view, viewHeight);
+    public void appendStatusBarPadding(View view) {
+        AppUtils.appendStatusBarPadding(requireContext(), view);
     }
 
-    public void removeStatusBarPadding(View view, int viewHeight) {
-        AppUtils.removeStatusBarPadding(view, viewHeight);
+    public void removeStatusBarPadding(View view) {
+        AppUtils.removeStatusBarPadding(requireContext(), view);
     }
 
     private SoftInputLayoutListener globalLayoutListener;
@@ -1304,7 +1316,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         if (isStatusBarTranslucent()) {
-            appendStatusBarPadding(toolbar, getToolbarHeight());
+            appendStatusBarPadding(toolbar);
         }
 
         return toolbar;
@@ -1345,18 +1357,18 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     protected int preferredToolbarColor() {
-        AwesomeFragment childFragmentForToolbarColor = childFragmentForAppearance();
-        if (childFragmentForToolbarColor != null) {
-            return childFragmentForToolbarColor.preferredToolbarColor();
+        AwesomeFragment fragmentForAppearance = childFragmentForAppearance();
+        if (fragmentForAppearance != null) {
+            return fragmentForAppearance.preferredToolbarColor();
         }
         return style.getToolbarBackgroundColor();
     }
 
 
     protected int preferredToolbarAlpha() {
-        AwesomeFragment childFragmentForToolbarColor = childFragmentForAppearance();
-        if (childFragmentForToolbarColor != null) {
-            return childFragmentForToolbarColor.preferredToolbarAlpha();
+        AwesomeFragment fragmentForAppearance = childFragmentForAppearance();
+        if (fragmentForAppearance != null) {
+            return fragmentForAppearance.preferredToolbarAlpha();
         }
         return (int) (style.getToolbarAlpha() * 255 + 0.5);
     }

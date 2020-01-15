@@ -44,6 +44,11 @@ public class ViewPagerFragment extends BaseFragment {
     }
 
     @Override
+    protected boolean preferredStatusBarColorAlongWithToolbarColor() {
+        return false;
+    }
+
+    @Override
     protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
         return toolbar;
     }
@@ -71,7 +76,7 @@ public class ViewPagerFragment extends BaseFragment {
 
         // important
         if(isStatusBarTranslucent()) {
-            appendStatusBarPadding(appBarLayout, -2);
+            appendStatusBarPadding(appBarLayout);
         }
 
         TabLayout tabLayout =  view.findViewById(R.id.tab_layout);

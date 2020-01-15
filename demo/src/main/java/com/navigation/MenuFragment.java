@@ -87,9 +87,9 @@ public class MenuFragment extends AwesomeFragment {
     private void changeRootViewTopPadding(boolean translucent) {
         if (AppUtils.isCutout(requireActivity())) {
             if (translucent) {
-                appendStatusBarPadding(getView(), getView().getLayoutParams().height );
+                appendStatusBarPadding(getView() );
             } else {
-                removeStatusBarPadding(getView(), getView().getLayoutParams().height);
+                removeStatusBarPadding(getView());
             }
         }
     }

@@ -124,9 +124,9 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
                 break;
             case R.id.adjust:
                 if (isChecked) {
-                    appendStatusBarPadding(toolbar, getToolbarHeight());
+                    appendStatusBarPadding(toolbar);
                 } else {
-                    removeStatusBarPadding(toolbar, getToolbarHeight());
+                    removeStatusBarPadding(toolbar);
                 }
                 break;
         }

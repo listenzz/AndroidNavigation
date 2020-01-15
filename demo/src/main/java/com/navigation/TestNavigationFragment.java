@@ -42,9 +42,9 @@ public class TestNavigationFragment extends BaseFragment {
     }
 
     @Override
-    public void appendStatusBarPadding(View view, int viewHeight) {
+    public void appendStatusBarPadding(View view) {
         if (!isInDialog()) {
-            super.appendStatusBarPadding(view, viewHeight);
+            super.appendStatusBarPadding(view);
         }
     }
 

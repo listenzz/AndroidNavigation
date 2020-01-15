@@ -52,7 +52,7 @@ public class CoordinatorFragment extends BaseFragment {
 
         // important
         if (isStatusBarTranslucent()) {
-            appendStatusBarPadding(toolbar, getToolbarHeight());
+            appendStatusBarPadding(toolbar);
         }
 
         return root;
