@@ -83,12 +83,9 @@ public class AppUtils {
 
     public static int fetchContextColor(Context context, int androidAttribute) {
         TypedValue typedValue = new TypedValue();
-
         TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[]{androidAttribute});
         int color = a.getColor(0, 0);
-
         a.recycle();
-
         return color;
     }
 
@@ -194,6 +191,13 @@ public class AppUtils {
             }
             decorView.setSystemUiVisibility(systemUi);
         }
+    }
+
+    public static boolean isDarNavigationBarStyle(Window window) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR) != 0;
+        }
+        return false;
     }
 
     public static void setNavigationBarHidden(Window window, boolean hidden) {

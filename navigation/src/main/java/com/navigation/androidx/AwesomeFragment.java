@@ -658,9 +658,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         if (getShowsDialog()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Activity activity = requireActivity();
-                boolean isDark = (activity.getWindow().getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
-                return isDark ? BarStyle.DarkContent : BarStyle.LightContent;
+                return AppUtils.isDarkStatusBarStyle(requireActivity().getWindow()) ? BarStyle.DarkContent : BarStyle.LightContent;
             }
         }
 
@@ -674,9 +672,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         if (getShowsDialog()) {
-            Activity activity = requireActivity();
-            int activityWindowFlags = activity.getWindow().getAttributes().flags;
-            return (activityWindowFlags & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0;
+            return AppUtils.isStatusBarHidden(requireActivity().getWindow());
         }
 
         return style.isStatusBarHidden();
@@ -739,9 +735,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         if (getShowsDialog()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Activity activity = requireActivity();
-                boolean isDark = (activity.getWindow().getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR) != 0;
-                return isDark ? BarStyle.DarkContent : BarStyle.LightContent;
+                return AppUtils.isDarNavigationBarStyle(requireActivity().getWindow()) ? BarStyle.DarkContent : BarStyle.LightContent;
             }
         }
 

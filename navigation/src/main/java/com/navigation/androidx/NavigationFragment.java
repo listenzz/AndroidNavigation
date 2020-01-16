@@ -42,7 +42,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState == null) {
             if (rootFragment == null) {
-                throw new IllegalArgumentException("必须通过 `setRootFragment` 指定 rootFragment");
+                throw new IllegalArgumentException("Must specify rootFragment by `setRootFragment`.");
             } else {
                 setRootFragmentInternal(rootFragment);
                 rootFragment = null;
@@ -83,7 +83,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     public void setRootFragment(@NonNull AwesomeFragment fragment) {
         if (isAdded()) {
-            throw new IllegalStateException("NavigationFragment 已经出于 added 状态，不可以再设置 rootFragment");
+            throw new IllegalStateException("NavigationFragment is at added state，can not `setRootFragment` any more.");
         }
         this.rootFragment = fragment;
     }
