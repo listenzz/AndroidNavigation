@@ -266,6 +266,23 @@ public class AppUtils {
         }
     }
 
+    public static int getStatusBarColor(final Window window) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return window.getStatusBarColor();
+        } else {
+            ViewGroup decorViewGroup = (ViewGroup) window.getDecorView();
+            View statusBarView = decorViewGroup.findViewWithTag("custom_status_bar_tag");
+            if (statusBarView != null) {
+                Drawable drawable = statusBarView.getBackground();
+                if (drawable instanceof ColorDrawable) {
+                    ColorDrawable colorDrawable = (ColorDrawable) drawable;
+                    return colorDrawable.getColor();
+                }
+            }
+        }
+        return Color.BLACK;
+    }
+
     public static void setStatusBarStyle(Window window, boolean dark) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             View decorView = window.getDecorView();

@@ -790,14 +790,26 @@ public abstract class AwesomeFragment extends InternalFragment {
             }
 
             int toolbarColor = preferredToolbarColor();
-            animated = animated & statusBarColor != toolbarColor;
+
+            boolean isSameColor = isStatusBarColorSame(toolbarColor, statusBarColor);
 
             if (!getShowsDialog() && isStatusBarTranslucent() && statusBarColor == toolbarColor && preferredStatusBarColorAlongWithToolbarColor()) {
                 statusBarColor = Color.TRANSPARENT;
             }
 
-            setStatusBarColor(statusBarColor, animated);
+            setStatusBarColor(statusBarColor, animated && !isSameColor);
         }
+    }
+
+    private boolean isStatusBarColorSame(int nextToolbarColor, int nextStatusBarColor) {
+        int currentStatusBarColor = AppUtils.getStatusBarColor(getWindow());
+        if (nextToolbarColor == currentStatusBarColor) {
+            currentStatusBarColor = Color.TRANSPARENT;
+        }
+        if (nextToolbarColor == nextStatusBarColor) {
+            nextStatusBarColor = Color.TRANSPARENT;
+        }
+        return currentStatusBarColor == nextStatusBarColor;
     }
 
     public void setNeedsNavigationBarAppearanceUpdate() {
