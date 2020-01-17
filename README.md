@@ -31,7 +31,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 ```groovy
 implementation 'me.listenzz:navigation:2.7.0'
 // or with androidx
-implementation 'com.navigation.androidx:androidx:4.3.0'
+implementation 'com.navigation.androidx:androidx:4.3.1'
 implementation 'androidx.appcompat:appcompat:1.1.0'
 
 ```
