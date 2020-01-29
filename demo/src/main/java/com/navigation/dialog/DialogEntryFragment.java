@@ -1,5 +1,6 @@
 package com.navigation.dialog;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,15 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.navigation.BaseFragment;
 import com.navigation.R;
 import com.navigation.androidx.BarStyle;
+import com.navigation.androidx.NavigationFragment;
 import com.navigation.androidx.Style;
 import com.navigation.statusbar.TestStatusBarFragment;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.navigation.androidx.NavigationFragment;
 
 
 /**
@@ -23,6 +24,9 @@ import com.navigation.androidx.NavigationFragment;
  */
 
 public class DialogEntryFragment extends BaseFragment {
+
+    private static final int REQUEST_CODE_DATETIME = 1;
+    private static final int REQUEST_CODE_AREA = 2;
 
     TextView resultText;
 
@@ -44,9 +48,14 @@ public class DialogEntryFragment extends BaseFragment {
             showDialog(dialog, 0);
         });
 
-        root.findViewById(R.id.bottom_sheet).setOnClickListener(v -> {
-            SlideAnimationDialogFragment dialog = new SlideAnimationDialogFragment();
-            showDialog(dialog, 0);
+        root.findViewById(R.id.datetime_picker).setOnClickListener(v -> {
+            DatetimePickerDialogFragment dialog = DatetimePickerDialogFragment.newInstance(null);
+            showDialog(dialog, REQUEST_CODE_DATETIME);
+        });
+
+        root.findViewById(R.id.area_picker).setOnClickListener(v -> {
+            AreaPickerDialogFragment dialog = new AreaPickerDialogFragment();
+            showDialog(dialog, REQUEST_CODE_AREA);
         });
 
         root.findViewById(R.id.data_binding).setOnClickListener(view -> {
@@ -74,9 +83,21 @@ public class DialogEntryFragment extends BaseFragment {
     public void onFragmentResult(int requestCode, int resultCode, @Nullable Bundle data) {
         super.onFragmentResult(requestCode, resultCode, data);
         Log.i(TAG, "onFragmentResult");
-        if (data != null) {
-            String words = data.getString("text", "");
-            resultText.setText(words);
+        if (requestCode == REQUEST_CODE_DATETIME) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                String time = data.getString(DatetimePickerDialogFragment.KEY_TIME);
+                resultText.setText("选中的时间是：" + time);
+            }
+        } else if (requestCode == REQUEST_CODE_AREA) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                String area = data.getString(AreaPickerDialogFragment.KEY_SELECTED_AREA);
+                resultText.setText("选中的区域是：" + area);
+            }
+        } else {
+            if (data != null) {
+                String words = data.getString("text", "");
+                resultText.setText(words);
+            }
         }
     }
 

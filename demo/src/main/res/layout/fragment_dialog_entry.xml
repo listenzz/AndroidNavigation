@@ -25,11 +25,21 @@
     <Button
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
-        android:id="@+id/bottom_sheet"
+        android:id="@+id/area_picker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Slide Animation Dialog"
+        android:text="Area Picker"
+        android:textAllCaps="false" />
+
+    <Button
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:id="@+id/datetime_picker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Datetime Picker"
         android:textAllCaps="false" />
 
     <Button
@@ -62,6 +72,8 @@
         android:gravity="center"
         android:text="Nested Fragment Dialog"
         android:textAllCaps="false" />
+
+
 
     <TextView
         android:id="@+id/result_text"

@@ -47,4 +47,8 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':navigation')
     implementation "com.google.android.material:material:1.0.0"
+
+    // 选择器
+    implementation 'com.contrarywind:Android-PickerView:4.1.9'
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
