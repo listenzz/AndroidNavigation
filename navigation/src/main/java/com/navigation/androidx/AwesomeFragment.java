@@ -412,6 +412,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode) {
         scheduleTaskAtStarted(() -> {
             if (!FragmentHelper.canPresentFragment(this, requireActivity())) {
+                onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
                 return;
             }
 
@@ -1055,9 +1056,11 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public void showDialog(@NonNull final AwesomeFragment dialog, final int requestCode) {
         scheduleTaskAtStarted(() -> {
-            if (FragmentHelper.canShowDialog(this, requireActivity())) {
-                showDialogInternal(AwesomeFragment.this, dialog, requestCode);
+            if (!FragmentHelper.canShowDialog(this, requireActivity())) {
+                onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
+                return;
             }
+            showDialogInternal(AwesomeFragment.this, dialog, requestCode);
         }, true);
     }
 

@@ -236,14 +236,6 @@ public class FragmentHelper {
 
         DialogFragment dialog = getDialogFragment(activity.getSupportFragmentManager());
         if (dialog != null) {
-            if (!AwesomeFragment.class.isAssignableFrom(dialog.getClass())) {
-                FragmentManager fragmentManager = dialog.getFragmentManager();
-                dialog.dismiss();
-                if (fragmentManager != null) {
-                    fragmentManager.executePendingTransactions();
-                }
-                return canPresentFragment(fragment, activity);
-            }
             Log.w(TAG, "can not present a fragment over a dialog.");
             return false;
         }
@@ -260,14 +252,6 @@ public class FragmentHelper {
 
         DialogFragment dialog = getDialogFragment(activity.getSupportFragmentManager());
         if (dialog != null && dialog != fragment) {
-            if (!AwesomeFragment.class.isAssignableFrom(dialog.getClass())) {
-                FragmentManager fragmentManager = dialog.getFragmentManager();
-                dialog.dismiss();
-                if (fragmentManager != null) {
-                    fragmentManager.executePendingTransactions();
-                }
-                return canShowDialog(fragment, activity);
-            }
             Log.w(TAG, "can not show dialog since the fragment had show another dialog already.");
             return false;
         }
