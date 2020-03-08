@@ -181,15 +181,15 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         }
     }
 
-    public void replaceFragment(@NonNull final AwesomeFragment substitution) {
-        scheduleTaskAtStarted(() -> replaceFragmentInternal(substitution, null), false);
+    public void redirectToFragment(@NonNull final AwesomeFragment fragment, boolean animated) {
+        scheduleTaskAtStarted(() -> redirectToFragmentInternal(fragment, null, animated), animated);
     }
 
-    public void replaceFragment(@NonNull final AwesomeFragment substitution, @NonNull final AwesomeFragment target) {
-        scheduleTaskAtStarted(() -> replaceFragmentInternal(substitution, target), false);
+    public void redirectToFragment(@NonNull final AwesomeFragment fragment, @NonNull final AwesomeFragment target, boolean animated) {
+        scheduleTaskAtStarted(() -> redirectToFragmentInternal(fragment, target, animated), animated);
     }
 
-    private void replaceFragmentInternal(AwesomeFragment fragment, AwesomeFragment target) {
+    private void redirectToFragmentInternal(AwesomeFragment fragment, AwesomeFragment target, boolean animated) {
         FragmentManager fragmentManager = getChildFragmentManager();
 
         AwesomeFragment topFragment = getTopFragment();
@@ -203,10 +203,10 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
         AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, target);
 
-        topFragment.setAnimation(PresentAnimation.Fade);
+        topFragment.setAnimation(animated ? PresentAnimation.Pop : PresentAnimation.Fade);
         topFragment.setUserVisibleHint(false);
         if (aheadFragment != null) {
-            aheadFragment.setAnimation(PresentAnimation.Fade);
+            aheadFragment.setAnimation(animated ? PresentAnimation.Pop : PresentAnimation.Fade);
         }
         fragmentManager.popBackStack(target.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
@@ -216,18 +216,18 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         if (aheadFragment != null && aheadFragment.isAdded()) {
             transaction.hide(aheadFragment);
         }
-        fragment.setAnimation(PresentAnimation.None);
+        fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
     }
 
-    public void replaceToRootFragment(@NonNull final AwesomeFragment fragment) {
-        scheduleTaskAtStarted(() -> replaceToRootFragmentInternal(fragment), false);
+    public void redirectToRootFragment(@NonNull final AwesomeFragment fragment, boolean animated) {
+        scheduleTaskAtStarted(() -> redirectToRootFragmentInternal(fragment, animated), animated);
     }
 
-    private void replaceToRootFragmentInternal(AwesomeFragment fragment) {
+    private void redirectToRootFragmentInternal(AwesomeFragment fragment, boolean animated) {
         FragmentManager fragmentManager = getChildFragmentManager();
 
         AwesomeFragment topFragment = getTopFragment();
@@ -236,15 +236,15 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             return;
         }
 
-        topFragment.setAnimation(PresentAnimation.Fade);
-        rootFragment.setAnimation(PresentAnimation.Fade);
+        topFragment.setAnimation(animated ? PresentAnimation.Pop : PresentAnimation.Fade );
+        rootFragment.setAnimation(animated ?  PresentAnimation.Pop : PresentAnimation.Fade);
         topFragment.setUserVisibleHint(false);
         fragmentManager.popBackStack(rootFragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        fragment.setAnimation(PresentAnimation.None);
+        fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();

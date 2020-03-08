@@ -9,6 +9,7 @@ import androidx.annotation.AnimRes;
 public enum PresentAnimation {
 
     Push(R.anim.nav_slide_in_right, R.anim.nav_slide_out_left, R.anim.nav_slide_in_left, R.anim.nav_slide_out_right),
+    Pop(R.anim.nav_slide_in_left, R.anim.nav_slide_out_right, R.anim.nav_slide_in_right, R.anim.nav_slide_out_left),
     Modal(R.anim.nav_slide_up, R.anim.nav_delay, R.anim.nav_delay, R.anim.nav_slide_down),
     Delay(R.anim.nav_delay, R.anim.nav_delay, R.anim.nav_delay, R.anim.nav_delay),
     DelayShort(R.anim.nav_delay_short, R.anim.nav_delay_short,R.anim.nav_delay_short,R.anim.nav_delay_short),

@@ -75,23 +75,23 @@
                 android:textAllCaps="false" />
 
             <Button
-                android:id="@+id/replace"
+                android:id="@+id/redirect"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:gravity="center"
-                android:text="replace "
+                android:text="redirectTo "
                 android:textAllCaps="false" />
 
             <Button
-                android:id="@+id/replace_to_root"
+                android:id="@+id/redirect_to_root"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:gravity="center"
-                android:text="replaceToRoot"
+                android:text="redirectToRoot"
                 android:textAllCaps="false" />
 
             <Button

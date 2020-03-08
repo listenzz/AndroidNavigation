@@ -99,17 +99,17 @@ public class TestNavigationFragment extends BaseFragment {
             }
         });
 
-        root.findViewById(R.id.replace).setOnClickListener(v -> {
+        root.findViewById(R.id.redirect).setOnClickListener(v -> {
             NavigationFragment navigationFragment = getNavigationFragment();
             if (navigationFragment != null) {
-                navigationFragment.replaceFragment(new TestNavigationFragment());
+                navigationFragment.redirectToFragment(new TestNavigationFragment(), true);
             }
         });
 
-        root.findViewById(R.id.replace_to_root).setOnClickListener(v -> {
+        root.findViewById(R.id.redirect_to_root).setOnClickListener(v -> {
             NavigationFragment navigationFragment = getNavigationFragment();
             if (navigationFragment != null) {
-                navigationFragment.replaceToRootFragment(new TestNavigationFragment());
+                navigationFragment.redirectToRootFragment(new TestNavigationFragment(), true);
             }
         });
 
