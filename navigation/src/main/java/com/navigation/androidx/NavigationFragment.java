@@ -135,6 +135,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         topFragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
         fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
         topFragment.setUserVisibleHint(false);
+        fragment.setUserVisibleHint(true);
         fragmentManager.popBackStack(fragment.getSceneId(), 0);
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
         fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
@@ -181,6 +182,10 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         }
     }
 
+    public void redirectToFragment(@NonNull final AwesomeFragment fragment) {
+        redirectToFragment(fragment, true);
+    }
+
     public void redirectToFragment(@NonNull final AwesomeFragment fragment, boolean animated) {
         scheduleTaskAtStarted(() -> redirectToFragmentInternal(fragment, null, animated), animated);
     }
@@ -203,10 +208,11 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
         AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, target);
 
-        topFragment.setAnimation(animated ? PresentAnimation.Pop : PresentAnimation.Fade);
+        topFragment.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.Fade);
         topFragment.setUserVisibleHint(false);
-        if (aheadFragment != null) {
-            aheadFragment.setAnimation(animated ? PresentAnimation.Pop : PresentAnimation.Fade);
+        if (aheadFragment != null && aheadFragment.isAdded()) {
+            aheadFragment.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.Fade);
+            aheadFragment.setUserVisibleHint(false);
         }
         fragmentManager.popBackStack(target.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
@@ -236,8 +242,8 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             return;
         }
 
-        topFragment.setAnimation(animated ? PresentAnimation.Pop : PresentAnimation.Fade );
-        rootFragment.setAnimation(animated ?  PresentAnimation.Pop : PresentAnimation.Fade);
+        topFragment.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.Fade );
+        rootFragment.setAnimation(animated ?  PresentAnimation.Redirect : PresentAnimation.Fade);
         topFragment.setUserVisibleHint(false);
         fragmentManager.popBackStack(rootFragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
