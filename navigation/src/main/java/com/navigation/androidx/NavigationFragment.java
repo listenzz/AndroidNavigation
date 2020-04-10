@@ -136,6 +136,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
         topFragment.setUserVisibleHint(false);
         fragment.setUserVisibleHint(true);
+
         fragmentManager.popBackStack(fragment.getSceneId(), 0);
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
         fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
@@ -222,34 +223,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         if (aheadFragment != null && aheadFragment.isAdded()) {
             transaction.hide(aheadFragment);
         }
-        fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
-        transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
-        transaction.addToBackStack(fragment.getSceneId());
-        transaction.commit();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-    }
-
-    public void redirectToRootFragment(@NonNull final AwesomeFragment fragment, boolean animated) {
-        scheduleTaskAtStarted(() -> redirectToRootFragmentInternal(fragment, animated), animated);
-    }
-
-    private void redirectToRootFragmentInternal(AwesomeFragment fragment, boolean animated) {
-        FragmentManager fragmentManager = getChildFragmentManager();
-
-        AwesomeFragment topFragment = getTopFragment();
-        AwesomeFragment rootFragment = getRootFragment();
-        if (topFragment == null || rootFragment == null) {
-            return;
-        }
-
-        topFragment.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.Fade );
-        rootFragment.setAnimation(animated ?  PresentAnimation.Redirect : PresentAnimation.Fade);
-        topFragment.setUserVisibleHint(false);
-        fragmentManager.popBackStack(rootFragment.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setReorderingAllowed(true);
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());

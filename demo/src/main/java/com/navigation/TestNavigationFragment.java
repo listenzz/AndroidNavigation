@@ -106,13 +106,6 @@ public class TestNavigationFragment extends BaseFragment {
             }
         });
 
-        root.findViewById(R.id.redirect_to_root).setOnClickListener(v -> {
-            NavigationFragment navigationFragment = getNavigationFragment();
-            if (navigationFragment != null) {
-                navigationFragment.redirectToRootFragment(new TestNavigationFragment(), true);
-            }
-        });
-
         root.findViewById(R.id.show_badge).setOnClickListener(view -> {
             TabBarFragment tabBarFragment = getTabBarFragment();
             if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {

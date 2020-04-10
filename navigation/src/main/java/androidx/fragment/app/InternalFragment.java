@@ -11,8 +11,4 @@ public class InternalFragment extends DialogFragment {
         super.dismissInternal(allowStateLoss, fromOnDismiss);
     }
 
-//    @Override
-//    protected void dismissInternal(boolean allowStateLoss) {
-//        super.dismissInternal(allowStateLoss);
-//    }
 }
