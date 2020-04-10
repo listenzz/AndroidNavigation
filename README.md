@@ -31,7 +31,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 ```groovy
 implementation 'me.listenzz:navigation:2.7.0'
 // or with androidx
-implementation 'com.navigation.androidx:androidx:4.3.2'
+implementation 'com.navigation.androidx:androidx:4.4.0'
 implementation 'androidx.appcompat:appcompat:1.1.0'
 
 ```
@@ -449,27 +449,15 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 
   > 你可能已经猜到，pop 和 popToRoot 都是通过 popTo 来实现的。pop 的时候也可以通过 setResult 设置返回值，不过此时 requestCode 的值总是 0。
 
-- replace
+- redirectTo
 
-  出栈然后入栈，用指定页面取代当前页面，比如当前页面是 A，想要替换成 B
+  重定向，出栈然后入栈，用指定页面取代当前页面，比如当前页面是 A，想要替换成 B
 
   ```java
   // AFragment.java
   BFragment bFragment = new BFragment();
-  getNavigationFragment().replaceFragment(bFragment);
+  getNavigationFragment().redirectToFragment(bFragment);
   ```
-
-- replaceToRoot
-
-  出栈然后入栈，把 NavigationFragment 的所有子 Fragment 替换成一个 Fragment。譬如 A 页面是根页面，然后 push 到 B、C、D 页面，此时 NavigationFragment 里有 A、B、C、D 四个页面。如果想要重置 NavigationFragment ，把 E 页面设置成根页面。
-
-  ```java
-  // DFragment.java
-  EFragment eFragment = new EFragment();
-  getNavigationFragment().replaceToRootFragment(eFragment);
-  ```
-
-  现在 NavigationFragment 里只有 EFragment 这么一个子 Fragment 了。
 
 - isNavigationRoot
 

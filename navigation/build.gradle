@@ -14,7 +14,7 @@ android {
         minSdkVersion 16
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "4.3.2"
+        versionName "4.4.0"
     }
 
     buildTypes {
@@ -34,7 +34,7 @@ publish {
     userOrg = 'listenzz'
     groupId = 'com.navigation.androidx'
     artifactId = 'androidx'
-    publishVersion = '4.3.2'
+    publishVersion = '4.4.0'
     desc = 'A library managing nested Fragment, StatusBar, Toolbar for Android.'
     website = 'https://github.com/listenzz/AndroidNavigation'
 }
