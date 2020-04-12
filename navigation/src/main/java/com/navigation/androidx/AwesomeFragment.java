@@ -51,7 +51,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     public static final String TAG = "Navigation";
 
     private static final String ARGS_REQUEST_CODE = "nav_request_code";
-    private static final String ARGS_SHOW_AS_DIALOG = "show_as_dialog";
+    static final String ARGS_SHOW_AS_DIALOG = "show_as_dialog";
 
     private static final String SAVED_TAB_BAR_ITEM = "nav_tab_bar_item";
     private static final String SAVED_ANIMATION_TYPE = "nav_animation_type";
@@ -234,6 +234,15 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void onPause() {
         super.onPause();
         //Log.i(TAG, getDebugTag() + "#onPause");
+    }
+
+    public boolean isFragmentHidden() {
+        boolean hidden = super.isHidden();
+        if (hidden) {
+            return true;
+        }
+        AwesomeFragment parent = getParentAwesomeFragment();
+        return parent != null && parent.isFragmentHidden();
     }
 
     @Override

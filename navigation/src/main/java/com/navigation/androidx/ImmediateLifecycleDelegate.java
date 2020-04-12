@@ -33,7 +33,6 @@ public class ImmediateLifecycleDelegate implements LifecycleObserver {
     }
 
     private boolean executing;
-    private boolean shouldDelay;
 
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onStateChange() {
@@ -42,7 +41,6 @@ public class ImmediateLifecycleDelegate implements LifecycleObserver {
             tasks.clear();
             getLifecycle().removeObserver(this);
         } else {
-            shouldDelay = true;
             considerExecute();
         }
     }
@@ -50,17 +48,12 @@ public class ImmediateLifecycleDelegate implements LifecycleObserver {
     void considerExecute() {
         if (isAtLeastStarted() && !executing) {
             executing = true;
-            if (shouldDelay) {
-                shouldDelay = false;
-                handler.post(executeTask);
-            } else {
-                Runnable runnable = tasks.poll();
-                while (runnable != null) {
-                    runnable.run();
-                    runnable = tasks.poll();
-                }
-                executing = false;
+            Runnable runnable = tasks.poll();
+            while (runnable != null) {
+                runnable.run();
+                runnable = tasks.poll();
             }
+            executing = false;
         }
     }
 
@@ -73,7 +66,7 @@ public class ImmediateLifecycleDelegate implements LifecycleObserver {
     };
 
     boolean isAtLeastStarted() {
-        return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
+        return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED);
     }
 
     private Lifecycle getLifecycle() {

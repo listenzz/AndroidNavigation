@@ -36,7 +36,6 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
         }
     }
 
-    private boolean shouldDelay;
     private boolean executing;
 
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
@@ -46,7 +45,6 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
             tasks.clear();
             getLifecycle().removeObserver(this);
         } else {
-            shouldDelay = true;
             considerExecute();
         }
     }
@@ -54,18 +52,14 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
     void considerExecute() {
         if (isAtLeastStarted() && !executing) {
             executing = true;
-            if (shouldDelay) {
-                shouldDelay = false;
-                handler.post(executeTask);
+            Runnable runnable = tasks.poll();
+            if (runnable != null) {
+                runnable.run();
+                handler.postDelayed(executeTask, INTERVAL);
             } else {
-                Runnable runnable = tasks.poll();
-                if (runnable != null) {
-                    runnable.run();
-                    handler.postDelayed(executeTask, INTERVAL);
-                } else {
-                    executing = false;
-                }
+                executing = false;
             }
+
         }
     }
 
@@ -78,7 +72,7 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
     };
 
     boolean isAtLeastStarted() {
-        return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
+        return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED);
     }
 
     private Lifecycle getLifecycle() {

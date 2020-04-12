@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 
 import java.util.List;
 
@@ -124,6 +125,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentByTag(top);
             if (topFragment != null) {
                 topFragment.setAnimation(PresentAnimation.Fade);
+                fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
             }
             if (rootFragment != null) {
                 rootFragment.setAnimation(PresentAnimation.Fade);
@@ -184,6 +186,8 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
                 dialog.setTargetFragment(fragment, requestCode);
             }
         }
+        Bundle args = FragmentHelper.getArguments(dialog);
+        args.putBoolean(AwesomeFragment.ARGS_SHOW_AS_DIALOG, true);
         dialog.show(fragmentManager, dialog.getSceneId());
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
     }
