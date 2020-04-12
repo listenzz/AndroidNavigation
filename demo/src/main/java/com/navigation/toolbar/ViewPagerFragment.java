@@ -5,17 +5,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.tabs.TabLayout;
-import com.navigation.BaseFragment;
-import com.navigation.R;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+import com.navigation.BaseFragment;
+import com.navigation.R;
 import com.navigation.androidx.AwesomeFragment;
 import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.Style;
@@ -28,8 +28,6 @@ import com.navigation.androidx.Style;
 public class ViewPagerFragment extends BaseFragment {
 
     AwesomeToolbar toolbar;
-
-    int location;
 
     @Override
     public boolean isParentFragment() {
@@ -75,26 +73,27 @@ public class ViewPagerFragment extends BaseFragment {
         AppBarLayout appBarLayout = view.findViewById(R.id.appbar_layout);
 
         // important
-        if(isStatusBarTranslucent()) {
+        if (isStatusBarTranslucent()) {
             appendStatusBarPadding(appBarLayout);
         }
 
-        TabLayout tabLayout =  view.findViewById(R.id.tab_layout);
-        ViewPager viewPager =  view.findViewById(R.id.view_pager);
+        TabLayout tabLayout = view.findViewById(R.id.tab_layout);
+        ViewPager2 viewPager = view.findViewById(R.id.view_pager);
 
         tabLayout.addTab(tabLayout.newTab().setText("Android"));
         tabLayout.addTab(tabLayout.newTab().setText("Awesome"));
         tabLayout.addTab(tabLayout.newTab().setText("Navigation"));
 
-        viewPager.setAdapter(new ViewPagerAdapter(getChildFragmentManager(), "Android", "Awesome", "Navigation"));
-        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
-            @Override
-            public void onPageSelected(int position) {
-                location = position;
-                setNeedsStatusBarAppearanceUpdate();
-            }
-        });
-        tabLayout.setupWithViewPager(viewPager);
+        viewPager.setAdapter(new ViewPagerAdapter(this));
+
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            String[] titles = new String[]{"Android", "Awesome", "Navigation"};
+            tab.setText(titles[position]);
+            viewPager.setCurrentItem(position);
+        }).attach();
+
+        viewPager.setCurrentItem(0);
+
     }
 
     @Override
@@ -103,28 +102,21 @@ public class ViewPagerFragment extends BaseFragment {
         setTitle("Toolbar In AppBar");
     }
 
-    public class ViewPagerAdapter extends FragmentPagerAdapter {
-        String[] titles;
-
-        public ViewPagerAdapter(FragmentManager fm, String... titles) {
-            super(fm);
-            this.titles = titles;
+    public class ViewPagerAdapter extends FragmentStateAdapter {
+        public ViewPagerAdapter(@NonNull Fragment fragment) {
+            super(fragment);
         }
 
+        @NonNull
         @Override
-        public Fragment getItem(int position) {
-            String[] titles = new String[] {"Android", "Awesome", "Navigation"};
+        public Fragment createFragment(int position) {
+            String[] titles = new String[]{"Android", "Awesome", "Navigation"};
             return PageFragment.newInstance(titles[position]);
         }
 
         @Override
-        public int getCount() {
-            return titles.length;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return titles[position];
+        public int getItemCount() {
+            return 3;
         }
     }
 

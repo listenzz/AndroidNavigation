@@ -51,6 +51,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     public static final String TAG = "Navigation";
 
     private static final String ARGS_REQUEST_CODE = "nav_request_code";
+    private static final String ARGS_SHOW_AS_DIALOG = "show_as_dialog";
 
     private static final String SAVED_TAB_BAR_ITEM = "nav_tab_bar_item";
     private static final String SAVED_ANIMATION_TYPE = "nav_animation_type";
@@ -89,6 +90,11 @@ public abstract class AwesomeFragment extends InternalFragment {
             tabBarItem = savedInstanceState.getParcelable(SAVED_TAB_BAR_ITEM);
             definesPresentationContext = savedInstanceState.getBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, false);
         }
+
+        Bundle args = FragmentHelper.getArguments(this);
+        boolean showAsDialog = args.getBoolean(ARGS_SHOW_AS_DIALOG, false);
+        setShowsDialog(showAsDialog);
+
         setResult(0, null);
         requireFragmentManager().registerFragmentLifecycleCallbacks(fragmentLifecycleCallbacks, true);
     }
@@ -120,9 +126,13 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Override
     @NonNull
     public LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
-        if (getShowsDialog()) {
-            setStyle(STYLE_NORMAL, R.style.Theme_Nav_FullScreenDialog);
+        inflateStyle();
+
+        if (!getShowsDialog()) {
+            return super.onGetLayoutInflater(savedInstanceState);
         }
+
+        setStyle(STYLE_NORMAL, R.style.Theme_Nav_FullScreenDialog);
 
         super.onGetLayoutInflater(savedInstanceState);
         LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
@@ -136,8 +146,6 @@ public abstract class AwesomeFragment extends InternalFragment {
                         }
                     });
         }
-
-        inflateStyle();
 
         return layoutInflater;
     }
@@ -214,7 +222,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     @CallSuper
     public void onResume() {
         super.onResume();
-        // Log.i(TAG, getDebugTag() + "#onResume");
+        //Log.i(TAG, getDebugTag() + "#onResume");
         if (childFragmentForAppearance() == null) {
             setNeedsStatusBarAppearanceUpdate();
             setNeedsNavigationBarAppearanceUpdate();
@@ -225,7 +233,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     @CallSuper
     public void onPause() {
         super.onPause();
-        // Log.i(TAG, getDebugTag() + "#onPause");
+        //Log.i(TAG, getDebugTag() + "#onPause");
     }
 
     @Override
@@ -988,6 +996,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     private void showDialogInternal(final AwesomeFragment target, final AwesomeFragment dialog, final int requestCode) {
         Bundle args = FragmentHelper.getArguments(dialog);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
+        args.putBoolean(ARGS_SHOW_AS_DIALOG, true);
         dialog.setTargetFragment(target, requestCode);
         dialog.show(target.requireFragmentManager(), dialog.getSceneId());
         FragmentHelper.executePendingTransactionsSafe(target.requireFragmentManager());
