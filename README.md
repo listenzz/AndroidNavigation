@@ -31,7 +31,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 ```groovy
 implementation 'me.listenzz:navigation:2.7.0'
 // or with androidx
-implementation 'com.navigation.androidx:androidx:4.4.0'
+implementation 'com.navigation.androidx:androidx:5.0.0'
 implementation 'androidx.appcompat:appcompat:1.1.0'
 
 ```
@@ -519,6 +519,8 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
           .addSharedElement(holder.image, "kittenImage")
           // 在添加新的 Fragment 之前先隐藏旧的
           .hide(this)
+          // 使当前 fragment 处于 pause 状态
+          .setMaxLifecycle(this, Lifecycle.State.STARTED)
           // 使用具有三个参数的 add
           .add(R.id.navigation_content, kittenDetails, kittenDetails.getSceneId())
           // 因为 NavigationFragment 以栈的形式管理子 Fragment
@@ -531,14 +533,9 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 
 ### 懒加载
 
-AwesomeFragment 提供了两个额外的生命周期回调
+本库 5.0.0 以上支持使用 `onResume` 和 `onPause` 实现懒加载
 
-```java
-protected void onViewAppear();
-protected void onViewDisappear();
-```
-
-可以通过它们实现懒加载
+建议使用 `ViewPager2` 来代替 `ViewPager`
 
 <a name="setting-style"></a>
 
