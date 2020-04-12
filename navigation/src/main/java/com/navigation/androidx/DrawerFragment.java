@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
 
 /**
  * Created by Listen on 2018/1/11.
@@ -68,17 +69,16 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
                 throw new IllegalArgumentException("必须调用 `setMenuFragment` 设置 menuFragment");
             }
 
-            FragmentHelper.addFragmentToAddedList(getChildFragmentManager(), R.id.drawer_content, contentFragment);
-            menuFragment.setUserVisibleHint(false);
-            FragmentHelper.addFragmentToAddedList(getChildFragmentManager(), R.id.drawer_menu, menuFragment, false);
+            FragmentHelper.addFragmentToAddedList(getChildFragmentManager(), R.id.drawer_content, contentFragment, Lifecycle.State.RESUMED);
+            FragmentHelper.addFragmentToAddedList(getChildFragmentManager(), R.id.drawer_menu, menuFragment, Lifecycle.State.STARTED, false);
         }
     }
 
     @Override
-    protected void onViewAppear() {
+    public void onResume() {
+        super.onResume();
         opened = opening = isMenuOpened();
         closed = !isMenuOpened();
-        super.onViewAppear();
     }
 
     @Override
@@ -163,12 +163,15 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     @Override
     public void onDrawerOpened(@NonNull View drawerView) {
         scheduleTaskAtStarted(() -> {
-            FragmentManager fragmentManager = getChildFragmentManager();
-            fragmentManager.beginTransaction().setPrimaryNavigationFragment(getMenuFragment()).commit();
-            FragmentHelper.executePendingTransactionsSafe(fragmentManager);
             AwesomeFragment menu = getMenuFragment();
-            if (menu != null) {
-                menu.setUserVisibleHint(true);
+            AwesomeFragment content = getContentFragment();
+            if (menu != null && content != null) {
+                FragmentManager fragmentManager = getChildFragmentManager();
+                fragmentManager.beginTransaction()
+                        .setPrimaryNavigationFragment(menu)
+                        .setMaxLifecycle(menu, Lifecycle.State.RESUMED)
+                        .commit();
+                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
             }
         });
     }
@@ -176,12 +179,15 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     @Override
     public void onDrawerClosed(@NonNull View drawerView) {
         scheduleTaskAtStarted(() -> {
-            FragmentManager fragmentManager = getChildFragmentManager();
-            fragmentManager.beginTransaction().setPrimaryNavigationFragment(getContentFragment()).commit();
-            FragmentHelper.executePendingTransactionsSafe(fragmentManager);
             AwesomeFragment menu = getMenuFragment();
-            if (menu != null) {
-                menu.setUserVisibleHint(false);
+            AwesomeFragment content = getContentFragment();
+            if (menu != null && content != null) {
+                FragmentManager fragmentManager = getChildFragmentManager();
+                fragmentManager.beginTransaction()
+                        .setPrimaryNavigationFragment(content)
+                        .setMaxLifecycle(menu, Lifecycle.State.STARTED)
+                        .commit();
+                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
             }
         });
     }

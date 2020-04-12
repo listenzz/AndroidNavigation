@@ -1,7 +1,6 @@
 package com.navigation.androidx;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 
 import java.util.List;
 
@@ -132,12 +132,15 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         if (topFragment == null || topFragment == fragment) {
             return;
         }
+
+        fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
+
         topFragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
         fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
-        topFragment.setUserVisibleHint(false);
-        fragment.setUserVisibleHint(true);
-
         fragmentManager.popBackStack(fragment.getSceneId(), 0);
+
+        fragmentManager.beginTransaction().setMaxLifecycle(fragment, Lifecycle.State.RESUMED).commit();
+
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
         fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
     }
@@ -210,11 +213,12 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, target);
 
         topFragment.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.Fade);
-        topFragment.setUserVisibleHint(false);
         if (aheadFragment != null && aheadFragment.isAdded()) {
             aheadFragment.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.Fade);
-            aheadFragment.setUserVisibleHint(false);
         }
+
+        fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
+
         fragmentManager.popBackStack(target.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -222,6 +226,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         if (aheadFragment != null && aheadFragment.isAdded()) {
             transaction.hide(aheadFragment);
+            transaction.setMaxLifecycle(aheadFragment, Lifecycle.State.STARTED);
         }
         fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
@@ -278,10 +283,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             dragging = true;
             AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
 
-            if (aheadFragment != null && shouldTransitionWithStatusBar(aheadFragment, topFragment)) {
-                AppUtils.setStatusBarColor(getWindow(), topFragment.preferredStatusBarColor(), false);
-            }
-
             if (aheadFragment != null && aheadFragment.getView() != null) {
                 aheadFragment.getView().setVisibility(View.VISIBLE);
             }
@@ -314,14 +315,9 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
                 FragmentManager fragmentManager = getChildFragmentManager();
                 topFragment.setAnimation(PresentAnimation.None);
                 aheadFragment.setAnimation(PresentAnimation.None);
-                topFragment.setUserVisibleHint(false);
                 fragmentManager.popBackStack(aheadFragment.getSceneId(), 0);
                 FragmentHelper.executePendingTransactionsSafe(fragmentManager);
                 aheadFragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
-            }
-
-            if (aheadFragment != null && shouldTransitionWithStatusBar(aheadFragment, topFragment)) {
-                setNeedsStatusBarAppearanceUpdate(false);
             }
 
             swipeBackLayout.setTabBar(null);
@@ -341,14 +337,4 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
                 && top.isSwipeBackEnabled();
     }
 
-    private boolean shouldTransitionWithStatusBar(AwesomeFragment aheadFragment, AwesomeFragment topFragment) {
-        boolean shouldAdjustForWhiteStatusBar = AppUtils.shouldAdjustStatusBarColor(this);
-
-        return isStatusBarTranslucent()
-                && !shouldAdjustForWhiteStatusBar
-                && aheadFragment.preferredStatusBarColor() != Color.TRANSPARENT
-                && aheadFragment.preferredStatusBarColor() == topFragment.preferredStatusBarColor()
-                && topFragment.preferredToolbarAlpha() == 255
-                && aheadFragment.preferredToolbarAlpha() == 255;
-    }
 }

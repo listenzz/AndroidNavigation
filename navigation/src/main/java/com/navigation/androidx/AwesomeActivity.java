@@ -30,9 +30,10 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         style = new Style(this);
         onCustomStyle(style);
-
+        
         if (savedInstanceState != null) {
             statusBarTranslucent = savedInstanceState.getBoolean(SAVED_STATE_STATUS_BAR_TRANSLUCENT);
             AppUtils.setStatusBarTranslucent(getWindow(), statusBarTranslucent);

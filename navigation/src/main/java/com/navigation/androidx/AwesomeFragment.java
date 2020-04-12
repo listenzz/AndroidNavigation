@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -33,6 +34,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.fragment.app.InternalFragment;
+import androidx.lifecycle.Lifecycle;
 
 import java.util.Collections;
 import java.util.List;
@@ -208,42 +210,14 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
-    private boolean viewAppear;
-
-    protected boolean isViewAppear() {
-        return viewAppear;
-    }
-
-    private void notifyViewAppear(boolean appear) {
-        if (viewAppear != appear) {
-            viewAppear = appear;
-            if (appear) {
-                onViewAppear();
-            } else {
-                onViewDisappear();
-            }
-        }
-    }
-
-    @CallSuper
-    protected void onViewAppear() {
-        if (childFragmentForAppearance() == null) {
-            setNeedsStatusBarAppearanceUpdate();
-            setNeedsNavigationBarAppearanceUpdate();
-        }
-    }
-
-    @CallSuper
-    protected void onViewDisappear() {
-
-    }
-
     @Override
     @CallSuper
     public void onResume() {
         super.onResume();
-        if (getUserVisibleHint() && !isFragmentHidden() || getShowsDialog()) {
-            notifyViewAppear(true);
+        // Log.i(TAG, getDebugTag() + "#onResume");
+        if (childFragmentForAppearance() == null) {
+            setNeedsStatusBarAppearanceUpdate();
+            setNeedsNavigationBarAppearanceUpdate();
         }
     }
 
@@ -251,61 +225,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     @CallSuper
     public void onPause() {
         super.onPause();
-        notifyViewAppear(false);
-    }
-
-    @Override
-    @CallSuper
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!isFragmentHidden()) {
-            if (isResumed() && getUserVisibleHint()) {
-                notifyViewAppear(true);
-            }
-        } else {
-            notifyViewAppear(false);
-        }
-
-        List<AwesomeFragment> fragments = getChildFragmentsAtAddedList();
-        for (AwesomeFragment fragment : fragments) {
-            fragment.onHiddenChanged(hidden);
-        }
-    }
-
-    public boolean isFragmentHidden() {
-        boolean hidden = super.isHidden();
-        if (hidden) {
-            return true;
-        }
-        AwesomeFragment parent = getParentAwesomeFragment();
-        return parent != null && parent.isFragmentHidden();
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            if (isResumed() && !isFragmentHidden()) {
-                notifyViewAppear(true);
-            }
-        } else {
-            notifyViewAppear(false);
-        }
-
-        List<AwesomeFragment> fragments = getChildFragmentsAtAddedList();
-        for (AwesomeFragment fragment : fragments) {
-            fragment.setUserVisibleHint(isVisibleToUser);
-        }
-    }
-
-    @Override
-    public boolean getUserVisibleHint() {
-        boolean isVisibleToUser = super.getUserVisibleHint();
-        if (!isVisibleToUser) {
-            return false;
-        }
-        AwesomeFragment parent = getParentAwesomeFragment();
-        return parent == null || parent.getUserVisibleHint();
+        // Log.i(TAG, getDebugTag() + "#onPause");
     }
 
     @Override
@@ -984,6 +904,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         } else {
             if (getShowsDialog()) {
                 if (isAdded()) {
+                    requireFragmentManager().beginTransaction().setMaxLifecycle(this, Lifecycle.State.STARTED).commit();
                     super.dismiss();
                 }
             } else {

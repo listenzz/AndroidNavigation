@@ -14,6 +14,9 @@ import com.navigation.androidx.TabBarItem;
 import com.navigation.statusbar.TestStatusBarFragment;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
+
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 
 public class MainActivity extends AwesomeActivity {
 
@@ -23,6 +26,8 @@ public class MainActivity extends AwesomeActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
+
         super.onCreate(savedInstanceState);
 
         setStatusBarTranslucent(true);

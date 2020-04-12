@@ -57,7 +57,7 @@ public class TabBarItem implements Parcelable {
         this.unselectedIconUri = null;
     }
 
-    public TabBarItem( @NonNull String title, @NonNull String iconUri, @Nullable String unselectedIconUri) {
+    public TabBarItem(@NonNull String title, @NonNull String iconUri, @Nullable String unselectedIconUri) {
         this.title = title;
         this.iconRes = -1;
         this.unselectedIconRes = 0;

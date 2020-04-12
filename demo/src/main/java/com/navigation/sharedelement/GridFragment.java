@@ -12,6 +12,7 @@ import com.navigation.R;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -64,6 +65,8 @@ public class GridFragment extends BaseFragment implements KittenClickListener {
                 .addSharedElement(holder.image, "kittenImage")
                 // 在添加新的 Fragment 之前先隐藏旧的
                 .hide(this)
+                // 使当前 fragment 处于 pause 状态
+                .setMaxLifecycle(this, Lifecycle.State.STARTED)
                 // 使用具有三个参数的 add
                 .add(R.id.navigation_content, kittenDetails, kittenDetails.getSceneId())
                 // 因为 NavigationFragment 以栈的形式管理子 Fragment

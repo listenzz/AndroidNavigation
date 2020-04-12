@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,20 +53,22 @@ public class FragmentHelper {
         AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentById(containerId);
         if (topFragment != null && topFragment.isAdded()) {
             topFragment.setAnimation(animation);
+            transaction.setMaxLifecycle(topFragment, Lifecycle.State.STARTED);
             transaction.hide(topFragment);
         }
         fragment.setAnimation(animation);
+
         transaction.add(containerId, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
         executePendingTransactionsSafe(fragmentManager);
     }
 
-    public static void addFragmentToAddedList(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment) {
-        addFragmentToAddedList(fragmentManager, containerId, fragment, true);
+    public static void addFragmentToAddedList(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull Lifecycle.State maxLifecycle) {
+        addFragmentToAddedList(fragmentManager, containerId, fragment, maxLifecycle, true);
     }
 
-    public static void addFragmentToAddedList(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, boolean primary) {
+    public static void addFragmentToAddedList(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull Lifecycle.State maxLifecycle, boolean primary) {
         if (fragmentManager.isDestroyed()) {
             return;
         }
@@ -75,6 +78,7 @@ public class FragmentHelper {
         if (primary) {
             transaction.setPrimaryNavigationFragment(fragment); // primary
         }
+        transaction.setMaxLifecycle(fragment, maxLifecycle);
         transaction.commit();
         executePendingTransactionsSafe(fragmentManager);
     }
@@ -221,7 +225,7 @@ public class FragmentHelper {
         }
 
         top.setAnimation(PresentAnimation.Modal);
-        top.setUserVisibleHint(false);
+        fragmentManager.beginTransaction().setMaxLifecycle(presented, Lifecycle.State.STARTED).commit();
         fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
         target.onFragmentResult(top.getRequestCode(), top.getResultCode(), top.getResultData());

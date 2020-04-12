@@ -164,7 +164,7 @@ public class TabView extends FrameLayout {
         badgeView.setMinWidth(AppUtils.dp2px(getContext(), 10));
         badgeView.setHeight(AppUtils.dp2px(getContext(), 10));
         badgeView.setPadding(0, 0, 0, 0);
-        Drawable drawable =ContextCompat.getDrawable(getContext(), R.drawable.nav_dot_badge_background);
+        Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.nav_dot_badge_background);
         assert drawable != null;
         DrawableCompat.setTint(drawable, badgeColor);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -204,7 +204,7 @@ public class TabView extends FrameLayout {
             states.addState(new int[]{},
                     unselectedIcon);
             iconView.setImageDrawable(states);
-        } else if (icon != null){
+        } else if (icon != null) {
             DrawableCompat.setTintList(icon, new ColorStateList(
                     new int[][]{
                             new int[]{android.R.attr.state_selected}, //1

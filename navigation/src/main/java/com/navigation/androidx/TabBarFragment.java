@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -163,8 +164,10 @@ public class TabBarFragment extends AwesomeFragment {
             fragmentTags.add(fragment.getSceneId());
             transaction.add(R.id.tabs_content, fragment, fragment.getSceneId());
             if (i == selectedIndex) {
+                transaction.setMaxLifecycle(fragment, Lifecycle.State.RESUMED);
                 transaction.setPrimaryNavigationFragment(fragment);
             } else {
+                transaction.setMaxLifecycle(fragment, Lifecycle.State.STARTED);
                 transaction.hide(fragment);
             }
         }
@@ -219,8 +222,10 @@ public class TabBarFragment extends AwesomeFragment {
         transaction.setPrimaryNavigationFragment(current);
         if (previous != null && previous.isAdded()) {
             setPresentAnimation(current, previous);
+            transaction.setMaxLifecycle(previous, Lifecycle.State.STARTED);
             transaction.hide(previous);
         }
+        transaction.setMaxLifecycle(current, Lifecycle.State.RESUMED);
         transaction.show(current);
         transaction.commit();
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);

@@ -181,5 +181,4 @@ public class TestNavigationFragment extends BaseFragment {
             }
         }
     }
-
 }

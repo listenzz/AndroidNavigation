@@ -101,7 +101,7 @@ public class TabBar extends FrameLayout {
 
     public void updateTabIcon(int index, @NonNull String iconUri, String unselectedIconUri) {
         if (tabBarItems.size() > index) {
-            TabBarItem item =  tabBarItems.get(index);
+            TabBarItem item = tabBarItems.get(index);
             item.iconUri = iconUri;
             item.unselectedIconUri = unselectedIconUri;
         }
