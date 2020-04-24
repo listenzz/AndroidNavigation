@@ -172,6 +172,11 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
                         .setMaxLifecycle(menu, Lifecycle.State.RESUMED)
                         .commit();
                 FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+
+                View menuView = menu.getView();
+                if (menuView != null) {
+                    menuView.setClickable(true);
+                }
             }
         });
     }
