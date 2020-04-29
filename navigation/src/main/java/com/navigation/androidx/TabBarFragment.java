@@ -137,8 +137,20 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     @Override
+    protected AwesomeFragment childFragmentForNavigationBarAppearance() {
+        if (tabBarHidden) {
+            return super.childFragmentForNavigationBarAppearance();
+        }
+        return null;
+    }
+
+    @Override
     protected int preferredNavigationBarColor() {
-        return tabBarHidden ? super.preferredNavigationBarColor() : Color.parseColor(style.getTabBarBackgroundColor());
+        if (style.getNavigationBarColor() != Style.INVALID_COLOR) {
+            return style.getNavigationBarColor();
+        } else {
+            return Color.parseColor(style.getTabBarBackgroundColor());
+        }
     }
 
     public void setChildFragments(AwesomeFragment... fragments) {

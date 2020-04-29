@@ -1,6 +1,5 @@
 package com.navigation.androidx;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,8 +98,18 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         return true;
     }
 
+    @Nullable
     @Override
     protected AwesomeFragment childFragmentForAppearance() {
+        if (opening || opened) {
+            return null;
+        }
+        return getContentFragment();
+    }
+
+    @Nullable
+    @Override
+    protected AwesomeFragment childFragmentForNavigationBarAppearance() {
         return getContentFragment();
     }
 
@@ -111,7 +120,21 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Override
     protected int preferredStatusBarColor() {
-        return (opening || opened) && isStatusBarTranslucent() ? Color.TRANSPARENT : super.preferredStatusBarColor();
+        AwesomeFragment content = getContentFragment();
+        if (content != null) {
+            return content.fragmentForStatusBarAppearance().preferredStatusBarColor();
+        }
+        return super.preferredStatusBarColor();
+    }
+
+    @NonNull
+    @Override
+    protected BarStyle preferredStatusBarStyle() {
+        AwesomeFragment content = getContentFragment();
+        if (content != null) {
+           return content.fragmentForStatusBarAppearance().preferredStatusBarStyle();
+        }
+        return super.preferredStatusBarStyle();
     }
 
     protected boolean shouldHideStatusBarWhenMenuOpened() {
@@ -127,8 +150,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         return super.onBackPressed();
     }
 
-    boolean closed = true;
-    boolean opened = false;
+    private boolean closed = true;
+    private boolean opened = false;
     private boolean closing;
     private boolean opening;
 

@@ -17,7 +17,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 public class Style implements Cloneable {
 
-    private static int INVALID_COLOR = Integer.MAX_VALUE;
+    public static int INVALID_COLOR = Integer.MAX_VALUE;
     private static Drawable defaultShadow = new ColorDrawable(Color.parseColor("#F0F0F0"));
 
     private int screenBackgroundColor = Color.WHITE;
@@ -164,7 +164,7 @@ public class Style implements Cloneable {
         if (elevation != -1) {
             return elevation;
         }
-        elevation = AppUtils.dp2px(context, 4);
+        elevation = AppUtils.dp2px(context, 1);
         return elevation;
     }
 
@@ -310,9 +310,6 @@ public class Style implements Cloneable {
 
     @ColorInt
     public int getNavigationBarColor() {
-        if (navigationBarColor == INVALID_COLOR) {
-            return getScreenBackgroundColor();
-        }
         return navigationBarColor;
     }
 
