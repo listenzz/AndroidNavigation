@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
+import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -1286,7 +1287,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         } else {
             toolbar.showShadow(style.getShadow(), style.getElevation());
         }
-        toolbar.setAlpha(style.getToolbarAlpha());
+        toolbar.setAlpha(preferredToolbarAlpha());
 
         if (!isNavigationRoot()) {
             if (shouldHideBackButton()) {
@@ -1312,13 +1313,13 @@ public abstract class AwesomeFragment extends InternalFragment {
         return style.getToolbarBackgroundColor();
     }
 
-
-    protected int preferredToolbarAlpha() {
+    @FloatRange(from = 0f, to = 1.0f)
+    protected float preferredToolbarAlpha() {
         AwesomeFragment fragmentForAppearance = childFragmentForAppearance();
         if (fragmentForAppearance != null) {
             return fragmentForAppearance.preferredToolbarAlpha();
         }
-        return (int) (style.getToolbarAlpha() * 255 + 0.5);
+        return style.getToolbarAlpha();
     }
 
     public void setNeedsToolbarAppearanceUpdate() {

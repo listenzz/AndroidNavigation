@@ -312,12 +312,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             }
 
             if (aheadFragment != null && scrollPercent >= 1.0f) {
-                FragmentManager fragmentManager = getChildFragmentManager();
-                topFragment.setAnimation(PresentAnimation.None);
-                aheadFragment.setAnimation(PresentAnimation.None);
-                fragmentManager.popBackStack(aheadFragment.getSceneId(), 0);
-                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-                aheadFragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
+                popFragment(false);
             }
 
             swipeBackLayout.setTabBar(null);

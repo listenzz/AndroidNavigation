@@ -279,7 +279,6 @@ public class TabBarFragment extends AwesomeFragment {
                 tabBar.startAnimation(animation);
             } else {
                 tabBar.setVisibility(View.VISIBLE);
-                tabBar.setTranslationY(0);
             }
         }
     }
@@ -294,7 +293,6 @@ public class TabBarFragment extends AwesomeFragment {
                 tabBar.startAnimation(animation);
             } else {
                 tabBar.setVisibility(View.GONE);
-                tabBar.setTranslationY(tabBar.getHeight());
             }
         }
     }
@@ -303,7 +301,6 @@ public class TabBarFragment extends AwesomeFragment {
         if (tabBar != null) {
             tabBarHidden = false;
             tabBar.setVisibility(View.VISIBLE);
-            tabBar.setTranslationY(0);
             setNeedsNavigationBarAppearanceUpdate();
         }
     }
@@ -311,12 +308,7 @@ public class TabBarFragment extends AwesomeFragment {
     private void hideTabBar() {
         if (tabBar != null) {
             tabBarHidden = true;
-            int height = tabBar.getHeight();
-            if (height == 0) {
-                height = (int) (getResources().getDimension(R.dimen.nav_tab_bar_height) * 2);
-            }
             tabBar.setVisibility(View.GONE);
-            tabBar.setTranslationY(height);
             if (isResumed()) {
                 setNeedsNavigationBarAppearanceUpdate();
             }
@@ -335,7 +327,6 @@ public class TabBarFragment extends AwesomeFragment {
         public void onAnimationStart(Animation animation) {
             if (tabBar != null && !hidden) {
                 tabBar.setVisibility(View.VISIBLE);
-                tabBar.setTranslationY(0);
             }
         }
 
@@ -343,7 +334,6 @@ public class TabBarFragment extends AwesomeFragment {
         public void onAnimationEnd(Animation animation) {
             if (tabBar != null && hidden) {
                 tabBar.setVisibility(View.GONE);
-                tabBar.setTranslationY(tabBar.getHeight() * 2);
             }
         }
 
