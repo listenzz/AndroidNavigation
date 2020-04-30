@@ -593,12 +593,26 @@ public abstract class AwesomeFragment extends InternalFragment {
         return null;
     }
 
-    protected AwesomeFragment fragmentForStatusBarAppearance() {
+    private AwesomeFragment fragmentForStatusBarAppearance() {
         AwesomeFragment childFragment = childFragmentForAppearance();
         if (childFragment == null) {
             return this;
         } else {
             return childFragment.fragmentForStatusBarAppearance();
+        }
+    }
+
+    @Nullable
+    protected AwesomeFragment childFragmentForStatusBarHidden() {
+        return childFragmentForAppearance();
+    }
+
+    private AwesomeFragment fragmentForStatusBarHidden() {
+        AwesomeFragment childFragment = childFragmentForStatusBarHidden();
+        if (childFragment == null) {
+            return this;
+        } else {
+            return childFragment.fragmentForStatusBarHidden();
         }
     }
 
@@ -657,7 +671,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         AwesomeFragment fragment = fragmentForStatusBarAppearance();
 
         // statusBarHidden
-        boolean hidden = fragment.preferredStatusBarHidden();
+        boolean hidden = fragmentForStatusBarHidden().preferredStatusBarHidden();
         setStatusBarHidden(hidden);
 
         // statusBarStyle

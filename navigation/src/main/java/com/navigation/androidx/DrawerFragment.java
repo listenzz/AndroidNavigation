@@ -101,9 +101,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     @Nullable
     @Override
     protected AwesomeFragment childFragmentForAppearance() {
-        if (opening || opened) {
-            return null;
-        }
         return getContentFragment();
     }
 
@@ -113,28 +110,18 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         return getContentFragment();
     }
 
+    @Nullable
+    @Override
+    protected AwesomeFragment childFragmentForStatusBarHidden() {
+        if (opening || opened) {
+            return null;
+        }
+        return getContentFragment();
+    }
+
     @Override
     protected boolean preferredStatusBarHidden() {
         return shouldHideStatusBarWhenMenuOpened() || super.preferredStatusBarHidden();
-    }
-
-    @Override
-    protected int preferredStatusBarColor() {
-        AwesomeFragment content = getContentFragment();
-        if (content != null) {
-            return content.fragmentForStatusBarAppearance().preferredStatusBarColor();
-        }
-        return super.preferredStatusBarColor();
-    }
-
-    @NonNull
-    @Override
-    protected BarStyle preferredStatusBarStyle() {
-        AwesomeFragment content = getContentFragment();
-        if (content != null) {
-           return content.fragmentForStatusBarAppearance().preferredStatusBarStyle();
-        }
-        return super.preferredStatusBarStyle();
     }
 
     protected boolean shouldHideStatusBarWhenMenuOpened() {
