@@ -66,11 +66,16 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         if (dragging) {
             return true;
         }
+
+        AwesomeFragment topFragment = getTopFragment();
+        if (topFragment != null && !topFragment.isBackInteractive()) {
+            return true;
+        }
+
         FragmentManager fragmentManager = getChildFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 1) {
-            AwesomeFragment topFragment = getTopFragment();
-            if (topFragment != null && topFragment.isBackInteractive()) {
+            if (topFragment != null) {
                 popFragment();
             }
             return true;
