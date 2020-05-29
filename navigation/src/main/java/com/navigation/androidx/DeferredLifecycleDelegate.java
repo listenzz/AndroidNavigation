@@ -15,7 +15,7 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
 
     private static final String TAG = "Navigation";
 
-    private static final long INTERVAL = 400;
+    private static final long INTERVAL = 250;
 
     private Queue<Runnable> tasks = new LinkedList<>();
 
