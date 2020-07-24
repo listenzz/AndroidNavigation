@@ -293,4 +293,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         return false;
     }
 
+    public boolean isMenuPrimary() {
+        return !(closed || closing);
+    }
+
 }
