@@ -626,18 +626,15 @@ public abstract class AwesomeFragment extends InternalFragment {
         return getAnimation() != PresentAnimation.None && style.isStatusBarColorAnimated();
     }
 
-    public void setNeedsStatusBarAppearanceUpdate() {
-        setNeedsStatusBarAppearanceUpdate(true);
-    }
 
-    public void setNeedsStatusBarAppearanceUpdate(boolean colorAnimated) {
+    public void setNeedsStatusBarAppearanceUpdate() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             return;
         }
 
         AwesomeFragment parent = getParentAwesomeFragment();
         if (!getShowsDialog() && parent != null) {
-            parent.setNeedsStatusBarAppearanceUpdate(colorAnimated);
+            parent.setNeedsStatusBarAppearanceUpdate();
             return;
         }
 
@@ -652,22 +649,9 @@ public abstract class AwesomeFragment extends InternalFragment {
         setStatusBarStyle(statusBarStyle);
 
         // statusBarColor
-        boolean animated = fragment.preferredStatusBarColorAnimated() && colorAnimated;
+        boolean animated = fragment.preferredStatusBarColorAnimated();
         int statusBarColor = fragment.preferredStatusBarColor();
-        int toolbarColor = fragment.preferredToolbarColor();
-        boolean isSameColor = isStatusBarColorSame(toolbarColor, statusBarColor);
-        setStatusBarColor(statusBarColor, animated && !isSameColor);
-    }
-
-    private boolean isStatusBarColorSame(int nextToolbarColor, int nextStatusBarColor) {
-        int currentStatusBarColor = AppUtils.getStatusBarColor(getWindow());
-        if (nextToolbarColor == currentStatusBarColor) {
-            currentStatusBarColor = Color.TRANSPARENT;
-        }
-        if (nextToolbarColor == nextStatusBarColor) {
-            nextStatusBarColor = Color.TRANSPARENT;
-        }
-        return currentStatusBarColor == nextStatusBarColor;
+        setStatusBarColor(statusBarColor, animated);
     }
 
     public void setStatusBarStyle(BarStyle barStyle) {
