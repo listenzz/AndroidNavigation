@@ -183,7 +183,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         if (getParentAwesomeFragment() == null || getShowsDialog()) {
-            fixKeyboardBugAtKitkat(root, isStatusBarTranslucent());
+            fixKeyboardBugAtKitkat(root);
         }
 
         callSuperOnViewCreated = true;
@@ -636,7 +636,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return Color.TRANSPARENT;
         }
 
-        if (isStatusBarTranslucent() && preferredStatusBarColorAlongWithToolbarColor() && getAwesomeToolbar() == null) {
+        if (preferredStatusBarColorAlongWithToolbarColor() && getAwesomeToolbar() == null) {
             return Color.TRANSPARENT;
         }
 
@@ -696,7 +696,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         boolean isSameColor = isStatusBarColorSame(toolbarColor, statusBarColor);
 
-        if (!getShowsDialog() && isStatusBarTranslucent() && statusBarColor == toolbarColor && fragment.preferredStatusBarColorAlongWithToolbarColor()) {
+        if (!getShowsDialog() && statusBarColor == toolbarColor && fragment.preferredStatusBarColorAlongWithToolbarColor()) {
             statusBarColor = Color.TRANSPARENT;
         }
 
@@ -727,22 +727,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         AppUtils.setStatusBarColor(getWindow(), color, animated);
     }
 
-    public void setStatusBarTranslucent(boolean translucent) {
-        if (getShowsDialog()) {
-            AppUtils.setStatusBarTranslucent(getWindow(), translucent);
-        } else {
-            presentableActivity.setStatusBarTranslucent(translucent);
-        }
-    }
-
-    public boolean isStatusBarTranslucent() {
-        if (isInDialog()) {
-            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP || presentableActivity.isStatusBarTranslucent();
-        } else {
-            return presentableActivity != null && presentableActivity.isStatusBarTranslucent();
-        }
-    }
-
     @CallSuper
     protected void onStatusBarTranslucentChanged(boolean translucent) {
         AwesomeToolbar toolbar = getAwesomeToolbar();
@@ -755,7 +739,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         if (getView() != null) {
-            fixKeyboardBugAtKitkat(getView(), translucent);
+            fixKeyboardBugAtKitkat(getView());
         }
 
         List<AwesomeFragment> children = getChildFragmentsAtAddedList();
@@ -839,20 +823,11 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private SoftInputLayoutListener globalLayoutListener;
 
-    private void fixKeyboardBugAtKitkat(View root, boolean isStatusBarTranslucent) {
+    private void fixKeyboardBugAtKitkat(View root) {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-            if (isStatusBarTranslucent) {
-                if (globalLayoutListener == null) {
-                    globalLayoutListener = new SoftInputLayoutListener(root);
-                    root.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
-                }
-            } else {
-                if (globalLayoutListener != null) {
-                    root.getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);
-                    root.getLayoutParams().height = globalLayoutListener.getInitialHeight();
-                    root.requestLayout();
-                    globalLayoutListener = null;
-                }
+            if (globalLayoutListener == null) {
+                globalLayoutListener = new SoftInputLayoutListener(root);
+                root.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
             }
         }
     }
@@ -891,13 +866,9 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     protected void setupDialog() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setStatusBarTranslucent(true);
-        } else {
-            setStatusBarTranslucent(presentableActivity.isStatusBarTranslucent());
-        }
-
         Window window = getWindow();
+        AppUtils.setStatusBarTranslucent(window, true);
+
         if (window != null) {
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
@@ -1269,9 +1240,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                     + " 添加 Toolbar. 请重写 onCreateAwesomeToolbar, 这样你就可以自行添加 Toolbar 了。");
         }
 
-        if (isStatusBarTranslucent()) {
-            appendStatusBarPadding(toolbar);
-        }
+        appendStatusBarPadding(toolbar);
 
         return toolbar;
     }

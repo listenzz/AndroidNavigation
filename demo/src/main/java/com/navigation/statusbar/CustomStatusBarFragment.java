@@ -40,18 +40,11 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_custom_statusbar, container, false);
         toolbar = root.findViewById(R.id.toolbar);
-
-
         textView = root.findViewById(R.id.hint);
-
-        CheckBox insetsCheckBox = root.findViewById(R.id.insets);
-        insetsCheckBox.setChecked(isStatusBarTranslucent());
-        insetsCheckBox.setOnCheckedChangeListener(this);
 
         ((CheckBox)root.findViewById(R.id.tinting)).setOnCheckedChangeListener(this);
         ((CheckBox)root.findViewById(R.id.dark)).setOnCheckedChangeListener(this);
         ((CheckBox)root.findViewById(R.id.hidden)).setOnCheckedChangeListener(this);
-        ((CheckBox)root.findViewById(R.id.adjust)).setOnCheckedChangeListener(this);
 
         return root;
     }
@@ -92,12 +85,6 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         textView.setText("");
         switch (buttonView.getId()) {
-            case R.id.insets:
-                // 慎重，会影响整个 Activity
-                setStatusBarTranslucent(isChecked);
-                getWindow().getDecorView().requestLayout();
-                textView.setText("将影响整个 Activity，打开 Drawer 看看");
-                break;
             case R.id.tinting:
                 statusBarColor = isChecked ? Color.MAGENTA : Color.TRANSPARENT;
                 setNeedsStatusBarAppearanceUpdate();
@@ -116,18 +103,10 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     textView.setText("只有在 6.0 以上系统才能看到效果");
                 }
-
                 break;
             case R.id.hidden:
                 statusBarHidden = isChecked;
                 setNeedsStatusBarAppearanceUpdate();
-                break;
-            case R.id.adjust:
-                if (isChecked) {
-                    appendStatusBarPadding(toolbar);
-                } else {
-                    removeStatusBarPadding(toolbar);
-                }
                 break;
         }
     }

@@ -125,7 +125,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     protected boolean shouldHideStatusBarWhenMenuOpened() {
-        return (opening || opened) && isStatusBarTranslucent() && !AppUtils.isCutout(requireActivity());
+        return (opening || opened) && !AppUtils.isCutout(requireActivity());
     }
 
     @Override

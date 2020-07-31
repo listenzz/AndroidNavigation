@@ -22,7 +22,4 @@ public interface PresentableActivity {
     @Nullable
     Style getStyle();
 
-    void setStatusBarTranslucent(boolean under);
-
-    boolean isStatusBarTranslucent();
 }

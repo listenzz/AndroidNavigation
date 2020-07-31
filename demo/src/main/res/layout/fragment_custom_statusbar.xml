@@ -34,14 +34,6 @@
         android:paddingTop="16dp">
 
         <CheckBox
-            android:id="@+id/insets"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="内容延伸到 StatusBar 底下（沉浸式）"
-            android:textSize="14sp" />
-
-        <CheckBox
             android:id="@+id/tinting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,13 +54,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="隐藏状态栏"
-            android:textSize="14sp" />
-
-        <CheckBox
-            android:id="@+id/adjust"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="调整 Toolbar 位置"
             android:textSize="14sp" />
 
         <TextView

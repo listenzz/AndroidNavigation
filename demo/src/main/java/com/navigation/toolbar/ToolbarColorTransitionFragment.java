@@ -23,11 +23,7 @@ public class ToolbarColorTransitionFragment extends BaseFragment {
 
     @Override
     protected int preferredStatusBarColor() {
-        if (isStatusBarTranslucent()) {
-            return Color.TRANSPARENT;
-        } else {
-            return super.preferredStatusBarColor();
-        }
+        return Color.TRANSPARENT;
     }
 
     @Override

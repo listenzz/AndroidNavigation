@@ -14,31 +14,20 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 
-import java.util.List;
-
 public abstract class AwesomeActivity extends AppCompatActivity implements PresentableActivity {
 
     public static final String TAG = "Navigation";
-
-    private static final String SAVED_STATE_STATUS_BAR_TRANSLUCENT = "saved_state_status_bar_translucent";
 
     private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
 
     private Style style;
 
-    private boolean statusBarTranslucent;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         style = new Style(this);
         onCustomStyle(style);
-        
-        if (savedInstanceState != null) {
-            statusBarTranslucent = savedInstanceState.getBoolean(SAVED_STATE_STATUS_BAR_TRANSLUCENT);
-            AppUtils.setStatusBarTranslucent(getWindow(), statusBarTranslucent);
-        }
+        AppUtils.setStatusBarTranslucent(getWindow(), true);
     }
 
     @Override
@@ -49,12 +38,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     protected void onCustomStyle(@NonNull Style style) {
 
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(SAVED_STATE_STATUS_BAR_TRANSLUCENT, statusBarTranslucent);
     }
 
     @Override
@@ -203,28 +186,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             return dialogFragment.getDialog().getWindow();
         } else {
             return getWindow();
-        }
-    }
-
-    @Override
-    public void setStatusBarTranslucent(boolean translucent) {
-        if (statusBarTranslucent != translucent) {
-            statusBarTranslucent = translucent;
-            AppUtils.setStatusBarTranslucent(getWindow(), translucent);
-            onStatusBarTranslucentChanged(translucent);
-        }
-    }
-
-    @Override
-    public boolean isStatusBarTranslucent() {
-        return statusBarTranslucent;
-    }
-
-    protected void onStatusBarTranslucentChanged(boolean translucent) {
-        List<AwesomeFragment> children = FragmentHelper.getFragmentsAtAddedList(getSupportFragmentManager());
-        for (int i = 0, size = children.size(); i < size; i++) {
-            AwesomeFragment child = children.get(i);
-            child.onStatusBarTranslucentChanged(translucent);
         }
     }
 

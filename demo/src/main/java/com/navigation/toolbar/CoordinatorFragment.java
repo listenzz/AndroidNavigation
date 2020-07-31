@@ -36,11 +36,7 @@ public class CoordinatorFragment extends BaseFragment {
 
     @Override
     protected int preferredStatusBarColor() {
-        if (isStatusBarTranslucent()) {
-            return Color.TRANSPARENT;
-        } else {
-            return super.preferredStatusBarColor();
-        }
+        return Color.TRANSPARENT;
     }
 
     @Nullable
@@ -51,9 +47,7 @@ public class CoordinatorFragment extends BaseFragment {
         toolbar = root.findViewById(R.id.toolbar);
 
         // important
-        if (isStatusBarTranslucent()) {
-            appendStatusBarPadding(toolbar);
-        }
+        appendStatusBarPadding(toolbar);
 
         return root;
     }

@@ -27,10 +27,7 @@ public class MainActivity extends AwesomeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
-
         super.onCreate(savedInstanceState);
-
-        setStatusBarTranslucent(true);
 
         if (savedInstanceState == null) {
 
