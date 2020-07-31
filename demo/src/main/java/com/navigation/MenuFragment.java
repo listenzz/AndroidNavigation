@@ -70,28 +70,14 @@ public class MenuFragment extends AwesomeFragment {
             requireDrawerFragment().closeMenu();
         });
 
+        appendStatusBarPadding(root);
+
         return root;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    protected void onStatusBarTranslucentChanged(boolean translucent) {
-        super.onStatusBarTranslucentChanged(translucent);
-        changeRootViewTopPadding(translucent);
-    }
-
-    private void changeRootViewTopPadding(boolean translucent) {
-        if (AppUtils.isCutout(requireActivity())) {
-            if (translucent) {
-                appendStatusBarPadding(getView() );
-            } else {
-                removeStatusBarPadding(getView());
-            }
-        }
     }
 
     @Override

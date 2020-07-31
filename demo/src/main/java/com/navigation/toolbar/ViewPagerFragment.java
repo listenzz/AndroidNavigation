@@ -42,11 +42,6 @@ public class ViewPagerFragment extends BaseFragment {
     }
 
     @Override
-    protected boolean preferredStatusBarColorAlongWithToolbarColor() {
-        return false;
-    }
-
-    @Override
     protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
         return toolbar;
     }

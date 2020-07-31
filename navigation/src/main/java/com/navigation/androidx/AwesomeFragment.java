@@ -636,15 +636,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return Color.TRANSPARENT;
         }
 
-        if (preferredStatusBarColorAlongWithToolbarColor() && getAwesomeToolbar() == null) {
-            return Color.TRANSPARENT;
-        }
-
         return style.getStatusBarColor();
-    }
-
-    protected boolean preferredStatusBarColorAlongWithToolbarColor() {
-        return true;
     }
 
     protected boolean preferredStatusBarColorAnimated() {
@@ -654,7 +646,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void setNeedsStatusBarAppearanceUpdate() {
         setNeedsStatusBarAppearanceUpdate(true);
     }
-
 
     public void setNeedsStatusBarAppearanceUpdate(boolean colorAnimated) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
@@ -679,29 +670,10 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         // statusBarColor
         boolean animated = fragment.preferredStatusBarColorAnimated() && colorAnimated;
-
         int statusBarColor = fragment.preferredStatusBarColor();
-
-        boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(statusBarColor, 176);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && statusBarStyle == BarStyle.LightContent;
-        }
-
-        if (shouldAdjustForWhiteStatusBar) {
-            statusBarColor = Color.parseColor("#4A4A4A");
-        }
-
         int toolbarColor = fragment.preferredToolbarColor();
-
         boolean isSameColor = isStatusBarColorSame(toolbarColor, statusBarColor);
-
-        if (!getShowsDialog() && statusBarColor == toolbarColor && fragment.preferredStatusBarColorAlongWithToolbarColor()) {
-            statusBarColor = Color.TRANSPARENT;
-        }
-
         setStatusBarColor(statusBarColor, animated && !isSameColor);
-
     }
 
     private boolean isStatusBarColorSame(int nextToolbarColor, int nextStatusBarColor) {
@@ -725,28 +697,6 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public void setStatusBarColor(int color, boolean animated) {
         AppUtils.setStatusBarColor(getWindow(), color, animated);
-    }
-
-    @CallSuper
-    protected void onStatusBarTranslucentChanged(boolean translucent) {
-        AwesomeToolbar toolbar = getAwesomeToolbar();
-        if (toolbar != null) {
-            if (translucent) {
-                appendStatusBarPadding(toolbar);
-            } else {
-                removeStatusBarPadding(toolbar);
-            }
-        }
-
-        if (getView() != null) {
-            fixKeyboardBugAtKitkat(getView());
-        }
-
-        List<AwesomeFragment> children = getChildFragmentsAtAddedList();
-        for (int i = 0, size = children.size(); i < size; i++) {
-            AwesomeFragment child = children.get(i);
-            child.onStatusBarTranslucentChanged(translucent);
-        }
     }
 
     public void appendStatusBarPadding(View view) {

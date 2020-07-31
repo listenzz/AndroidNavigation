@@ -1,13 +1,12 @@
 package com.navigation.statusbar;
 
 import android.graphics.Color;
-import android.os.Bundle;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
 import com.navigation.androidx.BarStyle;
 import com.navigation.androidx.Style;
-import com.navigation.androidx.ToolbarButtonItem;
 
 
 /**
@@ -28,23 +27,16 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
     protected void onCustomStyle(@NonNull Style style) {
         super.onCustomStyle(style);
         style.setStatusBarStyle(BarStyle.DarkContent);
-        style.setStatusBarColor(Color.WHITE);
+        style.setStatusBarColor(Color.TRANSPARENT);
         style.setToolbarBackgroundColor(Color.WHITE);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
-        builder.title("切换").tintColor(Color.RED).listener(view -> {
-            if (preferredStatusBarStyle() == BarStyle.DarkContent) {
-                barStyle = BarStyle.LightContent;
-            } else {
-                barStyle = BarStyle.DarkContent;
-            }
-            setNeedsStatusBarAppearanceUpdate();
-        });
-        setRightBarButtonItem(builder.build());
+    protected int preferredStatusBarColor() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return Color.parseColor("#4A4A4A");
+        }
+        return Color.TRANSPARENT;
     }
 
 }

@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.BarStyle;
+import com.navigation.androidx.Style;
 
 
 /**
@@ -40,6 +41,7 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_custom_statusbar, container, false);
         toolbar = root.findViewById(R.id.toolbar);
+        appendStatusBarPadding(toolbar);
         textView = root.findViewById(R.id.hint);
 
         ((CheckBox)root.findViewById(R.id.tinting)).setOnCheckedChangeListener(this);
@@ -50,8 +52,10 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void appendStatusBarPadding(View view) {
+        if (!isInDialog()) {
+            super.appendStatusBarPadding(view);
+        }
     }
 
     @Override
@@ -61,24 +65,10 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
         toolbar.setNavigationOnClickListener(v -> requireNavigationFragment().popFragment());
     }
 
-    int statusBarColor = Color.MAGENTA;
-    BarStyle statusBarStyle = BarStyle.LightContent;
-    boolean statusBarHidden = false;
-
     @Override
-    protected int preferredStatusBarColor() {
-        return statusBarColor;
-    }
-
-    @NonNull
-    @Override
-    protected BarStyle preferredStatusBarStyle() {
-        return statusBarStyle;
-    }
-
-    @Override
-    protected boolean preferredStatusBarHidden() {
-        return statusBarHidden;
+    protected void onCustomStyle(@NonNull Style style) {
+        super.onCustomStyle(style);
+        style.setStatusBarColor(Color.MAGENTA);
     }
 
     @Override
@@ -86,26 +76,21 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
         textView.setText("");
         switch (buttonView.getId()) {
             case R.id.tinting:
-                statusBarColor = isChecked ? Color.MAGENTA : Color.TRANSPARENT;
+                int statusBarColor = isChecked ? Color.MAGENTA : Color.TRANSPARENT;
+                style.setStatusBarColor(statusBarColor);
                 setNeedsStatusBarAppearanceUpdate();
-                if (statusBarHidden && isChecked) {
-                    textView.setText("只有显示状态栏才能看到效果");
-                }
                 break;
             case R.id.dark: // 深色状态栏 6.0 以上生效
-                statusBarStyle = isChecked ? BarStyle.DarkContent : BarStyle.LightContent;
+                BarStyle barStyle = isChecked ? BarStyle.DarkContent : BarStyle.LightContent;
+                style.setStatusBarStyle(barStyle);
                 setNeedsStatusBarAppearanceUpdate();
-
-                if (statusBarHidden && isChecked) {
-                    textView.setText("只有显示状态栏才能看到效果");
-                }
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     textView.setText("只有在 6.0 以上系统才能看到效果");
                 }
                 break;
             case R.id.hidden:
-                statusBarHidden = isChecked;
+                style.setStatusBarHidden(isChecked);
                 setNeedsStatusBarAppearanceUpdate();
                 break;
         }
