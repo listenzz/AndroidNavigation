@@ -1119,9 +1119,9 @@ public abstract class AwesomeFragment extends InternalFragment {
     private void createToolbarIfNeeded(@NonNull View root) {
         AwesomeToolbar toolbar = onCreateAwesomeToolbar(root);
         if (toolbar != null) {
-            this.toolbar = toolbar;
             customAwesomeToolbar(toolbar);
         }
+        this.toolbar = toolbar;
     }
 
     private void adjustBottomPaddingIfNeeded(final View root) {
@@ -1197,9 +1197,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     protected int preferredToolbarColor() {
-        if (getAwesomeToolbar() == null) {
-            return Color.TRANSPARENT;
-        }
         return style.getToolbarBackgroundColor();
     }
 
