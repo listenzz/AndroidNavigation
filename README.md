@@ -13,7 +13,6 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 - 一行代码实现 Fragment 嵌套，一次性构建好嵌套层级
 - 一行代码实现 Fragment 跳转，不再需要写一大堆操作 fragment 的代码了，不用担心用错 FragmentManager 了
 - 可扩展性强，允许自定义容器和路由
-- 一行代码开关沉浸式状态栏，兼容到 Android 4.4 并解决了相关 BUG
 - 自动为你创建 Toolbar，一行代码设置标题、按钮，支持关闭自动创建功能以实现定制
 - 一处设置全局样式，到处使用，并且支持不同页面个性化
 - 支持侧滑返回
@@ -31,7 +30,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 ```groovy
 implementation 'me.listenzz:navigation:2.7.0'
 // or with androidx
-implementation 'com.navigation.androidx:androidx:5.0.10'
+implementation 'com.navigation.androidx:androidx:6.0.1'
 implementation 'androidx.appcompat:appcompat:1.1.0'
 
 ```
@@ -633,21 +632,7 @@ protected boolean preferredStatusBarColorAnimated();
 
   当状态栏的颜色由其它颜色转变成当前页面所期待的颜色时，需不需要对颜色做过渡动画，默认是 true，使得过渡更自然。如果过渡到某个界面状态栏出现闪烁，你需要在目标页面关闭它。参考 demo 中 TopDialogFragment 这个类。
 
-如果你当前页面的状态栏样式不是固定的，需要根据 App 的不同状态展示不同的样式，你可以在上面这些方法中返回一个变量，当这个变量的值发生变化时，你需要手动调用 `setNeedsStatusBarAppearanceUpdate` 来通知框架更新状态栏样式。可以参考 demo 中 ViewPagerFragment 这个类。
-
-#### 开启沉浸式
-
-这里的沉浸式是指页面的内容延伸到 statusBar 底下
-
-只需要调用 `setStatusBarTranslucent(boolean translucent)` 即可开关沉浸式，AwesomeActivity 和 AwesomeFragment 都有这个方法，这个方法会影响整个 Activity 中所有的 Fragment，请慎重使用。
-
-AwesomeFragment 中有一个 `onStatusBarTranslucentChanged(boolean translucent)` 方法，你可以在这里处理开关沉浸式所要做的适配工作。
-
-你也可以通过 `isStatusBarTranslucent` 来判断是否开启了沉浸式。
-
-我们的 demo 在 MainActivity 中开启了沉浸式，你可以在 CustomStatusBarFragment 这个界面开关沉浸式
-
-![statusbar_custom](./screenshot/statusbar_custom.gif)
+如果你当前页面的状态栏样式不是固定的，需要根据 App 的不同状态展示不同的样式，你可以在上面这些方法中返回一个变量，当这个变量的值发生变化时，你需要手动调用 `setNeedsStatusBarAppearanceUpdate` 来通知框架更新状态栏样式。可以参考 demo 中 CustomStatusBarFragment 这个类。
 
 <a name="setting-toolbar"></a>
 
