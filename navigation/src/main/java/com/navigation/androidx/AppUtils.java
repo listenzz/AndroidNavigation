@@ -27,7 +27,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 
 import java.lang.reflect.Method;
@@ -165,14 +164,6 @@ public class AppUtils {
         }
     }
 
-    public static boolean shouldAdjustStatusBarColor(@NonNull AwesomeFragment fragment) {
-        boolean shouldAdjustForWhiteStatusBar = !AppUtils.isBlackColor(fragment.preferredStatusBarColor(), 176);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            shouldAdjustForWhiteStatusBar = shouldAdjustForWhiteStatusBar && fragment.preferredStatusBarStyle() == BarStyle.LightContent;
-        }
-        return shouldAdjustForWhiteStatusBar;
-    }
-
     public static void setNavigationBarColor(final Window window, int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -193,7 +184,7 @@ public class AppUtils {
         }
     }
 
-    public static boolean isDarNavigationBarStyle(Window window) {
+    public static boolean isNavigationBarStyleDark(Window window) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR) != 0;
         }
@@ -296,7 +287,7 @@ public class AppUtils {
         }
     }
 
-    public static boolean isDarkStatusBarStyle(Window window) {
+    public static boolean isStatusBarStyleDark(Window window) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
         }
@@ -352,7 +343,7 @@ public class AppUtils {
                 int statusBarHeight = getStatusBarHeight(context);
                 ViewGroup.LayoutParams lp = view.getLayoutParams();
                 if (lp != null && lp.height > 0) {
-                    lp.height += statusBarHeight;//增高
+                    lp.height += statusBarHeight;
                 }
                 view.setPadding(view.getPaddingLeft(), view.getPaddingTop() + statusBarHeight,
                         view.getPaddingRight(), view.getPaddingBottom());
@@ -367,7 +358,7 @@ public class AppUtils {
                 int statusBarHeight = getStatusBarHeight(context);
                 ViewGroup.LayoutParams lp = view.getLayoutParams();
                 if (lp != null && lp.height > 0) {
-                    lp.height -= statusBarHeight;//增高
+                    lp.height -= statusBarHeight;
                 }
                 view.setPadding(view.getPaddingLeft(), view.getPaddingTop() - statusBarHeight,
                         view.getPaddingRight(), view.getPaddingBottom());
@@ -379,12 +370,11 @@ public class AppUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             ViewGroup.LayoutParams lp = view.getLayoutParams();
             if (lp instanceof ViewGroup.MarginLayoutParams) {
-                ((ViewGroup.MarginLayoutParams) lp).topMargin += getStatusBarHeight(context);//增高
+                ((ViewGroup.MarginLayoutParams) lp).topMargin += getStatusBarHeight(context);
             }
             view.setLayoutParams(lp);
         }
     }
-
 
     private static int statusBarHeight = -1;
 
