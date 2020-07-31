@@ -94,25 +94,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         Bundle args = FragmentHelper.getArguments(this);
         boolean showAsDialog = args.getBoolean(ARGS_SHOW_AS_DIALOG, false);
         setShowsDialog(showAsDialog);
-
         setResult(0, null);
-        requireFragmentManager().registerFragmentLifecycleCallbacks(fragmentLifecycleCallbacks, true);
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        requireFragmentManager().unregisterFragmentLifecycleCallbacks(fragmentLifecycleCallbacks);
-    }
-
-    private FragmentManager.FragmentLifecycleCallbacks fragmentLifecycleCallbacks = new FragmentManager.FragmentLifecycleCallbacks() {
-        @Override
-        public void onFragmentDestroyed(@NonNull FragmentManager fm, @NonNull Fragment f) {
-            if (fm == f.getFragmentManager() && getTargetFragment() == f) {
-                setTargetFragment(f.getTargetFragment(), f.getTargetRequestCode());
-            }
-        }
-    };
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
