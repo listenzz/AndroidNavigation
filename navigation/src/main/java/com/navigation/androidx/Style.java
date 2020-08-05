@@ -138,9 +138,6 @@ public class Style implements Cloneable {
     }
 
     public void setToolbarBackgroundColor(int color) {
-        if (toolbarBackgroundColor == statusBarColor) {
-            statusBarColor = color;
-        }
         toolbarBackgroundColor = color;
     }
 
