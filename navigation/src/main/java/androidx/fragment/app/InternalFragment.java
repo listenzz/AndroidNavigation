@@ -11,4 +11,8 @@ public class InternalFragment extends DialogFragment {
         super.dismissInternal(allowStateLoss, fromOnDismiss);
     }
 
+    public boolean isDismissed() {
+        return mDismissed;
+    }
+
 }
