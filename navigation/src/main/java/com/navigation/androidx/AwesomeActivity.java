@@ -2,7 +2,6 @@ package com.navigation.androidx;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +26,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         super.onCreate(savedInstanceState);
         style = new Style(this);
         onCustomStyle(style);
-        AppUtils.setStatusBarTranslucent(getWindow(), true);
+        SystemUI.setStatusBarTranslucent(getWindow(), true);
     }
 
     @Override
@@ -145,20 +144,16 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     @Override
     public AwesomeFragment getPresentedFragment(@NonNull AwesomeFragment fragment) {
-        return FragmentHelper.getLatterFragment(getSupportFragmentManager(), fragment);
+        return FragmentHelper.getFragmentAfter(fragment);
     }
 
     @Override
     public AwesomeFragment getPresentingFragment(@NonNull AwesomeFragment fragment) {
-        return FragmentHelper.getAheadFragment(getSupportFragmentManager(), fragment);
+        return FragmentHelper.getFragmentBefore(fragment);
     }
 
     public void showDialog(@NonNull final AwesomeFragment dialog, final int requestCode) {
-        if (getSupportFragmentManager().isStateSaved()) {
-            scheduleTaskAtStarted(() -> showDialogInternal(dialog, requestCode));
-        } else {
-            showDialogInternal(dialog, requestCode);
-        }
+        scheduleTaskAtStarted(() -> showDialogInternal(dialog, requestCode), true);
     }
 
     protected void showDialogInternal(AwesomeFragment dialog, int requestCode) {
@@ -178,15 +173,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     @Nullable
     public DialogFragment getDialogFragment() {
         return FragmentHelper.getDialogFragment(getSupportFragmentManager());
-    }
-
-    public Window getCurrentWindow() {
-        DialogFragment dialogFragment = getDialogFragment();
-        if (dialogFragment != null && dialogFragment.isAdded()) {
-            return dialogFragment.getDialog().getWindow();
-        } else {
-            return getWindow();
-        }
     }
 
     public void scheduleTaskAtStarted(Runnable runnable) {

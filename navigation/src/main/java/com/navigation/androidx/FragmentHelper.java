@@ -64,11 +64,11 @@ public class FragmentHelper {
         executePendingTransactionsSafe(fragmentManager);
     }
 
-    public static void addFragmentToAddedList(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull Lifecycle.State maxLifecycle) {
-        addFragmentToAddedList(fragmentManager, containerId, fragment, maxLifecycle, true);
+    public static void addFragment(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull Lifecycle.State maxLifecycle) {
+        addFragment(fragmentManager, containerId, fragment, maxLifecycle, true);
     }
 
-    public static void addFragmentToAddedList(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull Lifecycle.State maxLifecycle, boolean primary) {
+    public static void addFragment(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull Lifecycle.State maxLifecycle, boolean primary) {
         if (fragmentManager.isDestroyed()) {
             return;
         }
@@ -83,35 +83,57 @@ public class FragmentHelper {
         executePendingTransactionsSafe(fragmentManager);
     }
 
+    @NonNull
+    public static List<AwesomeFragment> getFragments(@NonNull FragmentManager fragmentManager) {
+        List<AwesomeFragment> children = new ArrayList<>();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        for (int i = 0, size = fragments.size(); i < size; i++) {
+            Fragment fragment = fragments.get(i);
+            if (fragment instanceof AwesomeFragment && fragment.isAdded()) {
+                children.add((AwesomeFragment) fragment);
+            }
+        }
+        return children;
+    }
+
     @Nullable
-    public static AwesomeFragment getLatterFragment(@NonNull FragmentManager fragmentManager, @NonNull AwesomeFragment fragment) {
+    public static AwesomeFragment getFragmentAfter(@NonNull AwesomeFragment fragment) {
+        if (!fragment.isAdded()) {
+            return null;
+        }
+        FragmentManager fragmentManager = fragment.requireFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
-        int index = findIndexAtBackStack(fragmentManager, fragment);
+        int index = getIndexAtBackStack(fragment);
         if (index > -1 && index < count - 1) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(index + 1);
-            AwesomeFragment latter = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-            if (latter != null && latter.isAdded()) {
-                return latter;
+            AwesomeFragment next = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+            if (next != null && next.isAdded()) {
+                return next;
             }
         }
         return null;
     }
 
     @Nullable
-    public static AwesomeFragment getAheadFragment(@NonNull FragmentManager fragmentManager, @NonNull AwesomeFragment fragment) {
+    public static AwesomeFragment getFragmentBefore(@NonNull AwesomeFragment fragment) {
+        if (!fragment.isAdded()) {
+            return null;
+        }
+        FragmentManager fragmentManager = fragment.requireFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
-        int index = findIndexAtBackStack(fragmentManager, fragment);
+        int index = getIndexAtBackStack(fragment);
         if (index > 0 && index < count) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(index - 1);
-            AwesomeFragment ahead = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-            if (ahead != null && ahead.isAdded()) {
-                return ahead;
+            AwesomeFragment previous = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+            if (previous != null && previous.isAdded()) {
+                return previous;
             }
         }
         return null;
     }
 
-    public static int findIndexAtBackStack(@NonNull FragmentManager fragmentManager, @NonNull AwesomeFragment fragment) {
+    public static int getIndexAtBackStack(@NonNull AwesomeFragment fragment) {
+        FragmentManager fragmentManager = fragment.requireFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         int index = -1;
         for (int i = 0; i < count; i++) {
@@ -122,6 +144,16 @@ public class FragmentHelper {
             }
         }
         return index;
+    }
+
+    public static int getIndexAtList(@NonNull AwesomeFragment fragment) {
+        List<AwesomeFragment> list = getFragments(fragment.requireFragmentManager());
+        return list.indexOf(fragment);
+    }
+
+    public static int getBackStackEntryCount(@NonNull AwesomeFragment fragment) {
+        FragmentManager fragmentManager = fragment.getChildFragmentManager();
+        return fragmentManager.getBackStackEntryCount();
     }
 
     @Nullable
@@ -197,19 +229,6 @@ public class FragmentHelper {
         }
 
         return null;
-    }
-
-    @NonNull
-    public static List<AwesomeFragment> getFragmentsAtAddedList(@NonNull FragmentManager fragmentManager) {
-        List<AwesomeFragment> children = new ArrayList<>();
-        List<Fragment> fragments = fragmentManager.getFragments();
-        for (int i = 0, size = fragments.size(); i < size; i++) {
-            Fragment fragment = fragments.get(i);
-            if (fragment instanceof AwesomeFragment && fragment.isAdded()) {
-                children.add((AwesomeFragment) fragment);
-            }
-        }
-        return children;
     }
 
     public static void handleDismissFragment(@NonNull AwesomeFragment target, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top) {

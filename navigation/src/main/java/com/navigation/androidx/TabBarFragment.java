@@ -164,6 +164,7 @@ public class TabBarFragment extends AwesomeFragment {
         this.fragments = fragments;
     }
 
+    @Override
     public List<AwesomeFragment> getChildFragments() {
         return fragments;
     }
@@ -245,7 +246,7 @@ public class TabBarFragment extends AwesomeFragment {
         if (tabBar != null) {
             NavigationFragment navigationFragment = current.getNavigationFragment();
             if (navigationFragment != null && navigationFragment.shouldHideTabBarWhenPushed()) {
-                if (navigationFragment.getChildFragmentCountAtBackStack() <= 1) {
+                if (FragmentHelper.getBackStackEntryCount(navigationFragment) <= 1) {
                     showTabBar();
                 } else {
                     hideTabBar();

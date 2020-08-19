@@ -9,6 +9,7 @@ import com.navigation.androidx.AwesomeActivity;
 import com.navigation.androidx.DrawerFragment;
 import com.navigation.androidx.NavigationFragment;
 import com.navigation.androidx.Style;
+import com.navigation.androidx.SystemUI;
 import com.navigation.androidx.TabBarFragment;
 import com.navigation.androidx.TabBarItem;
 import com.navigation.statusbar.TestStatusBarFragment;
@@ -58,7 +59,7 @@ public class MainActivity extends AwesomeActivity {
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Log.i(TAG, "onAttachedToWindow 是否刘海眉：" + AppUtils.isCutout(this));
+        Log.i(TAG, "onAttachedToWindow 是否刘海眉：" + SystemUI.isCutout(this));
         // 设置沉浸式
         // setStatusBarTranslucent(!AppUtils.isCutout(this));
     }

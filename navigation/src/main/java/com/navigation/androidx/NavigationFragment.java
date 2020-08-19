@@ -164,15 +164,9 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             return;
         }
 
-        AwesomeFragment latter = FragmentHelper.getLatterFragment(getChildFragmentManager(), top);
-        if (latter != null) {
-            popToFragmentInternal(this, animated);
-            return;
-        }
-
-        AwesomeFragment ahead = FragmentHelper.getAheadFragment(getChildFragmentManager(), top);
-        if (ahead != null) {
-            popToFragmentInternal(ahead, animated);
+        AwesomeFragment previous = FragmentHelper.getFragmentBefore(top);
+        if (previous != null) {
+            popToFragmentInternal(previous, animated);
         }
     }
 
@@ -215,7 +209,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             target = topFragment;
         }
 
-        AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(fragmentManager, target);
+        AwesomeFragment aheadFragment = FragmentHelper.getFragmentBefore(target);
 
         topFragment.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.Fade);
         if (aheadFragment != null && aheadFragment.isAdded()) {
@@ -286,13 +280,13 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
         if (state == SwipeBackLayout.STATE_DRAGGING) {
             dragging = true;
-            AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
+            AwesomeFragment previous = FragmentHelper.getFragmentBefore(topFragment);
 
-            if (aheadFragment != null && aheadFragment.getView() != null) {
-                aheadFragment.getView().setVisibility(View.VISIBLE);
+            if (previous != null && previous.getView() != null) {
+                previous.getView().setVisibility(View.VISIBLE);
             }
 
-            if (aheadFragment != null && aheadFragment == getRootFragment() && aheadFragment.shouldHideTabBarWhenPushed()) {
+            if (previous != null && previous == getRootFragment() && previous.shouldHideTabBarWhenPushed()) {
                 TabBarFragment tabBarFragment = getTabBarFragment();
                 if (tabBarFragment != null && tabBarFragment.getTabBar() != null && tabBarFragment.getView() != null) {
                     View tabBar = tabBarFragment.getTabBar();
@@ -310,13 +304,13 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             }
 
         } else if (state == SwipeBackLayout.STATE_IDLE) {
-            AwesomeFragment aheadFragment = FragmentHelper.getAheadFragment(getChildFragmentManager(), topFragment);
+            AwesomeFragment previous = FragmentHelper.getFragmentBefore(topFragment);
 
-            if (aheadFragment != null && aheadFragment.getView() != null) {
-                aheadFragment.getView().setVisibility(View.GONE);
+            if (previous != null && previous.getView() != null) {
+                previous.getView().setVisibility(View.GONE);
             }
 
-            if (aheadFragment != null && scrollPercent >= 1.0f) {
+            if (previous != null && scrollPercent >= 1.0f) {
                 popFragment(false);
             }
 
@@ -332,7 +326,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             return false;
         }
         return style.isSwipeBackEnabled()
-                && getChildFragmentCountAtBackStack() > 1
+                && FragmentHelper.getBackStackEntryCount(this) > 1
                 && top.isBackInteractive()
                 && top.isSwipeBackEnabled();
     }

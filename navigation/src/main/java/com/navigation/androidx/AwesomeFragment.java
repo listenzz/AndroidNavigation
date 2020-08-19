@@ -1,6 +1,5 @@
 package com.navigation.androidx;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -39,8 +38,6 @@ import androidx.lifecycle.Lifecycle;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
-import static com.navigation.androidx.AppUtils.isHuawei;
 
 /**
  * Created by Listen on 2018/1/11.
@@ -165,10 +162,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             animateIn();
         }
 
-        if (getParentAwesomeFragment() == null || getShowsDialog()) {
-            fixKeyboardBugAtKitkat(root);
-        }
-
         callSuperOnViewCreated = true;
     }
 
@@ -176,9 +169,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void onDestroyView() {
         if (getView() != null) {
             AppUtils.hideSoftInput(getView());
-            if (globalLayoutListener != null) {
-                getView().getViewTreeObserver().removeOnGlobalLayoutListener(globalLayoutListener);
-            }
         }
         super.onDestroyView();
     }
@@ -400,17 +390,18 @@ public abstract class AwesomeFragment extends InternalFragment {
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             if (definesPresentationContext()) {
-                if (FragmentHelper.findIndexAtBackStack(requireFragmentManager(), this) == -1) {
-                    if (parent.getChildFragmentCountAtBackStack() != 0) {
-                        FragmentManager.BackStackEntry backStackEntry = requireFragmentManager().getBackStackEntryAt(0);
-                        AwesomeFragment presented = (AwesomeFragment) requireFragmentManager().findFragmentByTag(backStackEntry.getName());
+                FragmentManager fragmentManager = requireFragmentManager();
+                if (FragmentHelper.getIndexAtBackStack(this) == -1) {
+                    if (FragmentHelper.getBackStackEntryCount(parent) != 0) {
+                        FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(0);
+                        AwesomeFragment presented = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
                         if (presented != null && presented.isAdded()) {
                             return presented;
                         }
                     }
                     return null;
                 } else {
-                    return FragmentHelper.getLatterFragment(requireFragmentManager(), this);
+                    return FragmentHelper.getFragmentAfter(this);
                 }
             } else {
                 return parent.getPresentedFragment();
@@ -499,7 +490,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                 child.onFragmentResult(requestCode, resultCode, data);
             }
         } else {
-            List<AwesomeFragment> fragments = getChildFragmentsAtAddedList();
+            List<AwesomeFragment> fragments = getChildFragments();
             for (AwesomeFragment child : fragments) {
                 child.onFragmentResult(requestCode, resultCode, data);
             }
@@ -512,30 +503,16 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent == null) {
-            return "#" + getIndexAtAddedList() + "-" + getClass().getSimpleName();
+            return "#" + FragmentHelper.getIndexAtList(this) + "-" + getClass().getSimpleName();
         } else {
-            return parent.getDebugTag() + "#" + getIndexAtAddedList() + "-" + getClass().getSimpleName();
+            return parent.getDebugTag() + "#" + FragmentHelper.getIndexAtList(this) + "-" + getClass().getSimpleName();
         }
     }
 
-    public int getChildFragmentCountAtBackStack() {
-        FragmentManager fragmentManager = getChildFragmentManager();
-        return fragmentManager.getBackStackEntryCount();
-    }
-
-    public int getIndexAtBackStack() {
-        return FragmentHelper.findIndexAtBackStack(requireFragmentManager(), this);
-    }
-
-    public int getIndexAtAddedList() {
-        List<Fragment> fragments = requireFragmentManager().getFragments();
-        return fragments.indexOf(this);
-    }
-
     @NonNull
-    public List<AwesomeFragment> getChildFragmentsAtAddedList() {
+    public List<AwesomeFragment> getChildFragments() {
         if (isAdded()) {
-            return FragmentHelper.getFragmentsAtAddedList(getChildFragmentManager());
+            return FragmentHelper.getFragments(getChildFragmentManager());
         }
         return Collections.emptyList();
     }
@@ -600,7 +577,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     @NonNull
     protected BarStyle preferredStatusBarStyle() {
         if (getShowsDialog()) {
-            return AppUtils.isStatusBarStyleDark(requireActivity().getWindow()) ? BarStyle.DarkContent : BarStyle.LightContent;
+            return SystemUI.isStatusBarStyleDark(requireActivity().getWindow()) ? BarStyle.DarkContent : BarStyle.LightContent;
         }
 
         return style.getStatusBarStyle();
@@ -608,7 +585,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     protected boolean preferredStatusBarHidden() {
         if (getShowsDialog()) {
-            return AppUtils.isStatusBarHidden(requireActivity().getWindow());
+            return SystemUI.isStatusBarHidden(requireActivity().getWindow());
         }
 
         return style.isStatusBarHidden();
@@ -628,10 +605,6 @@ public abstract class AwesomeFragment extends InternalFragment {
 
 
     public void setNeedsStatusBarAppearanceUpdate() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            return;
-        }
-
         AwesomeFragment parent = getParentAwesomeFragment();
         if (!getShowsDialog() && parent != null) {
             parent.setNeedsStatusBarAppearanceUpdate();
@@ -655,23 +628,29 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void setStatusBarStyle(BarStyle barStyle) {
-        AppUtils.setStatusBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
+        SystemUI.setStatusBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
     }
 
     public void setStatusBarHidden(boolean hidden) {
-        AppUtils.setStatusBarHidden(getWindow(), hidden);
+        Window window = getWindow();
+        if (window != null) {
+            SystemUI.setStatusBarHidden(getWindow(), hidden);
+        }
     }
 
     public void setStatusBarColor(int color, boolean animated) {
-        AppUtils.setStatusBarColor(getWindow(), color, animated);
+        Window window = getWindow();
+        if (window != null) {
+            SystemUI.setStatusBarColor(getWindow(), color, animated);
+        }
     }
 
     public void appendStatusBarPadding(View view) {
-        AppUtils.appendStatusBarPadding(requireContext(), view);
+        SystemUI.appendStatusBarPadding(requireContext(), view);
     }
 
     public void removeStatusBarPadding(View view) {
-        AppUtils.removeStatusBarPadding(requireContext(), view);
+        SystemUI.removeStatusBarPadding(requireContext(), view);
     }
 
     // ------- NavigationBar --------
@@ -691,7 +670,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     @ColorInt
-    @TargetApi(26)
     protected int preferredNavigationBarColor() {
         if (getShowsDialog()) {
             if (getAnimationType() == AnimationType.Slide) {
@@ -710,8 +688,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @NonNull
     protected BarStyle preferredNavigationBarStyle() {
-        return !isHuawei() &&
-                !AppUtils.isBlackColor(preferredNavigationBarColor(), 176) ? BarStyle.DarkContent : BarStyle.LightContent;
+        return AppUtils.isBlackColor(preferredNavigationBarColor(), 176) ? BarStyle.LightContent : BarStyle.DarkContent;
     }
 
     public void setNeedsNavigationBarAppearanceUpdate() {
@@ -731,22 +708,11 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void setNavigationBarStyle(BarStyle barStyle) {
-        AppUtils.setNavigationBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
+        SystemUI.setNavigationBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
     }
 
     public void setNavigationBarColor(int color) {
-        AppUtils.setNavigationBarColor(getWindow(), color);
-    }
-
-    private SoftInputLayoutListener globalLayoutListener;
-
-    private void fixKeyboardBugAtKitkat(View root) {
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-            if (globalLayoutListener == null) {
-                globalLayoutListener = new SoftInputLayoutListener(root);
-                root.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
-            }
-        }
+        SystemUI.setNavigationBarColor(getWindow(), color);
     }
 
     // ------ dialog -----
@@ -784,7 +750,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     protected void setupDialog() {
         Window window = getWindow();
-        AppUtils.setStatusBarTranslucent(window, true);
+        SystemUI.setStatusBarTranslucent(window, true);
 
         if (window != null) {
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -1083,7 +1049,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                 return;
             }
 
-            int index = getIndexAtBackStack();
+            int index = FragmentHelper.getIndexAtBackStack(this);
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
                 if (index == 0) {
                     if (tabBarFragment.getTabBar() != null) {
@@ -1125,7 +1091,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     private void adjustBottomPaddingIfNeeded(final View root) {
-        int index = getIndexAtBackStack();
+        int index = FragmentHelper.getIndexAtBackStack(this);
         if (index == 0 || !shouldHideTabBarWhenPushed()) {
             int color = Color.parseColor(style.getTabBarBackgroundColor());
             if (Color.alpha(color) == 255) {

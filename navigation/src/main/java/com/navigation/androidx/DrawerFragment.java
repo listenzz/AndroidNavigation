@@ -68,8 +68,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
                 throw new IllegalArgumentException("必须调用 `setMenuFragment` 设置 menuFragment");
             }
 
-            FragmentHelper.addFragmentToAddedList(getChildFragmentManager(), R.id.drawer_content, contentFragment, Lifecycle.State.RESUMED);
-            FragmentHelper.addFragmentToAddedList(getChildFragmentManager(), R.id.drawer_menu, menuFragment, Lifecycle.State.STARTED, false);
+            FragmentHelper.addFragment(getChildFragmentManager(), R.id.drawer_content, contentFragment, Lifecycle.State.RESUMED);
+            FragmentHelper.addFragment(getChildFragmentManager(), R.id.drawer_menu, menuFragment, Lifecycle.State.STARTED, false);
         }
     }
 
@@ -125,7 +125,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     protected boolean shouldHideStatusBarWhenMenuOpened() {
-        return (opening || opened) && !AppUtils.isCutout(requireActivity());
+        return (opening || opened) && !SystemUI.isCutout(requireActivity());
     }
 
     @Override
