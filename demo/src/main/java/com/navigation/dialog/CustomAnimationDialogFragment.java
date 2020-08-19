@@ -10,10 +10,10 @@ import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 
-import com.navigation.R;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.navigation.R;
 import com.navigation.androidx.AnimationType;
 import com.navigation.androidx.AwesomeFragment;
 

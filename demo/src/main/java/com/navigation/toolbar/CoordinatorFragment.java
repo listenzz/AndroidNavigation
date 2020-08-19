@@ -6,11 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.navigation.BaseFragment;
-import com.navigation.R;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.navigation.BaseFragment;
+import com.navigation.R;
 import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.Style;
 

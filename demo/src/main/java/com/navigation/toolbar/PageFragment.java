@@ -3,20 +3,21 @@ package com.navigation.toolbar;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.navigation.BaseFragment;
-import com.navigation.R;
-import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.navigation.BaseFragment;
+import com.navigation.R;
 import com.navigation.androidx.FragmentHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Listen on 2018/2/1.

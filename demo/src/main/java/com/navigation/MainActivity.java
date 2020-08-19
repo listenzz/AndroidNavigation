@@ -4,7 +4,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.navigation.androidx.AppUtils;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.navigation.androidx.AwesomeActivity;
 import com.navigation.androidx.DrawerFragment;
 import com.navigation.androidx.NavigationFragment;
@@ -13,9 +15,6 @@ import com.navigation.androidx.SystemUI;
 import com.navigation.androidx.TabBarFragment;
 import com.navigation.androidx.TabBarItem;
 import com.navigation.statusbar.TestStatusBarFragment;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatDelegate;
 
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 
@@ -60,8 +59,6 @@ public class MainActivity extends AwesomeActivity {
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         Log.i(TAG, "onAttachedToWindow 是否刘海眉：" + SystemUI.isCutout(this));
-        // 设置沉浸式
-        // setStatusBarTranslucent(!AppUtils.isCutout(this));
     }
 
     @Override

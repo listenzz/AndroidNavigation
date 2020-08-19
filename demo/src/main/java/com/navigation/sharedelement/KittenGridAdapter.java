@@ -1,11 +1,11 @@
 package com.navigation.sharedelement;
 
-import androidx.core.view.ViewCompat;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.navigation.R;
 

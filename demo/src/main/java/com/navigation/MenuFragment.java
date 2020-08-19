@@ -6,7 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.navigation.androidx.AppUtils;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.navigation.androidx.AwesomeFragment;
 import com.navigation.androidx.DrawerFragment;
 import com.navigation.androidx.NavigationFragment;
@@ -17,9 +19,6 @@ import com.navigation.toolbar.CoordinatorFragment;
 import com.navigation.toolbar.SearchFragment;
 import com.navigation.toolbar.ToolbarColorTransitionFragment;
 import com.navigation.toolbar.ViewPagerFragment;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Created by listen on 2018/1/13.

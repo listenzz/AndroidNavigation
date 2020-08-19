@@ -8,10 +8,9 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.BarStyle;
 import com.navigation.statusbar.TestStatusBarFragment;
-
-import com.navigation.androidx.AwesomeToolbar;
 
 /**
  * Created by Listen on 2018/2/1.

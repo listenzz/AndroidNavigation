@@ -827,7 +827,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         if (isAdded() && !isDismissed()) {
             requireFragmentManager().beginTransaction().setMaxLifecycle(this, Lifecycle.State.STARTED).commit();
-            super.dismiss();
+            dismiss();
         }
 
         if (completion != null) {

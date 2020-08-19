@@ -3,7 +3,6 @@ package com.navigation.dialog;
 import android.content.Context;
 import android.content.res.AssetManager;
 
-
 import com.google.gson.Gson;
 
 import org.json.JSONArray;

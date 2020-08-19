@@ -1,17 +1,17 @@
 package com.navigation.dialog;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.navigation.R;
-import com.navigation.databinding.FragmentDataBindingBinding;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 
+import com.navigation.R;
 import com.navigation.androidx.AwesomeFragment;
+import com.navigation.databinding.FragmentDataBindingBinding;
 
 public class DataBindingDialogFragment extends AwesomeFragment {
 

@@ -10,12 +10,12 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.navigation.BaseFragment;
-import com.navigation.R;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+
+import com.navigation.BaseFragment;
+import com.navigation.R;
 import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.BarStyle;
 import com.navigation.androidx.Style;

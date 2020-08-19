@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+
 import com.navigation.androidx.AwesomeFragment;
 
 public class AlertDialogFragment extends AwesomeFragment {

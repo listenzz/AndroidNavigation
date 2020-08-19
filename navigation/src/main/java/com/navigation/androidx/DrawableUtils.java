@@ -19,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -105,7 +104,7 @@ public class DrawableUtils {
         int size = Math.round(fontSize * scale);
         String cacheKey = fontFamily + ":" + glyph + ":" + color;
         String hash = Integer.toString(cacheKey.hashCode(), 32);
-        String cacheFilePath = cacheFolderPath + hash + "_" + Integer.toString(fontSize) + scaleSuffix + ".png";
+        String cacheFilePath = cacheFolderPath + hash + "_" + fontSize + scaleSuffix + ".png";
         String cacheFileUrl = "file://" + cacheFilePath;
         File cacheFile = new File(cacheFilePath);
 
@@ -133,8 +132,6 @@ public class DrawableUtils {
                 fos.close();
                 fos = null;
                 return cacheFileUrl;
-            } catch (FileNotFoundException e) {
-                Log.e(TAG, "", e);
             } catch (IOException e) {
                 Log.e(TAG, "", e);
             } finally {

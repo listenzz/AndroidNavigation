@@ -7,11 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
-import com.navigation.BaseFragment;
-import com.navigation.R;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.navigation.BaseFragment;
+import com.navigation.R;
 import com.navigation.androidx.Style;
 
 

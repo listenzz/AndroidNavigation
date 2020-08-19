@@ -6,17 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.navigation.BaseFragment;
-import com.navigation.R;
-import com.navigation.toolbar.NoToolbarFragment;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.navigation.BaseFragment;
+import com.navigation.R;
 import com.navigation.androidx.BarStyle;
 import com.navigation.androidx.DrawerFragment;
 import com.navigation.androidx.NavigationFragment;
 import com.navigation.androidx.Style;
 import com.navigation.androidx.ToolbarButtonItem;
+import com.navigation.toolbar.NoToolbarFragment;
 
 /**
  * Created by listen on 2018/1/12.
