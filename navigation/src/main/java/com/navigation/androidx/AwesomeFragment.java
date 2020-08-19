@@ -211,15 +211,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         //Log.i(TAG, getDebugTag() + "#onPause");
     }
 
-    public boolean isFragmentHidden() {
-        boolean hidden = super.isHidden();
-        if (hidden) {
-            return true;
-        }
-        AwesomeFragment parent = getParentAwesomeFragment();
-        return parent != null && parent.isFragmentHidden();
-    }
-
     @Override
     @CallSuper
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
@@ -235,7 +226,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         // Log.d(TAG, getDebugTag() + "  " + animation.name() + " transit:" + transit + " enter:" + enter);
 
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null && FragmentHelper.isRemovingAlongWithParent(parent)) {
+        if (parent != null && FragmentHelper.isRemoving(parent)) {
             return AnimationUtils.loadAnimation(context, R.anim.nav_delay);
         }
 

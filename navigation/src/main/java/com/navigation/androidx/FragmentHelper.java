@@ -157,23 +157,20 @@ public class FragmentHelper {
     }
 
     @Nullable
-    public static Fragment findDescendantFragment(@NonNull FragmentManager fragmentManager, @NonNull String tag) {
+    public static Fragment findFragment(@NonNull FragmentManager fragmentManager, @NonNull String tag) {
         Fragment target = fragmentManager.findFragmentByTag(tag);
         if (target == null) {
             List<Fragment> fragments = fragmentManager.getFragments();
             int count = fragments.size();
             for (int i = count - 1; i > -1; i--) {
-                Fragment f = fragments.get(i);
-                if (f.isAdded()) {
-                    if (f instanceof AwesomeFragment) {
-                        AwesomeFragment af = (AwesomeFragment) f;
-                        if (af.getSceneId().equals(tag)) {
-                            target = af;
-                        }
+                Fragment fragment = fragments.get(i);
+                if (fragment.isAdded()) {
+                    if (tag.equals(fragment.getTag())) {
+                        target = fragment;
                     }
 
                     if (target == null) {
-                        target = findDescendantFragment(f.getChildFragmentManager(), tag);
+                        target = findFragment(fragment.getChildFragmentManager(), tag);
                     }
 
                     if (target != null) {
@@ -182,17 +179,51 @@ public class FragmentHelper {
                 }
             }
         }
+
         return target;
     }
 
-    public static boolean isRemovingAlongWithParent(@NonNull AwesomeFragment parent) {
-        while (parent != null) {
-            if (parent.isRemoving()) {
-                return true;
-            }
-            parent = parent.getParentAwesomeFragment();
+    @Nullable
+    public static AwesomeFragment findAwesomeFragment(@NonNull FragmentManager fragmentManager, @NonNull String tag) {
+        Fragment fragment = findFragment(fragmentManager, tag);
+        if (fragment instanceof AwesomeFragment) {
+            return (AwesomeFragment) fragment;
         }
-        return false;
+        return null;
+    }
+
+    @Nullable
+    public static Fragment findFragment(@NonNull FragmentManager fragmentManager, @NonNull Class<? extends Fragment> type) {
+        List<Fragment> fragments = fragmentManager.getFragments();
+        int count = fragments.size();
+        Fragment target = null;
+        for (int i = count - 1; i > -1; i--) {
+            Fragment fragment = fragments.get(i);
+            if (fragment.isAdded()) {
+                if (type.isAssignableFrom(fragment.getClass())) {
+                    target = fragment;
+                }
+
+                if (target == null) {
+                    target = findFragment(fragment.getChildFragmentManager(), type);
+                }
+
+                if (target != null) {
+                    break;
+                }
+            }
+        }
+
+        return target;
+    }
+
+    @Nullable
+    public static AwesomeFragment findAwesomeFragment(@NonNull FragmentManager fragmentManager, @NonNull Class<? extends Fragment> type) {
+        Fragment fragment = findFragment(fragmentManager, type);
+        if (fragment instanceof AwesomeFragment) {
+            return (AwesomeFragment) fragment;
+        }
+        return null;
     }
 
     @Nullable
@@ -248,6 +279,26 @@ public class FragmentHelper {
         fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
         target.onFragmentResult(top.getRequestCode(), top.getResultCode(), top.getResultData());
+    }
+
+    public static boolean isRemoving(@NonNull AwesomeFragment fragment) {
+        while (fragment != null) {
+            if (fragment.isRemoving()) {
+                return true;
+            }
+            fragment = fragment.getParentAwesomeFragment();
+        }
+        return false;
+    }
+
+    public static boolean isHidden(@NonNull AwesomeFragment fragment) {
+        while (fragment != null) {
+            if (fragment.isHidden()) {
+                return true;
+            }
+            fragment = fragment.getParentAwesomeFragment();
+        }
+        return false;
     }
 
     public static boolean canPresentFragment(@NonNull AwesomeFragment fragment, @NonNull FragmentActivity activity) {

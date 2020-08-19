@@ -229,15 +229,15 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         redirectToFragment(fragment, null, animated);
     }
 
-    public void redirectToFragment(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment target, boolean animated) {
-        redirectToFragment(fragment, target, animated, null);
+    public void redirectToFragment(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, boolean animated) {
+        redirectToFragment(fragment, from, animated, null);
     }
 
-    public void redirectToFragment(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment target, boolean animated, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> redirectToFragmentInternal(fragment, target, animated, completion), animated);
+    public void redirectToFragment(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, boolean animated, @Nullable Runnable completion) {
+        scheduleTaskAtStarted(() -> redirectToFragmentInternal(fragment, from, animated, completion), animated);
     }
 
-    private void redirectToFragmentInternal(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment target, boolean animated, @Nullable Runnable completion) {
+    private void redirectToFragmentInternal(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, boolean animated, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getChildFragmentManager();
 
         AwesomeFragment topFragment = getTopFragment();
@@ -248,27 +248,27 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             return;
         }
 
-        if (target == null) {
-            target = topFragment;
+        if (from == null) {
+            from = topFragment;
         }
 
-        AwesomeFragment aheadFragment = FragmentHelper.getFragmentBefore(target);
+        AwesomeFragment previous = FragmentHelper.getFragmentBefore(from);
 
         topFragment.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.Fade);
-        if (aheadFragment != null && aheadFragment.isAdded()) {
-            aheadFragment.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.Fade);
+        if (previous != null && previous.isAdded()) {
+            previous.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.Fade);
         }
 
         fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
 
-        fragmentManager.popBackStack(target.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        fragmentManager.popBackStack(from.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        if (aheadFragment != null && aheadFragment.isAdded()) {
-            transaction.hide(aheadFragment);
-            transaction.setMaxLifecycle(aheadFragment, Lifecycle.State.STARTED);
+        if (previous != null && previous.isAdded()) {
+            transaction.hide(previous);
+            transaction.setMaxLifecycle(previous, Lifecycle.State.STARTED);
         }
         fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
