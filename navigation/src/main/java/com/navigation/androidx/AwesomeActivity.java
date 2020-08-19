@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -197,8 +196,8 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     @Nullable
-    public DialogFragment getDialogFragment() {
-        return FragmentHelper.getDialogFragment(getSupportFragmentManager());
+    public AwesomeFragment getAwesomeDialogFragment() {
+        return FragmentHelper.getAwesomeDialogFragment(getSupportFragmentManager());
     }
 
     public void scheduleTaskAtStarted(Runnable runnable) {

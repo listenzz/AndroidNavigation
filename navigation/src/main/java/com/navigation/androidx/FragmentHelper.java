@@ -196,20 +196,20 @@ public class FragmentHelper {
     }
 
     @Nullable
-    public static DialogFragment getDialogFragment(@NonNull FragmentManager fragmentManager) {
+    public static AwesomeFragment getAwesomeDialogFragment(@NonNull FragmentManager fragmentManager) {
         if (fragmentManager.isDestroyed()) {
             return null;
         }
 
         Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
         if (fragment != null && fragment.isAdded()) {
-            if (fragment instanceof DialogFragment) {
-                DialogFragment dialogFragment = (DialogFragment) fragment;
+            if (fragment instanceof AwesomeFragment) {
+                AwesomeFragment dialogFragment = (AwesomeFragment) fragment;
                 if (dialogFragment.getShowsDialog()) {
                     return dialogFragment;
                 }
             }
-            return getDialogFragment(fragment.getChildFragmentManager());
+            return getAwesomeDialogFragment(fragment.getChildFragmentManager());
         }
 
         List<Fragment> fragments = fragmentManager.getFragments();
@@ -218,13 +218,13 @@ public class FragmentHelper {
         for (int i = count - 1; i > -1; i--) {
             fragment = fragments.get(i);
             if (fragment.isAdded()) {
-                if (fragment instanceof DialogFragment) {
-                    DialogFragment dialogFragment = (DialogFragment) fragment;
+                if (fragment instanceof AwesomeFragment) {
+                    AwesomeFragment dialogFragment = (AwesomeFragment) fragment;
                     if (dialogFragment.getShowsDialog()) {
                         return dialogFragment;
                     }
                 }
-                return getDialogFragment(fragment.getChildFragmentManager());
+                return getAwesomeDialogFragment(fragment.getChildFragmentManager());
             }
         }
 
@@ -257,7 +257,7 @@ public class FragmentHelper {
             return false;
         }
 
-        DialogFragment dialog = getDialogFragment(activity.getSupportFragmentManager());
+        DialogFragment dialog = getAwesomeDialogFragment(activity.getSupportFragmentManager());
         if (dialog != null) {
             Log.w(TAG, "can not present a fragment over a dialog.");
             return false;
@@ -273,7 +273,7 @@ public class FragmentHelper {
             return false;
         }
 
-        DialogFragment dialog = getDialogFragment(activity.getSupportFragmentManager());
+        DialogFragment dialog = getAwesomeDialogFragment(activity.getSupportFragmentManager());
         if (dialog != null && dialog != fragment) {
             Log.w(TAG, "can not show dialog since the fragment had show another dialog already.");
             return false;
