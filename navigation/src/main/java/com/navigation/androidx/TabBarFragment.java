@@ -189,8 +189,12 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     public void setSelectedFragment(AwesomeFragment fragment) {
+        setSelectedFragment(fragment, null);
+    }
+
+    public void setSelectedFragment(AwesomeFragment fragment, @Nullable Runnable completion) {
         int index = fragments.indexOf(fragment);
-        setSelectedIndex(index);
+        setSelectedIndex(index, completion);
     }
 
     @Nullable
@@ -209,20 +213,30 @@ public class TabBarFragment extends AwesomeFragment {
         return selectedIndex;
     }
 
-    public void setSelectedIndex(final int index) {
+    public void setSelectedIndex(int index) {
+        setSelectedIndex(index, null);
+    }
+
+    public void setSelectedIndex(int index, @Nullable Runnable completion) {
         if (isAdded()) {
-            scheduleTaskAtStarted(() -> setSelectedIndexInternal(index));
+            scheduleTaskAtStarted(() -> setSelectedIndexInternal(index, completion));
         } else {
             selectedIndex = index;
+            if (completion != null) {
+                throw new IllegalStateException("Can't run completion callback when the fragment is not added.");
+            }
         }
     }
 
-    private void setSelectedIndexInternal(int index) {
+    private void setSelectedIndexInternal(int index, @Nullable Runnable completion) {
         if (tabBarProvider != null) {
             tabBarProvider.setSelectedIndex(index);
         }
 
         if (selectedIndex == index) {
+            if (completion != null) {
+                completion.run();
+            }
             return;
         }
 
@@ -242,6 +256,10 @@ public class TabBarFragment extends AwesomeFragment {
         transaction.show(current);
         transaction.commit();
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+
+        if (completion != null) {
+            completion.run();
+        }
 
         if (tabBar != null) {
             NavigationFragment navigationFragment = current.getNavigationFragment();

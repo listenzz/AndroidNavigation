@@ -255,14 +255,57 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     public void openMenu() {
+        openMenu(null);
+    }
+
+    public void openMenu(@Nullable Runnable completion) {
+        if (isMenuOpened()) {
+            if (completion != null) {
+                completion.run();
+            }
+            return;
+        }
+
         if (drawerLayout != null) {
+            drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                @Override
+                public void onDrawerOpened(View drawerView) {
+                    drawerLayout.removeDrawerListener(this);
+                    if (completion != null) {
+                        completion.run();
+                    }
+                }
+            });
             drawerLayout.openDrawer(GravityCompat.START);
+        } else {
+            throw new IllegalStateException("No drawer");
         }
     }
 
     public void closeMenu() {
+        closeMenu(null);
+    }
+
+    public void closeMenu(@Nullable Runnable completion) {
+        if (!isMenuOpened()) {
+            if (completion != null) {
+                completion.run();
+            }
+            return;
+        }
         if (drawerLayout != null) {
+            drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                @Override
+                public void onDrawerClosed(View drawerView) {
+                    drawerLayout.removeDrawerListener(this);
+                    if (completion != null) {
+                        completion.run();
+                    }
+                }
+            });
             drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            throw new IllegalStateException("No drawer");
         }
     }
 
@@ -279,10 +322,14 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     public void toggleMenu() {
+        toggleMenu(null);
+    }
+
+    public void toggleMenu(@Nullable Runnable completion) {
         if (isMenuOpened()) {
-            closeMenu();
+            closeMenu(completion);
         } else {
-            openMenu();
+            openMenu(completion);
         }
     }
 

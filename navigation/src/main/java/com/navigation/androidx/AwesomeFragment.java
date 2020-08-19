@@ -122,7 +122,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             layoutInflater = new DialogLayoutInflater(requireContext(), layoutInflater,
                     () -> {
                         if (isCancelable()) {
-                            hideDialog();
+                            hideDialog(null);
                         }
                     });
         }
@@ -299,7 +299,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             if (child != null) {
                 boolean processed = child.dispatchBackPressed() || onBackPressed();
                 if (!processed) {
-                    child.dismissFragment();
+                    child.dismissFragment(null);
                 }
                 return true;
             }
@@ -322,8 +322,15 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode) {
+        presentFragment(fragment, requestCode, null);
+    }
+
+    public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> {
             if (!FragmentHelper.canPresentFragment(this, requireActivity())) {
+                if (completion != null) {
+                    completion.run();
+                }
                 onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
                 return;
             }
@@ -331,9 +338,9 @@ public abstract class AwesomeFragment extends InternalFragment {
             AwesomeFragment parent = getParentAwesomeFragment();
             if (parent != null) {
                 if (definesPresentationContext()) {
-                    presentFragmentInternal(AwesomeFragment.this, fragment, requestCode);
+                    presentFragmentInternal(AwesomeFragment.this, fragment, requestCode, completion);
                 } else {
-                    parent.presentFragment(fragment, requestCode);
+                    parent.presentFragment(fragment, requestCode, completion);
                 }
                 return;
             }
@@ -341,20 +348,27 @@ public abstract class AwesomeFragment extends InternalFragment {
             if (presentableActivity != null) {
                 Bundle args = FragmentHelper.getArguments(fragment);
                 args.putInt(ARGS_REQUEST_CODE, requestCode);
-                presentableActivity.presentFragment(fragment);
+                presentableActivity.presentFragment(fragment, completion);
             }
         }, true);
     }
 
-    private void presentFragmentInternal(final AwesomeFragment target, final AwesomeFragment fragment, final int requestCode) {
+    private void presentFragmentInternal(final AwesomeFragment target, final AwesomeFragment fragment, final int requestCode, @Nullable Runnable completion) {
         Bundle args = FragmentHelper.getArguments(fragment);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         fragment.setTargetFragment(target, requestCode);
         fragment.setDefinesPresentationContext(true);
         FragmentHelper.addFragmentToBackStack(target.requireFragmentManager(), target.getContainerId(), fragment, PresentAnimation.Modal);
+        if (completion != null) {
+            completion.run();
+        }
     }
 
     public void dismissFragment() {
+        dismissFragment(null);
+    }
+
+    public void dismissFragment(@Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> {
             if (isInDialog()) {
                 throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `hideDialog`");
@@ -366,23 +380,30 @@ public abstract class AwesomeFragment extends InternalFragment {
                     AwesomeFragment presented = getPresentedFragment();
                     if (presented != null) {
                         FragmentHelper.handleDismissFragment(this, presented, null);
+                        if (completion != null) {
+                            completion.run();
+                        }
                         return;
                     }
+
                     AwesomeFragment target = (AwesomeFragment) getTargetFragment();
                     if (target != null) {
                         FragmentHelper.handleDismissFragment(target, this, this);
                     }
+
+                    if (completion != null) {
+                        completion.run();
+                    }
                 } else {
-                    parent.dismissFragment();
+                    parent.dismissFragment(completion);
                 }
                 return;
             }
 
             if (presentableActivity != null) {
-                presentableActivity.dismissFragment(this);
+                presentableActivity.dismissFragment(this, completion);
             }
         }, true);
-
     }
 
     @Nullable
@@ -761,7 +782,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             dialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
                     if (!dispatchBackPressed() && isCancelable()) {
-                        hideDialog();
+                        hideDialog(null);
                     }
                     return true;
                 }
@@ -771,25 +792,46 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     /**
-     * @deprecated call {@link #hideDialog()} instead of this method.
+     * Dismiss the fragment as dialog.
      */
-    @Deprecated
-    @Override
-    public void dismiss() {
+    public void hideDialog() {
+        hideDialog(null);
+    }
+
+    public void hideDialog(@Nullable Runnable completion) {
+        scheduleTaskAtStarted(() -> hideDialogInternal(completion, false), true);
+    }
+
+    private void hideDialogInternal(@Nullable Runnable completion, boolean fromAnimation) {
         if (!isInDialog()) {
             throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
-        } else {
-            if (getShowsDialog()) {
-                if (isAdded()) {
-                    requireFragmentManager().beginTransaction().setMaxLifecycle(this, Lifecycle.State.STARTED).commit();
-                    super.dismiss();
-                }
+        }
+
+        if (!getShowsDialog()) {
+            AwesomeFragment parent = getParentAwesomeFragment();
+            if (parent != null) {
+                parent.hideDialog(completion);
             } else {
-                AwesomeFragment parent = getParentAwesomeFragment();
-                if (parent != null) {
-                    parent.hideDialog();
-                }
+                throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
             }
+            return;
+        }
+
+        AppUtils.hideSoftInput(getView());
+
+        if (getAnimationType() != AnimationType.None && !fromAnimation) {
+            if (animateOut(completion)) {
+                return;
+            }
+        }
+
+        if (isAdded() && !isDismissed()) {
+            requireFragmentManager().beginTransaction().setMaxLifecycle(this, Lifecycle.State.STARTED).commit();
+            super.dismiss();
+        }
+
+        if (completion != null) {
+            completion.run();
         }
     }
 
@@ -801,36 +843,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
             AwesomeFragment fragment = (AwesomeFragment) target;
             fragment.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
-        }
-    }
-
-    private boolean animatingOut = false;
-
-    /**
-     * Dismiss the fragment as dialog.
-     */
-    public void hideDialog() {
-        scheduleTaskAtStarted(this::hideDialogInternal, true);
-    }
-
-    /**
-     * @deprecated call {@link #hideDialog()} instead of this method.
-     */
-    @Deprecated
-    public void dismissDialog() {
-        hideDialog();
-    }
-
-    private void hideDialogInternal() {
-        if (animatingOut) {
-            return;
-        }
-
-        if (getAnimationType() != AnimationType.None) {
-            animateOut();
-        } else {
-            AppUtils.hideSoftInput(getView());
-            dismiss();
         }
     }
 
@@ -852,23 +864,42 @@ public abstract class AwesomeFragment extends InternalFragment {
         return super.show(transaction, tag);
     }
 
-    public void showDialog(@NonNull final AwesomeFragment dialog, final int requestCode) {
+    /**
+     * @deprecated call {@link #hideDialog()} instead of this method.
+     */
+    @Deprecated
+    @Override
+    public void dismiss() {
+        super.dismiss();
+    }
+
+    public void showDialog(@NonNull AwesomeFragment dialog, int requestCode) {
+        showDialog(dialog, requestCode, null);
+    }
+
+    public void showDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> {
             if (!FragmentHelper.canShowDialog(this, requireActivity())) {
+                if (completion != null) {
+                    completion.run();
+                }
                 onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
                 return;
             }
-            showDialogInternal(AwesomeFragment.this, dialog, requestCode);
+            showDialogInternal(AwesomeFragment.this, dialog, requestCode, completion);
         }, true);
     }
 
-    private void showDialogInternal(final AwesomeFragment target, final AwesomeFragment dialog, final int requestCode) {
+    private void showDialogInternal(AwesomeFragment target, AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
         Bundle args = FragmentHelper.getArguments(dialog);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         args.putBoolean(ARGS_SHOW_AS_DIALOG, true);
         dialog.setTargetFragment(target, requestCode);
         dialog.show(target.requireFragmentManager(), dialog.getSceneId());
         FragmentHelper.executePendingTransactionsSafe(target.requireFragmentManager());
+        if (completion != null) {
+            completion.run();
+        }
     }
 
     private AnimationType animationType = AnimationType.None;
@@ -911,7 +942,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
-    private void animateOut() {
+    private boolean animateOut(@Nullable Runnable completion) {
         View root = getView();
         AnimationType type = getAnimationType();
         boolean shouldAnimated = type != AnimationType.None && root instanceof DialogFrameLayout;
@@ -919,9 +950,27 @@ public abstract class AwesomeFragment extends InternalFragment {
             DialogFrameLayout frameLayout = (DialogFrameLayout) root;
             View contentView = frameLayout.getChildAt(0);
             if (type == AnimationType.Slide) {
-                animateDownOut(contentView);
+                animateDownOut(contentView, completion);
+                return true;
             }
         }
+        return false;
+    }
+
+    private void animateDownOut(@NonNull final View contentView, @Nullable Runnable completion) {
+        TranslateAnimation translate = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
+                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 1f
+        );
+        AlphaAnimation alpha = new AlphaAnimation(1, 0);
+        AnimationSet set = new AnimationSet(true);
+        set.addAnimation(translate);
+        set.addAnimation(alpha);
+        set.setInterpolator(new DecelerateInterpolator());
+        set.setDuration(200);
+        set.setFillAfter(true);
+        set.setAnimationListener(createAnimationListener(contentView, completion));
+        contentView.startAnimation(set);
     }
 
     private void animateUpIn(@NonNull final View contentView) {
@@ -939,33 +988,15 @@ public abstract class AwesomeFragment extends InternalFragment {
         contentView.startAnimation(set);
     }
 
-    private void animateDownOut(@NonNull final View contentView) {
-        TranslateAnimation translate = new TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
-                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 1f
-        );
-        AlphaAnimation alpha = new AlphaAnimation(1, 0);
-        AnimationSet set = new AnimationSet(true);
-        set.addAnimation(translate);
-        set.addAnimation(alpha);
-        set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(200);
-        set.setFillAfter(true);
-        set.setAnimationListener(createAnimationListener(contentView));
-        contentView.startAnimation(set);
-    }
-
-    private Animation.AnimationListener createAnimationListener(@NonNull final View animationView) {
+    private Animation.AnimationListener createAnimationListener(@NonNull final View animationView, @Nullable Runnable completion) {
         return new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                animatingOut = true;
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                animatingOut = false;
-                animationView.post(AwesomeFragment.this::dismiss);
+                animationView.post(() -> AwesomeFragment.this.hideDialogInternal(completion, true));
             }
 
             @Override

@@ -9,9 +9,9 @@ import androidx.annotation.Nullable;
 
 public interface PresentableActivity {
 
-    void presentFragment(@NonNull AwesomeFragment fragment);
+    void presentFragment(@NonNull AwesomeFragment fragment, @Nullable Runnable completion);
 
-    void dismissFragment(@NonNull AwesomeFragment fragment);
+    void dismissFragment(@NonNull AwesomeFragment fragment, @Nullable Runnable completion);
 
     AwesomeFragment getPresentedFragment(@NonNull AwesomeFragment fragment);
 

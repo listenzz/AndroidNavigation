@@ -114,27 +114,41 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         pushFragment(fragment, true);
     }
 
-    public void pushFragment(@NonNull final AwesomeFragment fragment, final boolean animated) {
-        scheduleTaskAtStarted(() -> pushFragmentInternal(fragment, animated), animated);
+    public void pushFragment(@NonNull AwesomeFragment fragment, boolean animated) {
+        pushFragment(fragment, animated, null);
     }
 
-    private void pushFragmentInternal(AwesomeFragment fragment, boolean animated) {
+    public void pushFragment(@NonNull AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
+        scheduleTaskAtStarted(() -> pushFragmentInternal(fragment, animated, completion), animated);
+    }
+
+    private void pushFragmentInternal(AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
         FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, animated ? PresentAnimation.Push : PresentAnimation.None);
+        if (completion != null) {
+            completion.run();
+        }
     }
 
-    public void popToFragment(@NonNull final AwesomeFragment fragment) {
+    public void popToFragment(@NonNull AwesomeFragment fragment) {
         popToFragment(fragment, true);
     }
 
-    public void popToFragment(@NonNull final AwesomeFragment fragment, final boolean animated) {
-        scheduleTaskAtStarted(() -> popToFragmentInternal(fragment, animated), animated);
+    public void popToFragment(@NonNull AwesomeFragment fragment, boolean animated) {
+        popToFragment(fragment, animated, null);
     }
 
-    private void popToFragmentInternal(AwesomeFragment fragment, boolean animated) {
+    public void popToFragment(@NonNull AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
+        scheduleTaskAtStarted(() -> popToFragmentInternal(fragment, animated, completion), animated);
+    }
+
+    private void popToFragmentInternal(AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getChildFragmentManager();
 
         AwesomeFragment topFragment = getTopFragment();
         if (topFragment == null || topFragment == fragment) {
+            if (completion != null) {
+                completion.run();
+            }
             return;
         }
 
@@ -148,25 +162,40 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
         fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
+
+        if (completion != null) {
+            completion.run();
+        }
     }
 
     public void popFragment() {
         popFragment(true);
     }
 
-    public void popFragment(final boolean animated) {
-        scheduleTaskAtStarted(() -> popFragmentInternal(animated), animated);
+    public void popFragment(boolean animated) {
+        popFragment(animated, null);
     }
 
-    private void popFragmentInternal(boolean animated) {
+    public void popFragment(boolean animated, @Nullable Runnable completion) {
+        scheduleTaskAtStarted(() -> popFragmentInternal(animated, completion), animated);
+    }
+
+    private void popFragmentInternal(boolean animated, @Nullable Runnable completion) {
         AwesomeFragment top = getTopFragment();
         if (top == null) {
+            if (completion != null) {
+                completion.run();
+            }
             return;
         }
 
         AwesomeFragment previous = FragmentHelper.getFragmentBefore(top);
         if (previous != null) {
-            popToFragmentInternal(previous, animated);
+            popToFragmentInternal(previous, animated, null);
+        }
+
+        if (completion != null) {
+            completion.run();
         }
     }
 
@@ -174,34 +203,48 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         popToRootFragment(true);
     }
 
-    public void popToRootFragment(final boolean animated) {
-        scheduleTaskAtStarted(() -> popToRootFragmentInternal(animated), animated);
+    public void popToRootFragment(boolean animated) {
+        popToRootFragment(animated, null);
     }
 
-    private void popToRootFragmentInternal(boolean animated) {
+    public void popToRootFragment(boolean animated, @Nullable Runnable completion) {
+        scheduleTaskAtStarted(() -> popToRootFragmentInternal(animated, completion), animated);
+    }
+
+    private void popToRootFragmentInternal(boolean animated, @Nullable Runnable completion) {
         AwesomeFragment awesomeFragment = getRootFragment();
         if (awesomeFragment != null) {
-            popToFragmentInternal(getRootFragment(), animated);
+            popToFragmentInternal(getRootFragment(), animated, null);
+        }
+        if (completion != null) {
+            completion.run();
         }
     }
 
-    public void redirectToFragment(@NonNull final AwesomeFragment fragment) {
+    public void redirectToFragment(@NonNull AwesomeFragment fragment) {
         redirectToFragment(fragment, true);
     }
 
-    public void redirectToFragment(@NonNull final AwesomeFragment fragment, boolean animated) {
-        scheduleTaskAtStarted(() -> redirectToFragmentInternal(fragment, null, animated), animated);
+    public void redirectToFragment(@NonNull AwesomeFragment fragment, boolean animated) {
+        redirectToFragment(fragment, null, animated);
     }
 
-    public void redirectToFragment(@NonNull final AwesomeFragment fragment, @NonNull final AwesomeFragment target, boolean animated) {
-        scheduleTaskAtStarted(() -> redirectToFragmentInternal(fragment, target, animated), animated);
+    public void redirectToFragment(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment target, boolean animated) {
+        redirectToFragment(fragment, target, animated, null);
     }
 
-    private void redirectToFragmentInternal(AwesomeFragment fragment, AwesomeFragment target, boolean animated) {
+    public void redirectToFragment(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment target, boolean animated, @Nullable Runnable completion) {
+        scheduleTaskAtStarted(() -> redirectToFragmentInternal(fragment, target, animated, completion), animated);
+    }
+
+    private void redirectToFragmentInternal(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment target, boolean animated, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getChildFragmentManager();
 
         AwesomeFragment topFragment = getTopFragment();
         if (topFragment == null) {
+            if (completion != null) {
+                completion.run();
+            }
             return;
         }
 
@@ -232,6 +275,10 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+
+        if (completion != null) {
+            completion.run();
+        }
     }
 
     public void setChildFragments(List<AwesomeFragment> fragments) {
