@@ -30,7 +30,7 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 ```groovy
 implementation 'me.listenzz:navigation:2.7.0'
 // or with androidx
-implementation 'com.navigation.androidx:androidx:6.0.4'
+implementation 'com.navigation.androidx:androidx:7.1.0'
 implementation 'androidx.appcompat:appcompat:1.1.0'
 
 ```
@@ -382,21 +382,33 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 
 - push
 
-  入栈，由 A 页面跳转到 B 页面。
+  入栈一个页面
+
+  比如由 A 页面跳转到 B 页面。
+
+  A -> B
 
   ```java
   // AFragment.java
+  BFragment bFragment = new BFragment();
   getNavigationFragment.pushFragment(bFragment);
   ```
 
 - pop
 
-  出栈，返回到前一个页面。比如你由 A 页面 push 到 B 页面，现在想返回到 A 页面。
+  出栈一个页面
+
+  比如你由 A 页面一路 push 到 D 页面
+
+  A -> B -> C -> D
+
+  现在想返回到 C 页面
 
   ```java
-  // BFragment.java
   getNavigationFragment.popFragment();
   ```
+
+  执行上述代码后，栈里面剩下 A B C 三个页面
 
 - 手势返回
 
@@ -404,59 +416,76 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 
 - popToRoot
 
-  出栈，返回到当前导航栈根页面。比如 A 页面是根页面，你由 A 页面 push 到 B 页面，由 B 页面 push 到 C 页面，由 C 页面 push 到 D 页面，现在想返回到根部，也就是 A 页面。
+  出栈直到栈底
+
+  比如你由 A 页面一路 push 到 D 页面
+
+  A -> B -> C -> D
+
+  现在想返回到 A 页面
 
   ```java
-  // DFragment.java
   getNavigationFragment.popToRootFragment();
   ```
 
+  执行上述代码后，栈里面只剩下 A 页面
+
 - popTo
 
-  出栈，返回到之前的指定页面。比如你由 A 页面 push 到 B 页面，由 B 页面 push 到 C 页面，由 C 页面 push 到 D 页面，现在想返回 B 页面。你可以把 B 页面的 `sceneId` 一直传递到 D 页面，然后调用 `popToFragment("bSceneId")` 返回到 B 页面。
+  出栈，返回到之前的某个页面。
 
-  从 B 页面跳转到 C 页面时
+  比如你由 A 页面一路 push 到 D 页面
 
-  ```java
-  // BFragment.java
-  CFragment cFragment = new CFragment();
-  Bundle args = FragmentHelper.getArguments(cFragment);
-  // 把 bSceneId 传递给 C 页面
-  args.putString("bSceneId", getSceneId());
-  getNavigationFragment().pushFragment(cFragment);
-  ```
+  A -> B -> C -> D
 
-  从 C 页面跳到 D 页面时
+  现在想返回到 B 页面
 
   ```java
-  // CFragment.java
-  DFragment dFragment = new DFragment();
-  Bundle args = FragmentHelper.getArguments(dFragment);
-  // 把 bSceneId 传递给 D 页面
-  args.putString("bSceneId", getArguments().getString("bSceneId"));
-  getNavigationFragment().pushFragment(dFragment);
+  NavigationFragment navigationFragment = getNavigationFragment();
+  if (navigationFragment != null) {
+      AwesomeFragment target =  FragmentHelper.findAwesomeFragment(requireFragmentManager(), BFragment.class);
+      if (target != null) {
+          navigationFragment.popToFragment(target);
+      }
+  }
   ```
 
-  现在想从 D 页面 返回到 B 页面
+  执行上述代码后，栈里面剩下 A B 两个页面
 
-  ```java
-  // DFragment.java
-  String bSceneId = getArguments().getString("bSceneId");
-  BFragment bFragment = (AwesomeFragment)getFragmentManager().findFragmentByTag(bSceneId);
-  getNavigationFragment().popToFragment(bFragment);
-  ```
-
-  > 你可能已经猜到，pop 和 popToRoot 都是通过 popTo 来实现的。pop 的时候也可以通过 setResult 设置返回值，不过此时 requestCode 的值总是 0。
+> 你可能已经猜到，pop 和 popToRoot 都是通过 popTo 来实现的。pop 的时候也可以通过 setResult 设置返回值，不过此时 requestCode 的值总是 0。
 
 - redirectTo
 
-  重定向，出栈然后入栈，用指定页面取代当前页面，比如当前页面是 A，想要替换成 B
+  重定向，出栈然后入栈。
+
+  比如你由 A 页面一路 push 到 D 页面
+
+  A -> B -> C -> D
+
+  现在想用 E 页面替换 D 页面
 
   ```java
-  // AFragment.java
-  BFragment bFragment = new BFragment();
-  getNavigationFragment().redirectToFragment(bFragment);
+  EFragment eFragment = new EFragment();
+  getNavigationFragment().redirectToFragment(eFragment);
   ```
+
+  执行上述代码后，栈里面有 A B C E 四个页面，D 页面被 E 页面所取代
+
+  又比如你由 A 页面一路 push 到 D 页面
+
+  A -> B -> C -> D
+
+  现在想用 E 页面替换 B C D 三个页面
+
+  ```java
+  NavigationFragment navigationFragment = getNavigationFragment();
+  if (navigationFragment != null) {
+    AwesomeFragment from = FragmentHelper.findAwesomeFragment(requireFragmentManager(), BFragment.class);
+    navigationFragment.redirectToFragment(new EFragment(),  from, true);
+  }
+  ```
+
+  执行上述代码后，栈里面只有 A E 两个页面
 
 - isNavigationRoot
 
@@ -584,8 +613,6 @@ protected void onCustomStyle(Style style) {
 <a name="setting-statusbar"></a>
 
 ### 设置状态栏
-
-状态栏的设置支持 4.4 以上系统。
 
 ![](./screenshot/statusbar.gif)
 
@@ -731,7 +758,7 @@ protected void onCustomStyle(@NonNull Style style) {
 
 ### 设置导航栏（虚拟键）
 
-仅对 Android O 以上版本生效
+仅对 Android 8 以上版本生效
 
 - preferredNavigationBarColor
 
