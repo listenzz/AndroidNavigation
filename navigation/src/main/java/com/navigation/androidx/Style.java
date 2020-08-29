@@ -24,16 +24,22 @@ public class Style implements Cloneable {
 
     private int toolbarHeight;
 
-    private BarStyle statusBarStyle = BarStyle.LightContent;
+    private BarStyle statusBarStyle;
     private int statusBarColor;
     private int navigationBarColor = INVALID_COLOR;
     private boolean statusBarColorAnimated = true;
     private boolean statusBarHidden = false;
 
     private int toolbarBackgroundColor;
+    private int toolbarBackgroundColorDarkContent = INVALID_COLOR;
+    private int toolbarBackgroundColorLightContent = INVALID_COLOR;
     private Drawable backIcon;
     private int toolbarTintColor = INVALID_COLOR;
+    private int toolbarTintColorDarkContent = INVALID_COLOR;
+    private int toolbarTintColorLightContent = INVALID_COLOR;
     private int titleTextColor = INVALID_COLOR;
+    private int titleTextColorDarkContent = INVALID_COLOR;
+    private int titleTextColorLightContent = INVALID_COLOR;
     private int titleTextSize = 17;
     private int elevation = -1;
     private Drawable shadow = defaultShadow;
@@ -57,6 +63,8 @@ public class Style implements Cloneable {
         statusBarColor = AppUtils.fetchContextColor(context, android.R.attr.statusBarColor);
         toolbarBackgroundColor = AppUtils.fetchContextColor(context, R.attr.colorPrimary);
         toolbarHeight = AppUtils.fetchContextDimension(context, R.attr.actionBarSize);
+        boolean isLightStyle = AppUtils.isBlackColor(toolbarBackgroundColor, 176);
+        statusBarStyle = isLightStyle ? BarStyle.LightContent : BarStyle.DarkContent;
     }
 
     // ------ screen ------
@@ -139,18 +147,36 @@ public class Style implements Cloneable {
 
     public void setToolbarBackgroundColor(int color) {
         toolbarBackgroundColor = color;
+        toolbarBackgroundColorDarkContent = color;
+        toolbarBackgroundColorLightContent = color;
+    }
+
+    public void setToolbarBackgroundColorDarkContent(int toolbarBackgroundColorDarkContent) {
+        this.toolbarBackgroundColorDarkContent = toolbarBackgroundColorDarkContent;
+    }
+
+    public void setToolbarBackgroundColorLightContent(int toolbarBackgroundColorLightContent) {
+        this.toolbarBackgroundColorLightContent = toolbarBackgroundColorLightContent;
     }
 
     public int getToolbarBackgroundColor() {
+        if (statusBarStyle == BarStyle.DarkContent && toolbarBackgroundColorDarkContent != INVALID_COLOR) {
+            return toolbarBackgroundColorDarkContent;
+        }
+
+        if (statusBarStyle == BarStyle.LightContent && toolbarBackgroundColorLightContent != INVALID_COLOR) {
+            return toolbarBackgroundColorLightContent;
+        }
+
         if (toolbarBackgroundColor != INVALID_COLOR) {
             return toolbarBackgroundColor;
         }
 
         if (statusBarStyle == BarStyle.LightContent) {
             return Color.BLACK;
-        } else {
-            return Color.WHITE;
         }
+
+        return Color.WHITE;
     }
 
     public void setElevation(int dp) {
@@ -167,9 +193,27 @@ public class Style implements Cloneable {
 
     public void setToolbarTintColor(int color) {
         toolbarTintColor = color;
+        toolbarTintColorDarkContent = color;
+        toolbarTintColorLightContent = color;
+    }
+
+    public void setToolbarTintColorDarkContent(int toolbarTintColorDarkContent) {
+        this.toolbarTintColorDarkContent = toolbarTintColorDarkContent;
+    }
+
+    public void setToolbarTintColorLightContent(int toolbarTintColorLightContent) {
+        this.toolbarTintColorLightContent = toolbarTintColorLightContent;
     }
 
     public int getToolbarTintColor() {
+        if (statusBarStyle == BarStyle.DarkContent && toolbarTintColorDarkContent != INVALID_COLOR) {
+            return toolbarTintColorDarkContent;
+        }
+
+        if (statusBarStyle == BarStyle.LightContent && toolbarTintColorLightContent != INVALID_COLOR) {
+            return toolbarTintColorLightContent;
+        }
+
         if (toolbarTintColor != INVALID_COLOR) {
             return toolbarTintColor;
         }
@@ -178,11 +222,7 @@ public class Style implements Cloneable {
             return Color.WHITE;
         }
 
-        if (toolbarBackgroundColor == INVALID_COLOR) {
-            return Color.parseColor("#666666");
-        }
-
-        return Color.BLACK;
+        return Color.parseColor("#131940");
     }
 
     public void setBackIcon(Drawable icon) {
@@ -215,9 +255,27 @@ public class Style implements Cloneable {
 
     public void setTitleTextColor(int color) {
         titleTextColor = color;
+        titleTextColorDarkContent = color;
+        titleTextColorLightContent = color;
+    }
+
+    public void setTitleTextColorDarkContent(int titleTextColorDarkContent) {
+        this.titleTextColorDarkContent = titleTextColorDarkContent;
+    }
+
+    public void setTitleTextColorLightContent(int titleTextColorLightContent) {
+        this.titleTextColorLightContent = titleTextColorLightContent;
     }
 
     public int getTitleTextColor() {
+        if (statusBarStyle == BarStyle.DarkContent && titleTextColorDarkContent != INVALID_COLOR) {
+            return titleTextColorDarkContent;
+        }
+
+        if (statusBarStyle == BarStyle.LightContent && titleTextColorLightContent != INVALID_COLOR) {
+            return titleTextColorLightContent;
+        }
+
         if (titleTextColor != INVALID_COLOR) {
             return titleTextColor;
         }
@@ -226,11 +284,7 @@ public class Style implements Cloneable {
             return Color.WHITE;
         }
 
-        if (toolbarBackgroundColor == INVALID_COLOR) {
-            return Color.parseColor("#666666");
-        }
-
-        return Color.BLACK;
+        return Color.parseColor("#131940");
     }
 
     public void setTitleTextSize(int dp) {
