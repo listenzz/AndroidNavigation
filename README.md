@@ -443,7 +443,7 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
   ```java
   NavigationFragment navigationFragment = getNavigationFragment();
   if (navigationFragment != null) {
-      AwesomeFragment target =  FragmentHelper.findAwesomeFragment(requireFragmentManager(), BFragment.class);
+      AwesomeFragment target = FragmentHelper.findAwesomeFragment(requireFragmentManager(), BFragment.class);
       if (target != null) {
           navigationFragment.popToFragment(target);
       }
@@ -481,7 +481,7 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
   NavigationFragment navigationFragment = getNavigationFragment();
   if (navigationFragment != null) {
     AwesomeFragment from = FragmentHelper.findAwesomeFragment(requireFragmentManager(), BFragment.class);
-    navigationFragment.redirectToFragment(new EFragment(),  from, true);
+    navigationFragment.redirectToFragment(new EFragment(), from, true);
   }
   ```
 
