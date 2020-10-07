@@ -831,7 +831,9 @@ public abstract class AwesomeFragment extends InternalFragment {
         super.dismissInternal(allowStateLoss, fromOnDismiss);
         Fragment target = getTargetFragment();
         if (target instanceof AwesomeFragment && target.isAdded() && fromOnDismiss) {
-            FragmentHelper.executePendingTransactionsSafe(requireFragmentManager());
+            FragmentManager fragmentManager = requireFragmentManager();
+            fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
+            FragmentHelper.executePendingTransactionsSafe(fragmentManager);
             AwesomeFragment fragment = (AwesomeFragment) target;
             fragment.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
         }
@@ -886,8 +888,10 @@ public abstract class AwesomeFragment extends InternalFragment {
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         args.putBoolean(ARGS_SHOW_AS_DIALOG, true);
         dialog.setTargetFragment(target, requestCode);
-        dialog.show(target.requireFragmentManager(), dialog.getSceneId());
-        FragmentHelper.executePendingTransactionsSafe(target.requireFragmentManager());
+        FragmentManager fragmentManager = target.requireFragmentManager();
+        fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.STARTED).commit();
+        dialog.show(fragmentManager, dialog.getSceneId());
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
         if (completion != null) {
             completion.run();
         }
