@@ -63,7 +63,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         return false;
     }
 
-
     @Override
     public void setActivityRootFragment(@NonNull final AwesomeFragment rootFragment) {
         if (getSupportFragmentManager().isStateSaved()) {
@@ -137,7 +136,11 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     @Override
     public void dismissFragment(@NonNull AwesomeFragment fragment, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> dismissFragmentInternal(fragment, completion), true);
+        if (fragment.getFragmentManager() == getSupportFragmentManager()) {
+            scheduleTaskAtStarted(() -> dismissFragmentInternal(fragment, completion), true);
+        } else {
+            fragment.dismissFragment(completion);
+        }
     }
 
     protected void dismissFragmentInternal(AwesomeFragment fragment, @Nullable Runnable completion) {
@@ -178,6 +181,10 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         scheduleTaskAtStarted(() -> showDialogInternal(dialog, requestCode, completion), true);
     }
 
+    public void hideDialog(@NonNull AwesomeFragment dialog, @Nullable Runnable completion) {
+        dialog.hideDialog(completion);
+    }
+
     protected void showDialogInternal(AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
@@ -196,7 +203,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     @Nullable
-    public AwesomeFragment getAwesomeDialogFragment() {
+    public AwesomeFragment getDialogFragment() {
         return FragmentHelper.getAwesomeDialogFragment(getSupportFragmentManager());
     }
 
