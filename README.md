@@ -412,7 +412,9 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 
 - 手势返回
 
-  手势返回是 NavigationFragment 的能力，需要在 Activity 的 onCustomStyle 中开启。手势返回实质上是个 pop.
+  手势返回是 NavigationFragment 的能力，需要在 Activity 的 onCustomStyle 中开启。
+
+  > 手势返回实质上是个 pop。
 
 - popToRoot
 
@@ -608,7 +610,7 @@ protected void onCustomStyle(Style style) {
 
 所有的可配置项都是可选的。
 
-如果某个 fragment 与众不同，可以为该 fragment 单独设置样式，只要重写 fragment 的 `onCustomStyle` 方法，在其中设置那些不同的样式即可。
+如果某个 fragment 与众不同，可以为该 fragment 单独设置样式，只要重写该 fragment 的 `onCustomStyle` 方法，在其中设置那些不同的样式即可。
 
 <a name="setting-statusbar"></a>
 
