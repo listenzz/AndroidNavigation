@@ -143,7 +143,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         }
     }
 
-    protected void dismissFragmentInternal(AwesomeFragment fragment, @Nullable Runnable completion) {
+    private void dismissFragmentInternal(AwesomeFragment fragment, @Nullable Runnable completion) {
         AwesomeFragment presented = getPresentedFragment(fragment);
         if (presented != null) {
             FragmentHelper.handleDismissFragment(fragment, presented, null);
@@ -181,11 +181,15 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         scheduleTaskAtStarted(() -> showDialogInternal(dialog, requestCode, completion), true);
     }
 
+    public void hideDialog(@NonNull AwesomeFragment dialog) {
+        dialog.hideDialog(null);
+    }
+
     public void hideDialog(@NonNull AwesomeFragment dialog, @Nullable Runnable completion) {
         dialog.hideDialog(completion);
     }
 
-    protected void showDialogInternal(AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+    private void showDialogInternal(AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             Fragment fragment = fragmentManager.findFragmentById(android.R.id.content);
