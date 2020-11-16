@@ -31,8 +31,10 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
     public void scheduleTaskAtStarted(Runnable runnable) {
         if (getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
             assertMainThread();
-            tasks.add(runnable);
-            considerExecute();
+            handler.post(() -> {
+                tasks.add(runnable);
+                considerExecute();
+            });
         }
     }
 
@@ -59,7 +61,6 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
             } else {
                 executing = false;
             }
-
         }
     }
 
