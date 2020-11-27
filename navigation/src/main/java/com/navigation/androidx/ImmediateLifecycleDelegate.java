@@ -27,10 +27,8 @@ public class ImmediateLifecycleDelegate implements LifecycleObserver {
     public void scheduleTaskAtStarted(Runnable runnable) {
         if (getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
             assertMainThread();
-            handler.post(() -> {
-                tasks.add(runnable);
-                considerExecute();
-            });
+            tasks.add(runnable);
+            considerExecute();
         }
     }
 
