@@ -86,6 +86,9 @@ public class TabBarFragment extends AwesomeFragment {
             for (int i = 0, size = fragments.size(); i < size; i++) {
                 AwesomeFragment fragment = fragments.get(i);
                 TabBarItem tabBarItem = fragment.getTabBarItem();
+                if (tabBarItem == null) {
+                    tabBarItem = new TabBarItem("TAB" + i);
+                }
                 tabBarItems.add(tabBarItem);
             }
             View tabBar = tabBarProvider.onCreateTabBar(tabBarItems, this, savedInstanceState);
