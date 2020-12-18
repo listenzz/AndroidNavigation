@@ -53,7 +53,7 @@ public class Style implements Cloneable {
     private String tabBarUnselectedItemColor = null;
     private Drawable tabBarShadow = defaultShadow;
 
-    private Context context;
+    private final Context context;
 
     private boolean swipeBackEnabled;
     private String tabBarBadgeColor = "#FF3B30";
