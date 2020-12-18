@@ -221,7 +221,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         PresentAnimation animation = getAnimation();
 
-        handleHideBottomBarWhenPushed(transit, enter, animation);
+        hideTabBarIfNeeded(transit, enter, animation);
         // ---------
         // Log.d(TAG, getDebugTag() + "  " + animation.name() + " transit:" + transit + " enter:" + enter);
 
@@ -1049,7 +1049,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         return true;
     }
 
-    protected boolean hidesBottomBarWhenPushed() {
+    protected boolean hideTabBarWhenPushed() {
         return true;
     }
 
@@ -1059,14 +1059,13 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (navigationFragment != null) {
             root = navigationFragment.getRootFragment();
             if (root != null) {
-                return root.hidesBottomBarWhenPushed();
+                return root.hideTabBarWhenPushed();
             }
         }
         return true;
     }
 
-    private void handleHideBottomBarWhenPushed(int transit, boolean enter, PresentAnimation animation) {
-        // handle hidesBottomBarWhenPushed
+    private void hideTabBarIfNeeded(int transit, boolean enter, PresentAnimation animation) {
         Fragment parent = getParentFragment();
         if (parent instanceof NavigationFragment) {
             NavigationFragment navigationFragment = (NavigationFragment) parent;
@@ -1077,15 +1076,11 @@ public abstract class AwesomeFragment extends InternalFragment {
 
             int index = FragmentHelper.getIndexAtBackStack(this);
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
-                if (index == 0) {
-                    if (tabBarFragment.getTabBar() != null) {
-                        tabBarFragment.showTabBarWhenPop(R.anim.nav_none);
-                    }
-                } else if (index == 1 && shouldHideTabBarWhenPushed()) {
+                if (index != 0 && shouldHideTabBarWhenPushed()) {
                     tabBarFragment.hideTabBarWhenPush(animation.exit);
                 }
             } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
-                if (index == 0 && shouldHideTabBarWhenPushed()) {
+                if (index == 0) {
                     tabBarFragment.showTabBarWhenPop(animation.popEnter);
                 }
             }

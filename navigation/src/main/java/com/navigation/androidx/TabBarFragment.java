@@ -35,7 +35,7 @@ public class TabBarFragment extends AwesomeFragment {
     private static final String SAVED_BOTTOM_BAR_HIDDEN = "nav_tab_bar_hidden";
     private static final String SAVED_TAB_BAR_PROVIDER_CLASS_NAME = "nav_tab_bar_provider_class_name";
 
-    private List<AwesomeFragment> fragments;
+    private List<AwesomeFragment> fragments = new ArrayList<>();
     private ArrayList<String> fragmentTags = new ArrayList<>();
 
     private int selectedIndex;
@@ -57,7 +57,6 @@ public class TabBarFragment extends AwesomeFragment {
         // fragments
         if (savedInstanceState != null) {
             fragmentTags = savedInstanceState.getStringArrayList(SAVED_FRAGMENT_TAGS);
-            fragments = new ArrayList<>();
             FragmentManager fragmentManager = getChildFragmentManager();
             for (int i = 0, size = fragmentTags.size(); i < size; i++) {
                 fragments.add((AwesomeFragment) fragmentManager.findFragmentByTag(fragmentTags.get(i)));
@@ -67,7 +66,7 @@ public class TabBarFragment extends AwesomeFragment {
             String providerClassName = savedInstanceState.getString(SAVED_TAB_BAR_PROVIDER_CLASS_NAME);
             if (providerClassName != null) {
                 try {
-                    Class clazz = Class.forName(providerClassName);
+                    Class<?> clazz = Class.forName(providerClassName);
                     tabBarProvider = (TabBarProvider) clazz.newInstance();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -167,6 +166,7 @@ public class TabBarFragment extends AwesomeFragment {
         this.fragments = fragments;
     }
 
+    @NonNull
     @Override
     public List<AwesomeFragment> getChildFragments() {
         return fragments;
@@ -265,9 +265,9 @@ public class TabBarFragment extends AwesomeFragment {
         }
 
         if (tabBar != null) {
-            NavigationFragment navigationFragment = current.getNavigationFragment();
-            if (navigationFragment != null && navigationFragment.shouldHideTabBarWhenPushed()) {
-                if (FragmentHelper.getBackStackEntryCount(navigationFragment) <= 1) {
+            NavigationFragment nav = current.getNavigationFragment();
+            if (nav != null && nav.getTabBarFragment() == this && nav.shouldHideTabBarWhenPushed()) {
+                if (nav.getTopFragment() == nav.getRootFragment()) {
                     showTabBar();
                 } else {
                     hideTabBar();
@@ -308,9 +308,11 @@ public class TabBarFragment extends AwesomeFragment {
             tabBarHidden = false;
             setNeedsNavigationBarAppearanceUpdate();
             if (anim != R.anim.nav_none) {
-                Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
-                animation.setAnimationListener(new TabBarAnimationListener(false));
-                tabBar.startAnimation(animation);
+                if (isTabBarHidden()) {
+                    Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
+                    animation.setAnimationListener(new TabBarAnimationListener(false));
+                    tabBar.startAnimation(animation);
+                }
             } else {
                 tabBar.setVisibility(View.VISIBLE);
                 tabBar.setTranslationY(0);
@@ -323,9 +325,11 @@ public class TabBarFragment extends AwesomeFragment {
             tabBarHidden = true;
             setNeedsNavigationBarAppearanceUpdate();
             if (anim != R.anim.nav_none) {
-                Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
-                animation.setAnimationListener(new TabBarAnimationListener(true));
-                tabBar.startAnimation(animation);
+                if (!isTabBarHidden()) {
+                    Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
+                    animation.setAnimationListener(new TabBarAnimationListener(true));
+                    tabBar.startAnimation(animation);
+                }
             } else {
                 tabBar.setVisibility(View.GONE);
                 tabBar.setTranslationY(tabBar.getHeight());
@@ -355,6 +359,13 @@ public class TabBarFragment extends AwesomeFragment {
                 setNeedsNavigationBarAppearanceUpdate();
             }
         }
+    }
+
+    private boolean isTabBarHidden() {
+        if (tabBar != null) {
+            return tabBar.getVisibility() == View.GONE;
+        }
+        return false;
     }
 
     class TabBarAnimationListener implements Animation.AnimationListener {

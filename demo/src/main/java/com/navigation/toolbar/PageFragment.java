@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.navigation.BaseFragment;
 import com.navigation.R;
+import com.navigation.TestNavigationFragment;
 import com.navigation.androidx.FragmentHelper;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class PageFragment extends BaseFragment {
         recyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener((position, view1) -> {
-
+            requireNavigationFragment().pushFragment(new TestNavigationFragment());
         });
 
         dataAsyncTask = new DataAsyncTask();
