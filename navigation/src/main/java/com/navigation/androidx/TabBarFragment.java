@@ -308,11 +308,9 @@ public class TabBarFragment extends AwesomeFragment {
             tabBarHidden = false;
             setNeedsNavigationBarAppearanceUpdate();
             if (anim != R.anim.nav_none) {
-                if (isTabBarHidden()) {
-                    Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
-                    animation.setAnimationListener(new TabBarAnimationListener(false));
-                    tabBar.startAnimation(animation);
-                }
+                Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
+                animation.setAnimationListener(new TabBarAnimationListener(false));
+                tabBar.startAnimation(animation);
             } else {
                 tabBar.setVisibility(View.VISIBLE);
                 tabBar.setTranslationY(0);
@@ -325,11 +323,9 @@ public class TabBarFragment extends AwesomeFragment {
             tabBarHidden = true;
             setNeedsNavigationBarAppearanceUpdate();
             if (anim != R.anim.nav_none) {
-                if (!isTabBarHidden()) {
-                    Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
-                    animation.setAnimationListener(new TabBarAnimationListener(true));
-                    tabBar.startAnimation(animation);
-                }
+                Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
+                animation.setAnimationListener(new TabBarAnimationListener(true));
+                tabBar.startAnimation(animation);
             } else {
                 tabBar.setVisibility(View.GONE);
                 tabBar.setTranslationY(tabBar.getHeight());
@@ -359,13 +355,6 @@ public class TabBarFragment extends AwesomeFragment {
                 setNeedsNavigationBarAppearanceUpdate();
             }
         }
-    }
-
-    private boolean isTabBarHidden() {
-        if (tabBar != null) {
-            return tabBar.getVisibility() == View.GONE;
-        }
-        return false;
     }
 
     class TabBarAnimationListener implements Animation.AnimationListener {
