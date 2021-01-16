@@ -232,22 +232,11 @@ public class FragmentHelper {
             return null;
         }
 
-        Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
-        if (fragment != null && fragment.isAdded()) {
-            if (fragment instanceof AwesomeFragment) {
-                AwesomeFragment dialogFragment = (AwesomeFragment) fragment;
-                if (dialogFragment.getShowsDialog()) {
-                    return dialogFragment;
-                }
-            }
-            return getAwesomeDialogFragment(fragment.getChildFragmentManager());
-        }
-
         List<Fragment> fragments = fragmentManager.getFragments();
         int count = fragments.size();
 
         for (int i = count - 1; i > -1; i--) {
-            fragment = fragments.get(i);
+            Fragment fragment = fragments.get(i);
             if (fragment.isAdded()) {
                 if (fragment instanceof AwesomeFragment) {
                     AwesomeFragment dialogFragment = (AwesomeFragment) fragment;
