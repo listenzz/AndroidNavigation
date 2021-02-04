@@ -235,20 +235,26 @@ public class FragmentHelper {
         List<Fragment> fragments = fragmentManager.getFragments();
         int count = fragments.size();
 
+        AwesomeFragment dialog = null;
+
         for (int i = count - 1; i > -1; i--) {
             Fragment fragment = fragments.get(i);
-            if (fragment.isAdded()) {
-                if (fragment instanceof AwesomeFragment) {
+            if (fragment instanceof AwesomeFragment) {
+                if (fragment.isAdded()) {
                     AwesomeFragment dialogFragment = (AwesomeFragment) fragment;
                     if (dialogFragment.getShowsDialog()) {
-                        return dialogFragment;
+                        dialog =  dialogFragment;
+                        break;
+                    }
+
+                    if (dialog == null) {
+                        dialog = getAwesomeDialogFragment(fragment.getChildFragmentManager());
                     }
                 }
-                return getAwesomeDialogFragment(fragment.getChildFragmentManager());
             }
         }
 
-        return null;
+        return dialog;
     }
 
     public static void handleDismissFragment(@NonNull AwesomeFragment target, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top) {
