@@ -374,11 +374,11 @@ AwesomeActivity 和 AwesomeFragment 提供了两个基础的导航功能 present
 
 #### NavigationFragment
 
-NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 push、pop、popTo、popToRoot 操作，并额外支持 replace 和 replaceToRoot 操作。
+NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 push、pop、popTo、popToRoot 操作，并额外支持 redirectTo 操作。
 
 我们可以在它的子 Fragment 中（不必是直接子 fragment，可以是子 fragment 的子 fragment）通过 `getNavigationFragment` 来获取它的引用。
 
-在初始化 NavigationFragment 时，你必须调用 `setRootFragment` 来指定它的根页面。请参考上面相册那个例子的做法。`setRootFragment` 只能调用一次，如果想更换根页面，可以使用 `replaceToRootFragment` 这个方法。
+在初始化 NavigationFragment 时，你必须调用 `setRootFragment` 来指定它的根页面。
 
 - push
 
