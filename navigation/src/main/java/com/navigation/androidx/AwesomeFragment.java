@@ -1074,6 +1074,10 @@ public abstract class AwesomeFragment extends InternalFragment {
                 return;
             }
 
+            if (navigationFragment != tabBarFragment.getSelectedFragment()) {
+                return;
+            }
+
             int index = FragmentHelper.getIndexAtBackStack(this);
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
                 if (index != 0 && shouldHideTabBarWhenPushed()) {
