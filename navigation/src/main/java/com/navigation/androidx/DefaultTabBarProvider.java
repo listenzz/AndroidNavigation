@@ -60,7 +60,6 @@ public class DefaultTabBarProvider implements TabBarProvider {
         tabBar.setTabSelectedListener(new TabBar.OnTabSelectedListener() {
             @Override
             public void onTabSelected(int position) {
-                Log.i("Navigation", "tab position:" + position);
                 tabBarFragment.setSelectedIndex(position);
             }
 
@@ -71,7 +70,6 @@ public class DefaultTabBarProvider implements TabBarProvider {
 
             @Override
             public void onTabReselected(int position) {
-                Log.i("Navigation", "tab position:" + position);
                 tabBarFragment.setSelectedIndex(position);
             }
         });

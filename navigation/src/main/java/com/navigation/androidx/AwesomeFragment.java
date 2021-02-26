@@ -329,7 +329,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             AwesomeFragment parent = getParentAwesomeFragment();
             if (parent != null) {
                 if (definesPresentationContext()) {
-                    presentFragmentInternal(AwesomeFragment.this, fragment, requestCode, completion);
+                    presentFragmentSync(AwesomeFragment.this, fragment, requestCode, completion);
                 } else {
                     parent.presentFragment(fragment, requestCode, completion);
                 }
@@ -344,7 +344,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }, true);
     }
 
-    private void presentFragmentInternal(final AwesomeFragment target, final AwesomeFragment fragment, final int requestCode, @Nullable Runnable completion) {
+    private void presentFragmentSync(final AwesomeFragment target, final AwesomeFragment fragment, final int requestCode, @Nullable Runnable completion) {
         Bundle args = FragmentHelper.getArguments(fragment);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         fragment.setTargetFragment(target, requestCode);
@@ -790,10 +790,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void hideDialog(@Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> hideDialogInternal(completion, false), true);
+        scheduleTaskAtStarted(() -> hideDialogSync(completion, false), true);
     }
 
-    private void hideDialogInternal(@Nullable Runnable completion, boolean fromAnimation) {
+    private void hideDialogSync(@Nullable Runnable completion, boolean fromAnimation) {
         if (!isInDialog()) {
             throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
         }
@@ -879,11 +879,11 @@ public abstract class AwesomeFragment extends InternalFragment {
                 onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
                 return;
             }
-            showDialogInternal(AwesomeFragment.this, dialog, requestCode, completion);
+            showDialogSync(AwesomeFragment.this, dialog, requestCode, completion);
         }, true);
     }
 
-    private void showDialogInternal(AwesomeFragment target, AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+    private void showDialogSync(AwesomeFragment target, AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
         Bundle args = FragmentHelper.getArguments(dialog);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         args.putBoolean(ARGS_SHOW_AS_DIALOG, true);
@@ -991,7 +991,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                animationView.post(() -> AwesomeFragment.this.hideDialogInternal(completion, true));
+                animationView.post(() -> AwesomeFragment.this.hideDialogSync(completion, true));
             }
 
             @Override

@@ -44,10 +44,14 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             if (rootFragment == null) {
                 throw new IllegalArgumentException("Must specify rootFragment by `setRootFragment`.");
             } else {
-                setRootFragmentInternal(rootFragment);
+                setRootFragmentSync(rootFragment);
                 rootFragment = null;
             }
         }
+    }
+
+    private void setRootFragmentSync(AwesomeFragment fragment) {
+        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
     }
 
     @Override
@@ -106,10 +110,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         return rootFragment;
     }
 
-    private void setRootFragmentInternal(AwesomeFragment fragment) {
-        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
-    }
-
     public void pushFragment(@NonNull AwesomeFragment fragment) {
         pushFragment(fragment, true);
     }
@@ -119,10 +119,10 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void pushFragment(@NonNull AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> pushFragmentInternal(fragment, animated, completion), animated);
+        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, animated, completion), animated);
     }
 
-    private void pushFragmentInternal(AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
+    private void pushFragmentSync(AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
         FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, animated ? PresentAnimation.Push : PresentAnimation.None);
         if (completion != null) {
             completion.run();
@@ -138,10 +138,10 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void popToFragment(@NonNull AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> popToFragmentInternal(fragment, animated, completion), animated);
+        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, animated, completion), animated);
     }
 
-    private void popToFragmentInternal(AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
+    private void popToFragmentSync(AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getChildFragmentManager();
 
         AwesomeFragment topFragment = getTopFragment();
@@ -177,10 +177,10 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void popFragment(boolean animated, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> popFragmentInternal(animated, completion), animated);
+        scheduleTaskAtStarted(() -> popFragmentSync(animated, completion), animated);
     }
 
-    private void popFragmentInternal(boolean animated, @Nullable Runnable completion) {
+    private void popFragmentSync(boolean animated, @Nullable Runnable completion) {
         AwesomeFragment top = getTopFragment();
         if (top == null) {
             if (completion != null) {
@@ -191,7 +191,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
         AwesomeFragment previous = FragmentHelper.getFragmentBefore(top);
         if (previous != null) {
-            popToFragmentInternal(previous, animated, null);
+            popToFragmentSync(previous, animated, null);
         }
 
         if (completion != null) {
@@ -208,13 +208,13 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void popToRootFragment(boolean animated, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> popToRootFragmentInternal(animated, completion), animated);
+        scheduleTaskAtStarted(() -> popToRootFragmentSync(animated, completion), animated);
     }
 
-    private void popToRootFragmentInternal(boolean animated, @Nullable Runnable completion) {
+    private void popToRootFragmentSync(boolean animated, @Nullable Runnable completion) {
         AwesomeFragment awesomeFragment = getRootFragment();
         if (awesomeFragment != null) {
-            popToFragmentInternal(getRootFragment(), animated, null);
+            popToFragmentSync(getRootFragment(), animated, null);
         }
         if (completion != null) {
             completion.run();
@@ -234,10 +234,10 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void redirectToFragment(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, boolean animated, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> redirectToFragmentInternal(fragment, from, animated, completion), animated);
+        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, from, animated, completion), animated);
     }
 
-    private void redirectToFragmentInternal(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, boolean animated, @Nullable Runnable completion) {
+    private void redirectToFragmentSync(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, boolean animated, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getChildFragmentManager();
 
         AwesomeFragment topFragment = getTopFragment();

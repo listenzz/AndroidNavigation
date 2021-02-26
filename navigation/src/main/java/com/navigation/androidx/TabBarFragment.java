@@ -76,7 +76,7 @@ public class TabBarFragment extends AwesomeFragment {
             if (fragments == null || fragments.size() == 0) {
                 throw new IllegalArgumentException("必须使用 `setChildFragments` 设置 childFragments ");
             }
-            setChildFragmentsInternal(fragments);
+            setChildFragmentsSync(fragments);
         }
 
         // create TabBar if needed
@@ -105,6 +105,25 @@ public class TabBarFragment extends AwesomeFragment {
                 hideTabBar();
             }
         }
+    }
+
+    private void setChildFragmentsSync(List<AwesomeFragment> fragments) {
+        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        for (int i = 0, size = fragments.size(); i < size; i++) {
+            AwesomeFragment fragment = fragments.get(i);
+            fragmentTags.add(fragment.getSceneId());
+            transaction.add(R.id.tabs_content, fragment, fragment.getSceneId());
+            if (i == selectedIndex) {
+                transaction.setMaxLifecycle(fragment, Lifecycle.State.RESUMED);
+                transaction.setPrimaryNavigationFragment(fragment);
+            } else {
+                transaction.setMaxLifecycle(fragment, Lifecycle.State.STARTED);
+                transaction.hide(fragment);
+            }
+        }
+        transaction.commit();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
     }
 
     @Override
@@ -172,25 +191,6 @@ public class TabBarFragment extends AwesomeFragment {
         return fragments;
     }
 
-    private void setChildFragmentsInternal(List<AwesomeFragment> fragments) {
-        FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        for (int i = 0, size = fragments.size(); i < size; i++) {
-            AwesomeFragment fragment = fragments.get(i);
-            fragmentTags.add(fragment.getSceneId());
-            transaction.add(R.id.tabs_content, fragment, fragment.getSceneId());
-            if (i == selectedIndex) {
-                transaction.setMaxLifecycle(fragment, Lifecycle.State.RESUMED);
-                transaction.setPrimaryNavigationFragment(fragment);
-            } else {
-                transaction.setMaxLifecycle(fragment, Lifecycle.State.STARTED);
-                transaction.hide(fragment);
-            }
-        }
-        transaction.commit();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-    }
-
     public void setSelectedFragment(AwesomeFragment fragment) {
         setSelectedFragment(fragment, null);
     }
@@ -222,7 +222,7 @@ public class TabBarFragment extends AwesomeFragment {
 
     public void setSelectedIndex(int index, @Nullable Runnable completion) {
         if (isAdded()) {
-            scheduleTaskAtStarted(() -> setSelectedIndexInternal(index, completion));
+            scheduleTaskAtStarted(() -> setSelectedIndexSync(index, completion));
         } else {
             selectedIndex = index;
             if (completion != null) {
@@ -231,7 +231,7 @@ public class TabBarFragment extends AwesomeFragment {
         }
     }
 
-    private void setSelectedIndexInternal(int index, @Nullable Runnable completion) {
+    private void setSelectedIndexSync(int index, @Nullable Runnable completion) {
         if (tabBarProvider != null) {
             tabBarProvider.setSelectedIndex(index);
         }

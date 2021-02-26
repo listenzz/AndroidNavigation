@@ -66,16 +66,16 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     @Override
     public void setActivityRootFragment(@NonNull final AwesomeFragment rootFragment) {
         if (getSupportFragmentManager().isStateSaved()) {
-            scheduleTaskAtStarted(() -> setRootFragmentInternal(rootFragment));
+            scheduleTaskAtStarted(() -> setRootFragmentSync(rootFragment));
         } else {
             if (!isFinishing()) {
-                setRootFragmentInternal(rootFragment);
+                setRootFragmentSync(rootFragment);
             }
         }
     }
 
-    protected void setRootFragmentInternal(AwesomeFragment fragment) {
-        clearFragmentsInternal();
+    protected void setRootFragmentSync(AwesomeFragment fragment) {
+        clearFragmentsSync();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
@@ -89,12 +89,12 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     public void clearFragments() {
         scheduleTaskAtStarted(() -> {
-            clearFragmentsInternal();
+            clearFragmentsSync();
             FragmentHelper.executePendingTransactionsSafe(getSupportFragmentManager());
         });
     }
 
-    protected void clearFragmentsInternal() {
+    protected void clearFragmentsSync() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 0) {
@@ -120,10 +120,10 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     @Override
     public void presentFragment(@NonNull AwesomeFragment fragment, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> presentFragmentInternal(fragment, completion), true);
+        scheduleTaskAtStarted(() -> presentFragmentSync(fragment, completion), true);
     }
 
-    private void presentFragmentInternal(AwesomeFragment fragment, @Nullable Runnable completion) {
+    private void presentFragmentSync(AwesomeFragment fragment, @Nullable Runnable completion) {
         FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.Modal);
         if (completion != null) {
             completion.run();
@@ -137,13 +137,13 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     @Override
     public void dismissFragment(@NonNull AwesomeFragment fragment, @Nullable Runnable completion) {
         if (fragment.getFragmentManager() == getSupportFragmentManager()) {
-            scheduleTaskAtStarted(() -> dismissFragmentInternal(fragment, completion), true);
+            scheduleTaskAtStarted(() -> dismissFragmentSync(fragment, completion), true);
         } else {
             fragment.dismissFragment(completion);
         }
     }
 
-    private void dismissFragmentInternal(AwesomeFragment fragment, @Nullable Runnable completion) {
+    private void dismissFragmentSync(AwesomeFragment fragment, @Nullable Runnable completion) {
         AwesomeFragment presented = getPresentedFragment(fragment);
         if (presented != null) {
             FragmentHelper.handleDismissFragment(fragment, presented, null);
@@ -178,7 +178,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     public void showDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> showDialogInternal(dialog, requestCode, completion), true);
+        scheduleTaskAtStarted(() -> showDialogSync(dialog, requestCode, completion), true);
     }
 
     public void hideDialog(@NonNull AwesomeFragment dialog) {
@@ -189,7 +189,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         dialog.hideDialog(completion);
     }
 
-    private void showDialogInternal(AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+    private void showDialogSync(AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             Fragment fragment = fragmentManager.findFragmentById(android.R.id.content);

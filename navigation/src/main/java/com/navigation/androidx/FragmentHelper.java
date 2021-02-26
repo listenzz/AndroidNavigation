@@ -96,6 +96,11 @@ public class FragmentHelper {
         return children;
     }
 
+    public static int getIndexAtList(@NonNull AwesomeFragment fragment) {
+        List<AwesomeFragment> list = getFragments(fragment.requireFragmentManager());
+        return list.indexOf(fragment);
+    }
+
     @Nullable
     public static AwesomeFragment getFragmentAfter(@NonNull AwesomeFragment fragment) {
         if (!fragment.isAdded()) {
@@ -146,14 +151,27 @@ public class FragmentHelper {
         return index;
     }
 
-    public static int getIndexAtList(@NonNull AwesomeFragment fragment) {
-        List<AwesomeFragment> list = getFragments(fragment.requireFragmentManager());
-        return list.indexOf(fragment);
-    }
-
     public static int getBackStackEntryCount(@NonNull AwesomeFragment fragment) {
         FragmentManager fragmentManager = fragment.getChildFragmentManager();
         return fragmentManager.getBackStackEntryCount();
+    }
+
+    @Nullable
+    public static AwesomeFragment findAwesomeFragment(@NonNull FragmentManager fragmentManager, @NonNull String tag) {
+        Fragment fragment = findFragment(fragmentManager, tag);
+        if (fragment instanceof AwesomeFragment) {
+            return (AwesomeFragment) fragment;
+        }
+        return null;
+    }
+
+    @Nullable
+    public static AwesomeFragment findAwesomeFragment(@NonNull FragmentManager fragmentManager, @NonNull Class<? extends Fragment> type) {
+        Fragment fragment = findFragment(fragmentManager, type);
+        if (fragment instanceof AwesomeFragment) {
+            return (AwesomeFragment) fragment;
+        }
+        return null;
     }
 
     @Nullable
@@ -184,15 +202,6 @@ public class FragmentHelper {
     }
 
     @Nullable
-    public static AwesomeFragment findAwesomeFragment(@NonNull FragmentManager fragmentManager, @NonNull String tag) {
-        Fragment fragment = findFragment(fragmentManager, tag);
-        if (fragment instanceof AwesomeFragment) {
-            return (AwesomeFragment) fragment;
-        }
-        return null;
-    }
-
-    @Nullable
     public static Fragment findFragment(@NonNull FragmentManager fragmentManager, @NonNull Class<? extends Fragment> type) {
         List<Fragment> fragments = fragmentManager.getFragments();
         int count = fragments.size();
@@ -215,15 +224,6 @@ public class FragmentHelper {
         }
 
         return target;
-    }
-
-    @Nullable
-    public static AwesomeFragment findAwesomeFragment(@NonNull FragmentManager fragmentManager, @NonNull Class<? extends Fragment> type) {
-        Fragment fragment = findFragment(fragmentManager, type);
-        if (fragment instanceof AwesomeFragment) {
-            return (AwesomeFragment) fragment;
-        }
-        return null;
     }
 
     @Nullable
