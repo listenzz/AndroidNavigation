@@ -11,11 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
+import com.navigation.BaseFragment;
 import com.navigation.R;
 import com.navigation.androidx.AwesomeFragment;
 import com.navigation.androidx.ToolbarButtonItem;
 
-public class SearchFragment extends AwesomeFragment {
+public class SearchFragment extends BaseFragment {
 
 
     EditText searchInput;
