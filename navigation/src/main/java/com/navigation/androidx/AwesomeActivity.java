@@ -66,15 +66,15 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     @Override
     public void setActivityRootFragment(@NonNull final AwesomeFragment rootFragment) {
         if (getSupportFragmentManager().isStateSaved()) {
-            scheduleTaskAtStarted(() -> setRootFragmentSync(rootFragment));
+            scheduleTaskAtStarted(() -> setActivityRootFragmentSync(rootFragment));
         } else {
             if (!isFinishing()) {
-                setRootFragmentSync(rootFragment);
+                setActivityRootFragmentSync(rootFragment);
             }
         }
     }
 
-    protected void setRootFragmentSync(AwesomeFragment fragment) {
+    protected void setActivityRootFragmentSync(AwesomeFragment fragment) {
         clearFragmentsSync();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();

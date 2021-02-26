@@ -515,9 +515,9 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent == null) {
-            return "#" + FragmentHelper.getIndexAtList(this) + "-" + getClass().getSimpleName();
+            return "#" + FragmentHelper.indexOf(this) + "-" + getClass().getSimpleName();
         } else {
-            return parent.getDebugTag() + "#" + FragmentHelper.getIndexAtList(this) + "-" + getClass().getSimpleName();
+            return parent.getDebugTag() + "#" + FragmentHelper.indexOf(this) + "-" + getClass().getSimpleName();
         }
     }
 

@@ -96,7 +96,7 @@ public class FragmentHelper {
         return children;
     }
 
-    public static int getIndexAtList(@NonNull AwesomeFragment fragment) {
+    public static int indexOf(@NonNull AwesomeFragment fragment) {
         List<AwesomeFragment> list = getFragments(fragment.requireFragmentManager());
         return list.indexOf(fragment);
     }
