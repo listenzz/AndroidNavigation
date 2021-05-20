@@ -15,11 +15,10 @@ public class LifecycleDelegate implements LifecycleObserver {
 
     private final ImmediateLifecycleDelegate immediateLifecycleDelegate;
     private final DeferredLifecycleDelegate deferredLifecycleDelegate;
-    private Handler handler = new Handler(Looper.getMainLooper());
 
     public LifecycleDelegate(LifecycleOwner lifecycleOwner) {
-        immediateLifecycleDelegate = new ImmediateLifecycleDelegate(lifecycleOwner, handler);
-        deferredLifecycleDelegate = new DeferredLifecycleDelegate(lifecycleOwner, handler);
+        immediateLifecycleDelegate = new ImmediateLifecycleDelegate(lifecycleOwner);
+        deferredLifecycleDelegate = new DeferredLifecycleDelegate(lifecycleOwner, new Handler(Looper.getMainLooper()));
     }
 
     public void scheduleTaskAtStarted(Runnable runnable) {

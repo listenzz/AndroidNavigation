@@ -1,6 +1,5 @@
 package com.navigation.androidx;
 
-import android.os.Handler;
 import android.os.Looper;
 
 import androidx.lifecycle.Lifecycle;
@@ -13,14 +12,13 @@ import java.util.Queue;
 
 public class ImmediateLifecycleDelegate implements LifecycleObserver {
 
-    private Queue<Runnable> tasks = new LinkedList<>();
+    private final Queue<Runnable> tasks = new LinkedList<>();
 
     private final LifecycleOwner lifecycleOwner;
-    private final Handler handler;
 
-    public ImmediateLifecycleDelegate(LifecycleOwner lifecycleOwner, Handler handler) {
+
+    public ImmediateLifecycleDelegate(LifecycleOwner lifecycleOwner) {
         this.lifecycleOwner = lifecycleOwner;
-        this.handler = handler;
         lifecycleOwner.getLifecycle().addObserver(this);
     }
 
