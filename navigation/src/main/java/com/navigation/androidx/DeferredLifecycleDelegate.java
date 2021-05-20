@@ -17,7 +17,7 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
 
     private static final long INTERVAL = 250;
 
-    private Queue<Runnable> tasks = new LinkedList<>();
+    private final Queue<Runnable> tasks = new LinkedList<>();
 
     private final LifecycleOwner lifecycleOwner;
     private final Handler handler;
@@ -64,7 +64,7 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
         }
     }
 
-    private Runnable executeTask = new Runnable() {
+    private final Runnable executeTask = new Runnable() {
         @Override
         public void run() {
             executing = false;

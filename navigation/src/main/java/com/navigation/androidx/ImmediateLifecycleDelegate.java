@@ -37,7 +37,6 @@ public class ImmediateLifecycleDelegate implements LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onStateChange() {
         if (getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
-            handler.removeCallbacks(executeTask);
             tasks.clear();
             getLifecycle().removeObserver(this);
         } else {
@@ -56,14 +55,6 @@ public class ImmediateLifecycleDelegate implements LifecycleObserver {
             executing = false;
         }
     }
-
-    private Runnable executeTask = new Runnable() {
-        @Override
-        public void run() {
-            executing = false;
-            considerExecute();
-        }
-    };
 
     boolean isAtLeastStarted() {
         return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED);
