@@ -299,13 +299,13 @@ public class FragmentHelper {
     public static boolean canPresentFragment(@NonNull AwesomeFragment fragment, @NonNull FragmentActivity activity) {
         AwesomeFragment presented = fragment.getPresentedFragment();
         if (presented != null) {
-            Log.w(TAG, "can not present since the fragment had present another fragment already.");
+            Log.w(TAG, "Can't present since the fragment had present another fragment already.");
             return false;
         }
 
         DialogFragment dialog = getAwesomeDialogFragment(activity.getSupportFragmentManager());
         if (dialog != null) {
-            Log.w(TAG, "can not present a fragment over a dialog.");
+            Log.w(TAG, "Can't present a fragment over a dialog.");
             return false;
         }
 
@@ -315,13 +315,13 @@ public class FragmentHelper {
     public static boolean canShowDialog(@NonNull AwesomeFragment fragment, @NonNull FragmentActivity activity) {
         AwesomeFragment presented = fragment.getPresentedFragment();
         if (presented != null) {
-            Log.w(TAG, "can not show dialog since the fragment had present another fragment already.");
+            Log.w(TAG, "Can't show dialog since the fragment had present another fragment already.");
             return false;
         }
 
         DialogFragment dialog = getAwesomeDialogFragment(activity.getSupportFragmentManager());
         if (dialog != null && dialog != fragment) {
-            Log.w(TAG, "can not show dialog since the fragment had show another dialog already.");
+            Log.w(TAG, "Can't show dialog since the fragment had show another dialog already.");
             return false;
         }
         return true;
