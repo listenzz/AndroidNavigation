@@ -16,7 +16,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     public static final String TAG = "Navigation";
 
-    private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
+    private final LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
 
     private Style style;
 
