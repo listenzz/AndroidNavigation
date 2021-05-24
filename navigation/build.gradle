@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+
 
 android {
     compileOptions {
@@ -14,7 +14,7 @@ android {
         minSdkVersion 21
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "8.0.8"
+        versionName "9.0.0"
     }
 
     buildTypes {
@@ -30,11 +30,71 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.2.0"
 }
 
-publish {
-    userOrg = 'listenzz'
-    groupId = 'com.navigation.androidx'
-    artifactId = 'androidx'
-    publishVersion = '8.0.8'
-    desc = 'A library managing nested Fragment, StatusBar, Toolbar for Android.'
-    website = 'https://github.com/listenzz/AndroidNavigation'
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+def PUBLISH_GROUP_ID = 'io.github.listenzz'
+
+def PUBLISH_ARTIFACT_ID = 'AndroidNavigation'
+
+def PUBLISH_VERSION = android.defaultConfig.versionName
+
+//签名
+signing {
+    required { gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.groupId = PUBLISH_GROUP_ID
+            pom.artifactId = PUBLISH_ARTIFACT_ID
+            pom.version = PUBLISH_VERSION
+
+            pom.project {
+                packaging 'aar' //我这里发布的是安卓的包，所有写的aar
+                name 'AndroidNavigation' // '发布库的简单名称'
+                description 'A library managing navigation, nested Fragment, StatusBar, Toolbar for Android'
+                url 'https://github.com/listenzz/AndroidNavigation'
+
+                scm {
+                    connection 'scm:git@github.com:listenzz/AndroidNavigation.git'
+                    developerConnection 'scm:git@github.com:listenzz/AndroidNavigation.git'
+                    url 'https://github.com/listenzz/AndroidNavigation'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'listenzz'
+                        name 'Listen'
+                        email 'listenzz@163.com'
+                    }
+                }
+            }
+        }
+    }
 }
