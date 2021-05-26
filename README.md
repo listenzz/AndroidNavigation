@@ -44,25 +44,25 @@ allprojects {
 
 ## Usage
 
-#### [构建 UI 层级](#building-hierarchy)
+- [**构建 UI 层级**](#building-hierarchy)
 
-#### [所见即所得 Dialog](#WYSIWYG-dialog)
+- [**所见即所得 Dialog**](#WYSIWYG-dialog)
 
-#### [导航](#navigation)
+- [**导航**](#navigation)
 
-#### [懒加载](#lazy-load)
+- [**懒加载**](#lazy-load)
 
-#### [全局样式设置](#setting-style)
+- [**全局样式设置**](#setting-style)
 
-#### [设置状态栏](#setting-statusbar)
+- [**设置状态栏**](#setting-statusbar)
 
-#### [设置导航栏](#setting-navigationbar)
+- [**设置导航栏**](#setting-navigationbar)
 
-#### [设置 Toolbar](#setting-toolbar)
+- [**设置 Toolbar**](#setting-toolbar)
 
-#### [使用 font icons](#using-font-icons)
+- [**使用 font icons**](#using-font-icons)
 
-#### [代码规范](#specification)
+- [**代码规范**](#specification)
 
 ---
 
