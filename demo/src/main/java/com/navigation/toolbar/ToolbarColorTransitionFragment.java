@@ -31,6 +31,11 @@ public class ToolbarColorTransitionFragment extends BaseFragment {
         style.setToolbarBackgroundColor(Color.parseColor("#EE6413"));
     }
 
+    @Override
+    protected boolean extendedLayoutIncludesToolbar() {
+        return true;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

@@ -27,7 +27,6 @@ This is also the subproject of [react-native-navigation-hybrid](https://github.c
 
 ## Installation
 
-
 ```groovy
 implementation 'io.github.listenzz:AndroidNavigation:9.0.0'
 implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -591,27 +590,27 @@ protected void onCustomStyle(Style style) {
 
 ```javascript
 {
-    screenBackgroundColor: int       // 页面背景，默认是白色
-    statusBarStyle: BarStyle         // 状态栏和 toolbar 前景色，可选值有 DarkContent 和 LightContent
-    statusBarColor: String           // 状态栏背景色，仅对 4.4 以上版本生效， 默认值是 colorPrimaryDark
-    navigationBarColor: Integer.     // 导航栏颜色，仅对 Android O 以上版本生效，建议保留默认设置
-    toolbarBackgroundColor: int      // toolbar 背景颜色，默认值是 colorPrimary
-    elevation: int                   // toolbar 阴影高度， 仅对 5.0 以上版本生效，默认值为 4 dp
-    shadow: Drawable                 // toolbar 阴影图片，仅对 4.4 以下版本生效
-    backIcon: Drawable               // 返回按钮图标，默认是个箭头
-    toolbarTintColor: int            // toolbar 按钮的颜色，默认根据 statusBarStyle 来推算
-    titleTextColor: int              // toolbar 标题颜色，默认根据 statusBarStyle 来推算
-    titleTextSize: int               // toolbar 标题字体大小，默认是 17 dp
-    titleGravity: int                // toolbar 标题的位置，默认是 Gravity.START
-    toolbarButtonTextSize: int       // toolbar 按钮字体大小，默认是 15 dp
-    swipeBackEnabled: boolean.       // 是否支持手势返回，默认是 false
-    badgeColor: String               // Badge 背景颜色
+  screenBackgroundColor: int // 页面背景，默认是白色
+  statusBarStyle: BarStyle // 状态栏和 toolbar 前景色，可选值有 DarkContent 和 LightContent
+  statusBarColor: String // 状态栏背景色，仅对 4.4 以上版本生效， 默认值是 colorPrimaryDark
+  navigationBarColor: Integer // 导航栏颜色，仅对 Android O 以上版本生效，建议保留默认设置
+  toolbarBackgroundColor: int // toolbar 背景颜色，默认值是 colorPrimary
+  elevation: int // toolbar 阴影高度， 仅对 5.0 以上版本生效，默认值为 4 dp
+  shadow: Drawable // toolbar 阴影图片，仅对 4.4 以下版本生效
+  backIcon: Drawable // 返回按钮图标，默认是个箭头
+  toolbarTintColor: int // toolbar 按钮的颜色，默认根据 statusBarStyle 来推算
+  titleTextColor: int // toolbar 标题颜色，默认根据 statusBarStyle 来推算
+  titleTextSize: int // toolbar 标题字体大小，默认是 17 dp
+  titleGravity: int // toolbar 标题的位置，默认是 Gravity.START
+  toolbarButtonTextSize: int // toolbar 按钮字体大小，默认是 15 dp
+  swipeBackEnabled: boolean // 是否支持手势返回，默认是 false
+  badgeColor: String // Badge 背景颜色
 
-    // BottomBar
-    tabBarBackgroundColor: String    // TabBar 背景，默认值是 #FFFFFF
-    tabBarShadow: Drawable           // TabBar 分割线
-    tabBarItemColor: String          // TabBarItem 颜色，当 tabBarSelectedItemColor 未设置时，该值为选中时的颜色，否则为未选中时的颜色
-    tabBarSelectedItemColor: String  // TabBarItem 选中时的颜色
+  // BottomBar
+  tabBarBackgroundColor: String // TabBar 背景，默认值是 #FFFFFF
+  tabBarShadow: Drawable // TabBar 分割线
+  tabBarItemColor: String // TabBarItem 颜色，当 tabBarSelectedItemColor 未设置时，该值为选中时的颜色，否则为未选中时的颜色
+  tabBarSelectedItemColor: String // TabBarItem 选中时的颜色
 }
 ```
 
@@ -748,6 +747,15 @@ protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
 
 demo 中，NoToolbarFragment 返回 null， 表示不需要创建 toolbar。如果需要自定义 toolbar，请优先考虑基于 AwesomeToolbar 进行自定义，并在 onCreateAwesomeToolbar 返回自定义的 toolbar，就像 CoordinatorFragment 和 ViewPagerFragment 所做的那样。
 
+如果在 toolbar 不透明的情况下，希望页面可以延伸到 toolbar 底部，那么重写以下方法，返回 true，参看 ToolbarColorTransitionFragment 这个例子
+
+```java
+@Override
+protected boolean extendedLayoutIncludesToolbar() {
+    return true;
+}
+```
+
 你还可以重写 onCustomStyle 这个方法，来修改 toolbar 的样式。
 
 ```java
@@ -761,7 +769,7 @@ protected void onCustomStyle(@NonNull Style style) {
 }
 ```
 
-如果开启了沉浸式，那么需要使用 `appendStatusBarPadding` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
+如果开启了沉浸式(默认就是开启的)，那么需要使用 `appendStatusBarPadding` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
 
 <a name="setting-navigationbar"></a>
 

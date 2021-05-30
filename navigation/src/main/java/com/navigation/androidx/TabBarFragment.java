@@ -7,10 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
-import androidx.annotation.AnimRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
@@ -221,11 +219,6 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     public void setSelectedIndex(int index, @Nullable Runnable completion) {
-        if (currentAnimation != null) {
-            currentAnimation.cancel();
-            currentAnimation = null;
-        }
-
         if (isAdded()) {
             scheduleTaskAtStarted(() -> setSelectedIndexSync(index, completion));
         } else {
@@ -308,45 +301,45 @@ public class TabBarFragment extends AwesomeFragment {
         }
     }
 
-    Animation currentAnimation = null;
+    void showTabBarAnimated(Animation anim) {
+        if (anim == null) {
+            showTabBar();
+            return;
+        }
 
-    void showTabBarWhenPop(@AnimRes int anim) {
         if (tabBar != null) {
             tabBarHidden = false;
-            setNeedsNavigationBarAppearanceUpdate();
-            if (anim != R.anim.nav_none) {
-                Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
-                animation.setAnimationListener(new TabBarAnimationListener());
-                currentAnimation = animation;
-                tabBar.startAnimation(animation);
-            } else {
-                tabBar.setVisibility(View.VISIBLE);
-                tabBar.setTranslationY(0);
-            }
+            tabBar.setVisibility(View.GONE);
+            handleTabBarVisibilityAnimated(anim);
         }
     }
 
-    void hideTabBarWhenPush(@AnimRes int anim) {
+    void hideTabBarAnimated(Animation anim) {
+        if (anim == null) {
+            hideTabBar();
+            return;
+        }
+
         if (tabBar != null) {
             tabBarHidden = true;
-            setNeedsNavigationBarAppearanceUpdate();
-            if (anim != R.anim.nav_none) {
-                Animation animation = AnimationUtils.loadAnimation(getContext(), anim);
-                animation.setAnimationListener(new TabBarAnimationListener());
-                currentAnimation = animation;
-                tabBar.startAnimation(animation);
-            } else {
-                tabBar.setVisibility(View.GONE);
-                tabBar.setTranslationY(tabBar.getHeight());
-            }
+            tabBar.setVisibility(View.GONE);
+            handleTabBarVisibilityAnimated(anim);
         }
+    }
+
+    private void handleTabBarVisibilityAnimated(@NonNull Animation animation) {
+        setNeedsNavigationBarAppearanceUpdate();
+        tabBar.postDelayed(() -> {
+            if (isAdded()) {
+                tabBar.setVisibility(tabBarHidden ? View.GONE : View.VISIBLE);
+            }
+        } , animation.getDuration());
     }
 
     private void showTabBar() {
         if (tabBar != null) {
             tabBarHidden = false;
             tabBar.setVisibility(View.VISIBLE);
-            tabBar.setTranslationY(0);
             setNeedsNavigationBarAppearanceUpdate();
         }
     }
@@ -354,39 +347,8 @@ public class TabBarFragment extends AwesomeFragment {
     private void hideTabBar() {
         if (tabBar != null) {
             tabBarHidden = true;
-            int height = tabBar.getHeight();
-            if (height == 0) {
-                height = (int) (getResources().getDimension(R.dimen.nav_tab_bar_height) * 2);
-            }
             tabBar.setVisibility(View.GONE);
-            tabBar.setTranslationY(height);
-            if (isResumed()) {
-                setNeedsNavigationBarAppearanceUpdate();
-            }
-        }
-    }
-
-    class TabBarAnimationListener implements Animation.AnimationListener {
-        @Override
-        public void onAnimationStart(Animation animation) {
-            if (tabBar != null && !tabBarHidden) {
-                tabBar.setVisibility(View.VISIBLE);
-                tabBar.setTranslationY(0);
-            }
-        }
-
-        @Override
-        public void onAnimationEnd(Animation animation) {
-            if (tabBar != null && tabBarHidden) {
-                tabBar.setVisibility(View.GONE);
-                tabBar.setTranslationY(tabBar.getHeight() * 2);
-            }
-            currentAnimation = null;
-        }
-
-        @Override
-        public void onAnimationRepeat(Animation animation) {
-
+            setNeedsNavigationBarAppearanceUpdate();
         }
     }
 }

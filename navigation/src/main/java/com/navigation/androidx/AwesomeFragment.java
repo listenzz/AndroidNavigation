@@ -3,7 +3,9 @@ package com.navigation.androidx;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -12,6 +14,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
@@ -21,7 +24,6 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
@@ -57,7 +59,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     // ------- lifecycle methods -------
     private PresentableActivity presentableActivity;
-    private LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
+    private final LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
     protected Style style;
 
     @Override
@@ -109,6 +111,12 @@ public abstract class AwesomeFragment extends InternalFragment {
         inflateStyle();
 
         if (!getShowsDialog()) {
+            if (hasNavigationParent()) {
+                LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
+                layoutInflater = new NavigationLayoutInflater(requireContext(), layoutInflater);
+                return layoutInflater;
+            }
+
             return super.onGetLayoutInflater(savedInstanceState);
         }
 
@@ -152,11 +160,12 @@ public abstract class AwesomeFragment extends InternalFragment {
     @CallSuper
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
+
         if (!getShowsDialog()) {
             if (!isParentFragment()) {
                 setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
             }
-            handleNavigationFragmentStuff(root);
+            fitNavigationFragment(root);
         } else {
             setupDialog();
             animateIn();
@@ -219,9 +228,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             return null;
         }
 
-        PresentAnimation animation = getAnimation();
-
-        hideTabBarIfNeeded(transit, enter, animation);
         // ---------
         // Log.d(TAG, getDebugTag() + "  " + animation.name() + " transit:" + transit + " enter:" + enter);
 
@@ -230,21 +236,26 @@ public abstract class AwesomeFragment extends InternalFragment {
             return AnimationUtils.loadAnimation(context, R.anim.nav_delay);
         }
 
+        PresentAnimation animation = getAnimation();
+
+        Animation anim = null;
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
-                return AnimationUtils.loadAnimation(context, animation.enter);
+                anim = AnimationUtils.loadAnimation(context, animation.enter);
             } else {
-                return AnimationUtils.loadAnimation(context, animation.exit);
+                anim = AnimationUtils.loadAnimation(context, animation.exit);
             }
         } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
             if (enter) {
-                return AnimationUtils.loadAnimation(context, animation.popEnter);
+                anim = AnimationUtils.loadAnimation(context, animation.popEnter);
             } else {
-                return AnimationUtils.loadAnimation(context, animation.popExit);
+                anim = AnimationUtils.loadAnimation(context, animation.popExit);
             }
         }
 
-        return super.onCreateAnimation(transit, enter, nextAnim);
+        hideTabBarIfNeeded(transit, enter, anim);
+
+        return anim;
     }
 
     // ------ lifecycle arch -------
@@ -1065,7 +1076,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         return true;
     }
 
-    private void hideTabBarIfNeeded(int transit, boolean enter, PresentAnimation animation) {
+    private void hideTabBarIfNeeded(int transit, boolean enter, Animation anim) {
         if (!shouldHideTabBarWhenPushed()) {
             return;
         }
@@ -1084,12 +1095,44 @@ public abstract class AwesomeFragment extends InternalFragment {
 
             int index = FragmentHelper.getIndexAtBackStack(this);
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
-                if (index != 0) {
-                    tabBarFragment.hideTabBarWhenPush(animation.exit);
+                if (index == 1) {
+                    drawFakeTabBar(tabBarFragment, navigationFragment, anim);
+                    tabBarFragment.hideTabBarAnimated(anim);
                 }
             } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
                 if (index == 0) {
-                    tabBarFragment.showTabBarWhenPop(animation.popEnter);
+                    drawFakeTabBar(tabBarFragment, navigationFragment, anim);
+                    tabBarFragment.showTabBarAnimated(anim);
+                }
+            }
+        }
+    }
+
+    private void drawFakeTabBar(TabBarFragment tabBarFragment, NavigationFragment navigationFragment, Animation anim) {
+        if (tabBarFragment != null && tabBarFragment.getTabBar() != null && tabBarFragment.getView() != null) {
+            View tabBar = tabBarFragment.getTabBar();
+            if (tabBar.getMeasuredWidth() == 0) {
+                tabBar.measure(View.MeasureSpec.makeMeasureSpec(tabBarFragment.getView().getWidth(), View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                tabBar.layout(0, 0, tabBar.getMeasuredWidth(), tabBar.getMeasuredHeight());
+            }
+            Bitmap bitmap = AppUtils.createBitmapFromView(tabBar);
+            BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
+            bitmapDrawable.setBounds(0, tabBarFragment.getView().getHeight() - tabBar.getHeight(),
+                    tabBar.getMeasuredWidth(), tabBarFragment.getView().getHeight());
+
+            AwesomeFragment rootFragment = navigationFragment.getRootFragment();
+            if (rootFragment != null) {
+                View root = rootFragment.getView();
+                if (root instanceof FrameLayout) {
+                    FrameLayout frameLayout = (FrameLayout) root;
+                    frameLayout.setForeground(bitmapDrawable);
+                    frameLayout.setForegroundGravity(Gravity.BOTTOM);
+                    root.postDelayed(() -> {
+                        if (isAdded()) {
+                            frameLayout.setForeground(null);
+                        }
+                    }, anim.getDuration());
                 }
             }
         }
@@ -1101,17 +1144,19 @@ public abstract class AwesomeFragment extends InternalFragment {
         return toolbar;
     }
 
-    private void handleNavigationFragmentStuff(@NonNull View root) {
-        AwesomeFragment parent = getParentAwesomeFragment();
-        boolean hasNavigationParent = (parent instanceof NavigationFragment);
-        if (hasNavigationParent) {
-            // create toolbar if needed
-            createToolbarIfNeeded(root);
-            adjustBottomPaddingIfNeeded(root);
+    private void fitNavigationFragment(@NonNull View root) {
+        if (hasNavigationParent()) {
+            createAwesomeToolbar(root);
+            adjustBottomPaddingForTabBar(root);
         }
     }
 
-    private void createToolbarIfNeeded(@NonNull View root) {
+    private boolean hasNavigationParent() {
+        AwesomeFragment parent = getParentAwesomeFragment();
+        return (parent instanceof NavigationFragment);
+    }
+
+    private void createAwesomeToolbar(@NonNull View root) {
         AwesomeToolbar toolbar = onCreateAwesomeToolbar(root);
         if (toolbar != null) {
             customAwesomeToolbar(toolbar);
@@ -1119,18 +1164,18 @@ public abstract class AwesomeFragment extends InternalFragment {
         this.toolbar = toolbar;
     }
 
-    private void adjustBottomPaddingIfNeeded(final View root) {
+    private void adjustBottomPaddingForTabBar(final View root) {
         int index = FragmentHelper.getIndexAtBackStack(this);
         if (index == 0 || !shouldHideTabBarWhenPushed()) {
             int color = Color.parseColor(style.getTabBarBackgroundColor());
             if (Color.alpha(color) == 255) {
-                root.post(() -> {
+                //root.post(() -> {
                     TabBarFragment tabBarFragment = getTabBarFragment();
                     if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
                         int bottomPadding = (int) getResources().getDimension(R.dimen.nav_tab_bar_height);
                         root.setPadding(0, 0, 0, bottomPadding);
                     }
-                });
+               // });
             }
         }
     }
@@ -1138,23 +1183,31 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Nullable
     protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
         if (getView() == null || getContext() == null) return null;
-
-        int height = getToolbarHeight();
+        int toolbarHeight = getToolbarHeight();
         AwesomeToolbar toolbar = new AwesomeToolbar(getContext());
-        if (parent instanceof LinearLayout) {
-            LinearLayout linearLayout = (LinearLayout) parent;
-            linearLayout.addView(toolbar, 0, new LinearLayout.LayoutParams(-1, height));
-        } else if (parent instanceof FrameLayout) {
-            FrameLayout frameLayout = (FrameLayout) parent;
-            frameLayout.addView(toolbar, new FrameLayout.LayoutParams(-1, height));
-        } else {
-            throw new UnsupportedOperationException("AwesomeFragment 无法为 " + parent.getClass().getSimpleName()
-                    + " 添加 Toolbar. 请重写 onCreateAwesomeToolbar, 这样你就可以自行添加 Toolbar 了。");
-        }
-
+        FrameLayout frameLayout = (FrameLayout) parent;
+        frameLayout.addView(toolbar, new FrameLayout.LayoutParams(-1, toolbarHeight));
         appendStatusBarPadding(toolbar);
-
+        appendToolbarPadding(parent);
         return toolbar;
+    }
+
+    private void appendToolbarPadding(View parent) {
+        if (!extendedLayoutIncludesToolbar()) {
+            FrameLayout frameLayout = (FrameLayout) parent;
+            if (frameLayout.getChildCount() > 1) {
+                View child = frameLayout.getChildAt(0);
+                int statusBarHeight = SystemUI.getStatusBarHeight(requireContext());
+                int toolbarHeight = getToolbarHeight();
+                child.setPadding(0, statusBarHeight + toolbarHeight, 0, 0);
+            }
+        }
+    }
+
+    protected boolean extendedLayoutIncludesToolbar() {
+        int color = preferredToolbarColor();
+        float alpha = preferredToolbarAlpha();
+        return Color.alpha(color) < 255 || alpha < 1.0;
     }
 
     public int getToolbarHeight() {

@@ -233,7 +233,7 @@ public class SwipeBackLayout extends FrameLayout {
         if (mScrimOpacity >= 0 && mCapturedView != null && count > 1) {
             int leftOffset = (int) ((mCapturedView.getLeft() - getWidth()) * mParallaxOffset * mScrimOpacity);
             View underlying = getChildAt(count - 2);
-            underlying.setX(leftOffset > 0 ? 0 : leftOffset);
+            underlying.setX(Math.min(leftOffset, 0));
         }
     }
 
