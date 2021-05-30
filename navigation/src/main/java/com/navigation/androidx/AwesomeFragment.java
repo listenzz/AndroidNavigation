@@ -1066,6 +1066,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     private void hideTabBarIfNeeded(int transit, boolean enter, PresentAnimation animation) {
+        if (!shouldHideTabBarWhenPushed()) {
+            return;
+        }
+
         Fragment parent = getParentFragment();
         if (parent instanceof NavigationFragment) {
             NavigationFragment navigationFragment = (NavigationFragment) parent;
@@ -1080,7 +1084,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
             int index = FragmentHelper.getIndexAtBackStack(this);
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
-                if (index != 0 && shouldHideTabBarWhenPushed()) {
+                if (index != 0) {
                     tabBarFragment.hideTabBarWhenPush(animation.exit);
                 }
             } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
