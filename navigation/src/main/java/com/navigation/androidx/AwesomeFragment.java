@@ -14,7 +14,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
@@ -208,6 +207,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (childFragmentForAppearance() == null) {
             setNeedsStatusBarAppearanceUpdate();
         }
+
         if (childFragmentForNavigationBarAppearance() == null) {
             setNeedsNavigationBarAppearanceUpdate();
         }
@@ -628,6 +628,10 @@ public abstract class AwesomeFragment extends InternalFragment {
 
 
     public void setNeedsStatusBarAppearanceUpdate() {
+        if (!isResumed()) {
+            return;
+        }
+
         AwesomeFragment parent = getParentAwesomeFragment();
         if (!getShowsDialog() && parent != null) {
             parent.setNeedsStatusBarAppearanceUpdate();
@@ -716,6 +720,10 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public void setNeedsNavigationBarAppearanceUpdate() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return;
+        }
+
+        if (!isResumed()) {
             return;
         }
 
@@ -1169,13 +1177,11 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (index == 0 || !shouldHideTabBarWhenPushed()) {
             int color = Color.parseColor(style.getTabBarBackgroundColor());
             if (Color.alpha(color) == 255) {
-                //root.post(() -> {
-                    TabBarFragment tabBarFragment = getTabBarFragment();
-                    if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
-                        int bottomPadding = (int) getResources().getDimension(R.dimen.nav_tab_bar_height);
-                        root.setPadding(0, 0, 0, bottomPadding);
-                    }
-               // });
+                TabBarFragment tabBarFragment = getTabBarFragment();
+                if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
+                    int bottomPadding = (int) getResources().getDimension(R.dimen.nav_tab_bar_height);
+                    root.setPadding(0, 0, 0, bottomPadding);
+                }
             }
         }
     }
