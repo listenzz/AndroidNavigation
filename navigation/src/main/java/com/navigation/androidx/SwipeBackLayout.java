@@ -27,7 +27,7 @@ public class SwipeBackLayout extends FrameLayout {
      */
     private static final int MIN_FLING_VELOCITY = 400; // dips per second
 
-    private static final int DEFAULT_SCRIM_COLOR = 0x10000000;
+    private static final int DEFAULT_SCRIM_COLOR = 25 << 24;
 
     private static final int FULL_ALPHA = 255;
 
@@ -54,7 +54,7 @@ public class SwipeBackLayout extends FrameLayout {
      */
     private static final float DEFAULT_SCROLL_THRESHOLD = 0.5f;
 
-    private static final float DEFAULT_PARALLAX = 0.25f;
+    private static final float DEFAULT_PARALLAX = 0.33f;
 
     /**
      * Threshold of scroll, we will close the activity, when scrollPercent over

@@ -2,4 +2,4 @@
 <translate xmlns:android="http://schemas.android.com/apk/res/android"
     android:duration="100"
     android:fromXDelta="0"
-    android:toXDelta="0"/>
+    android:toXDelta="0" />

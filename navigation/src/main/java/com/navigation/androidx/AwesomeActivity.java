@@ -124,7 +124,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     private void presentFragmentSync(AwesomeFragment fragment, @Nullable Runnable completion) {
-        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.Modal);
+        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.Present);
         if (completion != null) {
             completion.run();
         }

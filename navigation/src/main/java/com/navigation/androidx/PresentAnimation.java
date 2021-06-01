@@ -8,10 +8,9 @@ import androidx.annotation.AnimRes;
 
 public enum PresentAnimation {
 
-    Push(R.anim.nav_slide_in_right, R.anim.nav_slide_out_left, R.anim.nav_slide_in_left, R.anim.nav_slide_out_right),
-    Redirect(R.anim.nav_none, R.anim.nav_none, R.anim.nav_slide_in_right, R.anim.nav_slide_out_left),
-    Modal(R.anim.nav_slide_up, R.anim.nav_delay, R.anim.nav_delay, R.anim.nav_slide_down),
-    Delay(R.anim.nav_delay, R.anim.nav_delay, R.anim.nav_delay, R.anim.nav_delay),
+    Push(R.anim.nav_push_enter, R.anim.nav_push_exit, R.anim.nav_pop_enter, R.anim.nav_pop_exit),
+    Redirect(R.anim.nav_push_enter,  R.anim.nav_push_exit,  R.anim.nav_push_enter,  R.anim.nav_push_exit),
+    Present(R.anim.nav_present_enter, R.anim.nav_present_exit, R.anim.nav_dismiss_enter, R.anim.nav_dismiss_exit),
     DelayShort(R.anim.nav_delay_short, R.anim.nav_delay_short, R.anim.nav_delay_short, R.anim.nav_delay_short),
     Fade(R.anim.nav_fade_in, R.anim.nav_fade_out, R.anim.nav_fade_in, R.anim.nav_fade_out),
     FadeShort(R.anim.nav_fade_in_short, R.anim.nav_fade_out_short, R.anim.nav_fade_in_short, R.anim.nav_fade_out_short),

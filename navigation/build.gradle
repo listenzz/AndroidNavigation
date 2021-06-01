@@ -69,8 +69,8 @@ uploadArchives {
             pom.version = PUBLISH_VERSION
 
             pom.project {
-                packaging 'aar' //我这里发布的是安卓的包，所有写的aar
-                name 'AndroidNavigation' // '发布库的简单名称'
+                packaging 'aar'
+                name PUBLISH_ARTIFACT_ID
                 description 'A library managing navigation, nested Fragment, StatusBar, Toolbar for Android'
                 url 'https://github.com/listenzz/AndroidNavigation'
 

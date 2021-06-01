@@ -270,7 +270,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             transaction.hide(previous);
             transaction.setMaxLifecycle(previous, Lifecycle.State.STARTED);
         }
-        fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
+        fragment.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.None);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();

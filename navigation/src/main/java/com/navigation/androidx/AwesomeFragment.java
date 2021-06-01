@@ -1,5 +1,6 @@
 package com.navigation.androidx;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -30,6 +32,7 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -253,7 +256,9 @@ public abstract class AwesomeFragment extends InternalFragment {
             }
         }
 
-        hideTabBarIfNeeded(transit, enter, anim);
+        if (!drawTabBarIfNeeded(transit, enter, anim)) {
+            drawScrimIfNeeded(transit, enter, anim);
+        }
 
         return anim;
     }
@@ -360,7 +365,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         fragment.setTargetFragment(target, requestCode);
         fragment.setDefinesPresentationContext(true);
-        FragmentHelper.addFragmentToBackStack(target.requireFragmentManager(), target.getContainerId(), fragment, PresentAnimation.Modal);
+        FragmentHelper.addFragmentToBackStack(target.requireFragmentManager(), target.getContainerId(), fragment, PresentAnimation.Present);
         if (completion != null) {
             completion.run();
         }
@@ -1084,65 +1089,160 @@ public abstract class AwesomeFragment extends InternalFragment {
         return true;
     }
 
-    private void hideTabBarIfNeeded(int transit, boolean enter, Animation anim) {
+    private boolean drawTabBarIfNeeded(int transit, boolean enter, Animation anim) {
         if (!shouldHideTabBarWhenPushed()) {
-            return;
+            return false;
+        }
+
+        if (getAnimation() == PresentAnimation.Redirect) {
+            return false;
         }
 
         Fragment parent = getParentFragment();
-        if (parent instanceof NavigationFragment) {
-            NavigationFragment navigationFragment = (NavigationFragment) parent;
-            TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
-            if (tabBarFragment == null || !enter) {
-                return;
-            }
+        if (!(parent instanceof NavigationFragment)) {
+            return false;
+        }
 
-            if (navigationFragment != tabBarFragment.getSelectedFragment()) {
-                return;
-            }
+        NavigationFragment navigationFragment = (NavigationFragment) parent;
+        TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
 
-            int index = FragmentHelper.getIndexAtBackStack(this);
+        if (tabBarFragment == null) {
+            return false;
+        }
+
+        if (navigationFragment != tabBarFragment.getSelectedFragment()) {
+            return false;
+        }
+
+        if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN && !enter) {
+            if (this == navigationFragment.getRootFragment()) {
+                drawTabBar(tabBarFragment, anim.getDuration(), true);
+                tabBarFragment.hideTabBarAnimated(anim);
+                return true;
+            }
+        } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
+            if (this == navigationFragment.getRootFragment()) {
+                drawTabBar(tabBarFragment, anim.getDuration(), false);
+                tabBarFragment.showTabBarAnimated(anim);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void drawScrimIfNeeded(int transit, boolean enter, Animation anim) {
+        Fragment parent = getParentFragment();
+        if (!(parent instanceof NavigationFragment)) {
+            return;
+        }
+
+        NavigationFragment navigationFragment = (NavigationFragment) parent;
+
+        if (getAnimation() == PresentAnimation.Redirect) {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
-                if (index == 1) {
-                    drawFakeTabBar(tabBarFragment, navigationFragment, anim);
-                    tabBarFragment.hideTabBarAnimated(anim);
+                if (enter) {
+                    ViewCompat.setTranslationZ(getView(), 0f);
+                } else {
+                    ViewCompat.setTranslationZ(getView(), -4f);
                 }
             } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
-                if (index == 0) {
-                    drawFakeTabBar(tabBarFragment, navigationFragment, anim);
-                    tabBarFragment.showTabBarAnimated(anim);
+                if (enter) {
+                    ViewCompat.setTranslationZ(getView(), -3f);
+                } else {
+                    ViewCompat.setTranslationZ(getView(), -2f);
+                    drawScrim(navigationFragment, anim.getDuration(), true);
                 }
+            }
+        } else {
+            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN && !enter) {
+                drawScrim(navigationFragment, anim.getDuration(), true);
+            } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
+                drawScrim(navigationFragment, anim.getDuration(), false);
             }
         }
     }
 
-    private void drawFakeTabBar(TabBarFragment tabBarFragment, NavigationFragment navigationFragment, Animation anim) {
-        if (tabBarFragment != null && tabBarFragment.getTabBar() != null && tabBarFragment.getView() != null) {
-            View tabBar = tabBarFragment.getTabBar();
-            if (tabBar.getMeasuredWidth() == 0) {
-                tabBar.measure(View.MeasureSpec.makeMeasureSpec(tabBarFragment.getView().getWidth(), View.MeasureSpec.EXACTLY),
-                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                tabBar.layout(0, 0, tabBar.getMeasuredWidth(), tabBar.getMeasuredHeight());
-            }
-            Bitmap bitmap = AppUtils.createBitmapFromView(tabBar);
-            BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
-            bitmapDrawable.setBounds(0, tabBarFragment.getView().getHeight() - tabBar.getHeight(),
-                    tabBar.getMeasuredWidth(), tabBarFragment.getView().getHeight());
+    private static final int FULL_ALPHA = 25;
 
-            AwesomeFragment rootFragment = navigationFragment.getRootFragment();
-            if (rootFragment != null) {
-                View root = rootFragment.getView();
-                if (root instanceof FrameLayout) {
-                    FrameLayout frameLayout = (FrameLayout) root;
-                    frameLayout.setForeground(bitmapDrawable);
-                    frameLayout.setForegroundGravity(Gravity.BOTTOM);
-                    root.postDelayed(() -> {
-                        if (isAdded()) {
-                            frameLayout.setForeground(null);
-                        }
-                    }, anim.getDuration());
+    private void drawScrim(@NonNull NavigationFragment navigationFragment, long duration, boolean open) {
+        if (navigationFragment.getView() == null) {
+            return;
+        }
+
+        int vWidth = navigationFragment.getView().getWidth();
+        int vHeight = navigationFragment.getView().getHeight();
+
+        ColorDrawable colorDrawable = new ColorDrawable(0x00000000);
+        colorDrawable.setBounds(0, 0, vWidth, vHeight);
+
+        View root = getView();
+        if (root instanceof FrameLayout) {
+            FrameLayout frameLayout = (FrameLayout) root;
+            frameLayout.setForeground(colorDrawable);
+
+            ValueAnimator valueAnimator = open ? ValueAnimator.ofInt(0, FULL_ALPHA) : ValueAnimator.ofInt(FULL_ALPHA, 0);
+            valueAnimator.setDuration(duration);
+            valueAnimator.addUpdateListener(animation -> {
+                int value = (Integer) animation.getAnimatedValue();
+                colorDrawable.setColor(value << 24);
+            });
+            valueAnimator.start();
+
+            root.postDelayed(() -> {
+                if (isAdded()) {
+                    frameLayout.setForeground(null);
                 }
-            }
+            }, duration);
+        }
+
+    }
+
+    private void drawTabBar(@NonNull TabBarFragment tabBarFragment, long duration, boolean open) {
+        if (tabBarFragment.getTabBar() == null || tabBarFragment.getView() == null) {
+            return;
+        }
+
+        int vWidth = tabBarFragment.getView().getWidth();
+        int vHeight = tabBarFragment.getView().getHeight();
+
+        View tabBar = tabBarFragment.getTabBar();
+        if (tabBar.getMeasuredWidth() == 0) {
+            tabBar.measure(View.MeasureSpec.makeMeasureSpec(vWidth, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            tabBar.layout(0, 0, tabBar.getMeasuredWidth(), tabBar.getMeasuredHeight());
+        }
+
+        Bitmap bitmap = AppUtils.createBitmapFromView(tabBar);
+        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
+        bitmapDrawable.setBounds(0, vHeight - tabBar.getHeight(),
+                tabBar.getMeasuredWidth(), vHeight);
+        bitmapDrawable.setGravity(Gravity.BOTTOM);
+
+        ColorDrawable colorDrawable = new ColorDrawable(0x00000000);
+        colorDrawable.setBounds(0, 0, vWidth, vHeight);
+
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{bitmapDrawable, colorDrawable,});
+        layerDrawable.setBounds(0, 0, vWidth, vHeight);
+
+        View root = getView();
+        if (root instanceof FrameLayout) {
+            FrameLayout frameLayout = (FrameLayout) root;
+            frameLayout.setForeground(layerDrawable);
+
+            ValueAnimator valueAnimator = open ? ValueAnimator.ofInt(0, FULL_ALPHA) : ValueAnimator.ofInt(FULL_ALPHA, 0);
+            valueAnimator.setDuration(duration);
+            valueAnimator.addUpdateListener(animation -> {
+                int value = (Integer) animation.getAnimatedValue();
+                colorDrawable.setColor(value << 24);
+            });
+            valueAnimator.start();
+
+            root.postDelayed(() -> {
+                if (isAdded()) {
+                    frameLayout.setForeground(null);
+                }
+            }, duration);
         }
     }
 
