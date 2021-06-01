@@ -222,6 +222,10 @@ public class SwipeBackLayout extends FrameLayout {
         canvas.restore();
     }
 
+    public void setScrimColor(int color) {
+        mScrimColor = color;
+    }
+
     @Override
     public void computeScroll() {
         mScrimOpacity = 1 - mScrollPercent;

@@ -31,6 +31,8 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             root = inflater.inflate(R.layout.nav_fragment_navigation_swipe_back, container, false);
             swipeBackLayout = root.findViewById(R.id.navigation_content);
             swipeBackLayout.setSwipeListener(this);
+            int scrimAlpha = style.getScrimAlpha();
+            swipeBackLayout.setScrimColor(scrimAlpha << 24);
         } else {
             root = inflater.inflate(R.layout.nav_fragment_navigation, container, false);
         }

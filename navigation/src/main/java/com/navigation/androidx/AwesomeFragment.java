@@ -1163,8 +1163,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
-    private static final int FULL_ALPHA = 25;
-
     private void drawScrim(@NonNull NavigationFragment navigationFragment, long duration, boolean open) {
         if (navigationFragment.getView() == null) {
             return;
@@ -1180,8 +1178,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (root instanceof FrameLayout) {
             FrameLayout frameLayout = (FrameLayout) root;
             frameLayout.setForeground(colorDrawable);
-
-            ValueAnimator valueAnimator = open ? ValueAnimator.ofInt(0, FULL_ALPHA) : ValueAnimator.ofInt(FULL_ALPHA, 0);
+            int scrimAlpha = style.getScrimAlpha();
+            ValueAnimator valueAnimator = open ? ValueAnimator.ofInt(0, scrimAlpha) : ValueAnimator.ofInt(scrimAlpha, 0);
             valueAnimator.setDuration(duration);
             valueAnimator.addUpdateListener(animation -> {
                 int value = (Integer) animation.getAnimatedValue();
@@ -1229,8 +1227,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (root instanceof FrameLayout) {
             FrameLayout frameLayout = (FrameLayout) root;
             frameLayout.setForeground(layerDrawable);
-
-            ValueAnimator valueAnimator = open ? ValueAnimator.ofInt(0, FULL_ALPHA) : ValueAnimator.ofInt(FULL_ALPHA, 0);
+            int scrimAlpha = style.getScrimAlpha();
+            ValueAnimator valueAnimator = open ? ValueAnimator.ofInt(0, scrimAlpha) : ValueAnimator.ofInt(scrimAlpha, 0);
             valueAnimator.setDuration(duration);
             valueAnimator.addUpdateListener(animation -> {
                 int value = (Integer) animation.getAnimatedValue();

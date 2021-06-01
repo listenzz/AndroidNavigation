@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -57,6 +58,8 @@ public class Style implements Cloneable {
 
     private boolean swipeBackEnabled;
     private String tabBarBadgeColor = "#FF3B30";
+
+    private int scrimAlpha = 25;
 
     protected Style(Context context) {
         this.context = context;
@@ -366,6 +369,14 @@ public class Style implements Cloneable {
 
     public void setNavigationBarColor(@ColorInt int color) {
         this.navigationBarColor = color;
+    }
+
+    public void setScrimAlpha(@IntRange(from = 0, to = 255) int scrimAlpha) {
+        this.scrimAlpha = scrimAlpha;
+    }
+
+    public int getScrimAlpha() {
+        return scrimAlpha;
     }
 
     @Override
