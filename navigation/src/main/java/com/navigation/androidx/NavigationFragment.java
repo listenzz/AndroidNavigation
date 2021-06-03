@@ -214,9 +214,9 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     private void popToRootFragmentSync(boolean animated, @Nullable Runnable completion) {
-        AwesomeFragment awesomeFragment = getRootFragment();
-        if (awesomeFragment != null) {
-            popToFragmentSync(getRootFragment(), animated, null);
+        AwesomeFragment rootFragment = getRootFragment();
+        if (rootFragment != null) {
+            popToFragmentSync(rootFragment, animated, null);
         }
         if (completion != null) {
             completion.run();

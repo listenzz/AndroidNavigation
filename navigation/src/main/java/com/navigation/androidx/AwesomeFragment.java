@@ -1055,8 +1055,8 @@ public abstract class AwesomeFragment extends InternalFragment {
     public boolean isNavigationRoot() {
         NavigationFragment navigationFragment = getNavigationFragment();
         if (navigationFragment != null) {
-            AwesomeFragment awesomeFragment = navigationFragment.getRootFragment();
-            return awesomeFragment == this;
+            AwesomeFragment fragment = navigationFragment.getRootFragment();
+            return fragment == this;
         }
         return false;
     }
@@ -1082,7 +1082,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         AwesomeFragment root;
         if (navigationFragment != null) {
             root = navigationFragment.getRootFragment();
-            if (root != null) {
+            if (root != null && root.isAdded()) {
                 return root.hideTabBarWhenPushed();
             }
         }
@@ -1090,16 +1090,12 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     private boolean drawTabBarIfNeeded(int transit, boolean enter, Animation anim) {
-        if (!shouldHideTabBarWhenPushed()) {
-            return false;
-        }
-
-        if (getAnimation() == PresentAnimation.Redirect) {
-            return false;
-        }
-
         Fragment parent = getParentFragment();
         if (!(parent instanceof NavigationFragment)) {
+            return false;
+        }
+
+        if (getAnimation() != PresentAnimation.Push) {
             return false;
         }
 
@@ -1111,6 +1107,10 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         if (navigationFragment != tabBarFragment.getSelectedFragment()) {
+            return false;
+        }
+
+        if (!shouldHideTabBarWhenPushed()) {
             return false;
         }
 
@@ -1139,7 +1139,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         NavigationFragment navigationFragment = (NavigationFragment) parent;
 
-        if (getAnimation() == PresentAnimation.Redirect) {
+        if (getAnimation() == PresentAnimation.Redirect && getView() != null) {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
                 if (enter) {
                     ViewCompat.setTranslationZ(getView(), 0f);
@@ -1154,7 +1154,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                     drawScrim(navigationFragment, anim.getDuration(), true);
                 }
             }
-        } else {
+        } else if (getAnimation() == PresentAnimation.Push) {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN && !enter) {
                 drawScrim(navigationFragment, anim.getDuration(), true);
             } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
