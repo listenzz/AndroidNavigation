@@ -6,24 +6,24 @@ import androidx.annotation.AnimRes;
  * Created by Listen on 2017/11/20.
  */
 
-public enum PresentAnimation {
+public class PresentAnimation {
 
-    Push(R.anim.nav_push_enter, R.anim.nav_push_exit, R.anim.nav_pop_enter, R.anim.nav_pop_exit),
-    Redirect(R.anim.nav_push_enter,  R.anim.nav_push_exit,  R.anim.nav_push_enter,  R.anim.nav_push_exit),
-    Present(R.anim.nav_present_enter, R.anim.nav_present_exit, R.anim.nav_dismiss_enter, R.anim.nav_dismiss_exit),
-    DelayShort(R.anim.nav_delay_short, R.anim.nav_delay_short, R.anim.nav_delay_short, R.anim.nav_delay_short),
-    Fade(R.anim.nav_fade_in, R.anim.nav_fade_out, R.anim.nav_fade_in, R.anim.nav_fade_out),
-    FadeShort(R.anim.nav_fade_in_short, R.anim.nav_fade_out_short, R.anim.nav_fade_in_short, R.anim.nav_fade_out_short),
-    None(R.anim.nav_none, R.anim.nav_none, R.anim.nav_none, R.anim.nav_none);
+    public final static PresentAnimation Push = new PresentAnimation(R.anim.nav_push_enter, R.anim.nav_push_exit, R.anim.nav_pop_enter, R.anim.nav_pop_exit);
+    public final static PresentAnimation Redirect = new PresentAnimation(R.anim.nav_push_enter,  R.anim.nav_push_exit,  R.anim.nav_push_enter,  R.anim.nav_push_exit);
+    public final static PresentAnimation Present = new PresentAnimation(R.anim.nav_present_enter, R.anim.nav_present_exit, R.anim.nav_dismiss_enter, R.anim.nav_dismiss_exit);
+    public final static PresentAnimation DelayShort = new PresentAnimation(R.anim.nav_delay_short, R.anim.nav_delay_short, R.anim.nav_delay_short, R.anim.nav_delay_short);
+    public final static PresentAnimation Fade = new PresentAnimation(R.anim.nav_fade_in, R.anim.nav_fade_out, R.anim.nav_fade_in, R.anim.nav_fade_out);
+    public final static PresentAnimation FadeShort = new PresentAnimation(R.anim.nav_fade_in_short, R.anim.nav_fade_out_short, R.anim.nav_fade_in_short, R.anim.nav_fade_out_short);
+    public final static PresentAnimation None = new PresentAnimation(R.anim.nav_none, R.anim.nav_none, R.anim.nav_none, R.anim.nav_none);
 
     @AnimRes
-    int enter;
+    final int enter;
     @AnimRes
-    int exit;
+    final int exit;
     @AnimRes
-    int popEnter;
+    final int popEnter;
     @AnimRes
-    int popExit;
+    final int popExit;
 
     PresentAnimation(int enter, int exit, int popEnter, int popExit) {
         this.enter = enter;
