@@ -239,7 +239,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return AnimationUtils.loadAnimation(context, R.anim.nav_delay);
         }
 
-        PresentAnimation animation = getAnimation();
+        TransitionAnimation animation = getAnimation();
 
         Animation anim = null;
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
@@ -365,7 +365,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         fragment.setTargetFragment(target, requestCode);
         fragment.setDefinesPresentationContext(true);
-        FragmentHelper.addFragmentToBackStack(target.requireFragmentManager(), target.getContainerId(), fragment, PresentAnimation.Present);
+        FragmentHelper.addFragmentToBackStack(target.requireFragmentManager(), target.getContainerId(), fragment, TransitionAnimation.Present);
         if (completion != null) {
             completion.run();
         }
@@ -554,16 +554,16 @@ public abstract class AwesomeFragment extends InternalFragment {
         return null;
     }
 
-    private PresentAnimation animation = null;
+    private TransitionAnimation animation = null;
 
-    public void setAnimation(@Nullable PresentAnimation animation) {
+    public void setAnimation(@Nullable TransitionAnimation animation) {
         this.animation = animation;
     }
 
     @NonNull
-    public PresentAnimation getAnimation() {
+    public TransitionAnimation getAnimation() {
         if (this.animation == null) {
-            this.animation = PresentAnimation.None;
+            this.animation = TransitionAnimation.None;
         }
         return this.animation;
     }
@@ -628,7 +628,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     protected boolean preferredStatusBarColorAnimated() {
-        return getAnimation() != PresentAnimation.None && style.isStatusBarColorAnimated();
+        return getAnimation() != TransitionAnimation.None && style.isStatusBarColorAnimated();
     }
 
 
@@ -1095,7 +1095,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return false;
         }
 
-        if (getAnimation() != PresentAnimation.Push) {
+        if (getAnimation() != TransitionAnimation.Push) {
             return false;
         }
 
@@ -1139,7 +1139,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         NavigationFragment navigationFragment = (NavigationFragment) parent;
 
-        if (getAnimation() == PresentAnimation.Redirect && getView() != null) {
+        if (getAnimation() == TransitionAnimation.Redirect && getView() != null) {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
                 if (enter) {
                     ViewCompat.setTranslationZ(getView(), 0f);
@@ -1154,7 +1154,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                     drawScrim(navigationFragment, anim.getDuration(), true);
                 }
             }
-        } else if (getAnimation() == PresentAnimation.Push) {
+        } else if (getAnimation() == TransitionAnimation.Push) {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN && !enter) {
                 drawScrim(navigationFragment, anim.getDuration(), true);
             } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {

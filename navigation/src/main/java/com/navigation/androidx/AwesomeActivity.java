@@ -80,7 +80,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        fragment.setAnimation(PresentAnimation.None);
+        fragment.setAnimation(TransitionAnimation.None);
         transaction.add(android.R.id.content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
@@ -104,11 +104,11 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             AwesomeFragment rootFragment = (AwesomeFragment) fragmentManager.findFragmentByTag(root);
             AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentByTag(top);
             if (topFragment != null) {
-                topFragment.setAnimation(PresentAnimation.Fade);
+                topFragment.setAnimation(TransitionAnimation.Fade);
                 fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
             }
             if (rootFragment != null) {
-                rootFragment.setAnimation(PresentAnimation.Fade);
+                rootFragment.setAnimation(TransitionAnimation.Fade);
                 fragmentManager.popBackStack(root, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
         }
@@ -124,7 +124,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     private void presentFragmentSync(AwesomeFragment fragment, @Nullable Runnable completion) {
-        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, PresentAnimation.Present);
+        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, TransitionAnimation.Present);
         if (completion != null) {
             completion.run();
         }

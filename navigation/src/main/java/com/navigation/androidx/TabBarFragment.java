@@ -277,8 +277,8 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     protected void setPresentAnimation(AwesomeFragment current, AwesomeFragment previous) {
-        current.setAnimation(PresentAnimation.None);
-        previous.setAnimation(PresentAnimation.None);
+        current.setAnimation(TransitionAnimation.None);
+        previous.setAnimation(TransitionAnimation.None);
     }
 
     @SuppressWarnings("unchecked")

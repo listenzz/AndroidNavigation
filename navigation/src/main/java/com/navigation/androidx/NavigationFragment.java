@@ -53,7 +53,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     private void setRootFragmentSync(AwesomeFragment fragment) {
-        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, PresentAnimation.None);
+        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, TransitionAnimation.None);
     }
 
     @Override
@@ -125,7 +125,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     private void pushFragmentSync(AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
-        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, animated ? PresentAnimation.Push : PresentAnimation.None);
+        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None);
         if (completion != null) {
             completion.run();
         }
@@ -156,8 +156,8 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
         fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
 
-        topFragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
-        fragment.setAnimation(animated ? PresentAnimation.Push : PresentAnimation.None);
+        topFragment.setAnimation(animated ? TransitionAnimation.Push : TransitionAnimation.None);
+        fragment.setAnimation(animated ? TransitionAnimation.Push : TransitionAnimation.None);
         fragmentManager.popBackStack(fragment.getSceneId(), 0);
 
         fragmentManager.beginTransaction().setMaxLifecycle(fragment, Lifecycle.State.RESUMED).commit();
@@ -256,9 +256,9 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
         AwesomeFragment previous = FragmentHelper.getFragmentBefore(from);
 
-        topFragment.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.Fade);
+        topFragment.setAnimation(animated ? TransitionAnimation.Redirect : TransitionAnimation.Fade);
         if (previous != null && previous.isAdded()) {
-            previous.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.Fade);
+            previous.setAnimation(animated ? TransitionAnimation.Redirect : TransitionAnimation.Fade);
         }
 
         fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
@@ -272,7 +272,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             transaction.hide(previous);
             transaction.setMaxLifecycle(previous, Lifecycle.State.STARTED);
         }
-        fragment.setAnimation(animated ? PresentAnimation.Redirect : PresentAnimation.None);
+        fragment.setAnimation(animated ? TransitionAnimation.Redirect : TransitionAnimation.None);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();

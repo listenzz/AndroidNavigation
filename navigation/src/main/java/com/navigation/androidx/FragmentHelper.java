@@ -42,7 +42,7 @@ public class FragmentHelper {
         }
     }
 
-    public static void addFragmentToBackStack(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull PresentAnimation animation) {
+    public static void addFragmentToBackStack(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation) {
         if (fragmentManager.isDestroyed()) {
             return;
         }
@@ -259,7 +259,7 @@ public class FragmentHelper {
 
     public static void handleDismissFragment(@NonNull AwesomeFragment target, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top) {
         FragmentManager fragmentManager = target.requireFragmentManager();
-        target.setAnimation(PresentAnimation.Present);
+        target.setAnimation(TransitionAnimation.Present);
 
         if (top == null) {
             top = (AwesomeFragment) fragmentManager.findFragmentById(target.getContainerId());
@@ -269,7 +269,7 @@ public class FragmentHelper {
             return;
         }
 
-        top.setAnimation(PresentAnimation.Present);
+        top.setAnimation(TransitionAnimation.Present);
         fragmentManager.beginTransaction().setMaxLifecycle(presented, Lifecycle.State.STARTED).commit();
         fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
