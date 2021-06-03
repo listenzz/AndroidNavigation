@@ -125,7 +125,11 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     private void pushFragmentSync(AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
-        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None);
+        pushFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, completion);
+    }
+
+    protected void pushFragmentSync(AwesomeFragment fragment, TransitionAnimation animation, @Nullable Runnable completion) {
+        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, animation);
         if (completion != null) {
             completion.run();
         }
@@ -141,33 +145,6 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     public void popToFragment(@NonNull AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> popToFragmentSync(fragment, animated, completion), animated);
-    }
-
-    private void popToFragmentSync(AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
-        FragmentManager fragmentManager = getChildFragmentManager();
-
-        AwesomeFragment topFragment = getTopFragment();
-        if (topFragment == null || topFragment == fragment) {
-            if (completion != null) {
-                completion.run();
-            }
-            return;
-        }
-
-        fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
-
-        topFragment.setAnimation(animated ? TransitionAnimation.Push : TransitionAnimation.None);
-        fragment.setAnimation(animated ? TransitionAnimation.Push : TransitionAnimation.None);
-        fragmentManager.popBackStack(fragment.getSceneId(), 0);
-
-        fragmentManager.beginTransaction().setMaxLifecycle(fragment, Lifecycle.State.RESUMED).commit();
-
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-        fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
-
-        if (completion != null) {
-            completion.run();
-        }
     }
 
     public void popFragment() {
@@ -223,6 +200,37 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         }
     }
 
+    private void popToFragmentSync(AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
+        popToFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, completion);
+    }
+
+    protected void popToFragmentSync(AwesomeFragment fragment, TransitionAnimation animation, @Nullable Runnable completion) {
+        FragmentManager fragmentManager = getChildFragmentManager();
+
+        AwesomeFragment topFragment = getTopFragment();
+        if (topFragment == null || topFragment == fragment) {
+            if (completion != null) {
+                completion.run();
+            }
+            return;
+        }
+
+        fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
+
+        topFragment.setAnimation(animation);
+        fragment.setAnimation(animation);
+        fragmentManager.popBackStack(fragment.getSceneId(), 0);
+
+        fragmentManager.beginTransaction().setMaxLifecycle(fragment, Lifecycle.State.RESUMED).commit();
+
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+        fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
+
+        if (completion != null) {
+            completion.run();
+        }
+    }
+
     public void redirectToFragment(@NonNull AwesomeFragment fragment) {
         redirectToFragment(fragment, true);
     }
@@ -239,7 +247,11 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, from, animated, completion), animated);
     }
 
-    private void redirectToFragmentSync(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, boolean animated, @Nullable Runnable completion) {
+    protected void redirectToFragmentSync(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, boolean animated, @Nullable Runnable completion) {
+        redirectToFragmentSync(fragment, from, animated ? TransitionAnimation.Redirect : TransitionAnimation.Fade, completion);
+    }
+
+    protected void redirectToFragmentSync(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, TransitionAnimation animation, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getChildFragmentManager();
 
         AwesomeFragment topFragment = getTopFragment();
@@ -256,9 +268,9 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
         AwesomeFragment previous = FragmentHelper.getFragmentBefore(from);
 
-        topFragment.setAnimation(animated ? TransitionAnimation.Redirect : TransitionAnimation.Fade);
+        topFragment.setAnimation(animation);
         if (previous != null && previous.isAdded()) {
-            previous.setAnimation(animated ? TransitionAnimation.Redirect : TransitionAnimation.Fade);
+            previous.setAnimation(animation);
         }
 
         fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
@@ -272,7 +284,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
             transaction.hide(previous);
             transaction.setMaxLifecycle(previous, Lifecycle.State.STARTED);
         }
-        fragment.setAnimation(animated ? TransitionAnimation.Redirect : TransitionAnimation.None);
+        fragment.setAnimation(animation);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();

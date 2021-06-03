@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.navigation.R;
 import com.navigation.androidx.AwesomeFragment;
 import com.navigation.androidx.FragmentHelper;
-import com.navigation.androidx.PresentAnimation;
+import com.navigation.androidx.TransitionAnimation;
 
 public class NestedFragmentDialogFragment extends AwesomeFragment {
 
@@ -38,7 +38,7 @@ public class NestedFragmentDialogFragment extends AwesomeFragment {
             if (contentFragment == null) {
                 throw new IllegalArgumentException("必须先通过 `setContentFragment` 指定 contentFragment");
             }
-            FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.nested_content, contentFragment,  PresentAnimation.None);
+            FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.nested_content, contentFragment,  TransitionAnimation.None);
         }
     }
 
