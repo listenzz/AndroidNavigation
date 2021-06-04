@@ -248,7 +248,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     protected void redirectToFragmentSync(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, boolean animated, @Nullable Runnable completion) {
-        redirectToFragmentSync(fragment, from, animated ? TransitionAnimation.Redirect : TransitionAnimation.Fade, completion);
+        redirectToFragmentSync(fragment, from, animated ? TransitionAnimation.Redirect : TransitionAnimation.None, completion);
     }
 
     protected void redirectToFragmentSync(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, TransitionAnimation animation, @Nullable Runnable completion) {

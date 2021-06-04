@@ -1140,19 +1140,9 @@ public abstract class AwesomeFragment extends InternalFragment {
         NavigationFragment navigationFragment = (NavigationFragment) parent;
 
         if (getAnimation() == TransitionAnimation.Redirect && getView() != null) {
-            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
-                if (enter) {
-                    ViewCompat.setTranslationZ(getView(), 0f);
-                } else {
-                    ViewCompat.setTranslationZ(getView(), -4f);
-                }
-            } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
-                if (enter) {
-                    ViewCompat.setTranslationZ(getView(), -3f);
-                } else {
-                    ViewCompat.setTranslationZ(getView(), -2f);
-                    drawScrim(navigationFragment, anim.getDuration(), true);
-                }
+            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && !enter) {
+                ViewCompat.setTranslationZ(getView(), -1f);
+                drawScrim(navigationFragment, anim.getDuration(), true);
             }
         } else if (getAnimation() == TransitionAnimation.Push) {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN && !enter) {
