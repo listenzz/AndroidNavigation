@@ -1095,10 +1095,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             return false;
         }
 
-        if (getAnimation() != TransitionAnimation.Push) {
-            return false;
-        }
-
         NavigationFragment navigationFragment = (NavigationFragment) parent;
         TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
 
@@ -1138,13 +1134,15 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         NavigationFragment navigationFragment = (NavigationFragment) parent;
-
-        if (getAnimation() == TransitionAnimation.Redirect && getView() != null) {
+        TransitionAnimation animation = getAnimation();
+        if (animation.exit == animation.popEnter) {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && !enter) {
-                ViewCompat.setTranslationZ(getView(), -1f);
+                if (getView() != null) {
+                    ViewCompat.setTranslationZ(getView(), -1f);
+                }
                 drawScrim(navigationFragment, anim.getDuration(), true);
             }
-        } else if (getAnimation() == TransitionAnimation.Push) {
+        } else {
             if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN && !enter) {
                 drawScrim(navigationFragment, anim.getDuration(), true);
             } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
