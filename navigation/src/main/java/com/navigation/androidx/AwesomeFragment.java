@@ -1224,11 +1224,13 @@ public abstract class AwesomeFragment extends InternalFragment {
             });
             valueAnimator.start();
 
-            root.postDelayed(() -> {
-                if (isAdded()) {
-                    frameLayout.setForeground(null);
-                }
-            }, duration);
+            if (isAdded()) {
+                root.postDelayed(() -> {
+                    if (isAdded()) {
+                        frameLayout.setForeground(null);
+                    }
+                }, duration + 16);
+            }
         }
     }
 
