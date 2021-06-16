@@ -120,10 +120,13 @@ public class DrawableUtils {
             paint.setAntiAlias(true);
             Rect textBounds = new Rect();
             paint.getTextBounds(glyph, 0, glyph.length(), textBounds);
+            
+            int offsetX = 0;
+            int offsetY = size - (int) paint.getFontMetrics().bottom;
 
-            Bitmap bitmap = Bitmap.createBitmap(textBounds.width(), textBounds.height(), Bitmap.Config.ARGB_8888);
+            Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
-            canvas.drawText(glyph, -textBounds.left, -textBounds.top, paint);
+            canvas.drawText(glyph, offsetX, offsetY, paint);
 
             try {
                 fos = new FileOutputStream(cacheFile);
