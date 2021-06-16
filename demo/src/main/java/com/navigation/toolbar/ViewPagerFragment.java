@@ -49,7 +49,6 @@ public class ViewPagerFragment extends BaseFragment {
     @Override
     protected void onCustomStyle(@NonNull Style style) {
         super.onCustomStyle(style);
-        style.setShadow(null);
         style.setElevation(0);
     }
 

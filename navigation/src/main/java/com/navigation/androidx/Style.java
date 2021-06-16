@@ -43,7 +43,6 @@ public class Style implements Cloneable {
     private int titleTextColorLightContent = INVALID_COLOR;
     private int titleTextSize = 17;
     private int elevation = -1;
-    private Drawable shadow = defaultShadow;
     private int titleGravity = Gravity.START;
     private int toolbarButtonTextSize = 15;
     private float toolbarAlpha = 1.f;
@@ -312,14 +311,6 @@ public class Style implements Cloneable {
 
     public void setToolbarShadowHidden(boolean toolbarShadowHidden) {
         this.toolbarShadowHidden = toolbarShadowHidden;
-    }
-
-    public Drawable getShadow() {
-        return shadow;
-    }
-
-    public void setShadow(Drawable drawable) {
-        this.shadow = drawable;
     }
 
     public Drawable getTabBarShadow() {

@@ -1318,7 +1318,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (style.isToolbarShadowHidden()) {
             toolbar.hideShadow();
         } else {
-            toolbar.showShadow(style.getShadow(), style.getElevation());
+            toolbar.showShadow(style.getElevation());
         }
         toolbar.setAlpha(preferredToolbarAlpha());
 

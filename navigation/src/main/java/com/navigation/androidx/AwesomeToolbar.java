@@ -2,7 +2,6 @@ package com.navigation.androidx;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.drawable.ColorDrawable;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatImageButton;
@@ -41,8 +39,6 @@ public class AwesomeToolbar extends Toolbar {
     private TextView titleView;
     private TextView leftButton;
     private TextView rightButton;
-    private Drawable divider;
-    private int dividerAlpha = 255;
     private int contentInset;
 
     private int backgroundColor;
@@ -78,18 +74,6 @@ public class AwesomeToolbar extends Toolbar {
         setContentInsetsRelative(0, 0);
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        if (divider != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            int height = (int) getContext().getResources().getDisplayMetrics().density;
-            divider.setBounds(0, getHeight() - height, getWidth(), getHeight());
-            divider.setAlpha(dividerAlpha);
-            divider.draw(canvas);
-            divider.setAlpha(255);
-        }
-    }
-
     public void setButtonTintColor(int color) {
         this.buttonTintColor = color;
     }
@@ -112,39 +96,20 @@ public class AwesomeToolbar extends Toolbar {
         Drawable drawable = getBackground();
         drawable.setAlpha((int) (alpha * 255 + 0.5));
         setBackground(drawable);
-        if (divider != null) {
-            dividerAlpha = (int) (alpha * 255 + 0.5);
-            invalidate();
-        }
-    }
-
-    private void setShadow(@Nullable Drawable drawable) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            divider = drawable;
-            postInvalidate();
-        }
     }
 
     public void hideShadow() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (outlineProvider == null) {
-                outlineProvider = getOutlineProvider();
-            }
-            setOutlineProvider(new DefaultOutlineProvider());
-        } else {
-            setShadow(null);
+        if (outlineProvider == null) {
+            outlineProvider = getOutlineProvider();
         }
+        setOutlineProvider(new DefaultOutlineProvider());
     }
 
-    public void showShadow(@NonNull Drawable shadowImage, float elevation) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (outlineProvider != null) {
-                setOutlineProvider(outlineProvider);
-            }
-            setElevation(elevation);
-        } else {
-            setShadow(shadowImage);
+    public void showShadow(float elevation) {
+        if (outlineProvider != null) {
+            setOutlineProvider(outlineProvider);
         }
+        setElevation(elevation);
     }
 
     public void setTitleGravity(int gravity) {
@@ -318,10 +283,6 @@ public class AwesomeToolbar extends Toolbar {
     private void bringTitleViewToFront() {
         if (titleView != null) {
             bringChildToFront(titleView);
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-                requestLayout();
-                invalidate();
-            }
         }
     }
 

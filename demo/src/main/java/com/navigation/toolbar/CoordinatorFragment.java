@@ -30,7 +30,6 @@ public class CoordinatorFragment extends BaseFragment {
 
     @Override
     protected void onCustomStyle(@NonNull Style style) {
-        style.setShadow(null);
         style.setToolbarBackgroundColor(Color.TRANSPARENT);
     }
 
