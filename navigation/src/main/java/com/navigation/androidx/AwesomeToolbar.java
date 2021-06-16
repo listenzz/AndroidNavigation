@@ -245,7 +245,7 @@ public class AwesomeToolbar extends Toolbar {
     }
 
     public void clearRightButtons() {
-        clearLeftButton();
+        clearRightButton();
         if (rightButtons != null) {
             for (TextView button : rightButtons) {
                 removeView(button);
