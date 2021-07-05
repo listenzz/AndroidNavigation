@@ -1331,7 +1331,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                 toolbar.setNavigationOnClickListener(view -> {
                     NavigationFragment navigationFragment = getNavigationFragment();
                     if (navigationFragment != null) {
-                        getNavigationFragment().dispatchBackPressed();
+                        navigationFragment.dispatchBackPressed();
                     }
                 });
             }
@@ -1396,7 +1396,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                     toolbar.setNavigationOnClickListener(view -> {
                         NavigationFragment navigationFragment = getNavigationFragment();
                         if (navigationFragment != null) {
-                            navigationFragment.popFragment();
+                            navigationFragment.dispatchBackPressed();
                         }
                     });
                 }
@@ -1448,7 +1448,7 @@ public abstract class AwesomeFragment extends InternalFragment {
                     toolbar.setNavigationOnClickListener(view -> {
                         NavigationFragment navigationFragment = getNavigationFragment();
                         if (navigationFragment != null) {
-                            getNavigationFragment().dispatchBackPressed();
+                            navigationFragment.dispatchBackPressed();
                         }
                     });
                 }
