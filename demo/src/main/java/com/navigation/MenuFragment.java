@@ -18,6 +18,7 @@ import com.navigation.sharedelement.GridFragment;
 import com.navigation.toolbar.CoordinatorFragment;
 import com.navigation.toolbar.SearchFragment;
 import com.navigation.toolbar.ToolbarColorTransitionFragment;
+import com.navigation.toolbar.ViewBindingFragment;
 import com.navigation.toolbar.ViewPagerFragment;
 
 /**
@@ -66,6 +67,11 @@ public class MenuFragment extends AwesomeFragment {
 
         root.findViewById(R.id.dialog).setOnClickListener(v -> {
             requireNavigationFragment().pushFragment(new DialogEntryFragment());
+            requireDrawerFragment().closeMenu();
+        });
+
+        root.findViewById(R.id.view_binding).setOnClickListener(v -> {
+            requireNavigationFragment().pushFragment(new ViewBindingFragment());
             requireDrawerFragment().closeMenu();
         });
 

@@ -11,6 +11,10 @@ android {
         enabled = true
     }
 
+    viewBinding {
+        enabled = true
+    }
+
     signingConfigs {
         config {
             keyAlias 'navigation'
