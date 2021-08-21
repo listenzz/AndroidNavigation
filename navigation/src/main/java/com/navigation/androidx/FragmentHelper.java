@@ -239,17 +239,18 @@ public class FragmentHelper {
 
         for (int i = count - 1; i > -1; i--) {
             Fragment fragment = fragments.get(i);
-            if (fragment instanceof AwesomeFragment) {
-                if (fragment.isAdded()) {
-                    AwesomeFragment dialogFragment = (AwesomeFragment) fragment;
-                    if (dialogFragment.getShowsDialog()) {
-                        dialog =  dialogFragment;
-                        break;
-                    }
+            if (fragment instanceof AwesomeFragment && fragment.isAdded()) {
+                AwesomeFragment dialogFragment = (AwesomeFragment) fragment;
+                if (dialogFragment.getShowsDialog()) {
+                    dialog = dialogFragment;
+                }
 
-                    if (dialog == null) {
-                        dialog = getAwesomeDialogFragment(fragment.getChildFragmentManager());
-                    }
+                if (dialog == null) {
+                    dialog = getAwesomeDialogFragment(fragment.getChildFragmentManager());
+                }
+
+                if (dialog != null) {
+                    break;
                 }
             }
         }
