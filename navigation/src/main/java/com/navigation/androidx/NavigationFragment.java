@@ -113,22 +113,22 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void pushFragment(@NonNull AwesomeFragment fragment) {
-        pushFragment(fragment, true);
+        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, TransitionAnimation.Push, null), true);
     }
 
     public void pushFragment(@NonNull AwesomeFragment fragment, boolean animated) {
-        pushFragment(fragment, animated, null);
+        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, null), animated);
     }
 
-    public void pushFragment(@NonNull AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, animated, completion), animated);
+    public void pushFragment(@NonNull AwesomeFragment fragment, @NonNull Runnable completion) {
+        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, TransitionAnimation.Push, completion), true);
     }
 
-    private void pushFragmentSync(AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
-        pushFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, completion);
+    public void pushFragment(@NonNull AwesomeFragment fragment, boolean animated, @NonNull Runnable completion) {
+        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, completion), animated);
     }
 
-    protected void pushFragmentSync(AwesomeFragment fragment, TransitionAnimation animation, @Nullable Runnable completion) {
+    protected void pushFragmentSync(AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
         FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, animation);
         if (completion != null) {
             completion.run();
@@ -136,75 +136,22 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     public void popToFragment(@NonNull AwesomeFragment fragment) {
-        popToFragment(fragment, true);
+        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, TransitionAnimation.Push, null), true);
     }
 
     public void popToFragment(@NonNull AwesomeFragment fragment, boolean animated) {
-        popToFragment(fragment, animated, null);
+        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, null), animated);
     }
 
-    public void popToFragment(@NonNull AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, animated, completion), animated);
+    public void popToFragment(@NonNull AwesomeFragment fragment, @NonNull Runnable completion) {
+        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, TransitionAnimation.Push, completion), true);
     }
 
-    public void popFragment() {
-        popFragment(true);
+    public void popToFragment(@NonNull AwesomeFragment fragment, boolean animated, @NonNull Runnable completion) {
+        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, completion), animated);
     }
 
-    public void popFragment(boolean animated) {
-        popFragment(animated, null);
-    }
-
-    public void popFragment(boolean animated, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> popFragmentSync(animated, completion), animated);
-    }
-
-    private void popFragmentSync(boolean animated, @Nullable Runnable completion) {
-        AwesomeFragment top = getTopFragment();
-        if (top == null) {
-            if (completion != null) {
-                completion.run();
-            }
-            return;
-        }
-
-        AwesomeFragment previous = FragmentHelper.getFragmentBefore(top);
-        if (previous != null) {
-            popToFragmentSync(previous, animated, null);
-        }
-
-        if (completion != null) {
-            completion.run();
-        }
-    }
-
-    public void popToRootFragment() {
-        popToRootFragment(true);
-    }
-
-    public void popToRootFragment(boolean animated) {
-        popToRootFragment(animated, null);
-    }
-
-    public void popToRootFragment(boolean animated, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> popToRootFragmentSync(animated, completion), animated);
-    }
-
-    private void popToRootFragmentSync(boolean animated, @Nullable Runnable completion) {
-        AwesomeFragment rootFragment = getRootFragment();
-        if (rootFragment != null) {
-            popToFragmentSync(rootFragment, animated, null);
-        }
-        if (completion != null) {
-            completion.run();
-        }
-    }
-
-    private void popToFragmentSync(AwesomeFragment fragment, boolean animated, @Nullable Runnable completion) {
-        popToFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, completion);
-    }
-
-    protected void popToFragmentSync(AwesomeFragment fragment, TransitionAnimation animation, @Nullable Runnable completion) {
+    protected void popToFragmentSync(AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getChildFragmentManager();
 
         AwesomeFragment topFragment = getTopFragment();
@@ -231,27 +178,88 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         }
     }
 
+    public void popFragment() {
+        scheduleTaskAtStarted(() -> popFragmentSync(TransitionAnimation.Push, null), true);
+    }
+
+    public void popFragment(boolean animated) {
+        scheduleTaskAtStarted(() -> popFragmentSync(animated ? TransitionAnimation.Push : TransitionAnimation.None, null), animated);
+    }
+
+    public void popFragment(@NonNull Runnable completion) {
+        scheduleTaskAtStarted(() -> popFragmentSync(TransitionAnimation.Push, completion), true);
+    }
+
+    public void popFragment(boolean animated, @NonNull Runnable completion) {
+        scheduleTaskAtStarted(() -> popFragmentSync(animated ? TransitionAnimation.Push : TransitionAnimation.None, completion), animated);
+    }
+
+    protected void popFragmentSync(@NonNull TransitionAnimation animation, @Nullable Runnable completion) {
+        AwesomeFragment topFragment = getTopFragment();
+        if (topFragment == null) {
+            if (completion != null) {
+                completion.run();
+            }
+            return;
+        }
+
+        AwesomeFragment previous = FragmentHelper.getFragmentBefore(topFragment);
+        if (previous != null) {
+            popToFragmentSync(previous, animation, null);
+        }
+
+        if (completion != null) {
+            completion.run();
+        }
+    }
+
+    public void popToRootFragment() {
+        scheduleTaskAtStarted(() -> popToRootFragmentSync(TransitionAnimation.Push, null), true);
+    }
+
+    public void popToRootFragment(boolean animated) {
+        scheduleTaskAtStarted(() -> popToRootFragmentSync(animated ? TransitionAnimation.Push : TransitionAnimation.None, null), animated);
+    }
+
+    public void popToRootFragment(@NonNull Runnable completion) {
+        scheduleTaskAtStarted(() -> popToRootFragmentSync(TransitionAnimation.Push, completion), true);
+    }
+
+    public void popToRootFragment(boolean animated, @NonNull Runnable completion) {
+        scheduleTaskAtStarted(() -> popToRootFragmentSync(animated ? TransitionAnimation.Push : TransitionAnimation.None, completion), animated);
+    }
+
+    protected void popToRootFragmentSync(@NonNull TransitionAnimation animation, @Nullable Runnable completion) {
+        AwesomeFragment rootFragment = getRootFragment();
+        if (rootFragment != null) {
+            popToFragmentSync(rootFragment, animation, null);
+        }
+        if (completion != null) {
+            completion.run();
+        }
+    }
+
     public void redirectToFragment(@NonNull AwesomeFragment fragment) {
-        redirectToFragment(fragment, true);
+        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, TransitionAnimation.Redirect, null, null), true);
     }
 
     public void redirectToFragment(@NonNull AwesomeFragment fragment, boolean animated) {
-        redirectToFragment(fragment, null, animated);
+        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, animated ? TransitionAnimation.Redirect : TransitionAnimation.None, null, null), animated);
     }
 
-    public void redirectToFragment(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, boolean animated) {
-        redirectToFragment(fragment, from, animated, null);
+    public void redirectToFragment(@NonNull AwesomeFragment fragment, @NonNull Runnable completion) {
+        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, TransitionAnimation.Redirect, completion, null), true);
     }
 
-    public void redirectToFragment(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, boolean animated, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, from, animated, completion), animated);
+    public void redirectToFragment(@NonNull AwesomeFragment fragment, @NonNull AwesomeFragment from) {
+        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, TransitionAnimation.Redirect, null, from), true);
     }
 
-    protected void redirectToFragmentSync(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, boolean animated, @Nullable Runnable completion) {
-        redirectToFragmentSync(fragment, from, animated ? TransitionAnimation.Redirect : TransitionAnimation.None, completion);
+    public void redirectToFragment(@NonNull AwesomeFragment fragment, boolean animated, @Nullable Runnable completion, @Nullable AwesomeFragment from) {
+        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, animated ? TransitionAnimation.Redirect : TransitionAnimation.None, completion, from), animated);
     }
 
-    protected void redirectToFragmentSync(@NonNull AwesomeFragment fragment, @Nullable AwesomeFragment from, TransitionAnimation animation, @Nullable Runnable completion) {
+    protected void redirectToFragmentSync(@NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion, @Nullable AwesomeFragment from) {
         FragmentManager fragmentManager = getChildFragmentManager();
 
         AwesomeFragment topFragment = getTopFragment();

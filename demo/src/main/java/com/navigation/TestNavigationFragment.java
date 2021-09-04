@@ -102,7 +102,7 @@ public class TestNavigationFragment extends BaseFragment {
         root.findViewById(R.id.redirect).setOnClickListener(v -> {
             NavigationFragment navigationFragment = getNavigationFragment();
             if (navigationFragment != null) {
-                navigationFragment.redirectToFragment(new TestNavigationFragment(), true);
+                navigationFragment.redirectToFragment(new TestNavigationFragment());
             }
         });
 
