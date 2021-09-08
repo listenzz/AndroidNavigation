@@ -15,13 +15,13 @@ public class TransitionAnimation {
     public final static TransitionAnimation None = new TransitionAnimation(R.anim.nav_none, R.anim.nav_none, R.anim.nav_none, R.anim.nav_none);
 
     @AnimRes
-    final int enter;
+    public final int enter;
     @AnimRes
-    final int exit;
+    public final int exit;
     @AnimRes
-    final int popEnter;
+    public final int popEnter;
     @AnimRes
-    final int popExit;
+    public final int popExit;
 
     public TransitionAnimation(int enter, int exit, int popEnter, int popExit) {
         this.enter = enter;

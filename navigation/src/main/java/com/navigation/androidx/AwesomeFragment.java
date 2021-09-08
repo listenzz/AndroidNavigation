@@ -232,7 +232,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         // ---------
-        // Log.d(TAG, getDebugTag() + "  " + animation.name() + " transit:" + transit + " enter:" + enter);
+        // Log.i(TAG, getDebugTag() + "  " + " transit:" + transit + " enter:" + enter + " nextAnim:" + nextAnim + " isAdd:" + isAdded() + " inRemoving:" + isRemoving());
 
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null && FragmentHelper.isRemoving(parent)) {
@@ -244,15 +244,15 @@ public abstract class AwesomeFragment extends InternalFragment {
         Animation anim = null;
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
-                anim = AnimationUtils.loadAnimation(context, animation.enter);
+                anim = AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.enter : nextAnim);
             } else {
-                anim = AnimationUtils.loadAnimation(context, animation.exit);
+                anim = AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.exit : nextAnim);
             }
         } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
             if (enter) {
-                anim = AnimationUtils.loadAnimation(context, animation.popEnter);
+                anim = AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.popEnter : nextAnim);
             } else {
-                anim = AnimationUtils.loadAnimation(context, animation.popExit);
+                anim = AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.popExit : nextAnim);
             }
         }
 
