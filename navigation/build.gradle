@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 
-
 android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -30,70 +29,18 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.2.0"
 }
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
-}
-
-apply plugin: 'maven'
-apply plugin: 'signing'
-
-def PUBLISH_GROUP_ID = 'io.github.listenzz'
-
-def PUBLISH_ARTIFACT_ID = 'AndroidNavigation'
+apply plugin: 'com.vanniktech.maven.publish'
 
 def PUBLISH_VERSION = android.defaultConfig.versionName
 
-//签名
-signing {
-    required { gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
-}
-
-uploadArchives {
+publishing {
     repositories {
-        mavenDeployer {
-
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            pom.groupId = PUBLISH_GROUP_ID
-            pom.artifactId = PUBLISH_ARTIFACT_ID
-            pom.version = PUBLISH_VERSION
-
-            pom.project {
-                packaging 'aar'
-                name PUBLISH_ARTIFACT_ID
-                description 'A library managing navigation, nested Fragment, StatusBar, Toolbar for Android'
-                url 'https://github.com/listenzz/AndroidNavigation'
-
-                scm {
-                    connection 'scm:git@github.com:listenzz/AndroidNavigation.git'
-                    developerConnection 'scm:git@github.com:listenzz/AndroidNavigation.git'
-                    url 'https://github.com/listenzz/AndroidNavigation'
-                }
-
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id 'listenzz'
-                        name 'Listen'
-                        email 'listenzz@163.com'
-                    }
-                }
+        maven {
+            version = PUBLISH_VERSION
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials { 
+                username = ossrhUsername  
+                password = ossrhPassword
             }
         }
     }
