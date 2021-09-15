@@ -198,7 +198,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (!isInDialog()) {
             Window window = getWindow();
             if (window != null) {
-                window.setBackgroundDrawable(null);
+                window.setBackgroundDrawable(AppUtils.copyDrawable(drawable));
             }
         }
     }

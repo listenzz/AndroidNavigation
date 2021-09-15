@@ -260,7 +260,7 @@ public class Style implements Cloneable {
         }
         Drawable icon;
         if (backIcon.getConstantState() != null) {
-            icon = DrawableCompat.wrap(backIcon.getConstantState().newDrawable()).mutate();
+            icon = AppUtils.copyDrawable(backIcon);
         } else {
             icon = backIcon;
         }

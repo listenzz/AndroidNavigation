@@ -6,12 +6,14 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.ColorInt;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 /**
  * Created by listen on 2018/2/3.
@@ -97,6 +99,10 @@ public class AppUtils {
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    public static Drawable copyDrawable(Drawable drawable) {
+        return DrawableCompat.wrap(drawable.getConstantState().newDrawable()).mutate();
     }
 
 }
