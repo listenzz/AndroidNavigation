@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.ColorUtils;
 
 import com.navigation.BaseFragment;
 import com.navigation.R;
@@ -25,7 +26,7 @@ import com.navigation.androidx.Style;
  * Created by listen on 2018/2/2.
  */
 
-public class CustomStatusBarFragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener{
+public class CustomSystemUIFragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener{
 
     Toolbar toolbar;
 
@@ -39,7 +40,7 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_custom_statusbar, container, false);
+        View root = inflater.inflate(R.layout.fragment_custom_system_ui, container, false);
         toolbar = root.findViewById(R.id.toolbar);
         appendStatusBarPadding(toolbar);
         textView = root.findViewById(R.id.hint);
@@ -47,6 +48,12 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
         ((CheckBox)root.findViewById(R.id.tinting)).setOnCheckedChangeListener(this);
         ((CheckBox)root.findViewById(R.id.dark)).setOnCheckedChangeListener(this);
         ((CheckBox)root.findViewById(R.id.hidden)).setOnCheckedChangeListener(this);
+
+        ((CheckBox)root.findViewById(R.id.navigation_color)).setOnCheckedChangeListener(this);
+        ((CheckBox)root.findViewById(R.id.navigation_hidden)).setOnCheckedChangeListener(this);
+        ((CheckBox)root.findViewById(R.id.navigation_translucent)).setOnCheckedChangeListener(this);
+
+        ((CheckBox)root.findViewById(R.id.display_cutout)).setOnCheckedChangeListener(this);
 
         return root;
     }
@@ -68,7 +75,7 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
     @Override
     protected void onCustomStyle(@NonNull Style style) {
         super.onCustomStyle(style);
-        style.setStatusBarColor(Color.MAGENTA);
+        style.setStatusBarColor(Color.TRANSPARENT);
     }
 
     @Override
@@ -93,7 +100,54 @@ public class CustomStatusBarFragment extends BaseFragment implements CompoundBut
                 style.setStatusBarHidden(isChecked);
                 setNeedsStatusBarAppearanceUpdate();
                 break;
+
+            case R.id.navigation_color:
+                navColorChecked = isChecked;
+                setNeedsNavigationBarAppearanceUpdate();
+                break;
+            case R.id.navigation_translucent:
+                navTranslucentChecked = isChecked;
+                setNeedsNavigationBarAppearanceUpdate();
+                break;
+            case R.id.navigation_hidden:
+                navHiddenChecked = isChecked;
+                setNeedsNavigationBarAppearanceUpdate();
+                break;
+
+            case R.id.display_cutout:
+                style.setDisplayCutoutWhenLandscape(isChecked);
+                setNeedsStatusBarAppearanceUpdate();
+
+                textView.setText("旋转屏幕看看");
+                break;
         }
+    }
+
+    boolean navColorChecked;
+    boolean navTranslucentChecked;
+
+    @Override
+    protected int preferredNavigationBarColor() {
+        if (navColorChecked && navTranslucentChecked) {
+            return ColorUtils.setAlphaComponent(Color.BLUE, 100);
+        }
+
+        if (navColorChecked) {
+            return Color.BLUE;
+        }
+
+        if (navTranslucentChecked) {
+            return Color.TRANSPARENT;
+        }
+
+        return super.preferredNavigationBarColor();
+    }
+
+    boolean navHiddenChecked;
+
+    @Override
+    protected boolean preferredNavigationBarHidden() {
+        return navHiddenChecked;
     }
 
 }

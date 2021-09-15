@@ -72,8 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Custom StatusBar"
+        android:text="Custom System UI"
         android:textAllCaps="false" />
-
 
 </LinearLayout>
