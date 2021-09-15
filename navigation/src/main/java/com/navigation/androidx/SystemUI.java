@@ -19,31 +19,25 @@ import androidx.core.view.ViewCompat;
 public class SystemUI {
 
     public static void setStatusBarTranslucent(Window window, boolean translucent) {
-        setRenderContentInShortEdgeCutoutAreas(window, translucent);
         View decorView = window.getDecorView();
         if (translucent) {
             decorView.setOnApplyWindowInsetsListener((v, insets) -> {
                 WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
-                return defaultInsets.replaceSystemWindowInsets(
-                        defaultInsets.getSystemWindowInsetLeft(),
-                        0,
-                        defaultInsets.getSystemWindowInsetRight(),
-                        defaultInsets.getSystemWindowInsetBottom());
+                return defaultInsets.consumeSystemWindowInsets();
             });
         } else {
             decorView.setOnApplyWindowInsetsListener(null);
         }
-
         ViewCompat.requestApplyInsets(decorView);
     }
 
-    private static void setRenderContentInShortEdgeCutoutAreas(Window window, boolean shortEdges) {
+    public static void setRenderContentInShortEdgeCutoutAreas(Window window, boolean shortEdges) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             WindowManager.LayoutParams layoutParams = window.getAttributes();
             if (shortEdges) {
                 layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
             } else {
-                layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+                layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
             }
             window.setAttributes(layoutParams);
         }

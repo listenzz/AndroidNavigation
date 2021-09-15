@@ -60,6 +60,8 @@ public class Style implements Cloneable {
 
     private int scrimAlpha = 25;
 
+    private boolean displayCutoutWhenLandscape = true;
+
     protected Style(Context context) {
         this.context = context;
         statusBarColor = AppUtils.fetchContextColor(context, android.R.attr.statusBarColor);
@@ -67,6 +69,16 @@ public class Style implements Cloneable {
         toolbarHeight = AppUtils.fetchContextDimension(context, R.attr.actionBarSize);
         boolean isLightStyle = AppUtils.isBlackColor(toolbarBackgroundColor, 176);
         statusBarStyle = isLightStyle ? BarStyle.LightContent : BarStyle.DarkContent;
+    }
+
+    // ------ cutout ------
+
+    public boolean isDisplayCutoutWhenLandscape() {
+        return displayCutoutWhenLandscape;
+    }
+
+    public void setDisplayCutoutWhenLandscape(boolean displayCutoutWhenLandscape) {
+        this.displayCutoutWhenLandscape = displayCutoutWhenLandscape;
     }
 
     // ------ screen ------

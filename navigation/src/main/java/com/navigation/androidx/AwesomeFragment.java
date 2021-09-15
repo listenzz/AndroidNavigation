@@ -657,6 +657,17 @@ public abstract class AwesomeFragment extends InternalFragment {
         boolean animated = fragment.preferredStatusBarColorAnimated();
         int statusBarColor = fragment.preferredStatusBarColor();
         setStatusBarColor(statusBarColor, animated);
+
+        // displayCutout
+        requestActivityDisplayCutoutWhenLandscape(fragment.isDisplayCutoutWhenLandscape());
+    }
+
+    private boolean isDisplayCutoutWhenLandscape() {
+        return style.isDisplayCutoutWhenLandscape();
+    }
+
+    private void requestActivityDisplayCutoutWhenLandscape(boolean displayCutout) {
+        presentableActivity.setNeedsDisplayCutoutWhenLandscape(displayCutout);
     }
 
     public void setStatusBarStyle(BarStyle barStyle) {

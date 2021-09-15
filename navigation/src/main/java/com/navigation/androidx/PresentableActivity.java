@@ -22,4 +22,6 @@ public interface PresentableActivity {
     @Nullable
     Style getStyle();
 
+    void setNeedsDisplayCutoutWhenLandscape(boolean displayCutout);
+
 }
