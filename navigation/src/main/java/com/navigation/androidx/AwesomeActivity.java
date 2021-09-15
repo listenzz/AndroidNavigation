@@ -1,6 +1,5 @@
 package com.navigation.androidx;
 
-import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
@@ -26,7 +25,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         super.onCreate(savedInstanceState);
         style = new Style(this);
         onCustomStyle(style);
-        setDisplayCutoutWhenLandscape(getResources().getConfiguration().orientation);
         SystemUI.setStatusBarTranslucent(getWindow(), true);
     }
 
@@ -38,23 +36,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     protected void onCustomStyle(@NonNull Style style) {
 
-    }
-
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        setDisplayCutoutWhenLandscape(newConfig.orientation);
-    }
-
-    private void setDisplayCutoutWhenLandscape(int orientation) {
-        boolean displayCutout = style.isDisplayCutoutWhenLandscape() || orientation == Configuration.ORIENTATION_PORTRAIT;
-        SystemUI.setRenderContentInShortEdgeCutoutAreas(getWindow(), displayCutout);
-    }
-
-    @Override
-    public void setNeedsDisplayCutoutWhenLandscape(boolean displayCutout) {
-        style.setDisplayCutoutWhenLandscape(displayCutout);
-        setDisplayCutoutWhenLandscape(getResources().getConfiguration().orientation);
     }
 
     @Override

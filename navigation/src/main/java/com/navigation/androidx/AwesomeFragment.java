@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -214,6 +215,10 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (childFragmentForNavigationBarAppearance() == null) {
             setNeedsNavigationBarAppearanceUpdate();
         }
+
+        if (childFragmentForAppearance() == null) {
+            setNeedsLayoutInDisplayCutoutModeUpdate();
+        }
     }
 
     @Override
@@ -221,6 +226,23 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void onPause() {
         super.onPause();
         //Log.i(TAG, getDebugTag() + "#onPause");
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        if (isResumed() && !isParentFragment()) {
+            setDisplayCutoutWhenLandscape(newConfig.orientation);
+        }
+        super.onConfigurationChanged(newConfig);
+    }
+
+    public void setNeedsLayoutInDisplayCutoutModeUpdate() {
+        setDisplayCutoutWhenLandscape(getResources().getConfiguration().orientation);
+    }
+
+    private void setDisplayCutoutWhenLandscape(int orientation) {
+        boolean displayCutout = style.isDisplayCutoutWhenLandscape() || orientation == Configuration.ORIENTATION_PORTRAIT;
+        SystemUI.setRenderContentInShortEdgeCutoutAreas(getWindow(), displayCutout);
     }
 
     @Override
@@ -660,17 +682,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         boolean animated = fragment.preferredStatusBarColorAnimated();
         int statusBarColor = fragment.preferredStatusBarColor();
         setStatusBarColor(statusBarColor, animated);
-
-        // displayCutout
-        requestActivityDisplayCutoutWhenLandscape(fragment.isDisplayCutoutWhenLandscape());
-    }
-
-    private boolean isDisplayCutoutWhenLandscape() {
-        return style.isDisplayCutoutWhenLandscape();
-    }
-
-    private void requestActivityDisplayCutoutWhenLandscape(boolean displayCutout) {
-        presentableActivity.setNeedsDisplayCutoutWhenLandscape(displayCutout);
     }
 
     public void setStatusBarStyle(BarStyle barStyle) {
@@ -761,7 +772,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         AwesomeFragment fragment = fragmentForNavigationBarAppearance();
         if (!fragment.isResumed()) {
-           return;
+            return;
         }
         setNavigationBarColor(fragment.preferredNavigationBarColor());
         setNavigationBarStyle(fragment.preferredNavigationBarStyle());

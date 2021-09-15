@@ -116,7 +116,7 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
 
             case R.id.display_cutout:
                 style.setDisplayCutoutWhenLandscape(isChecked);
-                setNeedsStatusBarAppearanceUpdate();
+                setNeedsLayoutInDisplayCutoutModeUpdate();
 
                 textView.setText("旋转屏幕看看");
                 break;
