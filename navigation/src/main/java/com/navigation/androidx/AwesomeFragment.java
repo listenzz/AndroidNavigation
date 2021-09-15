@@ -644,6 +644,9 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         AwesomeFragment fragment = fragmentForStatusBarAppearance();
+        if (!fragment.isResumed()) {
+            return;
+        }
 
         // statusBarHidden
         boolean hidden = fragmentForStatusBarHidden().preferredStatusBarHidden();
@@ -734,6 +737,13 @@ public abstract class AwesomeFragment extends InternalFragment {
         return AppUtils.isBlackColor(preferredNavigationBarColor(), 176) ? BarStyle.LightContent : BarStyle.DarkContent;
     }
 
+    protected boolean preferredNavigationBarHidden() {
+        if (getShowsDialog()) {
+            return SystemUI.isNavigationBarHidden(requireActivity().getWindow());
+        }
+        return style.isNavigationBarHidden();
+    }
+
     public void setNeedsNavigationBarAppearanceUpdate() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return;
@@ -750,8 +760,14 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         AwesomeFragment fragment = fragmentForNavigationBarAppearance();
+        if (!fragment.isResumed()) {
+           return;
+        }
         setNavigationBarColor(fragment.preferredNavigationBarColor());
         setNavigationBarStyle(fragment.preferredNavigationBarStyle());
+        setNavigationBarHidden(fragment.preferredNavigationBarHidden());
+        setNavigationBarLayoutHidden(fragment.preferredNavigationBarHidden() ||
+                Color.alpha(fragment.preferredNavigationBarColor()) < 255);
     }
 
     public void setNavigationBarStyle(BarStyle barStyle) {
@@ -760,6 +776,14 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public void setNavigationBarColor(int color) {
         SystemUI.setNavigationBarColor(getWindow(), color);
+    }
+
+    public void setNavigationBarHidden(boolean hidden) {
+        SystemUI.setNavigationBarHidden(getWindow(), hidden);
+    }
+
+    private void setNavigationBarLayoutHidden(boolean hidden) {
+        SystemUI.setNavigationBarLayoutHidden(getWindow(), hidden);
     }
 
     // ------ dialog -----
@@ -797,9 +821,9 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     protected void setupDialog() {
         Window window = getWindow();
-        SystemUI.setStatusBarTranslucent(window, true);
 
         if (window != null) {
+            SystemUI.setStatusBarTranslucent(window, true);
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
 

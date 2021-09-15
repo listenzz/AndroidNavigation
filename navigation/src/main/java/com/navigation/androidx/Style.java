@@ -27,9 +27,11 @@ public class Style implements Cloneable {
 
     private BarStyle statusBarStyle;
     private int statusBarColor;
-    private int navigationBarColor = INVALID_COLOR;
     private boolean statusBarColorAnimated = true;
     private boolean statusBarHidden = false;
+
+    private int navigationBarColor = INVALID_COLOR;
+    private boolean navigationBarHidden = false;
 
     private int toolbarBackgroundColor;
     private int toolbarBackgroundColorDarkContent = INVALID_COLOR;
@@ -372,6 +374,14 @@ public class Style implements Cloneable {
 
     public void setNavigationBarColor(@ColorInt int color) {
         this.navigationBarColor = color;
+    }
+
+    public boolean isNavigationBarHidden() {
+        return navigationBarHidden;
+    }
+
+    public void setNavigationBarHidden(boolean hidden) {
+        this.navigationBarHidden = hidden;
     }
 
     public void setScrimAlpha(@IntRange(from = 0, to = 255) int scrimAlpha) {

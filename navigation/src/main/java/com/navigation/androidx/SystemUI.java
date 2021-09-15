@@ -228,6 +228,10 @@ public class SystemUI {
         return false;
     }
 
+    public static boolean isNavigationBarHidden(Window window) {
+        return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0;
+    }
+
     public static void setNavigationBarHidden(Window window, boolean hidden) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             View decorView = window.getDecorView();
@@ -238,6 +242,21 @@ public class SystemUI {
             } else {
                 systemUi &= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
                 systemUi &= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            }
+            window.getDecorView().setSystemUiVisibility(systemUi);
+        }
+    }
+
+    public static void setNavigationBarLayoutHidden(Window window, boolean hidden) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decorView = window.getDecorView();
+            int systemUi = decorView.getSystemUiVisibility();
+            if (hidden) {
+                systemUi |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+                systemUi |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            } else {
+                systemUi &= ~View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+                systemUi &= ~View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
             }
             window.getDecorView().setSystemUiVisibility(systemUi);
         }
