@@ -1,12 +1,10 @@
 package com.navigation.androidx;
 
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -60,7 +58,6 @@ public class TabView extends FrameLayout {
         init();
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public TabView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
@@ -144,11 +141,7 @@ public class TabView extends FrameLayout {
             Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.nav_text_badge_background);
             assert drawable != null;
             DrawableCompat.setTint(drawable, badgeColor);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                badgeView.setBackground(drawable);
-            } else {
-                badgeView.setBackgroundDrawable(drawable);
-            }
+            badgeView.setBackground(drawable);
             badgeView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
             badgeView.setText(text);
             badgeView.setVisibility(VISIBLE);
@@ -167,11 +160,7 @@ public class TabView extends FrameLayout {
         Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.nav_dot_badge_background);
         assert drawable != null;
         DrawableCompat.setTint(drawable, badgeColor);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            badgeView.setBackground(drawable);
-        } else {
-            badgeView.setBackgroundDrawable(drawable);
-        }
+        badgeView.setBackground(drawable);
         badgeView.setText(null);
         badgeView.setVisibility(VISIBLE);
     }
@@ -220,12 +209,16 @@ public class TabView extends FrameLayout {
             iconView.setImageDrawable(icon);
         }
 
-        if (badgeText != null) {
-            showTextBadge(badgeText);
-        }
-
         if (showDotBadge) {
             showDotBadge();
+        } else if (!TextUtils.isEmpty(badgeText)) {
+            showTextBadge(badgeText);
+        } else {
+            hideBadge();
+        }
+
+        if (selected) {
+            select();
         }
     }
 }

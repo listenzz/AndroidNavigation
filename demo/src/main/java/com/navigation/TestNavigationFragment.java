@@ -17,6 +17,7 @@ import com.navigation.androidx.NavigationFragment;
 import com.navigation.androidx.Style;
 import com.navigation.androidx.TabBar;
 import com.navigation.androidx.TabBarFragment;
+import com.navigation.androidx.TabBarItem;
 import com.navigation.androidx.ToolbarButtonItem;
 
 
@@ -110,8 +111,11 @@ public class TestNavigationFragment extends BaseFragment {
             TabBarFragment tabBarFragment = getTabBarFragment();
             if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
                 TabBar tabBar = tabBarFragment.getTabBar();
-                tabBar.showTextBadgeAtIndex(0, "88");
-                tabBar.showDotBadgeAtIndex(1);
+                TabBarItem tabBarItem0 = tabBar.getTabBarItem(0);
+                tabBarItem0.badgeText = "88";
+                TabBarItem tabBarItem1 = tabBar.getTabBarItem(1);
+                tabBarItem1.showDotBadge = true;
+                tabBar.renderAllTabView();
             }
         });
 
@@ -119,8 +123,11 @@ public class TestNavigationFragment extends BaseFragment {
             TabBarFragment tabBarFragment = getTabBarFragment();
             if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
                 TabBar tabBar = tabBarFragment.getTabBar();
-                tabBar.hideBadgeAtIndex(0);
-                tabBar.hideBadgeAtIndex(1);
+                TabBarItem tabBarItem0 = tabBar.getTabBarItem(0);
+                tabBarItem0.badgeText = "";
+                TabBarItem tabBarItem1 = tabBar.getTabBarItem(1);
+                tabBarItem1.showDotBadge = false;
+                tabBar.renderAllTabView();
             }
         });
 

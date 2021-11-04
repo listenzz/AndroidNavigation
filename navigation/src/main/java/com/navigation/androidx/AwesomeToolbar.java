@@ -387,7 +387,6 @@ public class AwesomeToolbar extends Toolbar {
         return drawable;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private static final class DefaultOutlineProvider extends ViewOutlineProvider {
         @Override
         public void getOutline(View view, Outline outline) {

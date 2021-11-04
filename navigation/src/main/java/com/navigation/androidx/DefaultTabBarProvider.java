@@ -1,7 +1,6 @@
 package com.navigation.androidx;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -76,7 +75,7 @@ public class DefaultTabBarProvider implements TabBarProvider {
 
         for (int i = 0, size = tabBarItems.size(); i < size; i++) {
             TabBarItem tabBarItem = tabBarItems.get(i);
-            tabBar.addItem(tabBarItem);
+            tabBar.addTabBarItem(tabBarItem);
         }
 
         tabBar.initialise(tabBarFragment.getSelectedIndex());

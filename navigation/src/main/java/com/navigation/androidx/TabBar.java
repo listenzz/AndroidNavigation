@@ -1,12 +1,10 @@
 package com.navigation.androidx;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +56,6 @@ public class TabBar extends FrameLayout {
         init(context);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public TabBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context);
@@ -75,11 +72,7 @@ public class TabBar extends FrameLayout {
         View parentView = inflater.inflate(R.layout.nav_tab_bar_container, this, true);
         container = parentView.findViewById(R.id.nav_tab_bar_container);
         tabContainer = parentView.findViewById(R.id.nav_tab_bar_item_container);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            this.setOutlineProvider(ViewOutlineProvider.BOUNDS);
-        }
-
+        this.setOutlineProvider(ViewOutlineProvider.BOUNDS);
         ViewCompat.setElevation(this, 0);
         setClipToPadding(false);
     }
@@ -99,22 +92,35 @@ public class TabBar extends FrameLayout {
         postInvalidate();
     }
 
-    public void updateTabIcon(int index, @NonNull String iconUri, String unselectedIconUri) {
+    public void addTabBarItem(TabBarItem item) {
+        tabBarItems.add(item);
+    }
+
+    public void removeTabBarItem(TabBarItem item) {
+        tabBarItems.remove(item);
+    }
+
+    @Nullable
+    public TabBarItem getTabBarItem(int index) {
         if (tabBarItems.size() > index) {
-            TabBarItem item = tabBarItems.get(index);
-            item.iconUri = iconUri;
-            item.unselectedIconUri = unselectedIconUri;
+            return tabBarItems.get(index);
+        }
+        return null;
+    }
+
+    public void renderTabView(int index) {
+        TabView tabView = getTabView(index);
+        TabBarItem tabBarItem = getTabBarItem(index);
+        if (tabBarItem != null) {
+            bindTabWithData(tabBarItem, tabView, this);
+            tabView.initialise();
         }
     }
 
-    public TabBar addItem(TabBarItem item) {
-        tabBarItems.add(item);
-        return this;
-    }
-
-    public TabBar removeItem(TabBarItem item) {
-        tabBarItems.remove(item);
-        return this;
+    public void renderAllTabView() {
+        for (int i = 0; i < tabs.size(); i++) {
+            renderTabView(i);
+        }
     }
 
     public TabBar setSelectedItemColor(@ColorRes int color) {
@@ -202,6 +208,13 @@ public class TabBar extends FrameLayout {
         selectTabInternal(newPosition, callListener);
     }
 
+    public TabView getTabView(int index) {
+        if (tabs.size() > index) {
+            return tabs.get(index);
+        }
+        return null;
+    }
+
     private void setupTab(TabView tab, TabBarItem currentItem, int itemWidth) {
         tab.setTabWidth(itemWidth);
         tab.setPosition(tabBarItems.indexOf(currentItem));
@@ -250,40 +263,6 @@ public class TabBar extends FrameLayout {
 
     public int getCurrentSelectedPosition() {
         return selectedPosition;
-    }
-
-    public void showTextBadgeAtIndex(int index, @Nullable String text) {
-        TabView tab = tabs.get(index);
-        TabBarItem tabBarItem = tabBarItems.get(index);
-        tabBarItem.badgeText = text;
-        tab.showTextBadge(text);
-    }
-
-    public void hideTextBadgeAtIndex(int index) {
-        TabBarItem tabBarItem = tabBarItems.get(index);
-        tabBarItem.badgeText = null;
-        hideBadgeAtIndex(index);
-    }
-
-    public void showDotBadgeAtIndex(int index) {
-        TabView tab = tabs.get(index);
-        TabBarItem tabBarItem = tabBarItems.get(index);
-        tabBarItem.showDotBadge = true;
-        tab.showDotBadge();
-    }
-
-    public void hideDotBadgeAtIndex(int index) {
-        TabBarItem tabBarItem = tabBarItems.get(index);
-        tabBarItem.showDotBadge = false;
-        hideBadgeAtIndex(index);
-    }
-
-    public void hideBadgeAtIndex(int index) {
-        TabView tab = tabs.get(index);
-        TabBarItem tabBarItem = tabBarItems.get(index);
-        tabBarItem.showDotBadge = false;
-        tabBarItem.badgeText = null;
-        tab.hideBadge();
     }
 
     public interface OnTabSelectedListener {
