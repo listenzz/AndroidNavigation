@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.DisplayCutout;
@@ -23,7 +24,12 @@ public class SystemUI {
         if (translucent) {
             decorView.setOnApplyWindowInsetsListener((v, insets) -> {
                 WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
-                return defaultInsets.consumeSystemWindowInsets();
+                boolean portrait = window.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+                return defaultInsets.replaceSystemWindowInsets(
+                        portrait ? defaultInsets.getSystemWindowInsetLeft() : 0,
+                        0,
+                        portrait ? defaultInsets.getSystemWindowInsetRight() : 0,
+                        defaultInsets.getSystemWindowInsetBottom());
             });
         } else {
             decorView.setOnApplyWindowInsetsListener(null);
