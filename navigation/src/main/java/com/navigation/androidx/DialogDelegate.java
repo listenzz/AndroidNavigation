@@ -134,7 +134,7 @@ public class DialogDelegate {
             return;
         }
 
-        AppUtils.hideSoftInput(getView());
+        AppUtils.hideSoftInput(mFragment.getWindow());
 
         if (!fromAnimation && animateOutIfNeeded(completion)) {
             return;

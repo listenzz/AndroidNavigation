@@ -43,13 +43,14 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private static final String SAVED_TAB_BAR_ITEM = "nav_tab_bar_item";
     private static final String SAVED_SCENE_ID = "nav_scene_id";
-    private static final String SAVED_STATE_DEFINES_PRESENTATION_CONTEXT = "defines_presentation_context";
+
 
     // ------- lifecycle methods -------
-    private PresentableActivity presentableActivity;
-    private final LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
+    private PresentableActivity mPresentableActivity;
+    private final LifecycleDelegate mLifecycleDelegate = new LifecycleDelegate(this);
     protected Style mStyle;
 
+    private PresentationDelegate mPresentationDelegate;
     private DialogDelegate mDialogDelegate;
     private StackDelegate mStackDelegate;
 
@@ -60,7 +61,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (!(activity instanceof PresentableActivity)) {
             throw new IllegalArgumentException("Activity must implements PresentableActivity!");
         }
-        presentableActivity = (PresentableActivity) activity;
+        mPresentableActivity = (PresentableActivity) activity;
+        mPresentationDelegate = new PresentationDelegate(this, mPresentableActivity);
         mDialogDelegate = new DialogDelegate(this);
         mStackDelegate = new StackDelegate(this);
         inflateStyle();
@@ -68,7 +70,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @Override
     public void onDetach() {
-        presentableActivity = null;
+        mPresentableActivity = null;
         super.onDetach();
     }
 
@@ -76,10 +78,11 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            sceneId = savedInstanceState.getString(SAVED_SCENE_ID);
+            mSceneId = savedInstanceState.getString(SAVED_SCENE_ID);
             tabBarItem = savedInstanceState.getParcelable(SAVED_TAB_BAR_ITEM);
-            definesPresentationContext = savedInstanceState.getBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, false);
         }
+
+        mPresentationDelegate.onCreate(savedInstanceState);
 
         Bundle args = FragmentHelper.getArguments(this);
         boolean showAsDialog = args.getBoolean(ARGS_SHOW_AS_DIALOG, false);
@@ -90,9 +93,9 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(SAVED_SCENE_ID, sceneId);
+        outState.putString(SAVED_SCENE_ID, mSceneId);
         outState.putParcelable(SAVED_TAB_BAR_ITEM, tabBarItem);
-        outState.putBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, definesPresentationContext);
+        mPresentationDelegate.onSaveInstanceState(outState);
     }
 
     @Override
@@ -114,13 +117,13 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     private void inflateStyle() {
-        if (mStyle == null && presentableActivity != null && presentableActivity.getStyle() != null) {
+        if (mStyle == null && mPresentableActivity != null && mPresentableActivity.getStyle() != null) {
             try {
-                mStyle = presentableActivity.getStyle().clone();
+                mStyle = mPresentableActivity.getStyle().clone();
                 onCustomStyle(mStyle);
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
-                mStyle = presentableActivity.getStyle();
+                mStyle = mPresentableActivity.getStyle();
             }
         }
     }
@@ -132,12 +135,12 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Override
     protected void performViewCreated() {
         super.performViewCreated();
-
         if (!getShowsDialog()) {
             View root = getView();
             if (root == null) {
                 return;
             }
+
             if (!isParentFragment()) {
                 setBackgroundDrawable(root, new ColorDrawable(mStyle.getScreenBackgroundColor()));
             }
@@ -145,15 +148,13 @@ public abstract class AwesomeFragment extends InternalFragment {
             mStackDelegate.fitStackFragment(root);
 
         } else {
-            setupDialog();
+            mDialogDelegate.setupDialog();
         }
     }
 
     @Override
     public void onDestroyView() {
-        if (getView() != null) {
-            AppUtils.hideSoftInput(getView());
-        }
+        AppUtils.hideSoftInput(getWindow());
         super.onDestroyView();
     }
 
@@ -209,18 +210,18 @@ public abstract class AwesomeFragment extends InternalFragment {
         SystemUI.setRenderContentInShortEdgeCutoutAreas(getWindow(), displayCutout);
     }
 
-    private TransitionAnimation animation = null;
+    private TransitionAnimation mAnimation = null;
 
     public void setAnimation(@Nullable TransitionAnimation animation) {
-        this.animation = animation;
+        mAnimation = animation;
     }
 
     @NonNull
     public TransitionAnimation getAnimation() {
-        if (this.animation == null) {
-            this.animation = TransitionAnimation.None;
+        if (mAnimation == null) {
+            mAnimation = TransitionAnimation.None;
         }
-        return this.animation;
+        return mAnimation;
     }
 
     @Override
@@ -231,7 +232,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             return null;
         }
 
-        // ---------
         // Log.i(TAG, getDebugTag() + "  " + " transit:" + transit + " enter:" + enter + " nextAnim:" + nextAnim + " isAdd:" + isAdded() + " inRemoving:" + isRemoving());
 
         AwesomeFragment parent = getParentAwesomeFragment();
@@ -270,29 +270,27 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void scheduleTaskAtStarted(Runnable runnable, boolean deferred) {
-        lifecycleDelegate.scheduleTaskAtStarted(runnable, deferred);
+        mLifecycleDelegate.scheduleTaskAtStarted(runnable, deferred);
     }
 
-    // ------- navigation ------
+    // ------- presentation ------
 
-    private String sceneId;
+    private String mSceneId;
 
     @NonNull
     public String getSceneId() {
-        if (this.sceneId == null) {
-            this.sceneId = UUID.randomUUID().toString();
+        if (mSceneId == null) {
+            mSceneId = UUID.randomUUID().toString();
         }
-        return this.sceneId;
-    }
-
-    private boolean definesPresentationContext;
-
-    public boolean definesPresentationContext() {
-        return definesPresentationContext;
+        return mSceneId;
     }
 
     public void setDefinesPresentationContext(boolean defines) {
-        definesPresentationContext = defines;
+        mPresentationDelegate.setDefinesPresentationContext(defines);
+    }
+
+    public boolean definesPresentationContext() {
+        return mPresentationDelegate.definesPresentationContext();
     }
 
     protected boolean dispatchBackPressed() {
@@ -334,41 +332,8 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> {
-            if (!FragmentHelper.canPresentFragment(this, requireActivity())) {
-                if (completion != null) {
-                    completion.run();
-                }
-                onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
-                return;
-            }
-
-            AwesomeFragment parent = getParentAwesomeFragment();
-            if (parent != null) {
-                if (definesPresentationContext()) {
-                    presentFragmentSync(AwesomeFragment.this, fragment, requestCode, completion);
-                } else {
-                    parent.presentFragment(fragment, requestCode, completion);
-                }
-                return;
-            }
-
-            if (presentableActivity != null) {
-                Bundle args = FragmentHelper.getArguments(fragment);
-                args.putInt(ARGS_REQUEST_CODE, requestCode);
-                presentableActivity.presentFragment(fragment, completion);
-            }
+            mPresentationDelegate.presentFragment(fragment, requestCode, completion);
         }, true);
-    }
-
-    private void presentFragmentSync(final AwesomeFragment target, final AwesomeFragment fragment, final int requestCode, @Nullable Runnable completion) {
-        Bundle args = FragmentHelper.getArguments(fragment);
-        args.putInt(ARGS_REQUEST_CODE, requestCode);
-        fragment.setTargetFragment(target, requestCode);
-        fragment.setDefinesPresentationContext(true);
-        FragmentHelper.addFragmentToBackStack(target.getParentFragmentManager(), target.getContainerId(), fragment, TransitionAnimation.Present);
-        if (completion != null) {
-            completion.run();
-        }
     }
 
     public void dismissFragment() {
@@ -377,107 +342,33 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public void dismissFragment(@Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> {
-            if (isInDialog()) {
-                throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `hideDialog`");
-            }
-
-            AwesomeFragment parent = getParentAwesomeFragment();
-            if (parent != null) {
-                if (definesPresentationContext()) {
-                    AwesomeFragment presented = getPresentedFragment();
-                    if (presented != null) {
-                        FragmentHelper.handleDismissFragment(this, presented, null);
-                        if (completion != null) {
-                            completion.run();
-                        }
-                        return;
-                    }
-
-                    AwesomeFragment target = (AwesomeFragment) getTargetFragment();
-                    if (target != null) {
-                        FragmentHelper.handleDismissFragment(target, this, this);
-                    }
-
-                    if (completion != null) {
-                        completion.run();
-                    }
-                } else {
-                    parent.dismissFragment(completion);
-                }
-                return;
-            }
-
-            if (presentableActivity != null) {
-                presentableActivity.dismissFragment(this, completion);
-            }
+            mPresentationDelegate.dismissFragment(completion);
         }, true);
     }
 
     @Nullable
     public AwesomeFragment getPresentedFragment() {
-        AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
-            if (definesPresentationContext()) {
-                FragmentManager fragmentManager = getParentFragmentManager();
-                if (FragmentHelper.getIndexAtBackStack(this) == -1) {
-                    if (FragmentHelper.getBackStackEntryCount(parent) != 0) {
-                        FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(0);
-                        AwesomeFragment presented = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-                        if (presented != null && presented.isAdded()) {
-                            return presented;
-                        }
-                    }
-                    return null;
-                } else {
-                    return FragmentHelper.getFragmentAfter(this);
-                }
-            } else {
-                return parent.getPresentedFragment();
-            }
-        }
-
-        if (presentableActivity != null) {
-            return presentableActivity.getPresentedFragment(this);
-        }
-
-        return null;
+        return mPresentationDelegate.getPresentedFragment();
     }
 
     @Nullable
     public AwesomeFragment getPresentingFragment() {
-        AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
-            if (definesPresentationContext()) {
-                AwesomeFragment target = (AwesomeFragment) getTargetFragment();
-                if (target != null && target.isAdded()) {
-                    return target;
-                }
-                return null;
-            } else {
-                return parent.getPresentingFragment();
-            }
-        }
-
-        if (presentableActivity != null) {
-            return presentableActivity.getPresentingFragment(this);
-        }
-
-        return null;
+        return mPresentationDelegate.getPresentingFragment();
     }
 
     public void setActivityRootFragment(AwesomeFragment root) {
-        if (presentableActivity != null) {
-            presentableActivity.setActivityRootFragment(root);
+        if (mPresentableActivity != null) {
+            mPresentableActivity.setActivityRootFragment(root);
         }
     }
 
-    private int requestCode;
-    private int resultCode;
-    private Bundle result;
+    private int mRequestCode;
+    private int mResultCode;
+    private Bundle mResult;
 
     public void setResult(int resultCode, Bundle data) {
-        this.result = data;
-        this.resultCode = resultCode;
+        mResult = data;
+        mResultCode = resultCode;
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null && !definesPresentationContext() && !getShowsDialog()) {
             parent.setResult(resultCode, data);
@@ -485,19 +376,19 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public int getRequestCode() {
-        if (requestCode == 0) {
+        if (mRequestCode == 0) {
             Bundle args = FragmentHelper.getArguments(this);
-            requestCode = args.getInt(ARGS_REQUEST_CODE);
+            mRequestCode = args.getInt(ARGS_REQUEST_CODE);
         }
-        return requestCode;
+        return mRequestCode;
     }
 
     public int getResultCode() {
-        return resultCode;
+        return mResultCode;
     }
 
     public Bundle getResultData() {
-        return result;
+        return mResult;
     }
 
     public void onFragmentResult(int requestCode, int resultCode, @Nullable Bundle data) {
@@ -616,7 +507,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     protected boolean preferredStatusBarColorAnimated() {
         return getAnimation() != TransitionAnimation.None && mStyle.isStatusBarColorAnimated();
     }
-
 
     public void setNeedsStatusBarAppearanceUpdate() {
         if (!isResumed()) {
@@ -815,10 +705,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
         AwesomeFragment parent = getParentAwesomeFragment();
         return parent != null && parent.isInDialog();
-    }
-
-    protected void setupDialog() {
-        mDialogDelegate.setupDialog();
     }
 
     public void showDialog(@NonNull AwesomeFragment dialog, int requestCode) {
