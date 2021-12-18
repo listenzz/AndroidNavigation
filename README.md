@@ -94,11 +94,11 @@ AwesomeFragment 同样部署了 setActivityRootFragment 接口，方便你随时
 
 你通常还需要另外一个 Activity 来做为闪屏页（Splash），这个页面则不必继承 AwesomeActivity。
 
-为了处理常见的 Fragment 嵌套问题，提供了 `NavigationFragment`、`TabBarFragment`、`DrawerFragment` 三个容器类。它们可以作为 Activity 的 rootFragment 使用。这三个容器为 Fragment 嵌套提供了非常便利的操作。
+为了处理常见的 Fragment 嵌套问题，提供了 `StackFragment`、`TabBarFragment`、`DrawerFragment` 三个容器类。它们可以作为 Activity 的 rootFragment 使用。这三个容器为 Fragment 嵌套提供了非常便利的操作。
 
-#### NavigationFragment
+#### StackFragment
 
-NavigationFragment 以栈的形式管理它的子 Fragment，支持 push、pop 等操作，在初始化时，需要为它指定 rootFragment。
+StackFragment 以栈的形式管理它的子 Fragment，支持 push、pop 等操作，在初始化时，需要为它指定 rootFragment。
 
 ```java
 public class MainActivity extends AwesomeActivity {
@@ -107,10 +107,10 @@ public class MainActivity extends AwesomeActivity {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
             TestFragment testFragment = new TestFragment();
-            NavigationFragment stackFragment = new NavigationFragment();
-            // 把 TestFragment 设置为 NavigationFragment 的根
+            StackFragment stackFragment = new StackFragment();
+            // 把 TestFragment 设置为 StackFragment 的根
             stackFragment.setRootFragment(testFragment);
-            // 把 NavigationFragment 设置为 Activity 的根
+            // 把 StackFragment 设置为 Activity 的根
             setActivityRootFragment(stackFragment);
         }
     }
@@ -119,7 +119,7 @@ public class MainActivity extends AwesomeActivity {
 
 如果 TestFragment 的根布局是 LinearLayout 或 FrameLayout，会自动帮你创建 Toolbar，当由 A 页面跳转到 B 页面时，会为 B 页面的 Toolbar 添加返回按钮。更多关于 Toolbar 的配置，请参考 [**设置 Toolbar**](#setting-toolbar) 一章。
 
-在 TestFragment 中，我们可以通过 `getNavigationFragment` 来获取套在它外面的 NavigationFragment，然后通过 NavigationFragment 提供的 `pushFragment` 跳转到其它页面，或通过 `popFragment` 返回到前一个页面。关于导航的更多细节，请参考 [**导航**](#navigation) 一章。
+在 TestFragment 中，我们可以通过 `getStackFragment` 来获取套在它外面的 StackFragment，然后通过 StackFragment 提供的 `pushFragment` 跳转到其它页面，或通过 `popFragment` 返回到前一个页面。关于导航的更多细节，请参考 [**导航**](#navigation) 一章。
 
 #### TabBarFragment
 
@@ -159,7 +159,7 @@ public class MainActivity extends AwesomeActivity {
 
 如果对提供的默认 TabBar 不满意，可以通过实现 `TabBarProvider` 来自定义 TabBar , 在设置 TabBarFragment 为其它容器的根前，调用 `TabBarFragment#setTabBarProvider` 来设置自定义的 TabBar, 参数可以为 null, 表示不需要 TabBar.
 
-如果 HomeFragment 或 ContactsFragment 需要有导航的能力，可以先把它们嵌套到 NavigationFragment 中。
+如果 HomeFragment 或 ContactsFragment 需要有导航的能力，可以先把它们嵌套到 StackFragment 中。
 
 ```java
 public class MainActivity extends AwesomeActivity {
@@ -171,13 +171,13 @@ public class MainActivity extends AwesomeActivity {
 
             // 首页
             HomeFragment homeFragment = new HomeFragment();
-            NavigationFragment homeNavigationFragment = new NavigationFragment();
+            StackFragment homeNavigationFragment = new StackFragment();
             homeNavigationFragment.setRootFragment(homeFragment);
             homeNavigationFragment.setTabBarItem(new TabBarItem("首页", R.drawable.icon_home));
 
             // 通讯录
             ContactsFragment contactsFragment = new ContactsFragment();
-            NavigationFragment contactsNavigationFragment = new NavigationFragment();
+            StackFragment contactsNavigationFragment = new StackFragment();
             contactsNavigationFragment.setRootFragment(contactsFragment);
             contactsNavigationFragment.setTabBarItem(new TabBarItem("通讯录", R.drawable.icon_contacts));
 
@@ -253,7 +253,7 @@ public boolean isParentFragment() {
 protected AwesomeFragment childFragmentForAppearance() {
     // 这个方法用来控制当前的 status bar 的样式是由哪个子 fragment 决定的
     // 如果不重写，则由容器自身决定
-    // 可以参考 NavigationFragment、TabBarFragment
+    // 可以参考 StackFragment、TabBarFragment
     // 是如何决定让哪个子 fragment 来决定 status bar 样式的
     return 一个恰当的子 fragment;
 }
@@ -268,7 +268,7 @@ protected AwesomeFragment childFragmentForAppearance() {
 protected boolean onBackPressed() {
     // 这个方法用来控制当用户点击返回键时，到底要退出哪个子 fragment
     // 返回 true 表示当前容器消费了此事件，否则转发给上一层容器处理
-    // 可以参考 DrawerFragment，NavigationFragment 是如何处理返回键的
+    // 可以参考 DrawerFragment，StackFragment 是如何处理返回键的
     return super.onBackPressed();
 }
 ```
@@ -332,7 +332,7 @@ AwesomeActivity 和 AwesomeFragment 提供了两个基础的导航功能 present
 
   ```java
   //AFragment.java
-  NavigationFragment stackFragment = new NavigationFragment();
+  StackFragment stackFragment = new StackFragment();
   AlbumListFragment albumListFragment = new AlbumListFragment();
   stackFragment.setRootFragment(albumListFragment);
   presentFragment(stackFragment, 1)
@@ -340,12 +340,12 @@ AwesomeActivity 和 AwesomeFragment 提供了两个基础的导航功能 present
 
   相册列表页面 push 到某个相册
 
-  > push 是 NavigationFragment 的能力，要使用这个功能，你的 fragment 外层必须有一个 NavigationFragment 做为容器。
+  > push 是 StackFragment 的能力，要使用这个功能，你的 fragment 外层必须有一个 StackFragment 做为容器。
 
   ```java
   // AlbumListFragment.java
   AlbumFragment albumFragment = new AlbumFragment();
-  getNavigationFragment.pushFragment(albumFragment);
+  getStackFragment.pushFragment(albumFragment);
   ```
 
   在相册页面选好相片后返回结果给 A 页面
@@ -378,13 +378,13 @@ AwesomeActivity 和 AwesomeFragment 提供了两个基础的导航功能 present
 
   通过重写该方法，并返回 true，可以拦截返回键事件。
 
-#### NavigationFragment
+#### StackFragment
 
-NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 push、pop、popTo、popToRoot 操作，并额外支持 redirectTo 操作。
+StackFragment 是个容器，以栈的方式管理子 fragment，支持 push、pop、popTo、popToRoot 操作，并额外支持 redirectTo 操作。
 
-我们可以在它的子 Fragment 中（不必是直接子 fragment，可以是子 fragment 的子 fragment）通过 `getNavigationFragment` 来获取它的引用。
+我们可以在它的子 Fragment 中（不必是直接子 fragment，可以是子 fragment 的子 fragment）通过 `getStackFragment` 来获取它的引用。
 
-在初始化 NavigationFragment 时，你必须调用 `setRootFragment` 来指定它的根页面。
+在初始化 StackFragment 时，你必须调用 `setRootFragment` 来指定它的根页面。
 
 - push
 
@@ -397,7 +397,7 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
   ```java
   // AFragment.java
   BFragment bFragment = new BFragment();
-  getNavigationFragment.pushFragment(bFragment);
+  getStackFragment.pushFragment(bFragment);
   ```
 
 - pop
@@ -411,14 +411,14 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
   现在想返回到 C 页面
 
   ```java
-  getNavigationFragment.popFragment();
+  getStackFragment.popFragment();
   ```
 
   执行上述代码后，栈里面剩下 A B C 三个页面
 
 - 手势返回
 
-  手势返回是 NavigationFragment 的能力，需要在 Activity 的 onCustomStyle 中开启。
+  手势返回是 StackFragment 的能力，需要在 Activity 的 onCustomStyle 中开启。
 
   > 手势返回实质上是个 pop。
 
@@ -433,7 +433,7 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
   现在想返回到 A 页面
 
   ```java
-  getNavigationFragment.popToRootFragment();
+  getStackFragment.popToRootFragment();
   ```
 
   执行上述代码后，栈里面只剩下 A 页面
@@ -449,7 +449,7 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
   现在想返回到 B 页面
 
   ```java
-  NavigationFragment stackFragment = getNavigationFragment();
+  StackFragment stackFragment = getStackFragment();
   if (stackFragment != null) {
       AwesomeFragment target = FragmentHelper.findAwesomeFragment(requireFragmentManager(), BFragment.class);
       if (target != null) {
@@ -474,7 +474,7 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 
   ```java
   EFragment eFragment = new EFragment();
-  getNavigationFragment().redirectToFragment(eFragment);
+  getStackFragment().redirectToFragment(eFragment);
   ```
 
   执行上述代码后，栈里面有 A B C E 四个页面，D 页面被 E 页面所取代
@@ -486,7 +486,7 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
   现在想用 E 页面替换 B C D 三个页面
 
   ```java
-  NavigationFragment stackFragment = getNavigationFragment();
+  StackFragment stackFragment = getStackFragment();
   if (stackFragment != null) {
     AwesomeFragment from = FragmentHelper.findAwesomeFragment(requireFragmentManager(), BFragment.class);
     stackFragment.redirectToFragment(new EFragment(), from, true);
@@ -497,17 +497,17 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
 
 - isNavigationRoot
 
-  通过这个方法，可以判断当前 fragment 是不是 NavigationFragment 的 rootFragment
+  通过这个方法，可以判断当前 fragment 是不是 StackFragment 的 rootFragment
 
-  上面这些操作所使用的 FragmentManager，是 NavigationFragment 的 `getChildFragmentManager`，所有出栈或入栈的 fragment 都是 NavigationFragment 的子 fragment.
+  上面这些操作所使用的 FragmentManager，是 StackFragment 的 `getChildFragmentManager`，所有出栈或入栈的 fragment 都是 StackFragment 的子 fragment.
 
   ![navigation-stack](./screenshot/navigation_stack.png)
 
-  如上图，A fragment 嵌套在 NavigationFragment 中，A1 fragment 嵌套在 A fragment 中，当我们从 A1 push B fragment 时，B fragment 会成为 NavigationFragment 的子 fragment，而不是 A 的子 fragment，它和 A 是兄弟，它是 A1 的叔叔。
+  如上图，A fragment 嵌套在 StackFragment 中，A1 fragment 嵌套在 A fragment 中，当我们从 A1 push B fragment 时，B fragment 会成为 StackFragment 的子 fragment，而不是 A 的子 fragment，它和 A 是兄弟，它是 A1 的叔叔。
 
 #### 自定义导航
 
-虽然 AwesomeFragment 和 NavigationFragment 提供的导航操作已经能满足大部分需求，但有时我们可能需要自定义导航操作，尤其是自定义容器的时候。
+虽然 AwesomeFragment 和 StackFragment 提供的导航操作已经能满足大部分需求，但有时我们可能需要自定义导航操作，尤其是自定义容器的时候。
 
 需要注意几个点
 
@@ -535,11 +535,11 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
   getFragmentManager().setPrimaryNavigationFragment(fragment);
   ```
 
-- 一个容器中的子 fragment 要不都添加到返回栈中，就像 NavigationFragment 那样，要不都不添加到返回栈中，就像 TabBarFragment 和 DrawerFragment 那样，切勿混用这两种模式。
+- 一个容器中的子 fragment 要不都添加到返回栈中，就像 StackFragment 那样，要不都不添加到返回栈中，就像 TabBarFragment 和 DrawerFragment 那样，切勿混用这两种模式。
 
 - `FragmentTransaction#addSharedElement`、`FragmentTransaction#setTransition`、`FragmentTransaction#setCustomAnimations` 不可以同时使用，其中 `setTransition` 要配合 `AwesomeFragment#setAnimation` 一起使用
 
-  可以参考 demo 中 GridFragment 这个类，看如何实现自定义导航的，它遵循了 NavigationFragment 管理子 fragment 的规则。
+  可以参考 demo 中 GridFragment 这个类，看如何实现自定义导航的，它遵循了 StackFragment 管理子 fragment 的规则。
 
   ![](./screenshot/shared_element_transition.gif)
 
@@ -559,7 +559,7 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
           .setMaxLifecycle(this, Lifecycle.State.STARTED)
           // 使用具有三个参数的 add
           .add(R.id.navigation_content, kittenDetails, kittenDetails.getSceneId())
-          // 因为 NavigationFragment 以栈的形式管理子 Fragment
+          // 因为 StackFragment 以栈的形式管理子 Fragment
           .addToBackStack(kittenDetails.getSceneId()/*important*/)
           // 使用 commit 而不是 commitAllowingStateLoss 是个好习惯
           .commit();
@@ -673,7 +673,7 @@ protected boolean preferredStatusBarColorAnimated();
 
 ### 设置 Toolbar
 
-当 fragment 的 parent fragment 是一个 NavigationFragment 时，会自动为该 fragment 创建 Toolbar。
+当 fragment 的 parent fragment 是一个 StackFragment 时，会自动为该 fragment 创建 Toolbar。
 
 > 当 Fragment 的根布局是 LinearLayout 时，Toolbar 作为 LinearLayout 的第一个子元素添加。当 Fragment 的根布局是 FrameLayout 时，Toolbar 作为 FrameLayout 的最后一个子元素添加，覆盖在其余子元素最上面。
 
@@ -713,7 +713,7 @@ protected boolean preferredStatusBarColorAnimated();
 
 Toolbar 的创建时机是在 Fragment `onViewCreated` 这个生命周期函数中，在此之前之前，调用 getAwesomeToolbar 得到的返回值为 null。
 
-如果当前 fragment 不是 NavigationFragment 的 rootFragment，会自动在 Toolbar 上创建返回按钮。如果你不希望当前页面有返回按钮，可以重写以下方法。
+如果当前 fragment 不是 StackFragment 的 rootFragment，会自动在 Toolbar 上创建返回按钮。如果你不希望当前页面有返回按钮，可以重写以下方法。
 
 ```java
 protected boolean shouldHideBackButton() {
@@ -839,5 +839,5 @@ font://fontName/glyph/size/color
   TargetFragment target = new TargetFragment();
   Bundle args = FragmentHelper.getArguments(target);
   args.putInt("id", 1);
-  getNavigationFragment().pushFragment(target);
+  getStackFragment().pushFragment(target);
   ```
