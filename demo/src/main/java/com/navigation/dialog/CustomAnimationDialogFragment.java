@@ -14,19 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.navigation.R;
-import com.navigation.androidx.AnimationType;
 import com.navigation.androidx.AwesomeFragment;
 
 /**
  * Created by Listen on 2018/2/2.
  */
 public class CustomAnimationDialogFragment extends AwesomeFragment {
-
-    @NonNull
-    @Override
-    public AnimationType getAnimationType() {
-        return AnimationType.None;
-    }
 
     @Nullable
     @Override

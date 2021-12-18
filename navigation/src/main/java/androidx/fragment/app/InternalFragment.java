@@ -1,6 +1,5 @@
 package androidx.fragment.app;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -12,36 +11,6 @@ public class InternalFragment extends DialogFragment {
 
     public int getContainerId() {
         return mContainerId;
-    }
-
-    private boolean dismissed;
-
-    public boolean isDismissed() {
-        return dismissed;
-    }
-
-    @Override
-    public void dismiss() {
-        super.dismiss();
-        dismissed = true;
-    }
-
-    @Override
-    public void dismissAllowingStateLoss() {
-        super.dismissAllowingStateLoss();
-        dismissed = true;
-    }
-
-    @Override
-    public void onDismiss(@NonNull DialogInterface dialog) {
-        super.onDismiss(dialog);
-        dismissed = true;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        dismissed = true;
     }
 
     @Override

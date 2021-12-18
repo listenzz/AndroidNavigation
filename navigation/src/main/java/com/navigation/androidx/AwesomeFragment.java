@@ -57,7 +57,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     static final String ARGS_SHOW_AS_DIALOG = "show_as_dialog";
 
     private static final String SAVED_TAB_BAR_ITEM = "nav_tab_bar_item";
-    private static final String SAVED_ANIMATION_TYPE = "nav_animation_type";
     private static final String SAVED_SCENE_ID = "nav_scene_id";
     private static final String SAVED_STATE_DEFINES_PRESENTATION_CONTEXT = "defines_presentation_context";
 
@@ -88,8 +87,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             sceneId = savedInstanceState.getString(SAVED_SCENE_ID);
-            String animationName = savedInstanceState.getString(SAVED_ANIMATION_TYPE);
-            this.animationType = AnimationType.valueOf(animationName);
             tabBarItem = savedInstanceState.getParcelable(SAVED_TAB_BAR_ITEM);
             definesPresentationContext = savedInstanceState.getBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, false);
         }
@@ -104,7 +101,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(SAVED_SCENE_ID, sceneId);
-        outState.putString(SAVED_ANIMATION_TYPE, animationType.name());
         outState.putParcelable(SAVED_TAB_BAR_ITEM, tabBarItem);
         outState.putBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, definesPresentationContext);
     }
@@ -173,7 +169,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             fitNavigationFragment(root);
         } else {
             setupDialog();
-            animateIn();
+            animateInIfNeeded();
         }
     }
 
@@ -721,7 +717,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     @ColorInt
     protected int preferredNavigationBarColor() {
         if (getShowsDialog()) {
-            if (getAnimationType() == AnimationType.Slide) {
+            if (shouldAnimateDialogTransition()) {
                 return requireActivity().getWindow().getNavigationBarColor();
             } else {
                 return Color.TRANSPARENT;
@@ -791,6 +787,33 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     // ------ dialog -----
 
+    /**
+     * @deprecated call {@link #showDialog(AwesomeFragment, int)} instead of this method.
+     */
+    @Deprecated
+    @Override
+    public void show(@NonNull FragmentManager manager, String tag) {
+        super.show(manager, tag);
+    }
+
+    /**
+     * @deprecated call {@link #showDialog(AwesomeFragment, int)} instead of this method.
+     */
+    @Deprecated
+    @Override
+    public int show(@NonNull FragmentTransaction transaction, String tag) {
+        return super.show(transaction, tag);
+    }
+
+    /**
+     * @deprecated call {@link #hideDialog()} instead of this method.
+     */
+    @Deprecated
+    @Override
+    public void dismiss() {
+        super.dismiss();
+    }
+
     @Nullable
     public Window getWindow() {
         if (isInDialog()) {
@@ -844,6 +867,37 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
     }
 
+    public void showDialog(@NonNull AwesomeFragment dialog, int requestCode) {
+        showDialog(dialog, requestCode, null);
+    }
+
+    public void showDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+        scheduleTaskAtStarted(() -> {
+            if (!FragmentHelper.canShowDialog(this, requireActivity())) {
+                if (completion != null) {
+                    completion.run();
+                }
+                onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
+                return;
+            }
+            showDialogSync(AwesomeFragment.this, dialog, requestCode, completion);
+        }, true);
+    }
+
+    private void showDialogSync(AwesomeFragment target, AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+        Bundle args = FragmentHelper.getArguments(dialog);
+        args.putInt(ARGS_REQUEST_CODE, requestCode);
+        args.putBoolean(ARGS_SHOW_AS_DIALOG, true);
+        dialog.setTargetFragment(target, requestCode);
+        FragmentManager fragmentManager = target.getParentFragmentManager();
+        fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.STARTED).commit();
+        fragmentManager.beginTransaction().add(dialog, dialog.getSceneId()).commit();
+        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+        if (completion != null) {
+            completion.run();
+        }
+    }
+
     /**
      * Dismiss the fragment as dialog.
      */
@@ -872,15 +926,24 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         AppUtils.hideSoftInput(getView());
 
-        if (getAnimationType() != AnimationType.None && !fromAnimation) {
-            if (animateOut(completion)) {
-                return;
-            }
+        if (!fromAnimation && animateOutIfNeeded(completion)) {
+            return;
         }
 
-        if (isAdded() && !isDismissed()) {
-            getParentFragmentManager().beginTransaction().setMaxLifecycle(this, Lifecycle.State.STARTED).commit();
-            dismiss();
+        if (isAdded()) {
+            FragmentManager fragmentManager = getParentFragmentManager();
+            fragmentManager
+                    .beginTransaction()
+                    .setMaxLifecycle(this, Lifecycle.State.STARTED)
+                    .remove(this)
+                    .commit();
+            Fragment target = getTargetFragment();
+            if (target instanceof AwesomeFragment && target.isAdded()) {
+                fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
+                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+                AwesomeFragment fragment = (AwesomeFragment) target;
+                fragment.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
+            }
         }
 
         if (completion != null) {
@@ -891,127 +954,57 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-        Fragment target = getTargetFragment();
-        if (target instanceof AwesomeFragment && target.isAdded()) {
-            FragmentManager fragmentManager = getParentFragmentManager();
-            fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
-            FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-            AwesomeFragment fragment = (AwesomeFragment) target;
-            fragment.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
-        }
-    }
-
-    /**
-     * @deprecated call {@link #showDialog(AwesomeFragment, int)} instead of this method.
-     */
-    @Deprecated
-    @Override
-    public void show(@NonNull FragmentManager manager, String tag) {
-        super.show(manager, tag);
-    }
-
-    /**
-     * @deprecated call {@link #showDialog(AwesomeFragment, int)} instead of this method.
-     */
-    @Deprecated
-    @Override
-    public int show(@NonNull FragmentTransaction transaction, String tag) {
-        return super.show(transaction, tag);
-    }
-
-    /**
-     * @deprecated call {@link #hideDialog()} instead of this method.
-     */
-    @Deprecated
-    @Override
-    public void dismiss() {
-        super.dismiss();
-    }
-
-    public void showDialog(@NonNull AwesomeFragment dialog, int requestCode) {
-        showDialog(dialog, requestCode, null);
-    }
-
-    public void showDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> {
-            if (!FragmentHelper.canShowDialog(this, requireActivity())) {
-                if (completion != null) {
-                    completion.run();
-                }
-                onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
-                return;
+        if (isAdded()) {
+            Fragment target = getTargetFragment();
+            if (target instanceof AwesomeFragment && target.isAdded()) {
+                FragmentManager fragmentManager = getParentFragmentManager();
+                fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
+                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+                AwesomeFragment fragment = (AwesomeFragment) target;
+                fragment.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
             }
-            showDialogSync(AwesomeFragment.this, dialog, requestCode, completion);
-        }, true);
-    }
-
-    private void showDialogSync(AwesomeFragment target, AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
-        Bundle args = FragmentHelper.getArguments(dialog);
-        args.putInt(ARGS_REQUEST_CODE, requestCode);
-        args.putBoolean(ARGS_SHOW_AS_DIALOG, true);
-        dialog.setTargetFragment(target, requestCode);
-        FragmentManager fragmentManager = target.getParentFragmentManager();
-        fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.STARTED).commit();
-        dialog.show(fragmentManager, dialog.getSceneId());
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-        if (completion != null) {
-            completion.run();
         }
     }
 
-    private AnimationType animationType = AnimationType.None;
-
-    public void setAnimationType(@NonNull AnimationType type) {
-        this.animationType = type;
-    }
-
-    @NonNull
-    public AnimationType getAnimationType() {
-        return this.animationType;
-    }
-
-    private void animateIn() {
+    private void animateInIfNeeded() {
         View root = getView();
         if (!(root instanceof DialogFrameLayout)) {
             return;
         }
 
-        AnimationType type = getAnimationType();
-        boolean shouldAnimated = type != AnimationType.None;
-
-        if (!shouldAnimated) {
+        if (shouldAnimateDialogTransition()) {
             DialogFrameLayout frameLayout = (DialogFrameLayout) root;
             View contentView = frameLayout.getChildAt(0);
-            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
-            if (layoutParams.gravity == Gravity.BOTTOM) {
-                shouldAnimated = true;
-                type = AnimationType.Slide;
-                setAnimationType(type);
-            }
-        }
-
-        if (shouldAnimated) {
-            DialogFrameLayout frameLayout = (DialogFrameLayout) root;
-            View contentView = frameLayout.getChildAt(0);
-            if (type == AnimationType.Slide) {
-                animateUpIn(contentView);
-            }
+            animateUpIn(contentView);
         }
     }
 
-    private boolean animateOut(@Nullable Runnable completion) {
+    private boolean animateOutIfNeeded(@Nullable Runnable completion) {
         View root = getView();
-        AnimationType type = getAnimationType();
-        boolean shouldAnimated = type != AnimationType.None && root instanceof DialogFrameLayout;
-        if (shouldAnimated) {
+        if (!(root instanceof DialogFrameLayout)) {
+            return false;
+        }
+
+        if (shouldAnimateDialogTransition()) {
             DialogFrameLayout frameLayout = (DialogFrameLayout) root;
             View contentView = frameLayout.getChildAt(0);
-            if (type == AnimationType.Slide) {
-                animateDownOut(contentView, completion);
-                return true;
-            }
+            animateDownOut(contentView, completion);
+            return true;
         }
+
         return false;
+    }
+
+    private boolean shouldAnimateDialogTransition() {
+        View root = getView();
+        if (!(root instanceof DialogFrameLayout)) {
+            return false;
+        }
+
+        DialogFrameLayout frameLayout = (DialogFrameLayout) root;
+        View contentView = frameLayout.getChildAt(0);
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
+        return layoutParams.gravity == Gravity.BOTTOM;
     }
 
     private void animateDownOut(@NonNull final View contentView, @Nullable Runnable completion) {
@@ -1053,7 +1046,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                animationView.post(() -> AwesomeFragment.this.hideDialogSync(completion, true));
+                animationView.post(() -> hideDialogSync(completion, true));
             }
 
             @Override
