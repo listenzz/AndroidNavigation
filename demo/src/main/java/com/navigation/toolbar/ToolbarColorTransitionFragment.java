@@ -45,7 +45,7 @@ public class ToolbarColorTransitionFragment extends BaseFragment {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                getAwesomeToolbar().setAlpha(progress / 100.0f);
+                getToolbar().setAlpha(progress / 100.0f);
             }
 
             @Override
@@ -65,6 +65,6 @@ public class ToolbarColorTransitionFragment extends BaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getAwesomeToolbar().setAlpha(0);
+        getToolbar().setAlpha(0);
     }
 }

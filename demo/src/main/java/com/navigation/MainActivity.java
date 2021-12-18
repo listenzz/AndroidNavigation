@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.navigation.androidx.AwesomeActivity;
 import com.navigation.androidx.DrawerFragment;
-import com.navigation.androidx.NavigationFragment;
+import com.navigation.androidx.StackFragment;
 import com.navigation.androidx.Style;
 import com.navigation.androidx.SystemUI;
 import com.navigation.androidx.TabBarFragment;
@@ -32,13 +32,13 @@ public class MainActivity extends AwesomeActivity {
         if (savedInstanceState == null) {
 
             TestNavigationFragment testNavigationFragment = new TestNavigationFragment();
-            NavigationFragment navigation = new NavigationFragment();
+            StackFragment navigation = new StackFragment();
             navigation.setRootFragment(testNavigationFragment);
             String iconUri = "font://FontAwesome/" + fromCharCode(61732) + "/24";
             navigation.setTabBarItem(new TabBarItem("导航", iconUri));
 
             TestStatusBarFragment testStatusBarFragment = new TestStatusBarFragment();
-            NavigationFragment statusBar = new NavigationFragment();
+            StackFragment statusBar = new StackFragment();
             statusBar.setRootFragment(testStatusBarFragment);
             statusBar.setTabBarItem(new TabBarItem("状态栏", R.drawable.flower));
 

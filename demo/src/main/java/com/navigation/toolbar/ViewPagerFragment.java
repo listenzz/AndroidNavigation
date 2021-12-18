@@ -42,7 +42,7 @@ public class ViewPagerFragment extends BaseFragment {
     }
 
     @Override
-    protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
+    protected AwesomeToolbar onCreateToolbar(View parent) {
         return toolbar;
     }
 

@@ -165,10 +165,10 @@ public class TabBarFragment extends AwesomeFragment {
 
     @Override
     protected int preferredNavigationBarColor() {
-        if (style.getNavigationBarColor() != Style.INVALID_COLOR) {
-            return style.getNavigationBarColor();
+        if (mStyle.getNavigationBarColor() != Style.INVALID_COLOR) {
+            return mStyle.getNavigationBarColor();
         } else {
-            return Color.parseColor(style.getTabBarBackgroundColor());
+            return Color.parseColor(mStyle.getTabBarBackgroundColor());
         }
     }
 
@@ -263,7 +263,7 @@ public class TabBarFragment extends AwesomeFragment {
         }
 
         if (tabBar != null) {
-            NavigationFragment nav = current.getNavigationFragment();
+            StackFragment nav = current.getStackFragment();
             if (nav != null && nav.getTabBarFragment() == this && nav.shouldHideTabBarWhenPushed()) {
                 if (nav.getTopFragment() == nav.getRootFragment()) {
                     showTabBar();

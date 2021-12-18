@@ -9,7 +9,7 @@ public class BaseFragment extends AwesomeFragment {
         super.onResume();
         DrawerFragment drawerFragment = getDrawerFragment();
         if (drawerFragment != null) {
-            drawerFragment.setMenuInteractive(isNavigationRoot());
+            drawerFragment.setMenuInteractive(isStackRoot());
         }
     }
 }

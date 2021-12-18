@@ -1,34 +1,26 @@
 package com.navigation.androidx;
 
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
-import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -56,9 +48,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     // ------- lifecycle methods -------
     private PresentableActivity presentableActivity;
     private final LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
-    protected Style style;
+    protected Style mStyle;
 
     private DialogDelegate mDialogDelegate;
+    private StackDelegate mStackDelegate;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -69,6 +62,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
         presentableActivity = (PresentableActivity) activity;
         mDialogDelegate = new DialogDelegate(this);
+        mStackDelegate = new StackDelegate(this);
         inflateStyle();
     }
 
@@ -107,10 +101,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         inflateStyle();
 
         if (!getShowsDialog()) {
-            if (hasNavigationParent()) {
-                LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
-                layoutInflater = new NavigationLayoutInflater(requireContext(), layoutInflater);
-                return layoutInflater;
+            if (mStackDelegate.hasStackParent()) {
+                return mStackDelegate.onGetLayoutInflater(savedInstanceState);
             }
 
             return super.onGetLayoutInflater(savedInstanceState);
@@ -122,13 +114,13 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     private void inflateStyle() {
-        if (style == null && presentableActivity != null && presentableActivity.getStyle() != null) {
+        if (mStyle == null && presentableActivity != null && presentableActivity.getStyle() != null) {
             try {
-                style = presentableActivity.getStyle().clone();
-                onCustomStyle(style);
+                mStyle = presentableActivity.getStyle().clone();
+                onCustomStyle(mStyle);
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
-                style = presentableActivity.getStyle();
+                mStyle = presentableActivity.getStyle();
             }
         }
     }
@@ -147,9 +139,11 @@ public abstract class AwesomeFragment extends InternalFragment {
                 return;
             }
             if (!isParentFragment()) {
-                setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
+                setBackgroundDrawable(root, new ColorDrawable(mStyle.getScreenBackgroundColor()));
             }
-            fitNavigationFragment(root);
+
+            mStackDelegate.fitStackFragment(root);
+
         } else {
             setupDialog();
         }
@@ -211,8 +205,22 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     private void setDisplayCutoutWhenLandscape(int orientation) {
-        boolean displayCutout = style.isDisplayCutoutWhenLandscape() || orientation == Configuration.ORIENTATION_PORTRAIT;
+        boolean displayCutout = mStyle.isDisplayCutoutWhenLandscape() || orientation == Configuration.ORIENTATION_PORTRAIT;
         SystemUI.setRenderContentInShortEdgeCutoutAreas(getWindow(), displayCutout);
+    }
+
+    private TransitionAnimation animation = null;
+
+    public void setAnimation(@Nullable TransitionAnimation animation) {
+        this.animation = animation;
+    }
+
+    @NonNull
+    public TransitionAnimation getAnimation() {
+        if (this.animation == null) {
+            this.animation = TransitionAnimation.None;
+        }
+        return this.animation;
     }
 
     @Override
@@ -248,8 +256,8 @@ public abstract class AwesomeFragment extends InternalFragment {
             }
         }
 
-        if (!drawTabBarIfNeeded(transit, enter, anim)) {
-            drawScrimIfNeeded(transit, enter, anim);
+        if (!mStackDelegate.drawTabBarIfNeeded(transit, enter, anim)) {
+            mStackDelegate.drawScrimIfNeeded(transit, enter, anim);
         }
 
         return anim;
@@ -499,8 +507,8 @@ public abstract class AwesomeFragment extends InternalFragment {
             if (child != null) {
                 child.onFragmentResult(requestCode, resultCode, data);
             }
-        } else if (this instanceof NavigationFragment) {
-            AwesomeFragment child = ((NavigationFragment) this).getTopFragment();
+        } else if (this instanceof StackFragment) {
+            AwesomeFragment child = ((StackFragment) this).getTopFragment();
             if (child != null) {
                 child.onFragmentResult(requestCode, resultCode, data);
             }
@@ -546,20 +554,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         return null;
     }
 
-    private TransitionAnimation animation = null;
-
-    public void setAnimation(@Nullable TransitionAnimation animation) {
-        this.animation = animation;
-    }
-
-    @NonNull
-    public TransitionAnimation getAnimation() {
-        if (this.animation == null) {
-            this.animation = TransitionAnimation.None;
-        }
-        return this.animation;
-    }
-
     public boolean isParentFragment() {
         return false;
     }
@@ -600,7 +594,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return BarStyle.LightContent;
         }
 
-        return style.getStatusBarStyle();
+        return mStyle.getStatusBarStyle();
     }
 
     protected boolean preferredStatusBarHidden() {
@@ -608,7 +602,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return SystemUI.isStatusBarHidden(requireActivity().getWindow());
         }
 
-        return style.isStatusBarHidden();
+        return mStyle.isStatusBarHidden();
     }
 
     protected int preferredStatusBarColor() {
@@ -616,11 +610,11 @@ public abstract class AwesomeFragment extends InternalFragment {
             return Color.TRANSPARENT;
         }
 
-        return style.getStatusBarColor();
+        return mStyle.getStatusBarColor();
     }
 
     protected boolean preferredStatusBarColorAnimated() {
-        return getAnimation() != TransitionAnimation.None && style.isStatusBarColorAnimated();
+        return getAnimation() != TransitionAnimation.None && mStyle.isStatusBarColorAnimated();
     }
 
 
@@ -699,17 +693,13 @@ public abstract class AwesomeFragment extends InternalFragment {
     @ColorInt
     protected int preferredNavigationBarColor() {
         if (getShowsDialog()) {
-            if (mDialogDelegate.shouldAnimateDialogTransition()) {
-                return requireActivity().getWindow().getNavigationBarColor();
-            } else {
-                return Color.TRANSPARENT;
-            }
+            return mDialogDelegate.preferredNavigationBarColor();
         }
 
-        if (style.getNavigationBarColor() != Style.INVALID_COLOR) {
-            return style.getNavigationBarColor();
+        if (mStyle.getNavigationBarColor() != Style.INVALID_COLOR) {
+            return mStyle.getNavigationBarColor();
         } else {
-            return style.getScreenBackgroundColor();
+            return mStyle.getScreenBackgroundColor();
         }
     }
 
@@ -722,7 +712,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (getShowsDialog()) {
             return SystemUI.isNavigationBarHidden(requireActivity().getWindow());
         }
-        return style.isNavigationBarHidden();
+        return mStyle.isNavigationBarHidden();
     }
 
     public void setNeedsNavigationBarAppearanceUpdate() {
@@ -858,40 +848,24 @@ public abstract class AwesomeFragment extends InternalFragment {
         mDialogDelegate.onDismiss();
     }
 
-    // ------ NavigationFragment -----
+    // ------ StackFragment -----
+
     @NonNull
-    public NavigationFragment requireNavigationFragment() {
-        NavigationFragment navigationFragment = getNavigationFragment();
-        if (navigationFragment == null) {
+    public StackFragment requireStackFragment() {
+        StackFragment stackFragment = getStackFragment();
+        if (stackFragment == null) {
             throw new NullPointerException("NavigationFragment is null, make sure this fragment is wrapped in A NavigationFragment.");
         }
-        return navigationFragment;
+        return stackFragment;
     }
 
     @Nullable
-    public NavigationFragment getNavigationFragment() {
-        if (this instanceof NavigationFragment) {
-            return (NavigationFragment) this;
-        }
-
-        if (getShowsDialog()) {
-            return null;
-        }
-
-        AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
-            return parent.getNavigationFragment();
-        }
-        return null;
+    public StackFragment getStackFragment() {
+        return mStackDelegate.getStackFragment();
     }
 
-    public boolean isNavigationRoot() {
-        NavigationFragment navigationFragment = getNavigationFragment();
-        if (navigationFragment != null) {
-            AwesomeFragment fragment = navigationFragment.getRootFragment();
-            return fragment == this;
-        }
-        return false;
+    public boolean isStackRoot() {
+        return mStackDelegate.isStackRoot();
     }
 
     protected boolean shouldHideBackButton() {
@@ -910,411 +884,71 @@ public abstract class AwesomeFragment extends InternalFragment {
         return true;
     }
 
-    boolean shouldHideTabBarWhenPushed() {
-        NavigationFragment navigationFragment = getNavigationFragment();
-        AwesomeFragment root;
-        if (navigationFragment != null) {
-            root = navigationFragment.getRootFragment();
-            if (root != null && root.isAdded()) {
-                return root.hideTabBarWhenPushed();
-            }
-        }
-        return true;
-    }
-
-    private boolean drawTabBarIfNeeded(int transit, boolean enter, Animation anim) {
-        Fragment parent = getParentFragment();
-        if (!(parent instanceof NavigationFragment)) {
-            return false;
-        }
-
-        NavigationFragment navigationFragment = (NavigationFragment) parent;
-        TabBarFragment tabBarFragment = navigationFragment.getTabBarFragment();
-
-        if (tabBarFragment == null) {
-            return false;
-        }
-
-        if (navigationFragment != tabBarFragment.getSelectedFragment()) {
-            return false;
-        }
-
-        if (!shouldHideTabBarWhenPushed()) {
-            return false;
-        }
-
-        if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN && !enter) {
-            if (this == navigationFragment.getRootFragment()) {
-                drawTabBar(tabBarFragment, anim.getDuration(), true);
-                tabBarFragment.hideTabBarAnimated(anim);
-                return true;
-            }
-        } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
-            if (this == navigationFragment.getRootFragment()) {
-                drawTabBar(tabBarFragment, anim.getDuration(), false);
-                tabBarFragment.showTabBarAnimated(anim);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void drawScrimIfNeeded(int transit, boolean enter, Animation anim) {
-        Fragment parent = getParentFragment();
-        if (!(parent instanceof NavigationFragment)) {
-            return;
-        }
-
-        NavigationFragment navigationFragment = (NavigationFragment) parent;
-        TransitionAnimation animation = getAnimation();
-        if (animation.exit == animation.popEnter) {
-            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && !enter) {
-                if (getView() != null) {
-                    ViewCompat.setTranslationZ(getView(), -1f);
-                }
-                drawScrim(navigationFragment, anim.getDuration(), true);
-            }
-        } else {
-            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN && !enter) {
-                drawScrim(navigationFragment, anim.getDuration(), true);
-            } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
-                drawScrim(navigationFragment, anim.getDuration(), false);
-            }
-        }
-    }
-
-    private void drawScrim(@NonNull NavigationFragment navigationFragment, long duration, boolean open) {
-        if (navigationFragment.getView() == null) {
-            return;
-        }
-
-        int vWidth = navigationFragment.getView().getWidth();
-        int vHeight = navigationFragment.getView().getHeight();
-
-        ColorDrawable colorDrawable = new ColorDrawable(0x00000000);
-        colorDrawable.setBounds(0, 0, vWidth, vHeight);
-
-        View root = getView();
-        if (root instanceof FrameLayout) {
-            FrameLayout frameLayout = (FrameLayout) root;
-            frameLayout.setForeground(colorDrawable);
-            int scrimAlpha = style.getScrimAlpha();
-            ValueAnimator valueAnimator = open ? ValueAnimator.ofInt(0, scrimAlpha) : ValueAnimator.ofInt(scrimAlpha, 0);
-            valueAnimator.setDuration(duration);
-            valueAnimator.addUpdateListener(animation -> {
-                int value = (Integer) animation.getAnimatedValue();
-                colorDrawable.setColor(value << 24);
-            });
-            valueAnimator.start();
-
-            root.postDelayed(() -> {
-                if (isAdded()) {
-                    frameLayout.setForeground(null);
-                }
-            }, duration);
-        }
-
-    }
-
-    private void drawTabBar(@NonNull TabBarFragment tabBarFragment, long duration, boolean open) {
-        if (tabBarFragment.getTabBar() == null || tabBarFragment.getView() == null) {
-            return;
-        }
-
-        int vWidth = tabBarFragment.getView().getWidth();
-        int vHeight = tabBarFragment.getView().getHeight();
-
-        View tabBar = tabBarFragment.getTabBar();
-        if (tabBar.getMeasuredWidth() == 0) {
-            tabBar.measure(View.MeasureSpec.makeMeasureSpec(vWidth, View.MeasureSpec.EXACTLY),
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-            tabBar.layout(0, 0, tabBar.getMeasuredWidth(), tabBar.getMeasuredHeight());
-        }
-
-        Bitmap bitmap = AppUtils.createBitmapFromView(tabBar);
-        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
-        bitmapDrawable.setBounds(0, vHeight - tabBar.getHeight(),
-                tabBar.getMeasuredWidth(), vHeight);
-        bitmapDrawable.setGravity(Gravity.BOTTOM);
-
-        ColorDrawable colorDrawable = new ColorDrawable(0x00000000);
-        colorDrawable.setBounds(0, 0, vWidth, vHeight);
-
-        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{bitmapDrawable, colorDrawable,});
-        layerDrawable.setBounds(0, 0, vWidth, vHeight);
-
-        View root = getView();
-        if (root instanceof FrameLayout) {
-            FrameLayout frameLayout = (FrameLayout) root;
-            frameLayout.setForeground(layerDrawable);
-            int scrimAlpha = style.getScrimAlpha();
-            ValueAnimator valueAnimator = open ? ValueAnimator.ofInt(0, scrimAlpha) : ValueAnimator.ofInt(scrimAlpha, 0);
-            valueAnimator.setDuration(duration);
-            valueAnimator.addUpdateListener(animation -> {
-                int value = (Integer) animation.getAnimatedValue();
-                colorDrawable.setColor(value << 24);
-            });
-            valueAnimator.start();
-
-            if (isAdded()) {
-                root.postDelayed(() -> {
-                    if (isAdded()) {
-                        frameLayout.setForeground(null);
-                    }
-                }, duration + 16);
-            }
-        }
-    }
-
-    private volatile AwesomeToolbar toolbar;
-
-    public AwesomeToolbar getAwesomeToolbar() {
-        return toolbar;
-    }
-
-    private void fitNavigationFragment(@NonNull View root) {
-        if (hasNavigationParent()) {
-            createAwesomeToolbar(root);
-            adjustBottomPaddingForTabBar(root);
-        }
-    }
-
-    private boolean hasNavigationParent() {
-        AwesomeFragment parent = getParentAwesomeFragment();
-        return (parent instanceof NavigationFragment);
-    }
-
-    private void createAwesomeToolbar(@NonNull View root) {
-        AwesomeToolbar toolbar = onCreateAwesomeToolbar(root);
-        if (toolbar != null) {
-            customAwesomeToolbar(toolbar);
-        }
-        this.toolbar = toolbar;
-    }
-
-    private void adjustBottomPaddingForTabBar(final View root) {
-        int index = FragmentHelper.getIndexAtBackStack(this);
-        if (index == 0 || !shouldHideTabBarWhenPushed()) {
-            int color = Color.parseColor(style.getTabBarBackgroundColor());
-            if (Color.alpha(color) == 255) {
-                TabBarFragment tabBarFragment = getTabBarFragment();
-                if (tabBarFragment != null && tabBarFragment.getTabBar() != null) {
-                    int bottomPadding = (int) getResources().getDimension(R.dimen.nav_tab_bar_height);
-                    root.setPadding(0, 0, 0, bottomPadding);
-                }
-            }
-        }
+    public AwesomeToolbar getToolbar() {
+        return mStackDelegate.getToolbar();
     }
 
     @Nullable
-    protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
-        if (getView() == null || getContext() == null) return null;
-        int toolbarHeight = getToolbarHeight();
-        AwesomeToolbar toolbar = new AwesomeToolbar(getContext());
-        FrameLayout frameLayout = (FrameLayout) parent;
-        frameLayout.addView(toolbar, new FrameLayout.LayoutParams(-1, toolbarHeight));
-        appendStatusBarPadding(toolbar);
-        appendToolbarPadding(parent);
-        return toolbar;
-    }
-
-    private void appendToolbarPadding(View parent) {
-        if (!extendedLayoutIncludesToolbar()) {
-            FrameLayout frameLayout = (FrameLayout) parent;
-            if (frameLayout.getChildCount() > 1) {
-                View child = frameLayout.getChildAt(0);
-                int statusBarHeight = SystemUI.getStatusBarHeight(requireContext());
-                int toolbarHeight = getToolbarHeight();
-                child.setPadding(0, statusBarHeight + toolbarHeight, 0, 0);
-            }
-        }
+    protected AwesomeToolbar onCreateToolbar(View parent) {
+        return mStackDelegate.onCreateToolbar(parent);
     }
 
     protected boolean extendedLayoutIncludesToolbar() {
-        int color = preferredToolbarColor();
-        float alpha = preferredToolbarAlpha();
+        int color = mStyle.getToolbarBackgroundColor();
+        float alpha = mStyle.getToolbarAlpha();
         return Color.alpha(color) < 255 || alpha < 1.0;
     }
 
     public int getToolbarHeight() {
-        return style.getToolbarHeight();
-    }
-
-    private void customAwesomeToolbar(AwesomeToolbar toolbar) {
-        toolbar.setBackgroundColor(preferredToolbarColor());
-        toolbar.setButtonTintColor(style.getToolbarTintColor());
-        toolbar.setButtonTextSize(style.getToolbarButtonTextSize());
-        toolbar.setTitleTextColor(style.getTitleTextColor());
-        toolbar.setTitleTextSize(style.getTitleTextSize());
-        toolbar.setTitleGravity(style.getTitleGravity());
-        if (style.isToolbarShadowHidden()) {
-            toolbar.hideShadow();
-        } else {
-            toolbar.showShadow(style.getElevation());
-        }
-        toolbar.setAlpha(preferredToolbarAlpha());
-
-        if (!isNavigationRoot()) {
-            if (shouldHideBackButton()) {
-                toolbar.setNavigationIcon(null);
-                toolbar.setNavigationOnClickListener(null);
-            } else if (leftBarButtonItem == null && leftBarButtonItems == null) {
-                toolbar.setNavigationIcon(style.getBackIcon());
-                toolbar.setNavigationOnClickListener(view -> {
-                    NavigationFragment navigationFragment = getNavigationFragment();
-                    if (navigationFragment != null) {
-                        navigationFragment.dispatchBackPressed();
-                    }
-                });
-            }
-        }
-    }
-
-    protected int preferredToolbarColor() {
-        return style.getToolbarBackgroundColor();
-    }
-
-    @FloatRange(from = 0f, to = 1.0f)
-    protected float preferredToolbarAlpha() {
-        return style.getToolbarAlpha();
+        return mStyle.getToolbarHeight();
     }
 
     public void setNeedsToolbarAppearanceUpdate() {
-        AwesomeToolbar toolbar = getAwesomeToolbar();
-        if (toolbar != null) {
-            customAwesomeToolbar(toolbar);
-
-            if (leftBarButtonItems != null) {
-                for (ToolbarButtonItem item : leftBarButtonItems) {
-                    item.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
-                }
-            } else if (leftBarButtonItem != null) {
-                leftBarButtonItem.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
-            }
-
-            if (rightBarButtonItems != null) {
-                for (ToolbarButtonItem item : rightBarButtonItems) {
-                    item.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
-                }
-            } else if (rightBarButtonItem != null) {
-                rightBarButtonItem.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
-            }
-        }
+        mStackDelegate.setNeedsToolbarAppearanceUpdate();
     }
 
     public void setTitle(@StringRes int resId) {
-        if (getContext() != null) {
-            setTitle(getContext().getText(resId));
-        }
+        mStackDelegate.setTitle(getContext(), resId);
     }
 
     public void setTitle(CharSequence title) {
-        AwesomeToolbar toolbar = getAwesomeToolbar();
-        if (toolbar != null) {
-            toolbar.setAwesomeTitle(title);
-        }
+        mStackDelegate.setTitle(title);
     }
 
-    private ToolbarButtonItem[] leftBarButtonItems;
-
     public void setLeftBarButtonItems(@Nullable ToolbarButtonItem[] barButtonItems) {
-        leftBarButtonItems = barButtonItems;
-        AwesomeToolbar toolbar = getAwesomeToolbar();
-        if (toolbar != null) {
-            toolbar.clearLeftButtons();
-            if (barButtonItems == null) {
-                if (!isNavigationRoot() && !shouldHideBackButton()) {
-                    toolbar.setNavigationIcon(style.getBackIcon());
-                    toolbar.setNavigationOnClickListener(view -> {
-                        NavigationFragment navigationFragment = getNavigationFragment();
-                        if (navigationFragment != null) {
-                            navigationFragment.dispatchBackPressed();
-                        }
-                    });
-                }
-                return;
-            }
-
-            for (ToolbarButtonItem barButtonItem : barButtonItems) {
-                toolbar.addLeftButton(barButtonItem);
-            }
-        }
+        mStackDelegate.setLeftBarButtonItems(barButtonItems);
     }
 
     @Nullable
     public ToolbarButtonItem[] getLeftBarButtonItems() {
-        return leftBarButtonItems;
+        return mStackDelegate.getLeftBarButtonItems();
     }
 
-    private ToolbarButtonItem[] rightBarButtonItems;
-
     public void setRightBarButtonItems(@Nullable ToolbarButtonItem[] barButtonItems) {
-        rightBarButtonItems = barButtonItems;
-        AwesomeToolbar toolbar = getAwesomeToolbar();
-        if (toolbar != null) {
-            toolbar.clearRightButtons();
-            if (barButtonItems == null) {
-                return;
-            }
-            for (ToolbarButtonItem barButtonItem : barButtonItems) {
-                toolbar.addRightButton(barButtonItem);
-            }
-        }
+        mStackDelegate.setRightBarButtonItems(barButtonItems);
     }
 
     @Nullable
     public ToolbarButtonItem[] getRightBarButtonItems() {
-        return rightBarButtonItems;
+        return mStackDelegate.getRightBarButtonItems();
     }
 
-    private ToolbarButtonItem leftBarButtonItem;
-
     public void setLeftBarButtonItem(@Nullable ToolbarButtonItem barButtonItem) {
-        leftBarButtonItem = barButtonItem;
-        AwesomeToolbar toolbar = getAwesomeToolbar();
-        if (toolbar != null) {
-            if (barButtonItem == null) {
-                toolbar.clearLeftButton();
-                if (!isNavigationRoot() && !shouldHideBackButton()) {
-                    toolbar.setNavigationIcon(style.getBackIcon());
-                    toolbar.setNavigationOnClickListener(view -> {
-                        NavigationFragment navigationFragment = getNavigationFragment();
-                        if (navigationFragment != null) {
-                            navigationFragment.dispatchBackPressed();
-                        }
-                    });
-                }
-                return;
-            }
-            toolbar.setLeftButton(barButtonItem);
-            barButtonItem.attach(toolbar.getLeftButton());
-        }
+        mStackDelegate.setLeftBarButtonItem(barButtonItem);
     }
 
     @Nullable
     public ToolbarButtonItem getLeftBarButtonItem() {
-        return leftBarButtonItem;
+        return mStackDelegate.getLeftBarButtonItem();
     }
 
-    private ToolbarButtonItem rightBarButtonItem;
-
     public void setRightBarButtonItem(@Nullable ToolbarButtonItem barButtonItem) {
-        rightBarButtonItem = barButtonItem;
-        AwesomeToolbar toolbar = getAwesomeToolbar();
-        if (toolbar != null) {
-            if (barButtonItem == null) {
-                toolbar.clearRightButton();
-                return;
-            }
-            toolbar.setRightButton(barButtonItem);
-            barButtonItem.attach(toolbar.getRightButton());
-        }
+        mStackDelegate.setRightBarButtonItem(barButtonItem);
     }
 
     @Nullable
     public ToolbarButtonItem getRightBarButtonItem() {
-        return rightBarButtonItem;
+        return mStackDelegate.getRightBarButtonItem();
     }
 
     // ------ TabBarFragment -------

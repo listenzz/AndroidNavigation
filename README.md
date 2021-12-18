@@ -107,11 +107,11 @@ public class MainActivity extends AwesomeActivity {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
             TestFragment testFragment = new TestFragment();
-            NavigationFragment navigationFragment = new NavigationFragment();
+            NavigationFragment stackFragment = new NavigationFragment();
             // 把 TestFragment 设置为 NavigationFragment 的根
-            navigationFragment.setRootFragment(testFragment);
+            stackFragment.setRootFragment(testFragment);
             // 把 NavigationFragment 设置为 Activity 的根
-            setActivityRootFragment(navigationFragment);
+            setActivityRootFragment(stackFragment);
         }
     }
 }
@@ -332,10 +332,10 @@ AwesomeActivity 和 AwesomeFragment 提供了两个基础的导航功能 present
 
   ```java
   //AFragment.java
-  NavigationFragment navigationFragment = new NavigationFragment();
+  NavigationFragment stackFragment = new NavigationFragment();
   AlbumListFragment albumListFragment = new AlbumListFragment();
-  navigationFragment.setRootFragment(albumListFragment);
-  presentFragment(navigationFragment, 1)
+  stackFragment.setRootFragment(albumListFragment);
+  presentFragment(stackFragment, 1)
   ```
 
   相册列表页面 push 到某个相册
@@ -449,11 +449,11 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
   现在想返回到 B 页面
 
   ```java
-  NavigationFragment navigationFragment = getNavigationFragment();
-  if (navigationFragment != null) {
+  NavigationFragment stackFragment = getNavigationFragment();
+  if (stackFragment != null) {
       AwesomeFragment target = FragmentHelper.findAwesomeFragment(requireFragmentManager(), BFragment.class);
       if (target != null) {
-          navigationFragment.popToFragment(target);
+          stackFragment.popToFragment(target);
       }
   }
   ```
@@ -486,10 +486,10 @@ NavigationFragment 是个容器，以栈的方式管理子 fragment，支持 pus
   现在想用 E 页面替换 B C D 三个页面
 
   ```java
-  NavigationFragment navigationFragment = getNavigationFragment();
-  if (navigationFragment != null) {
+  NavigationFragment stackFragment = getNavigationFragment();
+  if (stackFragment != null) {
     AwesomeFragment from = FragmentHelper.findAwesomeFragment(requireFragmentManager(), BFragment.class);
-    navigationFragment.redirectToFragment(new EFragment(), from, true);
+    stackFragment.redirectToFragment(new EFragment(), from, true);
   }
   ```
 

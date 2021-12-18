@@ -24,7 +24,7 @@ public class CoordinatorFragment extends BaseFragment {
     AwesomeToolbar toolbar;
 
     @Override
-    protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
+    protected AwesomeToolbar onCreateToolbar(View parent) {
         return toolbar;
     }
 

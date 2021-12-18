@@ -53,7 +53,7 @@ public class PageFragment extends BaseFragment {
         recyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener((position, view1) -> {
-            requireNavigationFragment().pushFragment(new TestNavigationFragment());
+            requireStackFragment().pushFragment(new TestNavigationFragment());
         });
 
         dataAsyncTask = new DataAsyncTask();

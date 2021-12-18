@@ -19,7 +19,7 @@ import java.util.List;
  * Created by Listen on 2018/1/11.
  */
 
-public class NavigationFragment extends AwesomeFragment implements SwipeBackLayout.SwipeListener {
+public class StackFragment extends AwesomeFragment implements SwipeBackLayout.SwipeListener {
 
     private SwipeBackLayout swipeBackLayout;
 
@@ -27,11 +27,11 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root;
-        if (style.isSwipeBackEnabled()) {
+        if (mStyle.isSwipeBackEnabled()) {
             root = inflater.inflate(R.layout.nav_fragment_navigation_swipe_back, container, false);
             swipeBackLayout = root.findViewById(R.id.navigation_content);
             swipeBackLayout.setSwipeListener(this);
-            int scrimAlpha = style.getScrimAlpha();
+            int scrimAlpha = mStyle.getScrimAlpha();
             swipeBackLayout.setScrimColor(scrimAlpha << 24);
         } else {
             root = inflater.inflate(R.layout.nav_fragment_navigation, container, false);
@@ -40,8 +40,8 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    protected void performCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.performCreateView(inflater, container, savedInstanceState);
         if (savedInstanceState == null) {
             if (rootFragment == null) {
                 throw new IllegalArgumentException("Must specify rootFragment by `setRootFragment`.");
@@ -320,12 +320,12 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
 
     @Nullable
     @Override
-    public NavigationFragment getNavigationFragment() {
-        NavigationFragment navF = super.getNavigationFragment();
+    public StackFragment getStackFragment() {
+        StackFragment navF = super.getStackFragment();
         if (navF != null) {
             AwesomeFragment parent = navF.getParentAwesomeFragment();
             while (parent != null) {
-                if (parent instanceof NavigationFragment && parent.getWindow() == navF.getWindow()) {
+                if (parent instanceof StackFragment && parent.getWindow() == navF.getWindow()) {
                     throw new IllegalStateException("should not nest NavigationFragment in the same window.");
                 }
                 parent = parent.getParentAwesomeFragment();
@@ -355,7 +355,7 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
                 previous.getView().setVisibility(View.VISIBLE);
             }
 
-            if (previous != null && previous == getRootFragment() && previous.shouldHideTabBarWhenPushed()) {
+            if (previous != null && previous == getRootFragment() && previous.isAdded() && shouldHideTabBarWhenPushed()) {
                 TabBarFragment tabBarFragment = getTabBarFragment();
                 if (tabBarFragment != null && tabBarFragment.getTabBar() != null && tabBarFragment.getView() != null) {
                     View tabBar = tabBarFragment.getTabBar();
@@ -388,13 +388,22 @@ public class NavigationFragment extends AwesomeFragment implements SwipeBackLayo
         }
     }
 
+
+    public boolean shouldHideTabBarWhenPushed() {
+        AwesomeFragment root = getRootFragment();
+        if (root != null && root.isAdded()) {
+            return root.hideTabBarWhenPushed();
+        }
+        return true;
+    }
+
     @Override
     public boolean shouldSwipeBack() {
         AwesomeFragment top = getTopFragment();
         if (top == null) {
             return false;
         }
-        return style.isSwipeBackEnabled()
+        return mStyle.isSwipeBackEnabled()
                 && FragmentHelper.getBackStackEntryCount(this) > 1
                 && top.isBackInteractive()
                 && top.isSwipeBackEnabled();

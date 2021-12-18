@@ -44,7 +44,7 @@ public class DefaultTabBarProvider implements TabBarProvider {
     }
 
     private void initialise(List<TabBarItem> tabBarItems) {
-        Style style = tabBarFragment.style;
+        Style style = tabBarFragment.mStyle;
         tabBar.setBarBackgroundColor(style.getTabBarBackgroundColor());
         tabBar.setBadgeColor(style.getTabBarBadgeColor());
 

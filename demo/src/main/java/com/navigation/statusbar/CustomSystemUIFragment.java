@@ -33,7 +33,7 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
     TextView textView;
 
     @Override
-    protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
+    protected AwesomeToolbar onCreateToolbar(View parent) {
         return null; // 自定义 Toolbar
     }
 
@@ -68,8 +68,8 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        toolbar.setNavigationIcon(style.getBackIcon());
-        toolbar.setNavigationOnClickListener(v -> requireNavigationFragment().popFragment());
+        toolbar.setNavigationIcon(mStyle.getBackIcon());
+        toolbar.setNavigationOnClickListener(v -> requireStackFragment().popFragment());
     }
 
     @Override
@@ -84,12 +84,12 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
         switch (buttonView.getId()) {
             case R.id.tinting:
                 int statusBarColor = isChecked ? Color.MAGENTA : Color.TRANSPARENT;
-                style.setStatusBarColor(statusBarColor);
+                mStyle.setStatusBarColor(statusBarColor);
                 setNeedsStatusBarAppearanceUpdate();
                 break;
             case R.id.dark: // 深色状态栏 6.0 以上生效
                 BarStyle barStyle = isChecked ? BarStyle.DarkContent : BarStyle.LightContent;
-                style.setStatusBarStyle(barStyle);
+                mStyle.setStatusBarStyle(barStyle);
                 setNeedsStatusBarAppearanceUpdate();
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -97,7 +97,7 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
                 }
                 break;
             case R.id.hidden:
-                style.setStatusBarHidden(isChecked);
+                mStyle.setStatusBarHidden(isChecked);
                 setNeedsStatusBarAppearanceUpdate();
                 break;
 
@@ -115,7 +115,7 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
                 break;
 
             case R.id.display_cutout:
-                style.setDisplayCutoutWhenLandscape(isChecked);
+                mStyle.setDisplayCutoutWhenLandscape(isChecked);
                 setNeedsLayoutInDisplayCutoutModeUpdate();
 
                 textView.setText("旋转屏幕看看");

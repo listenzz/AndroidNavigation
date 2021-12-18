@@ -39,7 +39,7 @@ public class NoToolbarFragment extends TestStatusBarFragment {
     }
 
     @Override
-    protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
+    protected AwesomeToolbar onCreateToolbar(View parent) {
         return null;
     }
 }

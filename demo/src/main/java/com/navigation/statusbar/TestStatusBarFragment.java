@@ -13,7 +13,7 @@ import com.navigation.BaseFragment;
 import com.navigation.R;
 import com.navigation.androidx.BarStyle;
 import com.navigation.androidx.DrawerFragment;
-import com.navigation.androidx.NavigationFragment;
+import com.navigation.androidx.StackFragment;
 import com.navigation.androidx.Style;
 import com.navigation.androidx.ToolbarButtonItem;
 import com.navigation.toolbar.NoToolbarFragment;
@@ -49,23 +49,23 @@ public class TestStatusBarFragment extends BaseFragment {
         tagView.setText(getDebugTag());
 
         root.findViewById(R.id.pop_to_root).setOnClickListener(v -> {
-            NavigationFragment navigationFragment = getNavigationFragment();
-            if (navigationFragment != null) {
-                navigationFragment.popToRootFragment();
+            StackFragment stackFragment = getStackFragment();
+            if (stackFragment != null) {
+                stackFragment.popToRootFragment();
             }
         });
 
-        root.findViewById(R.id.status_bar_style).setOnClickListener(v -> requireNavigationFragment().pushFragment(new StatusBarStyleFragment()));
+        root.findViewById(R.id.status_bar_style).setOnClickListener(v -> requireStackFragment().pushFragment(new StatusBarStyleFragment()));
 
-        root.findViewById(R.id.status_bar_hidden).setOnClickListener(v -> requireNavigationFragment().pushFragment(new StatusBarHiddenFragment()));
+        root.findViewById(R.id.status_bar_hidden).setOnClickListener(v -> requireStackFragment().pushFragment(new StatusBarHiddenFragment()));
         
-        root.findViewById(R.id.status_bar_color).setOnClickListener(v -> requireNavigationFragment().pushFragment(new StatusBarColorFragment()));
+        root.findViewById(R.id.status_bar_color).setOnClickListener(v -> requireStackFragment().pushFragment(new StatusBarColorFragment()));
 
-        root.findViewById(R.id.no_toolbar).setOnClickListener(v -> requireNavigationFragment().pushFragment(new NoToolbarFragment()));
+        root.findViewById(R.id.no_toolbar).setOnClickListener(v -> requireStackFragment().pushFragment(new NoToolbarFragment()));
 
-        root.findViewById(R.id.custom).setOnClickListener(v -> requireNavigationFragment().pushFragment(new CustomSystemUIFragment()));
+        root.findViewById(R.id.custom).setOnClickListener(v -> requireStackFragment().pushFragment(new CustomSystemUIFragment()));
 
-        if (isNavigationRoot()) {
+        if (isStackRoot()) {
             root.findViewById(R.id.pop_to_root).setEnabled(false);
         }
 
@@ -76,7 +76,7 @@ public class TestStatusBarFragment extends BaseFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setTitle("状态栏");
-        if (isNavigationRoot()) {
+        if (isStackRoot()) {
             String iconUri = "font://FontAwesome/" + fromCharCode(61641) + "/24";
             ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
             builder.icon(iconUri).listener(view -> {

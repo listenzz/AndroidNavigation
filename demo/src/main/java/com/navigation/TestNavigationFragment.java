@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 
 import com.navigation.androidx.BarStyle;
 import com.navigation.androidx.DrawerFragment;
-import com.navigation.androidx.NavigationFragment;
+import com.navigation.androidx.StackFragment;
 import com.navigation.androidx.Style;
 import com.navigation.androidx.TabBar;
 import com.navigation.androidx.TabBarFragment;
@@ -61,9 +61,9 @@ public class TestNavigationFragment extends BaseFragment {
         tagView.setText(getDebugTag());
 
         root.findViewById(R.id.present).setOnClickListener(v -> {
-            NavigationFragment navigationFragment = new NavigationFragment();
-            navigationFragment.setRootFragment(new TestNavigationFragment());
-            presentFragment(navigationFragment, REQUEST_CODE);
+            StackFragment stackFragment = new StackFragment();
+            stackFragment.setRootFragment(new TestNavigationFragment());
+            presentFragment(stackFragment, REQUEST_CODE);
         });
 
         root.findViewById(R.id.dismiss).setOnClickListener(v -> {
@@ -74,36 +74,36 @@ public class TestNavigationFragment extends BaseFragment {
         });
 
         root.findViewById(R.id.push).setOnClickListener(v -> {
-            NavigationFragment navigationFragment = getNavigationFragment();
-            if (navigationFragment != null) {
-                navigationFragment.pushFragment(new TestNavigationFragment());
+            StackFragment stackFragment = getStackFragment();
+            if (stackFragment != null) {
+                stackFragment.pushFragment(new TestNavigationFragment());
             }
         });
 
         root.findViewById(R.id.pop).setOnClickListener(v -> {
-            NavigationFragment navigationFragment = getNavigationFragment();
-            if (navigationFragment != null) {
+            StackFragment stackFragment = getStackFragment();
+            if (stackFragment != null) {
                 Bundle result = new Bundle();
                 result.putString("text", resultEditText.getText().toString());
                 setResult(Activity.RESULT_OK, result);
-                navigationFragment.popFragment();
+                stackFragment.popFragment();
             }
         });
 
         root.findViewById(R.id.pop_to_root).setOnClickListener(v -> {
-            NavigationFragment navigationFragment = getNavigationFragment();
-            if (navigationFragment != null) {
+            StackFragment stackFragment = getStackFragment();
+            if (stackFragment != null) {
                 Bundle result = new Bundle();
                 result.putString("text", resultEditText.getText().toString());
                 setResult(Activity.RESULT_OK, result);
-                navigationFragment.popToRootFragment();
+                stackFragment.popToRootFragment();
             }
         });
 
         root.findViewById(R.id.redirect).setOnClickListener(v -> {
-            NavigationFragment navigationFragment = getNavigationFragment();
-            if (navigationFragment != null) {
-                navigationFragment.redirectToFragment(new TestNavigationFragment());
+            StackFragment stackFragment = getStackFragment();
+            if (stackFragment != null) {
+                stackFragment.redirectToFragment(new TestNavigationFragment());
             }
         });
 
@@ -131,7 +131,7 @@ public class TestNavigationFragment extends BaseFragment {
             }
         });
 
-        if (isNavigationRoot()) {
+        if (isStackRoot()) {
             root.findViewById(R.id.pop).setEnabled(false);
             root.findViewById(R.id.pop_to_root).setEnabled(false);
         }
@@ -152,7 +152,7 @@ public class TestNavigationFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
         setTitle("导航");
 
-        if (isNavigationRoot()) {
+        if (isStackRoot()) {
             if (getPresentingFragment() == null) {
                 String iconUri = "font://FontAwesome/" + fromCharCode(61641) + "/24";
                 ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();

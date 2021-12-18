@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.navigation.androidx.AwesomeFragment;
 import com.navigation.androidx.DrawerFragment;
-import com.navigation.androidx.NavigationFragment;
+import com.navigation.androidx.StackFragment;
 import com.navigation.androidx.TabBarFragment;
 import com.navigation.dialog.DialogEntryFragment;
 import com.navigation.sharedelement.GridFragment;
@@ -36,42 +36,42 @@ public class MenuFragment extends AwesomeFragment {
         tagView.setText(getDebugTag());
 
         root.findViewById(R.id.toolbar_color_transition).setOnClickListener(v -> {
-            requireNavigationFragment().pushFragment(new ToolbarColorTransitionFragment());
+            requireStackFragment().pushFragment(new ToolbarColorTransitionFragment());
             requireDrawerFragment().closeMenu();
         });
 
         root.findViewById(R.id.coordinator).setOnClickListener(v -> {
-            requireNavigationFragment().pushFragment(new CoordinatorFragment());
+            requireStackFragment().pushFragment(new CoordinatorFragment());
             requireDrawerFragment().closeMenu();
         });
 
         root.findViewById(R.id.search).setOnClickListener(v -> {
-            requireNavigationFragment().pushFragment(new SearchFragment());
+            requireStackFragment().pushFragment(new SearchFragment());
             requireDrawerFragment().closeMenu();
         });
 
         root.findViewById(R.id.view_pager).setOnClickListener(v -> {
-            requireNavigationFragment().pushFragment(new ViewPagerFragment());
+            requireStackFragment().pushFragment(new ViewPagerFragment());
             requireDrawerFragment().closeMenu();
         });
 
         root.findViewById(R.id.shared_element).setOnClickListener(v -> {
-            requireNavigationFragment().pushFragment(new GridFragment());
+            requireStackFragment().pushFragment(new GridFragment());
             requireDrawerFragment().closeMenu();
         });
 
         root.findViewById(R.id.web).setOnClickListener(v -> {
-            requireNavigationFragment().pushFragment(new WebFragment());
+            requireStackFragment().pushFragment(new WebFragment());
             requireDrawerFragment().closeMenu();
         });
 
         root.findViewById(R.id.dialog).setOnClickListener(v -> {
-            requireNavigationFragment().pushFragment(new DialogEntryFragment());
+            requireStackFragment().pushFragment(new DialogEntryFragment());
             requireDrawerFragment().closeMenu();
         });
 
         root.findViewById(R.id.view_binding).setOnClickListener(v -> {
-            requireNavigationFragment().pushFragment(new ViewBindingFragment());
+            requireStackFragment().pushFragment(new ViewBindingFragment());
             requireDrawerFragment().closeMenu();
         });
 
@@ -86,15 +86,15 @@ public class MenuFragment extends AwesomeFragment {
     }
 
     @Override
-    public NavigationFragment getNavigationFragment() {
+    public StackFragment getStackFragment() {
         DrawerFragment drawerFragment = getDrawerFragment();
         if (drawerFragment != null) {
             TabBarFragment tabBarFragment = drawerFragment.getContentFragment().getTabBarFragment();
             if (tabBarFragment != null) {
-                return tabBarFragment.getSelectedFragment().getNavigationFragment();
+                return tabBarFragment.getSelectedFragment().getStackFragment();
             }
-            return drawerFragment.getContentFragment().getNavigationFragment();
+            return drawerFragment.getContentFragment().getStackFragment();
         }
-        return super.getNavigationFragment();
+        return super.getStackFragment();
     }
 }

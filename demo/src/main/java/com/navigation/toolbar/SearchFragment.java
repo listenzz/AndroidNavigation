@@ -13,7 +13,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.navigation.BaseFragment;
 import com.navigation.R;
-import com.navigation.androidx.AwesomeFragment;
 import com.navigation.androidx.ToolbarButtonItem;
 
 public class SearchFragment extends BaseFragment {
@@ -35,8 +34,8 @@ public class SearchFragment extends BaseFragment {
         ToolbarButtonItem toolbarButtonItem = new ToolbarButtonItem.Builder().title("搜索").build();
         setRightBarButtonItem(toolbarButtonItem);
 
-        View searchBar = LayoutInflater.from(requireContext()).inflate(R.layout.search_bar, getAwesomeToolbar(), false);
-        getAwesomeToolbar().addView(searchBar, new Toolbar.LayoutParams(-1, -1, Gravity.CENTER));
+        View searchBar = LayoutInflater.from(requireContext()).inflate(R.layout.search_bar, getToolbar(), false);
+        getToolbar().addView(searchBar, new Toolbar.LayoutParams(-1, -1, Gravity.CENTER));
 
         searchInput = searchBar.findViewById(R.id.search_input);
         clearButton = searchBar.findViewById(R.id.search_clear);

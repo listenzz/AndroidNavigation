@@ -5,6 +5,7 @@ import static com.navigation.androidx.AwesomeFragment.ARGS_SHOW_AS_DIALOG;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -33,6 +34,14 @@ public class DialogDelegate {
         mFragment = fragment;
     }
 
+    private View getView() {
+        return mFragment.getView();
+    }
+
+    private Style getStyle() {
+        return mFragment.mStyle;
+    }
+
     LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
         LayoutInflater layoutInflater = mFragment.requireActivity().getLayoutInflater();
         Window window = mFragment.getWindow();
@@ -47,6 +56,18 @@ public class DialogDelegate {
         }
 
         return layoutInflater;
+    }
+
+    int preferredNavigationBarColor() {
+        if (shouldAnimateDialogTransition()) {
+            if (getStyle().getNavigationBarColor() != Style.INVALID_COLOR) {
+                return getStyle().getNavigationBarColor();
+            } else {
+                return mFragment.requireActivity().getWindow().getNavigationBarColor();
+            }
+        } else {
+            return Color.TRANSPARENT;
+        }
     }
 
     void setupDialog() {
@@ -113,7 +134,7 @@ public class DialogDelegate {
             return;
         }
 
-        AppUtils.hideSoftInput(mFragment.getView());
+        AppUtils.hideSoftInput(getView());
 
         if (!fromAnimation && animateOutIfNeeded(completion)) {
             return;
@@ -154,7 +175,7 @@ public class DialogDelegate {
     }
 
     private void animateInIfNeeded() {
-        View root = mFragment.getView();
+        View root = getView();
         if (!(root instanceof DialogFrameLayout)) {
             return;
         }
@@ -167,7 +188,7 @@ public class DialogDelegate {
     }
 
     private boolean animateOutIfNeeded(@Nullable Runnable completion) {
-        View root = mFragment.getView();
+        View root = getView();
         if (!(root instanceof DialogFrameLayout)) {
             return false;
         }
@@ -182,8 +203,8 @@ public class DialogDelegate {
         return false;
     }
 
-    boolean shouldAnimateDialogTransition() {
-        View root = mFragment.getView();
+    private boolean shouldAnimateDialogTransition() {
+        View root = getView();
         if (!(root instanceof DialogFrameLayout)) {
             return false;
         }
