@@ -17,32 +17,32 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
 
     private static final long INTERVAL = 250;
 
-    private final Queue<Runnable> tasks = new LinkedList<>();
+    private final Queue<Runnable> mTasks = new LinkedList<>();
 
-    private final LifecycleOwner lifecycleOwner;
-    private final Handler handler;
+    private final LifecycleOwner mLifecycleOwner;
+    private final Handler mHandler;
 
     public DeferredLifecycleDelegate(LifecycleOwner lifecycleOwner, Handler handler) {
-        this.lifecycleOwner = lifecycleOwner;
-        this.handler = handler;
+        mLifecycleOwner = lifecycleOwner;
+        mHandler = handler;
         lifecycleOwner.getLifecycle().addObserver(this);
     }
 
     public void scheduleTaskAtStarted(Runnable runnable) {
         if (getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
             assertMainThread();
-            tasks.add(runnable);
+            mTasks.add(runnable);
             considerExecute();
         }
     }
 
-    private boolean executing;
+    private boolean mExecuting;
 
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onStateChange() {
         if (getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
-            handler.removeCallbacks(executeTask);
-            tasks.clear();
+            mHandler.removeCallbacks(executeTask);
+            mTasks.clear();
             getLifecycle().removeObserver(this);
         } else {
             considerExecute();
@@ -50,14 +50,14 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
     }
 
     void considerExecute() {
-        if (isAtLeastStarted() && !executing) {
-            executing = true;
-            Runnable runnable = tasks.poll();
+        if (isAtLeastStarted() && !mExecuting) {
+            mExecuting = true;
+            Runnable runnable = mTasks.poll();
             if (runnable != null) {
                 runnable.run();
-                handler.postDelayed(executeTask, INTERVAL);
+                mHandler.postDelayed(executeTask, INTERVAL);
             } else {
-                executing = false;
+                mExecuting = false;
             }
         }
     }
@@ -65,7 +65,7 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
     private final Runnable executeTask = new Runnable() {
         @Override
         public void run() {
-            executing = false;
+            mExecuting = false;
             considerExecute();
         }
     };
@@ -75,7 +75,7 @@ public class DeferredLifecycleDelegate implements LifecycleObserver {
     }
 
     private Lifecycle getLifecycle() {
-        return lifecycleOwner.getLifecycle();
+        return mLifecycleOwner.getLifecycle();
     }
 
     private void assertMainThread() {

@@ -61,15 +61,15 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState == null) {
-            if (contentFragment == null) {
+            if (mContentFragment == null) {
                 throw new IllegalArgumentException("必须调用 `setContentFragment` 设置 contentFragment");
             }
-            if (menuFragment == null) {
+            if (mMenuFragment == null) {
                 throw new IllegalArgumentException("必须调用 `setMenuFragment` 设置 menuFragment");
             }
 
-            FragmentHelper.addFragment(getChildFragmentManager(), R.id.drawer_content, contentFragment, Lifecycle.State.RESUMED);
-            FragmentHelper.addFragment(getChildFragmentManager(), R.id.drawer_menu, menuFragment, Lifecycle.State.STARTED, false);
+            FragmentHelper.addFragment(getChildFragmentManager(), R.id.drawer_content, mContentFragment, Lifecycle.State.RESUMED);
+            FragmentHelper.addFragment(getChildFragmentManager(), R.id.drawer_menu, mMenuFragment, Lifecycle.State.STARTED, false);
         }
     }
 
@@ -212,13 +212,13 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         // Log.i(TAG, getDebugTag() + " drawer state:" + newState);
     }
 
-    private AwesomeFragment contentFragment;
+    private AwesomeFragment mContentFragment;
 
     public void setContentFragment(final AwesomeFragment fragment) {
         if (isAdded()) {
             throw new IllegalStateException("DrawerFragment 已处于 added 状态，不可以再设置 contentFragment");
         }
-        contentFragment = fragment;
+        mContentFragment = fragment;
     }
 
     @Nullable
@@ -229,13 +229,13 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_content);
     }
 
-    private AwesomeFragment menuFragment;
+    private AwesomeFragment mMenuFragment;
 
     public void setMenuFragment(AwesomeFragment fragment) {
         if (isAdded()) {
             throw new IllegalStateException("DrawerFragment 已处于 added 状态，不可以再设置 menuFragment");
         }
-        menuFragment = fragment;
+        mMenuFragment = fragment;
     }
 
     @Nullable

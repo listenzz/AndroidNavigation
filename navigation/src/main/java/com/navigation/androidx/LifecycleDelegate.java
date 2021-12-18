@@ -13,12 +13,12 @@ import androidx.lifecycle.LifecycleOwner;
 
 public class LifecycleDelegate implements LifecycleObserver {
 
-    private final ImmediateLifecycleDelegate immediateLifecycleDelegate;
-    private final DeferredLifecycleDelegate deferredLifecycleDelegate;
+    private final ImmediateLifecycleDelegate mImmediateLifecycleDelegate;
+    private final DeferredLifecycleDelegate mDeferredLifecycleDelegate;
 
     public LifecycleDelegate(LifecycleOwner lifecycleOwner) {
-        immediateLifecycleDelegate = new ImmediateLifecycleDelegate(lifecycleOwner);
-        deferredLifecycleDelegate = new DeferredLifecycleDelegate(lifecycleOwner, new Handler(Looper.getMainLooper()));
+        mImmediateLifecycleDelegate = new ImmediateLifecycleDelegate(lifecycleOwner);
+        mDeferredLifecycleDelegate = new DeferredLifecycleDelegate(lifecycleOwner, new Handler(Looper.getMainLooper()));
     }
 
     public void scheduleTaskAtStarted(Runnable runnable) {
@@ -27,9 +27,9 @@ public class LifecycleDelegate implements LifecycleObserver {
 
     public void scheduleTaskAtStarted(Runnable runnable, boolean deferred) {
         if (deferred) {
-            deferredLifecycleDelegate.scheduleTaskAtStarted(runnable);
+            mDeferredLifecycleDelegate.scheduleTaskAtStarted(runnable);
         } else {
-            immediateLifecycleDelegate.scheduleTaskAtStarted(runnable);
+            mImmediateLifecycleDelegate.scheduleTaskAtStarted(runnable);
         }
     }
 

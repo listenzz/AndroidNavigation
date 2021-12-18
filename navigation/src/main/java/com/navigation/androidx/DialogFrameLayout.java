@@ -17,12 +17,12 @@ public class DialogFrameLayout extends FrameLayout {
         void onTouchOutside();
     }
 
-    GestureDetector gestureDetector = null;
+    GestureDetector mGestureDetector = null;
 
-    OnTouchOutsideListener onTouchOutsideListener;
+    OnTouchOutsideListener mOnTouchOutsideListener;
 
     public void setOnTouchOutsideListener(OnTouchOutsideListener onTouchOutsideListener) {
-        this.onTouchOutsideListener = onTouchOutsideListener;
+        mOnTouchOutsideListener = onTouchOutsideListener;
     }
 
     public DialogFrameLayout(@NonNull Context context) {
@@ -31,7 +31,7 @@ public class DialogFrameLayout extends FrameLayout {
     }
 
     private void commonInit(@NonNull Context context) {
-        gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+        mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDown(MotionEvent e) {
                 return true;
@@ -50,8 +50,8 @@ public class DialogFrameLayout extends FrameLayout {
                         return false;
                     }
                 }
-                if (onTouchOutsideListener != null) {
-                    onTouchOutsideListener.onTouchOutside();
+                if (mOnTouchOutsideListener != null) {
+                    mOnTouchOutsideListener.onTouchOutside();
                 }
                 return true;
             }
@@ -60,6 +60,6 @@ public class DialogFrameLayout extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return gestureDetector.onTouchEvent(event);
+        return mGestureDetector.onTouchEvent(event);
     }
 }

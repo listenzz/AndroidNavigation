@@ -40,27 +40,27 @@ public class DialogEntryFragment extends BaseFragment {
 
         root.findViewById(R.id.alert).setOnClickListener(view -> {
             AlertDialogFragment alert = new AlertDialogFragment();
-            showDialog(alert, 0);
+            showAsDialog(alert, 0);
         });
 
         root.findViewById(R.id.dialog).setOnClickListener(v -> {
             CustomAnimationDialogFragment dialog = new CustomAnimationDialogFragment();
-            showDialog(dialog, 0);
+            showAsDialog(dialog, 0);
         });
 
         root.findViewById(R.id.datetime_picker).setOnClickListener(v -> {
             DatetimePickerDialogFragment dialog = DatetimePickerDialogFragment.newInstance(null);
-            showDialog(dialog, REQUEST_CODE_DATETIME);
+            showAsDialog(dialog, REQUEST_CODE_DATETIME);
         });
 
         root.findViewById(R.id.area_picker).setOnClickListener(v -> {
             AreaPickerDialogFragment dialog = new AreaPickerDialogFragment();
-            showDialog(dialog, REQUEST_CODE_AREA);
+            showAsDialog(dialog, REQUEST_CODE_AREA);
         });
 
         root.findViewById(R.id.data_binding).setOnClickListener(view -> {
             DataBindingDialogFragment fragment = new DataBindingDialogFragment();
-            showDialog(fragment, 0);
+            showAsDialog(fragment, 0);
         });
 
         root.findViewById(R.id.nested_fragment).setOnClickListener(view -> {
@@ -69,7 +69,7 @@ public class DialogEntryFragment extends BaseFragment {
             NestedFragmentDialogFragment dialog = new NestedFragmentDialogFragment();
             dialog.setContentFragment(stackFragment);
             // dialog.setCancelable(false);
-            showDialog(dialog, 0);
+            showAsDialog(dialog, 0);
         });
 
 

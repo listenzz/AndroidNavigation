@@ -24,7 +24,7 @@ public class AreaPickerDialogFragment extends AwesomeFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_area_picker, container, false);
         root.findViewById(R.id.iv_cancel).setOnClickListener(v -> {
-            hideDialog();
+            hideAsDialog();
         });
         root.findViewById(R.id.tv_finish).setOnClickListener(v -> {
             int[] items = wheelOptions.getCurrentItems();
@@ -34,7 +34,7 @@ public class AreaPickerDialogFragment extends AwesomeFragment {
             Bundle data = new Bundle();
             data.putString(KEY_SELECTED_AREA, text);
             setResult(Activity.RESULT_OK, data);
-            hideDialog();
+            hideAsDialog();
         });
 
         wheelOptions = new WheelOptions<>(root, true);

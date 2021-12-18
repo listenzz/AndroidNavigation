@@ -12,30 +12,30 @@ import java.util.Queue;
 
 public class ImmediateLifecycleDelegate implements LifecycleObserver {
 
-    private final Queue<Runnable> tasks = new LinkedList<>();
+    private final Queue<Runnable> mTasks = new LinkedList<>();
 
-    private final LifecycleOwner lifecycleOwner;
+    private final LifecycleOwner mLifecycleOwner;
 
 
     public ImmediateLifecycleDelegate(LifecycleOwner lifecycleOwner) {
-        this.lifecycleOwner = lifecycleOwner;
+        mLifecycleOwner = lifecycleOwner;
         lifecycleOwner.getLifecycle().addObserver(this);
     }
 
     public void scheduleTaskAtStarted(Runnable runnable) {
         if (getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
             assertMainThread();
-            tasks.add(runnable);
+            mTasks.add(runnable);
             considerExecute();
         }
     }
 
-    private boolean executing;
+    private boolean mExecuting;
 
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onStateChange() {
         if (getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
-            tasks.clear();
+            mTasks.clear();
             getLifecycle().removeObserver(this);
         } else {
             considerExecute();
@@ -43,14 +43,14 @@ public class ImmediateLifecycleDelegate implements LifecycleObserver {
     }
 
     void considerExecute() {
-        if (isAtLeastStarted() && !executing) {
-            executing = true;
-            Runnable runnable = tasks.poll();
+        if (isAtLeastStarted() && !mExecuting) {
+            mExecuting = true;
+            Runnable runnable = mTasks.poll();
             while (runnable != null) {
                 runnable.run();
-                runnable = tasks.poll();
+                runnable = mTasks.poll();
             }
-            executing = false;
+            mExecuting = false;
         }
     }
 
@@ -59,7 +59,7 @@ public class ImmediateLifecycleDelegate implements LifecycleObserver {
     }
 
     private Lifecycle getLifecycle() {
-        return lifecycleOwner.getLifecycle();
+        return mLifecycleOwner.getLifecycle();
     }
 
     private void assertMainThread() {

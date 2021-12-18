@@ -8,27 +8,25 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 
-public class NavigationLayoutInflater extends LayoutInflater {
+public class StackLayoutInflater extends LayoutInflater {
 
-    public static final String TAG = "Navigation";
+    private final LayoutInflater mLayoutInflater;
 
-    private final LayoutInflater layoutInflater;
-
-    public NavigationLayoutInflater(Context context, LayoutInflater layoutInflater) {
+    public StackLayoutInflater(Context context, LayoutInflater layoutInflater) {
         super(context);
-        this.layoutInflater = layoutInflater;
+        mLayoutInflater = layoutInflater;
     }
 
     @Override
     public LayoutInflater cloneInContext(Context context) {
-        return layoutInflater.cloneInContext(context);
+        return mLayoutInflater.cloneInContext(context);
     }
 
     @Override
     public View inflate(int resource, @Nullable ViewGroup root, boolean attachToRoot) {
         FrameLayout frameLayout = new FrameLayout(getContext());
         frameLayout.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
-        layoutInflater.inflate(resource, frameLayout, true);
+        mLayoutInflater.inflate(resource, frameLayout, true);
         return frameLayout;
     }
 }

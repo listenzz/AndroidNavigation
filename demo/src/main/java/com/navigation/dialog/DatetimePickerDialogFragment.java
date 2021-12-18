@@ -39,12 +39,12 @@ public class DatetimePickerDialogFragment extends AwesomeFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_datetime_picker, container, false);
         wheelTime = new WheelTime(root, new boolean[]{true, true, true, false, false, false}, Gravity.CENTER, 18);
-        root.findViewById(R.id.iv_cancel).setOnClickListener(v -> hideDialog());
+        root.findViewById(R.id.iv_cancel).setOnClickListener(v -> hideAsDialog());
         root.findViewById(R.id.tv_finish).setOnClickListener(v -> {
             Bundle data = new Bundle();
             data.putString(KEY_TIME, wheelTime.getTime().replace(" 0:0:0", ""));
             setResult(Activity.RESULT_OK, data);
-            hideDialog();
+            hideAsDialog();
         });
         return root;
     }

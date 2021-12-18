@@ -34,8 +34,8 @@ public class CustomAnimationDialogFragment extends AwesomeFragment {
         mContentView = root.findViewById(R.id.dialog_content);
         scheduleTaskAtStarted(this::animateScaleIn);
         root.findViewById(R.id.button).setOnClickListener(v -> {
-            showDialog(new AlertDialogFragment(), 1);
-            hideDialog();
+            showAsDialog(new AlertDialogFragment(), 1);
+            hideAsDialog();
         });
     }
 
@@ -44,7 +44,7 @@ public class CustomAnimationDialogFragment extends AwesomeFragment {
     private View mContentView;
 
     @Override
-    public void hideDialog() {
+    public void hideAsDialog() {
         if (mIsAnimating) {
             return;
         }
@@ -73,7 +73,7 @@ public class CustomAnimationDialogFragment extends AwesomeFragment {
             @Override
             public void onAnimationEnd(Animation animation) {
                 mIsAnimating = false;
-                mContentView.post(CustomAnimationDialogFragment.super::hideDialog);
+                mContentView.post(CustomAnimationDialogFragment.super::hideAsDialog);
             }
 
             @Override

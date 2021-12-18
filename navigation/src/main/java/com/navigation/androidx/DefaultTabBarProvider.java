@@ -13,22 +13,22 @@ import java.util.List;
  */
 public class DefaultTabBarProvider implements TabBarProvider {
 
-    private TabBar tabBar;
+    private TabBar mTabBar;
 
-    private TabBarFragment tabBarFragment;
+    private TabBarFragment mTabBarFragment;
 
     @Override
     public View onCreateTabBar(@NonNull List<TabBarItem> tabBarItems, @NonNull TabBarFragment tabBarFragment, @Nullable Bundle savedInstanceState) {
         TabBar tabBar = new TabBar(tabBarFragment.requireContext());
-        this.tabBarFragment = tabBarFragment;
-        this.tabBar = tabBar;
+        mTabBarFragment = tabBarFragment;
+        mTabBar = tabBar;
         initialise(tabBarItems);
         return tabBar;
     }
 
     @Override
     public void onDestroyTabBar() {
-        tabBar.setTabSelectedListener(null);
+        mTabBar.setTabSelectedListener(null);
     }
 
     @Override
@@ -38,28 +38,28 @@ public class DefaultTabBarProvider implements TabBarProvider {
 
     @Override
     public void setSelectedIndex(int index) {
-        if (tabBar != null) {
-            tabBar.selectTab(index, false);
+        if (mTabBar != null) {
+            mTabBar.selectTab(index, false);
         }
     }
 
     private void initialise(List<TabBarItem> tabBarItems) {
-        Style style = tabBarFragment.mStyle;
-        tabBar.setBarBackgroundColor(style.getTabBarBackgroundColor());
-        tabBar.setBadgeColor(style.getTabBarBadgeColor());
+        Style style = mTabBarFragment.mStyle;
+        mTabBar.setBarBackgroundColor(style.getTabBarBackgroundColor());
+        mTabBar.setBadgeColor(style.getTabBarBadgeColor());
 
         if (style.getTabBarItemColor() != null) {
-            tabBar.setSelectedItemColor(style.getTabBarItemColor());
+            mTabBar.setSelectedItemColor(style.getTabBarItemColor());
             if (style.getTabBarUnselectedItemColor() != null) {
-                tabBar.setUnselectedItemColor(style.getTabBarUnselectedItemColor());
+                mTabBar.setUnselectedItemColor(style.getTabBarUnselectedItemColor());
             }
         }
 
-        tabBar.setShadowDrawable(style.getTabBarShadow());
-        tabBar.setTabSelectedListener(new TabBar.OnTabSelectedListener() {
+        mTabBar.setShadowDrawable(style.getTabBarShadow());
+        mTabBar.setTabSelectedListener(new TabBar.OnTabSelectedListener() {
             @Override
             public void onTabSelected(int position) {
-                tabBarFragment.setSelectedIndex(position);
+                mTabBarFragment.setSelectedIndex(position);
             }
 
             @Override
@@ -69,16 +69,16 @@ public class DefaultTabBarProvider implements TabBarProvider {
 
             @Override
             public void onTabReselected(int position) {
-                tabBarFragment.setSelectedIndex(position);
+                mTabBarFragment.setSelectedIndex(position);
             }
         });
 
         for (int i = 0, size = tabBarItems.size(); i < size; i++) {
             TabBarItem tabBarItem = tabBarItems.get(i);
-            tabBar.addTabBarItem(tabBarItem);
+            mTabBar.addTabBarItem(tabBarItem);
         }
 
-        tabBar.initialise(tabBarFragment.getSelectedIndex());
+        mTabBar.initialise(mTabBarFragment.getSelectedIndex());
     }
 
     @Override

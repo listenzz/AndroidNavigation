@@ -21,7 +21,7 @@ import java.util.List;
 
 public class StackFragment extends AwesomeFragment implements SwipeBackLayout.SwipeListener {
 
-    private SwipeBackLayout swipeBackLayout;
+    private SwipeBackLayout mSwipeBackLayout;
 
     @Nullable
     @Override
@@ -29,10 +29,10 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         View root;
         if (mStyle.isSwipeBackEnabled()) {
             root = inflater.inflate(R.layout.nav_fragment_navigation_swipe_back, container, false);
-            swipeBackLayout = root.findViewById(R.id.navigation_content);
-            swipeBackLayout.setSwipeListener(this);
+            mSwipeBackLayout = root.findViewById(R.id.navigation_content);
+            mSwipeBackLayout.setSwipeListener(this);
             int scrimAlpha = mStyle.getScrimAlpha();
-            swipeBackLayout.setScrimColor(scrimAlpha << 24);
+            mSwipeBackLayout.setScrimColor(scrimAlpha << 24);
         } else {
             root = inflater.inflate(R.layout.nav_fragment_navigation, container, false);
         }
@@ -43,11 +43,11 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     protected void performCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.performCreateView(inflater, container, savedInstanceState);
         if (savedInstanceState == null) {
-            if (rootFragment == null) {
+            if (mRootFragment == null) {
                 throw new IllegalArgumentException("Must specify rootFragment by `setRootFragment`.");
             } else {
-                setRootFragmentSync(rootFragment);
-                rootFragment = null;
+                setRootFragmentSync(mRootFragment);
+                mRootFragment = null;
             }
         }
     }
@@ -69,7 +69,7 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
 
     @Override
     protected boolean onBackPressed() {
-        if (dragging) {
+        if (mDragging) {
             return true;
         }
 
@@ -90,13 +90,13 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         }
     }
 
-    private AwesomeFragment rootFragment;
+    private AwesomeFragment mRootFragment;
 
     public void setRootFragment(@NonNull AwesomeFragment fragment) {
         if (isAdded()) {
-            throw new IllegalStateException("NavigationFragment is at added state，can not `setRootFragment` any more.");
+            throw new IllegalStateException("StackFragment is at added state，can not `setRootFragment` any more.");
         }
-        this.rootFragment = fragment;
+        mRootFragment = fragment;
     }
 
     @Nullable
@@ -109,7 +109,7 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
                 return (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
             }
         }
-        return rootFragment;
+        return mRootFragment;
     }
 
     public void pushFragment(@NonNull AwesomeFragment fragment) {
@@ -326,7 +326,7 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
             AwesomeFragment parent = navF.getParentAwesomeFragment();
             while (parent != null) {
                 if (parent instanceof StackFragment && parent.getWindow() == navF.getWindow()) {
-                    throw new IllegalStateException("should not nest NavigationFragment in the same window.");
+                    throw new IllegalStateException("should not nest StackFragment in the same window.");
                 }
                 parent = parent.getParentAwesomeFragment();
             }
@@ -335,10 +335,10 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     }
 
     public SwipeBackLayout getSwipeBackLayout() {
-        return swipeBackLayout;
+        return mSwipeBackLayout;
     }
 
-    private boolean dragging = false;
+    private boolean mDragging = false;
 
     @Override
     public void onViewDragStateChanged(int state, float scrollPercent) {
@@ -348,7 +348,7 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         }
 
         if (state == SwipeBackLayout.STATE_DRAGGING) {
-            dragging = true;
+            mDragging = true;
             AwesomeFragment previous = FragmentHelper.getFragmentBefore(topFragment);
 
             if (previous != null && previous.getView() != null) {
@@ -368,7 +368,7 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
                     BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
                     bitmapDrawable.setBounds(0, tabBarFragment.getView().getHeight() - tabBar.getHeight(),
                             tabBar.getMeasuredWidth(), tabBarFragment.getView().getHeight());
-                    swipeBackLayout.setTabBar(bitmapDrawable);
+                    mSwipeBackLayout.setTabBar(bitmapDrawable);
                 }
             }
 
@@ -383,8 +383,8 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
                 popFragment(false);
             }
 
-            swipeBackLayout.setTabBar(null);
-            dragging = false;
+            mSwipeBackLayout.setTabBar(null);
+            mDragging = false;
         }
     }
 

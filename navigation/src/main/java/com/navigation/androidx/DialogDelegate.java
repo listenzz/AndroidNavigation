@@ -50,7 +50,7 @@ public class DialogDelegate {
             layoutInflater = new DialogLayoutInflater(mFragment.requireContext(), layoutInflater,
                     () -> {
                         if (mFragment.isCancelable()) {
-                            hideDialog(null, false);
+                            hideAsDialog(null, false);
                         }
                     });
         }
@@ -83,7 +83,7 @@ public class DialogDelegate {
             dialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
                     if (!mFragment.dispatchBackPressed() && mFragment.isCancelable()) {
-                        hideDialog(null, false);
+                        hideAsDialog(null, false);
                     }
                     return true;
                 }
@@ -94,7 +94,7 @@ public class DialogDelegate {
         animateInIfNeeded();
     }
 
-    void showDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+    void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
         if (!FragmentHelper.canShowDialog(mFragment, mFragment.requireActivity())) {
             if (completion != null) {
                 completion.run();
@@ -102,24 +102,26 @@ public class DialogDelegate {
             mFragment.onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
             return;
         }
-        showDialog(mFragment, dialog, requestCode, completion);
+        showAsDialog(mFragment, dialog, requestCode, completion);
     }
 
-    private void showDialog(AwesomeFragment target, AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+    private void showAsDialog(AwesomeFragment target, AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
         Bundle args = FragmentHelper.getArguments(dialog);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         args.putBoolean(ARGS_SHOW_AS_DIALOG, true);
         dialog.setTargetFragment(target, requestCode);
         FragmentManager fragmentManager = target.getParentFragmentManager();
-        fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.STARTED).commit();
-        fragmentManager.beginTransaction().add(dialog, dialog.getSceneId()).commit();
+        fragmentManager.beginTransaction()
+                .setMaxLifecycle(target, Lifecycle.State.STARTED)
+                .add(dialog, dialog.getSceneId())
+                .commit();
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);
         if (completion != null) {
             completion.run();
         }
     }
 
-    void hideDialog(@Nullable Runnable completion, boolean fromAnimation) {
+    void hideAsDialog(@Nullable Runnable completion, boolean fromAnimation) {
         if (!mFragment.isInDialog()) {
             throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
         }
@@ -127,7 +129,7 @@ public class DialogDelegate {
         if (!mFragment.getShowsDialog()) {
             AwesomeFragment parent = mFragment.getParentAwesomeFragment();
             if (parent != null) {
-                parent.hideDialog(completion);
+                parent.hideAsDialog(completion);
             } else {
                 throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
             }
@@ -254,7 +256,7 @@ public class DialogDelegate {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                animationView.post(() -> hideDialog(completion, true));
+                animationView.post(() -> hideAsDialog(completion, true));
             }
 
             @Override

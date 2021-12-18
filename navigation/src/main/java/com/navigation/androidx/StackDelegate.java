@@ -44,7 +44,7 @@ public class StackDelegate {
 
     public LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
         LayoutInflater layoutInflater = mFragment.requireActivity().getLayoutInflater();
-        layoutInflater = new NavigationLayoutInflater(requireContext(), layoutInflater);
+        layoutInflater = new StackLayoutInflater(requireContext(), layoutInflater);
         return layoutInflater;
     }
 

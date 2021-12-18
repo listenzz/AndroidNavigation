@@ -79,7 +79,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             mSceneId = savedInstanceState.getString(SAVED_SCENE_ID);
-            tabBarItem = savedInstanceState.getParcelable(SAVED_TAB_BAR_ITEM);
+            mTabBarItem = savedInstanceState.getParcelable(SAVED_TAB_BAR_ITEM);
         }
 
         mPresentationDelegate.onCreate(savedInstanceState);
@@ -94,7 +94,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(SAVED_SCENE_ID, mSceneId);
-        outState.putParcelable(SAVED_TAB_BAR_ITEM, tabBarItem);
+        outState.putParcelable(SAVED_TAB_BAR_ITEM, mTabBarItem);
         mPresentationDelegate.onSaveInstanceState(outState);
     }
 
@@ -650,7 +650,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     // ------ dialog -----
 
     /**
-     * @deprecated call {@link #showDialog(AwesomeFragment, int)} instead of this method.
+     * @deprecated call {@link #showAsDialog(AwesomeFragment, int)} instead of this method.
      */
     @Deprecated
     @Override
@@ -659,7 +659,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     /**
-     * @deprecated call {@link #showDialog(AwesomeFragment, int)} instead of this method.
+     * @deprecated call {@link #showAsDialog(AwesomeFragment, int)} instead of this method.
      */
     @Deprecated
     @Override
@@ -668,7 +668,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     /**
-     * @deprecated call {@link #hideDialog()} instead of this method.
+     * @deprecated call {@link #hideAsDialog()} instead of this method.
      */
     @Deprecated
     @Override
@@ -707,25 +707,25 @@ public abstract class AwesomeFragment extends InternalFragment {
         return parent != null && parent.isInDialog();
     }
 
-    public void showDialog(@NonNull AwesomeFragment dialog, int requestCode) {
-        showDialog(dialog, requestCode, null);
+    public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode) {
+        showAsDialog(dialog, requestCode, null);
     }
 
-    public void showDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+    public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> {
-            mDialogDelegate.showDialog(dialog, requestCode, completion);
+            mDialogDelegate.showAsDialog(dialog, requestCode, completion);
         }, true);
     }
 
     /**
      * Dismiss the fragment as dialog.
      */
-    public void hideDialog() {
-        hideDialog(null);
+    public void hideAsDialog() {
+        hideAsDialog(null);
     }
 
-    public void hideDialog(@Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> mDialogDelegate.hideDialog(completion, false), true);
+    public void hideAsDialog(@Nullable Runnable completion) {
+        scheduleTaskAtStarted(() -> mDialogDelegate.hideAsDialog(completion, false), true);
     }
 
     @Override
@@ -740,7 +740,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     public StackFragment requireStackFragment() {
         StackFragment stackFragment = getStackFragment();
         if (stackFragment == null) {
-            throw new NullPointerException("NavigationFragment is null, make sure this fragment is wrapped in A NavigationFragment.");
+            throw new NullPointerException("StackFragment is null, make sure this fragment is wrapped in A StackFragment.");
         }
         return stackFragment;
     }
@@ -865,15 +865,15 @@ public abstract class AwesomeFragment extends InternalFragment {
         return null;
     }
 
-    private TabBarItem tabBarItem;
+    private TabBarItem mTabBarItem;
 
     public void setTabBarItem(@Nullable TabBarItem item) {
-        tabBarItem = item;
+        mTabBarItem = item;
     }
 
     @Nullable
     public TabBarItem getTabBarItem() {
-        return tabBarItem;
+        return mTabBarItem;
     }
 
     // ------ DrawerFragment -------
