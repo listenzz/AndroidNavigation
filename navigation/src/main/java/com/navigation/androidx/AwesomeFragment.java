@@ -538,18 +538,18 @@ public abstract class AwesomeFragment extends InternalFragment {
         setStatusBarColor(statusBarColor, animated);
     }
 
-    public void setStatusBarStyle(BarStyle barStyle) {
+    private void setStatusBarStyle(BarStyle barStyle) {
         SystemUI.setStatusBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
     }
 
-    public void setStatusBarHidden(boolean hidden) {
+    private void setStatusBarHidden(boolean hidden) {
         Window window = getWindow();
         if (window != null) {
             SystemUI.setStatusBarHidden(getWindow(), hidden);
         }
     }
 
-    public void setStatusBarColor(int color, boolean animated) {
+    private void setStatusBarColor(int color, boolean animated) {
         Window window = getWindow();
         if (window != null) {
             SystemUI.setStatusBarColor(getWindow(), color, animated);
@@ -631,15 +631,15 @@ public abstract class AwesomeFragment extends InternalFragment {
                 Color.alpha(fragment.preferredNavigationBarColor()) < 255);
     }
 
-    public void setNavigationBarStyle(BarStyle barStyle) {
+    private void setNavigationBarStyle(BarStyle barStyle) {
         SystemUI.setNavigationBarStyle(getWindow(), barStyle == BarStyle.DarkContent);
     }
 
-    public void setNavigationBarColor(int color) {
+    private void setNavigationBarColor(int color) {
         SystemUI.setNavigationBarColor(getWindow(), color);
     }
 
-    public void setNavigationBarHidden(boolean hidden) {
+    private void setNavigationBarHidden(boolean hidden) {
         SystemUI.setNavigationBarHidden(getWindow(), hidden);
     }
 
