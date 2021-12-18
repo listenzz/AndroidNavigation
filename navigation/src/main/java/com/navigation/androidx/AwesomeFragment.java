@@ -15,17 +15,11 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
@@ -39,7 +33,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.fragment.app.InternalFragment;
-import androidx.lifecycle.Lifecycle;
 
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +46,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public static final String TAG = "Navigation";
 
-    private static final String ARGS_REQUEST_CODE = "nav_request_code";
+    static final String ARGS_REQUEST_CODE = "nav_request_code";
     static final String ARGS_SHOW_AS_DIALOG = "show_as_dialog";
 
     private static final String SAVED_TAB_BAR_ITEM = "nav_tab_bar_item";
@@ -65,6 +58,8 @@ public abstract class AwesomeFragment extends InternalFragment {
     private final LifecycleDelegate lifecycleDelegate = new LifecycleDelegate(this);
     protected Style style;
 
+    private DialogDelegate mDialogDelegate;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -73,6 +68,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             throw new IllegalArgumentException("Activity must implements PresentableActivity!");
         }
         presentableActivity = (PresentableActivity) activity;
+        mDialogDelegate = new DialogDelegate(this);
         inflateStyle();
     }
 
@@ -121,21 +117,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         setStyle(STYLE_NORMAL, R.style.Theme_Nav_FullScreenDialog);
-
         super.onGetLayoutInflater(savedInstanceState);
-        LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
-        Window window = getWindow();
-        boolean isFloating = window != null && window.isFloating();
-        if (getShowsDialog() && !isFloating) {
-            layoutInflater = new DialogLayoutInflater(requireContext(), layoutInflater,
-                    () -> {
-                        if (isCancelable()) {
-                            hideDialog(null);
-                        }
-                    });
-        }
-
-        return layoutInflater;
+        return mDialogDelegate.onGetLayoutInflater(savedInstanceState);
     }
 
     private void inflateStyle() {
@@ -169,7 +152,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             fitNavigationFragment(root);
         } else {
             setupDialog();
-            animateInIfNeeded();
         }
     }
 
@@ -717,7 +699,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     @ColorInt
     protected int preferredNavigationBarColor() {
         if (getShowsDialog()) {
-            if (shouldAnimateDialogTransition()) {
+            if (mDialogDelegate.shouldAnimateDialogTransition()) {
                 return requireActivity().getWindow().getNavigationBarColor();
             } else {
                 return Color.TRANSPARENT;
@@ -846,25 +828,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     protected void setupDialog() {
-        Window window = getWindow();
-
-        if (window != null) {
-            SystemUI.setStatusBarTranslucent(window, true);
-            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        }
-
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            dialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
-                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (!dispatchBackPressed() && isCancelable()) {
-                        hideDialog(null);
-                    }
-                    return true;
-                }
-                return false;
-            });
-        }
+        mDialogDelegate.setupDialog();
     }
 
     public void showDialog(@NonNull AwesomeFragment dialog, int requestCode) {
@@ -873,29 +837,8 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public void showDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> {
-            if (!FragmentHelper.canShowDialog(this, requireActivity())) {
-                if (completion != null) {
-                    completion.run();
-                }
-                onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
-                return;
-            }
-            showDialogSync(AwesomeFragment.this, dialog, requestCode, completion);
+            mDialogDelegate.showDialog(dialog, requestCode, completion);
         }, true);
-    }
-
-    private void showDialogSync(AwesomeFragment target, AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
-        Bundle args = FragmentHelper.getArguments(dialog);
-        args.putInt(ARGS_REQUEST_CODE, requestCode);
-        args.putBoolean(ARGS_SHOW_AS_DIALOG, true);
-        dialog.setTargetFragment(target, requestCode);
-        FragmentManager fragmentManager = target.getParentFragmentManager();
-        fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.STARTED).commit();
-        fragmentManager.beginTransaction().add(dialog, dialog.getSceneId()).commit();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-        if (completion != null) {
-            completion.run();
-        }
     }
 
     /**
@@ -906,154 +849,13 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void hideDialog(@Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> hideDialogSync(completion, false), true);
-    }
-
-    private void hideDialogSync(@Nullable Runnable completion, boolean fromAnimation) {
-        if (!isInDialog()) {
-            throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
-        }
-
-        if (!getShowsDialog()) {
-            AwesomeFragment parent = getParentAwesomeFragment();
-            if (parent != null) {
-                parent.hideDialog(completion);
-            } else {
-                throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
-            }
-            return;
-        }
-
-        AppUtils.hideSoftInput(getView());
-
-        if (!fromAnimation && animateOutIfNeeded(completion)) {
-            return;
-        }
-
-        if (isAdded()) {
-            FragmentManager fragmentManager = getParentFragmentManager();
-            fragmentManager
-                    .beginTransaction()
-                    .setMaxLifecycle(this, Lifecycle.State.STARTED)
-                    .remove(this)
-                    .commit();
-            Fragment target = getTargetFragment();
-            if (target instanceof AwesomeFragment && target.isAdded()) {
-                fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
-                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-                AwesomeFragment fragment = (AwesomeFragment) target;
-                fragment.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
-            }
-        }
-
-        if (completion != null) {
-            completion.run();
-        }
+        scheduleTaskAtStarted(() -> mDialogDelegate.hideDialog(completion, false), true);
     }
 
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (isAdded()) {
-            Fragment target = getTargetFragment();
-            if (target instanceof AwesomeFragment && target.isAdded()) {
-                FragmentManager fragmentManager = getParentFragmentManager();
-                fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
-                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
-                AwesomeFragment fragment = (AwesomeFragment) target;
-                fragment.onFragmentResult(getRequestCode(), getResultCode(), getResultData());
-            }
-        }
-    }
-
-    private void animateInIfNeeded() {
-        View root = getView();
-        if (!(root instanceof DialogFrameLayout)) {
-            return;
-        }
-
-        if (shouldAnimateDialogTransition()) {
-            DialogFrameLayout frameLayout = (DialogFrameLayout) root;
-            View contentView = frameLayout.getChildAt(0);
-            animateUpIn(contentView);
-        }
-    }
-
-    private boolean animateOutIfNeeded(@Nullable Runnable completion) {
-        View root = getView();
-        if (!(root instanceof DialogFrameLayout)) {
-            return false;
-        }
-
-        if (shouldAnimateDialogTransition()) {
-            DialogFrameLayout frameLayout = (DialogFrameLayout) root;
-            View contentView = frameLayout.getChildAt(0);
-            animateDownOut(contentView, completion);
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean shouldAnimateDialogTransition() {
-        View root = getView();
-        if (!(root instanceof DialogFrameLayout)) {
-            return false;
-        }
-
-        DialogFrameLayout frameLayout = (DialogFrameLayout) root;
-        View contentView = frameLayout.getChildAt(0);
-        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
-        return layoutParams.gravity == Gravity.BOTTOM;
-    }
-
-    private void animateDownOut(@NonNull final View contentView, @Nullable Runnable completion) {
-        TranslateAnimation translate = new TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
-                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 1f
-        );
-        AlphaAnimation alpha = new AlphaAnimation(1, 0);
-        AnimationSet set = new AnimationSet(true);
-        set.addAnimation(translate);
-        set.addAnimation(alpha);
-        set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(200);
-        set.setFillAfter(true);
-        set.setAnimationListener(createAnimationListener(contentView, completion));
-        contentView.startAnimation(set);
-    }
-
-    private void animateUpIn(@NonNull final View contentView) {
-        TranslateAnimation translate = new TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
-                Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0f
-        );
-        AlphaAnimation alpha = new AlphaAnimation(0, 1);
-        AnimationSet set = new AnimationSet(true);
-        set.addAnimation(translate);
-        set.addAnimation(alpha);
-        set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(200);
-        set.setFillAfter(true);
-        contentView.startAnimation(set);
-    }
-
-    private Animation.AnimationListener createAnimationListener(@NonNull final View animationView, @Nullable Runnable completion) {
-        return new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                animationView.post(() -> hideDialogSync(completion, true));
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        };
+        mDialogDelegate.onDismiss();
     }
 
     // ------ NavigationFragment -----
