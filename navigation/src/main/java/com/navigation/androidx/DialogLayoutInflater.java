@@ -11,27 +11,27 @@ public class DialogLayoutInflater extends LayoutInflater {
 
     public static final String TAG = "Navigation";
 
-    private LayoutInflater layoutInflater;
+    private final LayoutInflater mLayoutInflater;
 
-    private DialogFrameLayout.OnTouchOutsideListener listener;
+    private final DialogFrameLayout.OnTouchOutsideListener mListener;
 
     public DialogLayoutInflater(Context context, LayoutInflater layoutInflater, DialogFrameLayout.OnTouchOutsideListener listener) {
         super(context);
-        this.layoutInflater = layoutInflater;
-        this.listener = listener;
+        mLayoutInflater = layoutInflater;
+        mListener = listener;
     }
 
     @Override
     public LayoutInflater cloneInContext(Context context) {
-        return layoutInflater.cloneInContext(context);
+        return mLayoutInflater.cloneInContext(context);
     }
 
     @Override
     public View inflate(int resource, @Nullable ViewGroup root, boolean attachToRoot) {
         DialogFrameLayout dialogFrameLayout = new DialogFrameLayout(getContext());
-        dialogFrameLayout.setOnTouchOutsideListener(listener);
+        dialogFrameLayout.setOnTouchOutsideListener(mListener);
         dialogFrameLayout.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
-        layoutInflater.inflate(resource, dialogFrameLayout, true);
+        mLayoutInflater.inflate(resource, dialogFrameLayout, true);
         return dialogFrameLayout;
     }
 }

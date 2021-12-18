@@ -124,7 +124,7 @@ public class FragmentHelper {
         if (!fragment.isAdded()) {
             return null;
         }
-        FragmentManager fragmentManager = fragment.requireFragmentManager();
+        FragmentManager fragmentManager = fragment.getParentFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         int index = getIndexAtBackStack(fragment);
         if (index > 0 && index < count) {
@@ -138,7 +138,7 @@ public class FragmentHelper {
     }
 
     public static int getIndexAtBackStack(@NonNull AwesomeFragment fragment) {
-        FragmentManager fragmentManager = fragment.requireFragmentManager();
+        FragmentManager fragmentManager = fragment.getParentFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         int index = -1;
         for (int i = 0; i < count; i++) {
@@ -259,7 +259,7 @@ public class FragmentHelper {
     }
 
     public static void handleDismissFragment(@NonNull AwesomeFragment target, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top) {
-        FragmentManager fragmentManager = target.requireFragmentManager();
+        FragmentManager fragmentManager = target.getParentFragmentManager();
         target.setAnimation(TransitionAnimation.Present);
 
         if (top == null) {

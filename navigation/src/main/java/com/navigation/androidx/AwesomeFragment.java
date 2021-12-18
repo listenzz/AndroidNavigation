@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -157,14 +158,15 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     }
 
-    private boolean callSuperOnViewCreated;
-
     @Override
-    @CallSuper
-    public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(root, savedInstanceState);
+    protected void performViewCreated() {
+        super.performViewCreated();
 
         if (!getShowsDialog()) {
+            View root = getView();
+            if (root == null) {
+                return;
+            }
             if (!isParentFragment()) {
                 setBackgroundDrawable(root, new ColorDrawable(style.getScreenBackgroundColor()));
             }
@@ -173,8 +175,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             setupDialog();
             animateIn();
         }
-
-        callSuperOnViewCreated = true;
     }
 
     @Override
@@ -183,14 +183,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             AppUtils.hideSoftInput(getView());
         }
         super.onDestroyView();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (getView() != null && !callSuperOnViewCreated) {
-            throw new IllegalStateException("must invoke `super.onViewCreated` when override `onViewCreated`");
-        }
     }
 
     private void setBackgroundDrawable(View root, Drawable drawable) {
@@ -387,7 +379,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         fragment.setTargetFragment(target, requestCode);
         fragment.setDefinesPresentationContext(true);
-        FragmentHelper.addFragmentToBackStack(target.requireFragmentManager(), target.getContainerId(), fragment, TransitionAnimation.Present);
+        FragmentHelper.addFragmentToBackStack(target.getParentFragmentManager(), target.getContainerId(), fragment, TransitionAnimation.Present);
         if (completion != null) {
             completion.run();
         }
@@ -440,7 +432,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             if (definesPresentationContext()) {
-                FragmentManager fragmentManager = requireFragmentManager();
+                FragmentManager fragmentManager = getParentFragmentManager();
                 if (FragmentHelper.getIndexAtBackStack(this) == -1) {
                     if (FragmentHelper.getBackStackEntryCount(parent) != 0) {
                         FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(0);
@@ -887,7 +879,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         if (isAdded() && !isDismissed()) {
-            requireFragmentManager().beginTransaction().setMaxLifecycle(this, Lifecycle.State.STARTED).commit();
+            getParentFragmentManager().beginTransaction().setMaxLifecycle(this, Lifecycle.State.STARTED).commit();
             dismiss();
         }
 
@@ -897,11 +889,11 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     @Override
-    protected void dismissInternal(boolean allowStateLoss, boolean fromOnDismiss) {
-        super.dismissInternal(allowStateLoss, fromOnDismiss);
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
         Fragment target = getTargetFragment();
-        if (target instanceof AwesomeFragment && target.isAdded() && fromOnDismiss) {
-            FragmentManager fragmentManager = requireFragmentManager();
+        if (target instanceof AwesomeFragment && target.isAdded()) {
+            FragmentManager fragmentManager = getParentFragmentManager();
             fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
             FragmentHelper.executePendingTransactionsSafe(fragmentManager);
             AwesomeFragment fragment = (AwesomeFragment) target;
@@ -958,7 +950,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         args.putBoolean(ARGS_SHOW_AS_DIALOG, true);
         dialog.setTargetFragment(target, requestCode);
-        FragmentManager fragmentManager = target.requireFragmentManager();
+        FragmentManager fragmentManager = target.getParentFragmentManager();
         fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.STARTED).commit();
         dialog.show(fragmentManager, dialog.getSceneId());
         FragmentHelper.executePendingTransactionsSafe(fragmentManager);

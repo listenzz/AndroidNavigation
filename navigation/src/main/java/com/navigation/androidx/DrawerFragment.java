@@ -22,35 +22,35 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     private static final String MIN_DRAWER_MARGIN_KEY = "MIN_DRAWER_MARGIN_KEY";
     private static final String MAX_DRAWER_WIDTH_KEY = "MAX_DRAWER_WIDTH_KEY";
 
-    private DrawerLayout drawerLayout;
-    private int minDrawerMargin = 64; // dp
-    private int maxDrawerWidth; // dp
+    private DrawerLayout mDrawerLayout;
+    private int mMinDrawerMargin = 64; // dp
+    private int mMaxDrawerWidth; // dp
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.nav_fragment_drawer, container, false);
-        drawerLayout = root.findViewById(R.id.drawer);
-        drawerLayout.addDrawerListener(this);
+        mDrawerLayout = root.findViewById(R.id.drawer);
+        mDrawerLayout.addDrawerListener(this);
 
         if (savedInstanceState != null) {
-            minDrawerMargin = savedInstanceState.getInt(MIN_DRAWER_MARGIN_KEY, 64);
-            maxDrawerWidth = savedInstanceState.getInt(MAX_DRAWER_WIDTH_KEY);
+            mMinDrawerMargin = savedInstanceState.getInt(MIN_DRAWER_MARGIN_KEY, 64);
+            mMaxDrawerWidth = savedInstanceState.getInt(MAX_DRAWER_WIDTH_KEY);
         }
 
-        FrameLayout menuLayout = drawerLayout.findViewById(R.id.drawer_menu);
+        FrameLayout menuLayout = mDrawerLayout.findViewById(R.id.drawer_menu);
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) menuLayout.getLayoutParams();
         int screenWidth = AppUtils.getScreenWidth(requireContext());
-        int margin1 = AppUtils.dp2px(requireContext(), minDrawerMargin);
+        int margin1 = AppUtils.dp2px(requireContext(), mMinDrawerMargin);
         if (margin1 > screenWidth) {
             margin1 = screenWidth;
         } else if (margin1 < 0) {
             margin1 = 0;
         }
-        if (maxDrawerWidth <= 0 || maxDrawerWidth > screenWidth) {
-            maxDrawerWidth = screenWidth;
+        if (mMaxDrawerWidth <= 0 || mMaxDrawerWidth > screenWidth) {
+            mMaxDrawerWidth = screenWidth;
         }
-        int margin2 = screenWidth - AppUtils.dp2px(requireContext(), maxDrawerWidth);
+        int margin2 = screenWidth - AppUtils.dp2px(requireContext(), mMaxDrawerWidth);
         int margin = Math.max(margin1, margin2);
         layoutParams.rightMargin = margin - AppUtils.dp2px(requireContext(), 64);
 
@@ -58,8 +58,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState == null) {
             if (contentFragment == null) {
                 throw new IllegalArgumentException("必须调用 `setContentFragment` 设置 contentFragment");
@@ -83,13 +83,13 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(MIN_DRAWER_MARGIN_KEY, minDrawerMargin);
-        outState.putInt(MAX_DRAWER_WIDTH_KEY, maxDrawerWidth);
+        outState.putInt(MIN_DRAWER_MARGIN_KEY, mMinDrawerMargin);
+        outState.putInt(MAX_DRAWER_WIDTH_KEY, mMaxDrawerWidth);
     }
 
     @Override
     public void onDestroyView() {
-        drawerLayout.removeDrawerListener(this);
+        mDrawerLayout.removeDrawerListener(this);
         super.onDestroyView();
     }
 
@@ -247,11 +247,11 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     public void setMinDrawerMargin(int dp) {
-        this.minDrawerMargin = dp;
+        this.mMinDrawerMargin = dp;
     }
 
     public void setMaxDrawerWidth(int dp) {
-        this.maxDrawerWidth = dp;
+        this.mMaxDrawerWidth = dp;
     }
 
     public void openMenu() {
@@ -266,17 +266,17 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             return;
         }
 
-        if (drawerLayout != null) {
-            drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+        if (mDrawerLayout != null) {
+            mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
                 @Override
                 public void onDrawerOpened(View drawerView) {
-                    drawerLayout.removeDrawerListener(this);
+                    mDrawerLayout.removeDrawerListener(this);
                     if (completion != null) {
                         completion.run();
                     }
                 }
             });
-            drawerLayout.openDrawer(GravityCompat.START);
+            mDrawerLayout.openDrawer(GravityCompat.START);
         } else {
             throw new IllegalStateException("No drawer");
         }
@@ -293,17 +293,17 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             }
             return;
         }
-        if (drawerLayout != null) {
-            drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+        if (mDrawerLayout != null) {
+            mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
                 @Override
                 public void onDrawerClosed(View drawerView) {
-                    drawerLayout.removeDrawerListener(this);
+                    mDrawerLayout.removeDrawerListener(this);
                     if (completion != null) {
                         completion.run();
                     }
                 }
             });
-            drawerLayout.closeDrawer(GravityCompat.START);
+            mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
             throw new IllegalStateException("No drawer");
         }
@@ -311,8 +311,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     public void setDrawerLockMode(final int lockMode) {
         scheduleTaskAtStarted(() -> {
-            if (drawerLayout != null) {
-                drawerLayout.setDrawerLockMode(lockMode);
+            if (mDrawerLayout != null) {
+                mDrawerLayout.setDrawerLockMode(lockMode);
             }
         });
     }
@@ -334,8 +334,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     public boolean isMenuOpened() {
-        if (drawerLayout != null) {
-            return drawerLayout.isDrawerOpen(GravityCompat.START);
+        if (mDrawerLayout != null) {
+            return mDrawerLayout.isDrawerOpen(GravityCompat.START);
         }
         return false;
     }
