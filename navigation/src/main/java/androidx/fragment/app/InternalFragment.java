@@ -14,17 +14,8 @@ public class InternalFragment extends DialogFragment {
     }
 
     @Override
-    protected void performViewCreated() {
-        super.performViewCreated();
-    }
-
-    @Override
     protected void performCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.performCreateView(inflater, container, savedInstanceState);
     }
 
-    @Override
-    public void performDestroyView() {
-        super.performDestroyView();
-    }
 }

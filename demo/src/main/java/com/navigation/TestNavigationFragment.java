@@ -148,15 +148,15 @@ public class TestNavigationFragment extends BaseFragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         setTitle("导航");
 
         if (isStackRoot()) {
             if (getPresentingFragment() == null) {
                 String iconUri = "font://FontAwesome/" + fromCharCode(61641) + "/24";
                 ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
-                builder.icon(iconUri).listener(view -> {
+                builder.icon(iconUri).listener(v -> {
                     DrawerFragment drawerFragment = getDrawerFragment();
                     if (drawerFragment != null) {
                         drawerFragment.toggleMenu();
@@ -165,7 +165,7 @@ public class TestNavigationFragment extends BaseFragment {
                 setLeftBarButtonItem(builder.build());
             } else {
                 ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
-                builder.title("关闭").listener(view -> dismissFragment());
+                builder.title("关闭").listener(v -> dismissFragment());
                 setLeftBarButtonItem(builder.build());
             }
         }

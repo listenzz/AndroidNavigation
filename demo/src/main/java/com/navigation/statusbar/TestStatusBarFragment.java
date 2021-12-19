@@ -73,13 +73,13 @@ public class TestStatusBarFragment extends BaseFragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         setTitle("状态栏");
         if (isStackRoot()) {
             String iconUri = "font://FontAwesome/" + fromCharCode(61641) + "/24";
             ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
-            builder.icon(iconUri).listener(view -> {
+            builder.icon(iconUri).listener(v -> {
                 DrawerFragment drawerFragment = getDrawerFragment();
                 if (drawerFragment != null) {
                     drawerFragment.toggleMenu();

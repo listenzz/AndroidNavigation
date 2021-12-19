@@ -47,17 +47,17 @@ public class GridFragment extends BaseFragment implements KittenClickListener {
         // Note that we need the API version check here because the actual transition classes (e.g. Fade)
         // are not in the support library and are only available in API 21+. The methods we are calling on the Fragment
         // ARE available in the support library (though they don't do anything on API < 21)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
             kittenDetails.setSharedElementEnterTransition(new DetailsTransition());
             kittenDetails.setEnterTransition(new Fade());
             setExitTransition(new Fade());
             kittenDetails.setSharedElementReturnTransition(new DetailsTransition());
-        }
+
 
         // 如果是通过异步回调的方式来触发转场，以下代码需要包裹在 scheduleTaskAtStarted 中
 
         // 将要显示的 Fragment 是 this 的兄弟
-        requireFragmentManager()
+        getParentFragmentManager()
                 .beginTransaction()
                 // 很重要
                 .setReorderingAllowed(true)

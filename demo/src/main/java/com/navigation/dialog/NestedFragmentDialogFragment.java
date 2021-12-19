@@ -32,8 +32,8 @@ public class NestedFragmentDialogFragment extends AwesomeFragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState == null) {
             if (contentFragment == null) {
                 throw new IllegalArgumentException("必须先通过 `setContentFragment` 指定 contentFragment");

@@ -44,12 +44,11 @@ public class AreaPickerDialogFragment extends AwesomeFragment {
     AreaUtils areaUtils;
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         areaUtils = new AreaUtils(requireContext());
         areaUtils.initJsonData();
         wheelOptions.setCyclic(false);
         wheelOptions.setPicker(areaUtils.getOptions1Items(), areaUtils.getOptions2Items(), areaUtils.getOptions3Items());
     }
-
 }

@@ -29,8 +29,8 @@ public class SearchFragment extends BaseFragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         ToolbarButtonItem toolbarButtonItem = new ToolbarButtonItem.Builder().title("搜索").build();
         setRightBarButtonItem(toolbarButtonItem);
 

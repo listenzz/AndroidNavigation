@@ -709,7 +709,7 @@ protected boolean preferredStatusBarColorAnimated();
   menuItem.setOnMenuItemClickListener();
   ```
 
-> 请在 `onActivityCreated` 中调用上面这些方法
+> 请在 `onViewCreated` 中调用上面这些方法
 
 Toolbar 的创建时机是在 Fragment `onViewCreated` 这个生命周期函数中，在此之前之前，调用 getAwesomeToolbar 得到的返回值为 null。
 
@@ -823,7 +823,7 @@ font://fontName/glyph/size/color
 
 ### 代码规范
 
-- 在 `onActivityCreated` 中配置和 Toolbar 相关的东西，比如设置标题、按钮。
+- 在 `onViewCreated` 中配置和 Toolbar 相关的东西，比如设置标题、按钮。
 
 - 永远通过以下方式来获取 arguments, 否则后果很严重
 

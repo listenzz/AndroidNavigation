@@ -81,11 +81,6 @@ public class MenuFragment extends AwesomeFragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
     public StackFragment getStackFragment() {
         DrawerFragment drawerFragment = getDrawerFragment();
         if (drawerFragment != null) {

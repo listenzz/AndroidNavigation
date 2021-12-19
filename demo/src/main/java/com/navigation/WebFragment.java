@@ -9,7 +9,6 @@ import android.webkit.WebView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-
 /**
  * Created by Listen on 2018/2/2.
  */
@@ -43,10 +42,9 @@ public class WebFragment extends BaseFragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         webView.loadUrl("file:///android_asset/input_webview.html");
         setTitle("WebView");
     }
-
 }
