@@ -287,7 +287,9 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void setDefinesPresentationContext(boolean defines) {
-        mPresentationDelegate.setDefinesPresentationContext(defines);
+        scheduleTaskAtStarted(() -> {
+            mPresentationDelegate.setDefinesPresentationContext(defines);
+        });
     }
 
     public boolean definesPresentationContext() {
