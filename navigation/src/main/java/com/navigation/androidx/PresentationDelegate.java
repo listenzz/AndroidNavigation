@@ -15,10 +15,13 @@ public class PresentationDelegate {
 
     private final AwesomeFragment mFragment;
 
-    private final PresentableActivity mPresentableActivity;
+    private PresentableActivity mPresentableActivity;
 
-    public PresentationDelegate(AwesomeFragment fragment, PresentableActivity presentableActivity) {
+    public PresentationDelegate(AwesomeFragment fragment) {
         mFragment = fragment;
+    }
+
+    public void setPresentableActivity(PresentableActivity presentableActivity) {
         mPresentableActivity = presentableActivity;
     }
 

@@ -49,11 +49,11 @@ public abstract class AwesomeFragment extends InternalFragment {
     // ------- lifecycle methods -------
     private PresentableActivity mPresentableActivity;
     private final LifecycleDelegate mLifecycleDelegate = new LifecycleDelegate(this);
-    protected Style mStyle;
+    private final PresentationDelegate mPresentationDelegate = new PresentationDelegate(this);
+    private final DialogDelegate mDialogDelegate = new DialogDelegate(this);
+    private final StackDelegate mStackDelegate = new StackDelegate(this);
 
-    private PresentationDelegate mPresentationDelegate;
-    private DialogDelegate mDialogDelegate;
-    private StackDelegate mStackDelegate;
+    protected Style mStyle;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -63,15 +63,14 @@ public abstract class AwesomeFragment extends InternalFragment {
             throw new IllegalArgumentException("Activity must implements PresentableActivity!");
         }
         mPresentableActivity = (PresentableActivity) activity;
-        mPresentationDelegate = new PresentationDelegate(this, mPresentableActivity);
-        mDialogDelegate = new DialogDelegate(this);
-        mStackDelegate = new StackDelegate(this);
+        mPresentationDelegate.setPresentableActivity(mPresentableActivity);
         inflateStyle();
     }
 
     @Override
     public void onDetach() {
         mPresentableActivity = null;
+        mPresentationDelegate.setPresentableActivity(null);
         super.onDetach();
     }
 
@@ -287,9 +286,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void setDefinesPresentationContext(boolean defines) {
-        scheduleTaskAtStarted(() -> {
-            mPresentationDelegate.setDefinesPresentationContext(defines);
-        });
+        mPresentationDelegate.setDefinesPresentationContext(defines);
     }
 
     public boolean definesPresentationContext() {
