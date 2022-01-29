@@ -371,11 +371,11 @@ AwesomeActivity 和 AwesomeFragment 提供了两个基础的导航功能 present
 
   > present 所使用的 FragmentManager 是 Activity 的 `getSupportFragmentManager`，因此 present 出来的 fragment 是属于 Activity 的，它不属于任何 fragment 的子 fragment，这样就确保了 present 出来的 fragment 是模态的。
 
-- showDialog
+- showAsDialog
 
   把一个 fragment 作为 dialog 显示。showDialog 的参数列表和 present 是一样的，使用方式也基本相同。作为 dialog 的 fragment 可以通过 setResult 返回结果给把它作为 dialog show 出来的那个 fragment。
 
-- hideDialog
+- hideAsDialog
 
   关闭作为 dialog 的 fragment
 
@@ -500,7 +500,7 @@ StackFragment 是个容器，以栈的方式管理子 fragment，支持 push、p
 
   执行上述代码后，栈里面只有 A E 两个页面
 
-- isNavigationRoot
+- isStackRoot
 
   通过这个方法，可以判断当前 fragment 是不是 StackFragment 的 rootFragment
 
