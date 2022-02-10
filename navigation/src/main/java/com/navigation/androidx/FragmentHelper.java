@@ -35,11 +35,11 @@ public class FragmentHelper {
     }
 
     public static void executePendingTransactionsSafe(@NonNull FragmentManager fragmentManager) {
-        try {
-            fragmentManager.executePendingTransactions();
-        } catch (IllegalStateException e) {
-            Log.wtf(TAG, e);
-        }
+        // try {
+        fragmentManager.executePendingTransactions();
+        // } catch (IllegalStateException e) {
+        // Log.wtf(TAG, e);
+        // }
     }
 
     public static void addFragmentToBackStack(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation) {
