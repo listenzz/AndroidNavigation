@@ -87,16 +87,22 @@ public class DialogEntryFragment extends BaseFragment {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 String time = data.getString(DatetimePickerDialogFragment.KEY_TIME);
                 resultText.setText("选中的时间是：" + time);
+            } else {
+                resultText.setText("");
             }
         } else if (requestCode == REQUEST_CODE_AREA) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 String area = data.getString(AreaPickerDialogFragment.KEY_SELECTED_AREA);
                 resultText.setText("选中的区域是：" + area);
+            } else {
+                resultText.setText("");
             }
         } else {
             if (data != null) {
                 String words = data.getString("text", "");
                 resultText.setText(words);
+            } else {
+                resultText.setText("");
             }
         }
     }
