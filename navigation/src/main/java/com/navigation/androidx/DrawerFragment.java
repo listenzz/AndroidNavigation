@@ -181,7 +181,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
                         .setPrimaryNavigationFragment(menu)
                         .setMaxLifecycle(menu, Lifecycle.State.RESUMED)
                         .commit();
-                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
                 View menuView = menu.getView();
                 if (menuView != null) {
@@ -202,7 +201,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
                         .setPrimaryNavigationFragment(content)
                         .setMaxLifecycle(menu, Lifecycle.State.STARTED)
                         .commit();
-                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
             }
         });
     }

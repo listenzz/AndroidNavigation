@@ -121,7 +121,6 @@ public class TabBarFragment extends AwesomeFragment {
             }
         }
         transaction.commit();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
     }
 
     @Override
@@ -256,7 +255,6 @@ public class TabBarFragment extends AwesomeFragment {
         transaction.setMaxLifecycle(current, Lifecycle.State.RESUMED);
         transaction.show(current);
         transaction.commit();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         if (completion != null) {
             completion.run();

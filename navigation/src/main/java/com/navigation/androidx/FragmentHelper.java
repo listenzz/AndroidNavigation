@@ -15,7 +15,6 @@ import androidx.lifecycle.Lifecycle;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Created by Listen on 2018/1/11.
  */
@@ -32,14 +31,6 @@ public class FragmentHelper {
             fragment.setArguments(args);
         }
         return args;
-    }
-
-    public static void executePendingTransactionsSafe(@NonNull FragmentManager fragmentManager) {
-        // try {
-        fragmentManager.executePendingTransactions();
-        // } catch (IllegalStateException e) {
-        // Log.wtf(TAG, e);
-        // }
     }
 
     public static void addFragmentToBackStack(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation) {
@@ -61,7 +52,6 @@ public class FragmentHelper {
         transaction.add(containerId, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
-        executePendingTransactionsSafe(fragmentManager);
     }
 
     public static void addFragment(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull Lifecycle.State maxLifecycle) {
@@ -80,7 +70,6 @@ public class FragmentHelper {
         }
         transaction.setMaxLifecycle(fragment, maxLifecycle);
         transaction.commit();
-        executePendingTransactionsSafe(fragmentManager);
     }
 
     @NonNull
@@ -273,7 +262,7 @@ public class FragmentHelper {
         top.setAnimation(TransitionAnimation.Present);
         fragmentManager.beginTransaction().setMaxLifecycle(presented, Lifecycle.State.STARTED).commit();
         fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+        fragmentManager.executePendingTransactions();
         target.onFragmentResult(top.getRequestCode(), top.getResultCode(), top.getResultData());
     }
 

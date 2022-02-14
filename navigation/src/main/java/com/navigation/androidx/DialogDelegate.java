@@ -115,7 +115,7 @@ public class DialogDelegate {
                 .setMaxLifecycle(target, Lifecycle.State.STARTED)
                 .add(dialog, dialog.getSceneId())
                 .commit();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+
         if (completion != null) {
             completion.run();
         }
@@ -152,7 +152,7 @@ public class DialogDelegate {
             Fragment target = mFragment.getTargetFragment();
             if (target instanceof AwesomeFragment && target.isAdded()) {
                 fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
-                FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+                fragmentManager.executePendingTransactions();
                 AwesomeFragment fragment = (AwesomeFragment) target;
                 fragment.onFragmentResult(mFragment.getRequestCode(), mFragment.getResultCode(), mFragment.getResultData());
             }
@@ -170,7 +170,7 @@ public class DialogDelegate {
                 ((AwesomeFragment) target).scheduleTaskAtStarted(() -> {
                     FragmentManager fragmentManager = mFragment.getParentFragmentManager();
                     fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
-                    FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+                    fragmentManager.executePendingTransactions();
                     AwesomeFragment fragment = (AwesomeFragment) target;
                     fragment.onFragmentResult(mFragment.getRequestCode(), mFragment.getResultCode(), mFragment.getResultData());
                 });

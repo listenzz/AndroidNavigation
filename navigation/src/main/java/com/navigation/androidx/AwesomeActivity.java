@@ -84,14 +84,10 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         transaction.add(android.R.id.content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
     }
 
     public void clearFragments() {
-        scheduleTaskAtStarted(() -> {
-            clearFragmentsSync();
-            FragmentHelper.executePendingTransactionsSafe(getSupportFragmentManager());
-        });
+        scheduleTaskAtStarted(this::clearFragmentsSync);
     }
 
     protected void clearFragmentsSync() {
@@ -204,7 +200,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
                 .beginTransaction()
                 .add(dialog, dialog.getSceneId())
                 .commit();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+
         if (completion != null) {
             completion.run();
         }

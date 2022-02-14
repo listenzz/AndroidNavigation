@@ -170,7 +170,7 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
 
         fragmentManager.beginTransaction().setMaxLifecycle(fragment, Lifecycle.State.RESUMED).commit();
 
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
+        fragmentManager.executePendingTransactions();
         fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
 
         if (completion != null) {
@@ -296,7 +296,6 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
-        FragmentHelper.executePendingTransactionsSafe(fragmentManager);
 
         if (completion != null) {
             completion.run();
