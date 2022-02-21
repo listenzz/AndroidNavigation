@@ -165,14 +165,17 @@ public class DialogDelegate {
 
     void onDismiss() {
         if (mFragment.isAdded()) {
-            Fragment target = mFragment.getTargetFragment();
+            final Fragment target = mFragment.getTargetFragment();
             if (target instanceof AwesomeFragment && target.isAdded()) {
+                final int requestCode = mFragment.getRequestCode();
+                final int resultCode = mFragment.getResultCode();
+                final Bundle data = mFragment.getResultData();
                 ((AwesomeFragment) target).scheduleTaskAtStarted(() -> {
-                    FragmentManager fragmentManager = mFragment.getParentFragmentManager();
+                    FragmentManager fragmentManager = target.getParentFragmentManager();
                     fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
                     fragmentManager.executePendingTransactions();
                     AwesomeFragment fragment = (AwesomeFragment) target;
-                    fragment.onFragmentResult(mFragment.getRequestCode(), mFragment.getResultCode(), mFragment.getResultData());
+                    fragment.onFragmentResult(requestCode, resultCode, data);
                 });
             }
         }
