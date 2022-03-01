@@ -2,6 +2,7 @@ package com.navigation.androidx;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -262,8 +263,26 @@ public class FragmentHelper {
         top.setAnimation(TransitionAnimation.Present);
         fragmentManager.beginTransaction().setMaxLifecycle(presented, Lifecycle.State.STARTED).commit();
         fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        fragmentManager.executePendingTransactions();
-        target.onFragmentResult(top.getRequestCode(), top.getResultCode(), top.getResultData());
+
+        handleFragmentResult(target, top);
+    }
+
+    public static void handleFragmentResult(AwesomeFragment target, AwesomeFragment resultFragment) {
+        final int requestCode = resultFragment.getRequestCode();
+        final int resultCode = resultFragment.getResultCode();
+        final Bundle data = resultFragment.getResultData();
+        handleFragmentResult(target, requestCode, resultCode, data);
+    }
+
+    public static void handleFragmentResult(AwesomeFragment target, int requestCode, int resultCode, Bundle data) {
+        View view = target.getView();
+        if (view != null) {
+            view.post(() -> {
+                if (target.isAdded()) {
+                    target.onFragmentResult(requestCode, resultCode, data);
+                }
+            });
+        }
     }
 
     public static boolean isRemoving(@NonNull AwesomeFragment fragment) {

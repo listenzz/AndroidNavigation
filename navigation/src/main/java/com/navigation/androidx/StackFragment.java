@@ -1,5 +1,7 @@
 package com.navigation.androidx;
 
+import static com.navigation.androidx.FragmentHelper.handleFragmentResult;
+
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -161,17 +163,14 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
             }
             return;
         }
-
-        fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
-
         topFragment.setAnimation(animation);
         fragment.setAnimation(animation);
-        fragmentManager.popBackStack(fragment.getSceneId(), 0);
 
+        fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
+        fragmentManager.popBackStack(fragment.getSceneId(), 0);
         fragmentManager.beginTransaction().setMaxLifecycle(fragment, Lifecycle.State.RESUMED).commit();
 
-        fragmentManager.executePendingTransactions();
-        fragment.onFragmentResult(topFragment.getRequestCode(), topFragment.getResultCode(), topFragment.getResultData());
+        handleFragmentResult(fragment, topFragment);
 
         if (completion != null) {
             completion.run();

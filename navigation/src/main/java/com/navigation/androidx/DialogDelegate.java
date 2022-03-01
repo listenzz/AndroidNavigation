@@ -2,6 +2,7 @@ package com.navigation.androidx;
 
 import static com.navigation.androidx.AwesomeFragment.ARGS_REQUEST_CODE;
 import static com.navigation.androidx.AwesomeFragment.ARGS_SHOW_AS_DIALOG;
+import static com.navigation.androidx.FragmentHelper.handleFragmentResult;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -152,9 +153,8 @@ public class DialogDelegate {
             Fragment target = mFragment.getTargetFragment();
             if (target instanceof AwesomeFragment && target.isAdded()) {
                 fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
-                fragmentManager.executePendingTransactions();
                 AwesomeFragment fragment = (AwesomeFragment) target;
-                fragment.onFragmentResult(mFragment.getRequestCode(), mFragment.getResultCode(), mFragment.getResultData());
+                handleFragmentResult(fragment, mFragment);
             }
         }
 
@@ -173,9 +173,8 @@ public class DialogDelegate {
                 ((AwesomeFragment) target).scheduleTaskAtStarted(() -> {
                     FragmentManager fragmentManager = target.getParentFragmentManager();
                     fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
-                    fragmentManager.executePendingTransactions();
                     AwesomeFragment fragment = (AwesomeFragment) target;
-                    fragment.onFragmentResult(requestCode, resultCode, data);
+                    handleFragmentResult(fragment, requestCode, resultCode, data);
                 });
             }
         }
