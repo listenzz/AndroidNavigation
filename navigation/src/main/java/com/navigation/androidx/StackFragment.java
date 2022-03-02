@@ -378,7 +378,9 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
             }
 
             if (previous != null && scrollPercent >= 1.0f) {
-                popFragment(false);
+                popFragmentSync(TransitionAnimation.None, null);
+                FragmentManager fragmentManager = getChildFragmentManager();
+                fragmentManager.executePendingTransactions();
             }
 
             mSwipeBackLayout.setTabBar(null);
