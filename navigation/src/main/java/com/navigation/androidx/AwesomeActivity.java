@@ -84,6 +84,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         transaction.add(android.R.id.content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
+        fragmentManager.executePendingTransactions();
     }
 
     public void clearFragments() {

@@ -45,8 +45,8 @@ publishing {
         maven {
             version = PUBLISH_VERSION
             url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
-            credentials { 
-                username = ossrhUsername  
+            credentials {
+                username = ossrhUsername
                 password = ossrhPassword
             }
         }
