@@ -1,6 +1,7 @@
 package com.navigation.androidx;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -14,6 +15,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.ColorInt;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 /**
@@ -37,6 +39,22 @@ public class AppUtils {
         int green = (rgb & 0x0000FF00) >> 8;
         int red = (rgb & 0x00FF0000) >> 16;
         return (red * 38 + green * 75 + blue * 15) >> 7;
+    }
+
+    public static ColorStateList buttonColorStateList(int tintColor) {
+        int disableColor = ColorUtils.setAlphaComponent(AppUtils.toGrey(tintColor), 100);
+        int pressedColor = ColorUtils.setAlphaComponent(tintColor, 150);
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_pressed},  // pressed
+                new int[]{android.R.attr.state_enabled},  // enabled
+                new int[]{-android.R.attr.state_enabled}, // disabled
+        };
+        int[] colors = new int[]{
+                pressedColor,
+                tintColor,
+                disableColor,
+        };
+        return new ColorStateList(states, colors);
     }
 
     public static String colorToString(@ColorInt int color) {

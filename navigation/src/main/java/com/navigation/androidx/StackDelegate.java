@@ -82,18 +82,18 @@ public class StackDelegate {
 
             if (mLeftBarButtonItems != null) {
                 for (ToolbarButtonItem item : mLeftBarButtonItems) {
-                    item.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
+                    item.setTintColor(style.getToolbarTintColor());
                 }
             } else if (mLeftBarButtonItem != null) {
-                mLeftBarButtonItem.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
+                mLeftBarButtonItem.setTintColor(style.getToolbarTintColor());
             }
 
             if (mRightBarButtonItems != null) {
                 for (ToolbarButtonItem item : mRightBarButtonItems) {
-                    item.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
+                    item.setTintColor(style.getToolbarTintColor());
                 }
             } else if (mRightBarButtonItem != null) {
-                mRightBarButtonItem.setTintColor(style.getToolbarTintColor(), style.getToolbarBackgroundColor());
+                mRightBarButtonItem.setTintColor(style.getToolbarTintColor());
             }
         }
     }

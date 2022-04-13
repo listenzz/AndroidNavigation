@@ -304,19 +304,7 @@ public class AwesomeToolbar extends Toolbar {
         button.setVisibility(View.VISIBLE);
 
         int color = buttonItem.tintColor != 0 ? buttonItem.tintColor : buttonTintColor;
-        int disableColor = ColorUtils.setAlphaComponent(AppUtils.toGrey(color), 100);
-        int pressedColor = ColorUtils.setAlphaComponent(color, 150);
-        int[][] states = new int[][]{
-                new int[]{android.R.attr.state_pressed},  // pressed
-                new int[]{android.R.attr.state_enabled}, // enabled
-                new int[]{-android.R.attr.state_enabled}, // disabled
-        };
-        int[] colors = new int[]{
-                pressedColor,
-                color,
-                disableColor,
-        };
-        ColorStateList colorStateList = new ColorStateList(states, colors);
+        ColorStateList colorStateList = AppUtils.buttonColorStateList(color);
 
         Drawable icon = drawableFromBarButtonItem(buttonItem);
         if (icon != null) {

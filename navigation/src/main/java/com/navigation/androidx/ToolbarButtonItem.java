@@ -91,39 +91,15 @@ public class ToolbarButtonItem {
         }
     }
 
-    public void setTintColor(@ColorInt int tintColor, @ColorInt int backgroundColor) {
+    public void setTintColor(@ColorInt int tintColor) {
+        ColorStateList colorStateList = AppUtils.buttonColorStateList(tintColor);
         if (button != null) {
-            int disableColor = ColorUtils.blendARGB(AppUtils.toGrey(tintColor), backgroundColor, 0.75f);
             if (!renderOriginal) {
                 Drawable[] drawables = button.getCompoundDrawables();
                 if (drawables[0] != null) {
-                    int[][] states = new int[][]{
-                            new int[]{android.R.attr.state_enabled}, // enabled
-                            new int[]{-android.R.attr.state_enabled}, // disabled
-                    };
-
-                    int[] colors = new int[]{
-                            tintColor,
-                            disableColor
-                    };
-
-                    ColorStateList colorStateList = new ColorStateList(states, colors);
                     DrawableCompat.setTintList(drawables[0], colorStateList);
                 }
             } else {
-                int pressedColor = ColorUtils.blendARGB(ColorUtils.setAlphaComponent(tintColor, 51), backgroundColor, .75f);
-                int[][] states = new int[][]{
-                        new int[]{android.R.attr.state_pressed},  // pressed
-                        new int[]{android.R.attr.state_enabled},  // enabled
-                        new int[]{-android.R.attr.state_enabled}, // disabled
-                };
-
-                int[] colors = new int[]{
-                        pressedColor,
-                        tintColor,
-                        disableColor,
-                };
-                ColorStateList colorStateList = new ColorStateList(states, colors);
                 button.setTextColor(colorStateList);
             }
         }

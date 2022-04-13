@@ -273,19 +273,7 @@ public class Style implements Cloneable {
 
     private ColorStateList getBackIconColor() {
         int tintColor = getToolbarTintColor();
-        int disableColor = ColorUtils.setAlphaComponent(tintColor, 100);
-        int pressedColor = ColorUtils.setAlphaComponent(tintColor, 150);
-        int[][] states = new int[][]{
-                new int[]{android.R.attr.state_pressed},  // pressed
-                new int[]{android.R.attr.state_enabled}, // enabled
-                new int[]{-android.R.attr.state_enabled}, // disabled
-        };
-        int[] colors = new int[]{
-                pressedColor,
-                tintColor,
-                disableColor,
-        };
-        return new ColorStateList(states, colors);
+        return AppUtils.buttonColorStateList(tintColor);
     }
 
     public void setTitleTextColor(int color) {
