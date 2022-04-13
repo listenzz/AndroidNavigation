@@ -476,6 +476,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     @NonNull
     protected BarStyle preferredStatusBarStyle() {
         if (getShowsDialog()) {
+            Window window = getWindow();
+            if (window != null && window.getAttributes().dimAmount == 0 && SystemUI.isStatusBarStyleDark(requireActivity().getWindow())) {
+                return BarStyle.DarkContent;
+            }
             return BarStyle.LightContent;
         }
 
