@@ -3,7 +3,6 @@
     android:id="@+id/nav_tab_item_container"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_tab_bar_height"
-    android:background="?selectableItemBackgroundBorderless"
     android:focusable="true"
     android:orientation="vertical"
     android:paddingLeft="@dimen/nav_tab_item_width_padding"
