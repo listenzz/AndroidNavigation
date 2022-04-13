@@ -15,7 +15,7 @@
             android:scaleType="centerCrop"
             android:src="@drawable/panda" />
 
-        <androidx.appcompat.widget.Toolbar
+        <com.navigation.androidx.AwesomeToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"

@@ -1,6 +1,7 @@
 package com.navigation.androidx;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -10,6 +11,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 /**
@@ -265,8 +267,25 @@ public class Style implements Cloneable {
             icon = backIcon;
         }
         icon = DrawableCompat.wrap(icon).mutate();
-        DrawableCompat.setTint(icon, getToolbarTintColor());
+        DrawableCompat.setTintList(icon, getBackIconColor());
         return icon;
+    }
+
+    private ColorStateList getBackIconColor() {
+        int tintColor = getToolbarTintColor();
+        int disableColor = ColorUtils.setAlphaComponent(tintColor, 100);
+        int pressedColor = ColorUtils.setAlphaComponent(tintColor, 150);
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_pressed},  // pressed
+                new int[]{android.R.attr.state_enabled}, // enabled
+                new int[]{-android.R.attr.state_enabled}, // disabled
+        };
+        int[] colors = new int[]{
+                pressedColor,
+                tintColor,
+                disableColor,
+        };
+        return new ColorStateList(states, colors);
     }
 
     public void setTitleTextColor(int color) {

@@ -1,12 +1,14 @@
 package com.navigation.androidx;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -17,7 +19,6 @@ import android.view.ViewOutlineProvider;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -26,9 +27,6 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * Created by Listen on 2017/11/22.
@@ -41,7 +39,6 @@ public class AwesomeToolbar extends Toolbar {
     private TextView rightButton;
     private int contentInset;
 
-    private int backgroundColor;
     private int buttonTintColor;
     private int buttonTextSize;
     private int titleGravity;
@@ -80,7 +77,6 @@ public class AwesomeToolbar extends Toolbar {
 
     @Override
     public void setBackgroundColor(int color) {
-        this.backgroundColor = color;
         setBackground(new ColorDrawable(color));
         if (color == Color.TRANSPARENT) {
             hideShadow();
@@ -289,14 +285,13 @@ public class AwesomeToolbar extends Toolbar {
     @Override
     public void setNavigationIcon(@Nullable Drawable icon) {
         super.setNavigationIcon(icon);
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
-            int count = getChildCount();
-            for (int i = 0; i < count; i++) {
-                View child = getChildAt(i);
-                if (child instanceof AppCompatImageButton) {
-                    AppCompatImageButton button = (AppCompatImageButton) child;
-                    button.setBackgroundResource(R.drawable.nav_toolbar_button_item_background);
-                }
+
+        int count = getChildCount();
+        for (int i = 0; i < count; i++) {
+            View child = getChildAt(i);
+            if (child instanceof AppCompatImageButton) {
+                AppCompatImageButton button = (AppCompatImageButton) child;
+                button.setBackground(null);
             }
         }
     }
@@ -309,23 +304,22 @@ public class AwesomeToolbar extends Toolbar {
         button.setVisibility(View.VISIBLE);
 
         int color = buttonItem.tintColor != 0 ? buttonItem.tintColor : buttonTintColor;
-        int disableColor = ColorUtils.blendARGB(AppUtils.toGrey(color), backgroundColor, 0.75f);
+        int disableColor = ColorUtils.setAlphaComponent(AppUtils.toGrey(color), 100);
+        int pressedColor = ColorUtils.setAlphaComponent(color, 150);
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_pressed},  // pressed
+                new int[]{android.R.attr.state_enabled}, // enabled
+                new int[]{-android.R.attr.state_enabled}, // disabled
+        };
+        int[] colors = new int[]{
+                pressedColor,
+                color,
+                disableColor,
+        };
+        ColorStateList colorStateList = new ColorStateList(states, colors);
 
         Drawable icon = drawableFromBarButtonItem(buttonItem);
-
         if (icon != null) {
-            int[][] states = new int[][]{
-                    new int[]{android.R.attr.state_enabled}, // enabled
-                    new int[]{-android.R.attr.state_enabled}, // disabled
-            };
-
-            int[] colors = new int[]{
-                    color,
-                    disableColor,
-            };
-
-            ColorStateList colorStateList = new ColorStateList(states, colors);
-
             if (!buttonItem.renderOriginal) {
                 DrawableCompat.setTintList(icon, colorStateList);
             }
@@ -336,30 +330,8 @@ public class AwesomeToolbar extends Toolbar {
             button.setWidth(size);
             button.setHeight(size);
             button.setPaddingRelative(padding, 0, padding, 0);
-            TypedValue typedValue = new TypedValue();
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
-                button.setBackgroundResource(R.drawable.nav_toolbar_button_item_background);
-            } else {
-                if (getContext().getTheme().resolveAttribute(R.attr.actionBarItemBackground, typedValue, true)) {
-                    button.setBackgroundResource(typedValue.resourceId);
-                }
-            }
+
         } else {
-            int pressedColor = ColorUtils.blendARGB(ColorUtils.setAlphaComponent(color, 51), backgroundColor, .75f);
-            int[][] states = new int[][]{
-                    new int[]{android.R.attr.state_pressed},  // pressed
-                    new int[]{android.R.attr.state_enabled},  // enabled
-                    new int[]{-android.R.attr.state_enabled}, // disabled
-            };
-
-            int[] colors = new int[]{
-                    pressedColor,
-                    color,
-                    disableColor,
-            };
-
-            ColorStateList colorStateList = new ColorStateList(states, colors);
-
             int padding = AppUtils.dp2px(getContext(), 8);
             button.setPaddingRelative(padding, 0, padding, 0);
             button.setText(buttonItem.title);

@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.ColorUtils;
 
 import com.navigation.BaseFragment;
@@ -28,13 +27,12 @@ import com.navigation.androidx.Style;
 
 public class CustomSystemUIFragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener{
 
-    Toolbar toolbar;
-
+    AwesomeToolbar toolbar;
     TextView textView;
 
     @Override
     protected AwesomeToolbar onCreateToolbar(View parent) {
-        return null; // 自定义 Toolbar
+        return toolbar; // 自定义 Toolbar
     }
 
     @Nullable
@@ -43,6 +41,7 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
         View root = inflater.inflate(R.layout.fragment_custom_system_ui, container, false);
         toolbar = root.findViewById(R.id.toolbar);
         appendStatusBarPadding(toolbar);
+
         textView = root.findViewById(R.id.hint);
 
         ((CheckBox)root.findViewById(R.id.tinting)).setOnCheckedChangeListener(this);
@@ -66,16 +65,10 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        toolbar.setNavigationIcon(mStyle.getBackIcon());
-        toolbar.setNavigationOnClickListener(v -> requireStackFragment().popFragment());
-    }
-
-    @Override
     protected void onCustomStyle(@NonNull Style style) {
         super.onCustomStyle(style);
         style.setStatusBarColor(Color.TRANSPARENT);
+        style.setToolbarBackgroundColor(Color.TRANSPARENT);
     }
 
     @Override
