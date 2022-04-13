@@ -263,14 +263,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         return anim;
     }
 
-    // ------ lifecycle arch -------
-
     public void scheduleTaskAtStarted(Runnable runnable) {
-        scheduleTaskAtStarted(runnable, false);
-    }
-
-    public void scheduleTaskAtStarted(Runnable runnable, boolean deferred) {
-        mLifecycleDelegate.scheduleTaskAtStarted(runnable, deferred);
+        mLifecycleDelegate.scheduleTaskAtStarted(runnable);
     }
 
     // ------- presentation ------
@@ -333,7 +327,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> {
             mPresentationDelegate.presentFragment(fragment, requestCode, completion);
-        }, true);
+        });
     }
 
     public void dismissFragment() {
@@ -343,7 +337,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void dismissFragment(@Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> {
             mPresentationDelegate.dismissFragment(completion);
-        }, true);
+        });
     }
 
     @Nullable
@@ -714,7 +708,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> {
             mDialogDelegate.showAsDialog(dialog, requestCode, completion);
-        }, true);
+        });
     }
 
     /**
@@ -725,7 +719,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void hideAsDialog(@Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> mDialogDelegate.hideAsDialog(completion, false), true);
+        scheduleTaskAtStarted(() -> mDialogDelegate.hideAsDialog(completion, false));
     }
 
     @Override

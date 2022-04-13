@@ -117,7 +117,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     @Override
     public void presentFragment(@NonNull AwesomeFragment fragment, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> presentFragmentSync(fragment, completion), true);
+        scheduleTaskAtStarted(() -> presentFragmentSync(fragment, completion));
     }
 
     private void presentFragmentSync(AwesomeFragment fragment, @Nullable Runnable completion) {
@@ -134,7 +134,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     @Override
     public void dismissFragment(@NonNull AwesomeFragment fragment, @Nullable Runnable completion) {
         if (fragment.getParentFragmentManager() == getSupportFragmentManager()) {
-            scheduleTaskAtStarted(() -> dismissFragmentSync(fragment, completion), true);
+            scheduleTaskAtStarted(() -> dismissFragmentSync(fragment, completion));
         } else {
             fragment.dismissFragment(completion);
         }
@@ -175,7 +175,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> showAsDialogSync(dialog, requestCode, completion), true);
+        scheduleTaskAtStarted(() -> showAsDialogSync(dialog, requestCode, completion));
     }
 
     public void hideAsDialog(@NonNull AwesomeFragment dialog) {
@@ -213,11 +213,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     public void scheduleTaskAtStarted(Runnable runnable) {
-        scheduleTaskAtStarted(runnable, false);
-    }
-
-    public void scheduleTaskAtStarted(Runnable runnable, boolean deferred) {
-        mLifecycleDelegate.scheduleTaskAtStarted(runnable, deferred);
+        mLifecycleDelegate.scheduleTaskAtStarted(runnable);
     }
 
 }

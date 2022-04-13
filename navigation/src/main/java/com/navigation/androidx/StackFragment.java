@@ -115,19 +115,19 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     }
 
     public void pushFragment(@NonNull AwesomeFragment fragment) {
-        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, TransitionAnimation.Push, null), true);
+        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, TransitionAnimation.Push, null));
     }
 
     public void pushFragment(@NonNull AwesomeFragment fragment, boolean animated) {
-        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, null), animated);
+        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, null));
     }
 
     public void pushFragment(@NonNull AwesomeFragment fragment, @NonNull Runnable completion) {
-        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, TransitionAnimation.Push, completion), true);
+        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, TransitionAnimation.Push, completion));
     }
 
     public void pushFragment(@NonNull AwesomeFragment fragment, boolean animated, @NonNull Runnable completion) {
-        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, completion), animated);
+        scheduleTaskAtStarted(() -> pushFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, completion));
     }
 
     protected void pushFragmentSync(AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
@@ -138,19 +138,19 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     }
 
     public void popToFragment(@NonNull AwesomeFragment fragment) {
-        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, TransitionAnimation.Push, null), true);
+        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, TransitionAnimation.Push, null));
     }
 
     public void popToFragment(@NonNull AwesomeFragment fragment, boolean animated) {
-        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, null), animated);
+        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, null));
     }
 
     public void popToFragment(@NonNull AwesomeFragment fragment, @NonNull Runnable completion) {
-        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, TransitionAnimation.Push, completion), true);
+        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, TransitionAnimation.Push, completion));
     }
 
     public void popToFragment(@NonNull AwesomeFragment fragment, boolean animated, @NonNull Runnable completion) {
-        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, completion), animated);
+        scheduleTaskAtStarted(() -> popToFragmentSync(fragment, animated ? TransitionAnimation.Push : TransitionAnimation.None, completion));
     }
 
     protected void popToFragmentSync(AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
@@ -178,19 +178,19 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     }
 
     public void popFragment() {
-        scheduleTaskAtStarted(() -> popFragmentSync(TransitionAnimation.Push, null), true);
+        scheduleTaskAtStarted(() -> popFragmentSync(TransitionAnimation.Push, null));
     }
 
     public void popFragment(boolean animated) {
-        scheduleTaskAtStarted(() -> popFragmentSync(animated ? TransitionAnimation.Push : TransitionAnimation.None, null), animated);
+        scheduleTaskAtStarted(() -> popFragmentSync(animated ? TransitionAnimation.Push : TransitionAnimation.None, null));
     }
 
     public void popFragment(@NonNull Runnable completion) {
-        scheduleTaskAtStarted(() -> popFragmentSync(TransitionAnimation.Push, completion), true);
+        scheduleTaskAtStarted(() -> popFragmentSync(TransitionAnimation.Push, completion));
     }
 
     public void popFragment(boolean animated, @NonNull Runnable completion) {
-        scheduleTaskAtStarted(() -> popFragmentSync(animated ? TransitionAnimation.Push : TransitionAnimation.None, completion), animated);
+        scheduleTaskAtStarted(() -> popFragmentSync(animated ? TransitionAnimation.Push : TransitionAnimation.None, completion));
     }
 
     protected void popFragmentSync(@NonNull TransitionAnimation animation, @Nullable Runnable completion) {
@@ -213,19 +213,19 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     }
 
     public void popToRootFragment() {
-        scheduleTaskAtStarted(() -> popToRootFragmentSync(TransitionAnimation.Push, null), true);
+        scheduleTaskAtStarted(() -> popToRootFragmentSync(TransitionAnimation.Push, null));
     }
 
     public void popToRootFragment(boolean animated) {
-        scheduleTaskAtStarted(() -> popToRootFragmentSync(animated ? TransitionAnimation.Push : TransitionAnimation.None, null), animated);
+        scheduleTaskAtStarted(() -> popToRootFragmentSync(animated ? TransitionAnimation.Push : TransitionAnimation.None, null));
     }
 
     public void popToRootFragment(@NonNull Runnable completion) {
-        scheduleTaskAtStarted(() -> popToRootFragmentSync(TransitionAnimation.Push, completion), true);
+        scheduleTaskAtStarted(() -> popToRootFragmentSync(TransitionAnimation.Push, completion));
     }
 
     public void popToRootFragment(boolean animated, @NonNull Runnable completion) {
-        scheduleTaskAtStarted(() -> popToRootFragmentSync(animated ? TransitionAnimation.Push : TransitionAnimation.None, completion), animated);
+        scheduleTaskAtStarted(() -> popToRootFragmentSync(animated ? TransitionAnimation.Push : TransitionAnimation.None, completion));
     }
 
     protected void popToRootFragmentSync(@NonNull TransitionAnimation animation, @Nullable Runnable completion) {
@@ -239,23 +239,23 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     }
 
     public void redirectToFragment(@NonNull AwesomeFragment fragment) {
-        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, TransitionAnimation.Redirect, null, null), true);
+        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, TransitionAnimation.Redirect, null, null));
     }
 
     public void redirectToFragment(@NonNull AwesomeFragment fragment, boolean animated) {
-        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, animated ? TransitionAnimation.Redirect : TransitionAnimation.None, null, null), animated);
+        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, animated ? TransitionAnimation.Redirect : TransitionAnimation.None, null, null));
     }
 
     public void redirectToFragment(@NonNull AwesomeFragment fragment, @NonNull Runnable completion) {
-        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, TransitionAnimation.Redirect, completion, null), true);
+        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, TransitionAnimation.Redirect, completion, null));
     }
 
     public void redirectToFragment(@NonNull AwesomeFragment fragment, @NonNull AwesomeFragment from) {
-        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, TransitionAnimation.Redirect, null, from), true);
+        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, TransitionAnimation.Redirect, null, from));
     }
 
     public void redirectToFragment(@NonNull AwesomeFragment fragment, boolean animated, @Nullable Runnable completion, @Nullable AwesomeFragment from) {
-        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, animated ? TransitionAnimation.Redirect : TransitionAnimation.None, completion, from), animated);
+        scheduleTaskAtStarted(() -> redirectToFragmentSync(fragment, animated ? TransitionAnimation.Redirect : TransitionAnimation.None, completion, from));
     }
 
     protected void redirectToFragmentSync(@NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion, @Nullable AwesomeFragment from) {
