@@ -99,14 +99,12 @@ public class StackDelegate {
     }
 
     public void fitStackFragment(@NonNull View root) {
-        if (hasStackParent()) {
-            createToolbar(root);
-            fitTabBar(root);
-        }
+        createToolbar(root);
+        fitTabBar(root);
     }
 
     public boolean hasStackParent() {
-        AwesomeFragment parent =  mFragment.getParentAwesomeFragment();
+        AwesomeFragment parent = mFragment.getParentAwesomeFragment();
         return (parent instanceof StackFragment);
     }
 

@@ -330,7 +330,7 @@ public class FragmentHelper {
 
         DialogFragment dialog = getAwesomeDialogFragment(activity.getSupportFragmentManager());
         if (dialog != null && dialog != fragment) {
-            Log.w(TAG, "Can't show dialog since the fragment had show another dialog already.");
+            Log.w(TAG, "Can't show dialog since there are another dialog over there.");
             return false;
         }
         return true;

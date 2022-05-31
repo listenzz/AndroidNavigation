@@ -46,29 +46,29 @@ public class PresentationDelegate {
     }
 
     public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @Nullable Runnable completion) {
-            if (!FragmentHelper.canPresentFragment(mFragment, mFragment.requireActivity())) {
-                if (completion != null) {
-                    completion.run();
-                }
-                mFragment.onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
-                return;
+        if (!FragmentHelper.canPresentFragment(mFragment, mFragment.requireActivity())) {
+            if (completion != null) {
+                completion.run();
             }
+            mFragment.onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
+            return;
+        }
 
-            AwesomeFragment parent = mFragment.getParentAwesomeFragment();
-            if (parent != null) {
-                if (definesPresentationContext()) {
-                    presentFragment(mFragment, fragment, requestCode, completion);
-                } else {
-                    parent.presentFragment(fragment, requestCode, completion);
-                }
-                return;
+        AwesomeFragment parent = mFragment.getParentAwesomeFragment();
+        if (parent != null) {
+            if (definesPresentationContext()) {
+                presentFragment(mFragment, fragment, requestCode, completion);
+            } else {
+                parent.presentFragment(fragment, requestCode, completion);
             }
+            return;
+        }
 
-            if (mPresentableActivity != null) {
-                Bundle args = FragmentHelper.getArguments(fragment);
-                args.putInt(ARGS_REQUEST_CODE, requestCode);
-                mPresentableActivity.presentFragment(fragment, completion);
-            }
+        if (mPresentableActivity != null) {
+            Bundle args = FragmentHelper.getArguments(fragment);
+            args.putInt(ARGS_REQUEST_CODE, requestCode);
+            mPresentableActivity.presentFragment(fragment, completion);
+        }
 
     }
 
@@ -84,40 +84,39 @@ public class PresentationDelegate {
     }
 
     public void dismissFragment(@Nullable Runnable completion) {
+        if (mFragment.getDialogFragment() != null) {
+            throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `hideDialog`");
+        }
 
-            if (mFragment.isInDialog()) {
-                throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `hideDialog`");
-            }
-
-            AwesomeFragment parent = mFragment.getParentAwesomeFragment();
-            if (parent != null) {
-                if (definesPresentationContext()) {
-                    AwesomeFragment presented = getPresentedFragment();
-                    if (presented != null) {
-                        FragmentHelper.handleDismissFragment(mFragment, presented, null);
-                        if (completion != null) {
-                            completion.run();
-                        }
-                        return;
-                    }
-
-                    AwesomeFragment target = (AwesomeFragment) mFragment.getTargetFragment();
-                    if (target != null) {
-                        FragmentHelper.handleDismissFragment(target, mFragment, mFragment);
-                    }
-
+        AwesomeFragment parent = mFragment.getParentAwesomeFragment();
+        if (parent != null) {
+            if (definesPresentationContext()) {
+                AwesomeFragment presented = getPresentedFragment();
+                if (presented != null) {
+                    FragmentHelper.handleDismissFragment(mFragment, presented, null);
                     if (completion != null) {
                         completion.run();
                     }
-                } else {
-                    parent.dismissFragment(completion);
+                    return;
                 }
-                return;
-            }
 
-            if (mPresentableActivity != null) {
-                mPresentableActivity.dismissFragment(mFragment, completion);
+                AwesomeFragment target = (AwesomeFragment) mFragment.getTargetFragment();
+                if (target != null) {
+                    FragmentHelper.handleDismissFragment(target, mFragment, mFragment);
+                }
+
+                if (completion != null) {
+                    completion.run();
+                }
+            } else {
+                parent.dismissFragment(completion);
             }
+            return;
+        }
+
+        if (mPresentableActivity != null) {
+            mPresentableActivity.dismissFragment(mFragment, completion);
+        }
 
     }
 

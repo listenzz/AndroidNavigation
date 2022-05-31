@@ -7,7 +7,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.core.graphics.ColorUtils;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 /**
@@ -92,16 +91,20 @@ public class ToolbarButtonItem {
     }
 
     public void setTintColor(@ColorInt int tintColor) {
+        if (button == null) {
+            return;
+        }
+
         ColorStateList colorStateList = AppUtils.buttonColorStateList(tintColor);
-        if (button != null) {
-            if (!renderOriginal) {
-                Drawable[] drawables = button.getCompoundDrawables();
-                if (drawables[0] != null) {
-                    DrawableCompat.setTintList(drawables[0], colorStateList);
-                }
-            } else {
-                button.setTextColor(colorStateList);
-            }
+
+        if (renderOriginal) {
+            button.setTextColor(colorStateList);
+            return;
+        }
+
+        Drawable[] drawables = button.getCompoundDrawables();
+        if (drawables[0] != null) {
+            DrawableCompat.setTintList(drawables[0], colorStateList);
         }
     }
 

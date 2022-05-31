@@ -42,21 +42,31 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
-        if (count > 0) {
-            FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(count - 1);
-            AwesomeFragment fragment = (AwesomeFragment) fragmentManager.findFragmentByTag(entry.getName());
-            if (fragment != null && fragment.isAdded() && !fragment.dispatchBackPressed()) {
-                if (count == 1) {
-                    if (!handleBackPressed()) {
-                        ActivityCompat.finishAfterTransition(this);
-                    }
-                } else {
-                    dismissFragment(fragment, null);
-                }
-            }
-        } else {
+        if (count == 0) {
             super.onBackPressed();
+            return;
         }
+
+        FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(count - 1);
+        AwesomeFragment fragment = (AwesomeFragment) fragmentManager.findFragmentByTag(entry.getName());
+        if (fragment == null || !fragment.isAdded()) {
+            return;
+        }
+
+        if (fragment.dispatchBackPressed()) {
+            return;
+        }
+
+        if (count != 1) {
+            dismissFragment(fragment, null);
+            return;
+        }
+
+        if (handleBackPressed()) {
+            return;
+        }
+
+        ActivityCompat.finishAfterTransition(this);
     }
 
     protected boolean handleBackPressed() {
@@ -65,13 +75,14 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     @Override
     public void setActivityRootFragment(@NonNull final AwesomeFragment rootFragment) {
+        if (isFinishing()) {
+            return;
+        }
         if (getSupportFragmentManager().isStateSaved()) {
             scheduleTaskAtStarted(() -> setActivityRootFragmentSync(rootFragment));
-        } else {
-            if (!isFinishing()) {
-                setActivityRootFragmentSync(rootFragment);
-            }
+            return;
         }
+        setActivityRootFragmentSync(rootFragment);
     }
 
     protected void setActivityRootFragmentSync(AwesomeFragment fragment) {
@@ -94,20 +105,24 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     protected void clearFragmentsSync() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
-        if (count > 0) {
-            getWindow().setBackgroundDrawable(new ColorDrawable(mStyle.getScreenBackgroundColor()));
-            String root = fragmentManager.getBackStackEntryAt(0).getName();
-            String top = fragmentManager.getBackStackEntryAt(count - 1).getName();
-            AwesomeFragment rootFragment = (AwesomeFragment) fragmentManager.findFragmentByTag(root);
-            AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentByTag(top);
-            if (topFragment != null) {
-                topFragment.setAnimation(TransitionAnimation.Fade);
-                fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
-            }
-            if (rootFragment != null) {
-                rootFragment.setAnimation(TransitionAnimation.Fade);
-                fragmentManager.popBackStack(root, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            }
+        if (count == 0) {
+            return;
+        }
+
+        getWindow().setBackgroundDrawable(new ColorDrawable(mStyle.getScreenBackgroundColor()));
+        String root = fragmentManager.getBackStackEntryAt(0).getName();
+        String top = fragmentManager.getBackStackEntryAt(count - 1).getName();
+        AwesomeFragment rootFragment = (AwesomeFragment) fragmentManager.findFragmentByTag(root);
+        AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentByTag(top);
+
+        if (topFragment != null) {
+            topFragment.setAnimation(TransitionAnimation.Fade);
+            fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
+        }
+
+        if (rootFragment != null) {
+            rootFragment.setAnimation(TransitionAnimation.Fade);
+            fragmentManager.popBackStack(root, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
     }
 
@@ -135,9 +150,9 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     public void dismissFragment(@NonNull AwesomeFragment fragment, @Nullable Runnable completion) {
         if (fragment.getParentFragmentManager() == getSupportFragmentManager()) {
             scheduleTaskAtStarted(() -> dismissFragmentSync(fragment, completion));
-        } else {
-            fragment.dismissFragment(completion);
+            return;
         }
+        fragment.dismissFragment(completion);
     }
 
     private void dismissFragmentSync(AwesomeFragment fragment, @Nullable Runnable completion) {
@@ -153,10 +168,9 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         AwesomeFragment presenting = getPresentingFragment(fragment);
         if (presenting != null) {
             FragmentHelper.handleDismissFragment(presenting, fragment, fragment);
-        }
-
-        if (completion != null) {
-            completion.run();
+            if (completion != null) {
+                completion.run();
+            }
         }
     }
 
@@ -188,6 +202,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     private void showAsDialogSync(AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getSupportFragmentManager();
+
         if (fragmentManager.getBackStackEntryCount() > 0) {
             Fragment fragment = fragmentManager.findFragmentById(android.R.id.content);
             if (fragment != null && fragment.isAdded()) {

@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -103,28 +102,32 @@ public abstract class AwesomeFragment extends InternalFragment {
     public LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
         inflateStyle();
 
-        if (!getShowsDialog()) {
-            if (mStackDelegate.hasStackParent()) {
-                return mStackDelegate.onGetLayoutInflater(savedInstanceState);
-            }
-
-            return super.onGetLayoutInflater(savedInstanceState);
+        if (getShowsDialog()) {
+            setStyle(STYLE_NORMAL, R.style.Theme_Nav_FullScreenDialog);
+            super.onGetLayoutInflater(savedInstanceState);
+            return mDialogDelegate.onGetLayoutInflater(savedInstanceState);
         }
 
-        setStyle(STYLE_NORMAL, R.style.Theme_Nav_FullScreenDialog);
-        super.onGetLayoutInflater(savedInstanceState);
-        return mDialogDelegate.onGetLayoutInflater(savedInstanceState);
+        if (mStackDelegate.hasStackParent()) {
+            return mStackDelegate.onGetLayoutInflater(savedInstanceState);
+        }
+        return super.onGetLayoutInflater(savedInstanceState);
     }
 
     private void inflateStyle() {
-        if (mStyle == null && mPresentableActivity != null && mPresentableActivity.getStyle() != null) {
-            try {
-                mStyle = mPresentableActivity.getStyle().clone();
-                onCustomStyle(mStyle);
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-                mStyle = mPresentableActivity.getStyle();
-            }
+        if (mStyle != null) {
+            return;
+        }
+        if (mPresentableActivity == null || mPresentableActivity.getStyle() == null) {
+            return;
+        }
+
+        try {
+            mStyle = mPresentableActivity.getStyle().clone();
+            onCustomStyle(mStyle);
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            mStyle = mPresentableActivity.getStyle();
         }
     }
 
@@ -135,20 +138,21 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Override
     protected void performCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.performCreateView(inflater, container, savedInstanceState);
-        if (!getShowsDialog()) {
-            View root = getView();
-            if (root == null) {
-                return;
-            }
+        View root = getView();
+        if (root == null) {
+            return;
+        }
 
-            if (!isParentFragment()) {
-                setBackgroundDrawable(root, new ColorDrawable(mStyle.getScreenBackgroundColor()));
-            }
-
-            mStackDelegate.fitStackFragment(root);
-
-        } else {
+        if (getShowsDialog()) {
             mDialogDelegate.setupDialog();
+        }
+
+        if (mStackDelegate.hasStackParent()) {
+            mStackDelegate.fitStackFragment(root);
+        }
+
+        if (!isParentFragment()) {
+            setBackgroundDrawable(root, mStyle.getScreenBackgroundColor());
         }
     }
 
@@ -158,14 +162,84 @@ public abstract class AwesomeFragment extends InternalFragment {
         super.onDestroyView();
     }
 
-    private void setBackgroundDrawable(View root, Drawable drawable) {
-        root.setBackground(drawable);
-        if (!isInDialog()) {
-            Window window = getWindow();
-            if (window != null) {
-                window.setBackgroundDrawable(AppUtils.copyDrawable(drawable));
-            }
+    private void setBackgroundDrawable(View root, int color) {
+        setBackgroundDrawableForView(root, color);
+        setBackgroundDrawableForWindow(color);
+    }
+
+    private void setBackgroundDrawableForView(View root, int color) {
+        if (getShowsDialog()) {
+            return;
         }
+        root.setBackground(new ColorDrawable(color));
+    }
+
+    private void setBackgroundDrawableForWindow(int color) {
+        Window window = getWindow();
+        if (window == null) {
+            return;
+        }
+
+        AwesomeFragment fragment = getDialogFragment();
+        if (fragment != null) {
+            if (Color.alpha(color) < 255) {
+                window.setDimAmount(0);
+                window.setBackgroundDrawable(new ColorDrawable(color));
+            }
+            return;
+        }
+
+        window.setBackgroundDrawable(new ColorDrawable(color));
+    }
+
+    @Nullable
+    public Window getWindow() {
+        AwesomeFragment fragment = getDialogFragment();
+        if (fragment != null) {
+            Dialog dialog = fragment.requireDialog();
+            return dialog.getWindow();
+        }
+
+        if (getActivity() != null) {
+            return getActivity().getWindow();
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public AwesomeFragment getDialogFragment() {
+        if (getShowsDialog()) {
+            return this;
+        }
+
+        AwesomeFragment parent = getParentAwesomeFragment();
+        if (parent == null) {
+            return null;
+        }
+
+        return parent.getDialogFragment();
+    }
+
+    protected boolean isInDialog() {
+        return getDialogFragment() != null;
+    }
+
+    @Nullable
+    public AwesomeFragment getParentAwesomeFragment() {
+        if (getShowsDialog()) {
+            return null;
+        }
+
+        Fragment fragment = getParentFragment();
+        if (fragment instanceof AwesomeFragment) {
+            return (AwesomeFragment) fragment;
+        }
+        return null;
+    }
+
+    public boolean isParentFragment() {
+        return false;
     }
 
     @Override
@@ -364,7 +438,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         mResult = data;
         mResultCode = resultCode;
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null && !definesPresentationContext() && !getShowsDialog()) {
+        if (parent != null && !definesPresentationContext()) {
             parent.setResult(resultCode, data);
         }
     }
@@ -430,19 +504,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         return Collections.emptyList();
     }
 
-    @Nullable
-    public AwesomeFragment getParentAwesomeFragment() {
-        Fragment fragment = getParentFragment();
-        if (fragment instanceof AwesomeFragment) {
-            return (AwesomeFragment) fragment;
-        }
-        return null;
-    }
-
-    public boolean isParentFragment() {
-        return false;
-    }
-
     // ------- statusBar --------
 
     @Nullable
@@ -476,13 +537,8 @@ public abstract class AwesomeFragment extends InternalFragment {
     @NonNull
     protected BarStyle preferredStatusBarStyle() {
         if (getShowsDialog()) {
-            Window window = getWindow();
-            if (window != null && window.getAttributes().dimAmount == 0 && SystemUI.isStatusBarStyleDark(requireActivity().getWindow())) {
-                return BarStyle.DarkContent;
-            }
             return BarStyle.LightContent;
         }
-
         return mStyle.getStatusBarStyle();
     }
 
@@ -512,7 +568,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (!getShowsDialog() && parent != null) {
+        if (parent != null) {
             parent.setNeedsStatusBarAppearanceUpdate();
             return;
         }
@@ -613,7 +669,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (!getShowsDialog() && parent != null) {
+        if (parent != null) {
             parent.setNeedsNavigationBarAppearanceUpdate();
             return;
         }
@@ -672,37 +728,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Override
     public void dismiss() {
         super.dismiss();
-    }
-
-    @Nullable
-    public Window getWindow() {
-        if (isInDialog()) {
-            AwesomeFragment fragment = this;
-            while (fragment != null && !fragment.getShowsDialog()) {
-                fragment = fragment.getParentAwesomeFragment();
-            }
-
-            if (fragment != null) {
-                Dialog dialog = fragment.getDialog();
-                if (dialog != null) {
-                    return dialog.getWindow();
-                }
-            }
-        }
-
-        if (getActivity() != null) {
-            return getActivity().getWindow();
-        }
-
-        return null;
-    }
-
-    public boolean isInDialog() {
-        if (getShowsDialog()) {
-            return true;
-        }
-        AwesomeFragment parent = getParentAwesomeFragment();
-        return parent != null && parent.isInDialog();
     }
 
     public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode) {
@@ -852,10 +877,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             return (TabBarFragment) this;
         }
 
-        if (getShowsDialog()) {
-            return null;
-        }
-
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             return parent.getTabBarFragment();
@@ -889,10 +910,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     public DrawerFragment getDrawerFragment() {
         if (this instanceof DrawerFragment) {
             return (DrawerFragment) this;
-        }
-
-        if (getShowsDialog()) {
-            return null;
         }
 
         AwesomeFragment parent = getParentAwesomeFragment();
