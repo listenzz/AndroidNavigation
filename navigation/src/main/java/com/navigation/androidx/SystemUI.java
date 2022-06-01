@@ -34,6 +34,12 @@ public class SystemUI {
         } else {
             decorView.setOnApplyWindowInsetsListener(null);
         }
+
+        int systemUi = decorView.getSystemUiVisibility();
+        systemUi |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        systemUi |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+        decorView.setSystemUiVisibility(systemUi);
+
         ViewCompat.requestApplyInsets(decorView);
     }
 
@@ -95,10 +101,8 @@ public class SystemUI {
         int systemUi = decorView.getSystemUiVisibility();
         if (hidden) {
             systemUi |= View.SYSTEM_UI_FLAG_FULLSCREEN;
-            systemUi |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         } else {
             systemUi &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
-            systemUi &= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         }
         window.getDecorView().setSystemUiVisibility(systemUi);
     }
@@ -244,10 +248,8 @@ public class SystemUI {
             int systemUi = decorView.getSystemUiVisibility();
             if (hidden) {
                 systemUi |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-                systemUi |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
             } else {
                 systemUi &= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-                systemUi &= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
             }
             window.getDecorView().setSystemUiVisibility(systemUi);
         }
@@ -259,10 +261,8 @@ public class SystemUI {
             int systemUi = decorView.getSystemUiVisibility();
             if (hidden) {
                 systemUi |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-                systemUi |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
             } else {
                 systemUi &= ~View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-                systemUi &= ~View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
             }
             window.getDecorView().setSystemUiVisibility(systemUi);
         }

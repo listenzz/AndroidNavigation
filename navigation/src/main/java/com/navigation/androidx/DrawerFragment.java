@@ -104,21 +104,6 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         return getContentFragment();
     }
 
-    @Nullable
-    @Override
-    protected AwesomeFragment childFragmentForNavigationBarAppearance() {
-        return getContentFragment();
-    }
-
-    @Nullable
-    @Override
-    protected AwesomeFragment childFragmentForStatusBarHidden() {
-        if (opening || opened) {
-            return null;
-        }
-        return getContentFragment();
-    }
-
     @Override
     protected boolean preferredStatusBarHidden() {
         return shouldHideStatusBarWhenMenuOpened() || super.preferredStatusBarHidden();

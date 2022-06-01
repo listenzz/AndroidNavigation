@@ -249,9 +249,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         //Log.i(TAG, getDebugTag() + "#onResume");
         if (childFragmentForAppearance() == null) {
             setNeedsStatusBarAppearanceUpdate();
-        }
-
-        if (childFragmentForNavigationBarAppearance() == null) {
             setNeedsNavigationBarAppearanceUpdate();
         }
 
@@ -511,31 +508,13 @@ public abstract class AwesomeFragment extends InternalFragment {
         return null;
     }
 
-    private AwesomeFragment fragmentForStatusBarAppearance() {
-        AwesomeFragment childFragment = childFragmentForAppearance();
-        if (childFragment == null) {
-            return this;
-        } else {
-            return childFragment.fragmentForStatusBarAppearance();
-        }
-    }
-
-    @Nullable
-    protected AwesomeFragment childFragmentForStatusBarHidden() {
-        return childFragmentForAppearance();
-    }
-
-    private AwesomeFragment fragmentForStatusBarHidden() {
-        AwesomeFragment childFragment = childFragmentForStatusBarHidden();
-        if (childFragment == null) {
-            return this;
-        } else {
-            return childFragment.fragmentForStatusBarHidden();
-        }
-    }
-
     @NonNull
     protected BarStyle preferredStatusBarStyle() {
+        AwesomeFragment child = childFragmentForAppearance();
+        if (child != null) {
+            return child.preferredStatusBarStyle();
+        }
+
         if (getShowsDialog()) {
             return BarStyle.LightContent;
         }
@@ -543,18 +522,26 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     protected boolean preferredStatusBarHidden() {
+        AwesomeFragment child = childFragmentForAppearance();
+        if (child != null) {
+            return child.preferredStatusBarHidden();
+        }
+
         if (getShowsDialog()) {
             return SystemUI.isStatusBarHidden(requireActivity().getWindow());
         }
-
         return mStyle.isStatusBarHidden();
     }
 
     protected int preferredStatusBarColor() {
+        AwesomeFragment child = childFragmentForAppearance();
+        if (child != null) {
+            return child.preferredStatusBarColor();
+        }
+
         if (getShowsDialog()) {
             return Color.TRANSPARENT;
         }
-
         return mStyle.getStatusBarColor();
     }
 
@@ -563,33 +550,18 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void setNeedsStatusBarAppearanceUpdate() {
-        if (!isResumed()) {
-            return;
-        }
-
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             parent.setNeedsStatusBarAppearanceUpdate();
             return;
         }
 
-        AwesomeFragment fragment = fragmentForStatusBarAppearance();
-        if (!fragment.isResumed()) {
-            return;
-        }
-
         // statusBarHidden
-        boolean hidden = fragmentForStatusBarHidden().preferredStatusBarHidden();
-        setStatusBarHidden(hidden);
-
+        setStatusBarHidden(preferredStatusBarHidden());
         // statusBarStyle
-        BarStyle statusBarStyle = fragment.preferredStatusBarStyle();
-        setStatusBarStyle(statusBarStyle);
-
+        setStatusBarStyle(preferredStatusBarStyle());
         // statusBarColor
-        boolean animated = fragment.preferredStatusBarColorAnimated();
-        int statusBarColor = fragment.preferredStatusBarColor();
-        setStatusBarColor(statusBarColor, animated);
+        setStatusBarColor(preferredStatusBarColor(), preferredStatusBarColorAnimated());
     }
 
     private void setStatusBarStyle(BarStyle barStyle) {
@@ -619,23 +591,13 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     // ------- NavigationBar --------
-
-    @Nullable
-    protected AwesomeFragment childFragmentForNavigationBarAppearance() {
-        return childFragmentForAppearance();
-    }
-
-    private AwesomeFragment fragmentForNavigationBarAppearance() {
-        AwesomeFragment childFragment = childFragmentForNavigationBarAppearance();
-        if (childFragment == null) {
-            return this;
-        } else {
-            return childFragment.fragmentForNavigationBarAppearance();
-        }
-    }
-
     @ColorInt
     protected int preferredNavigationBarColor() {
+        AwesomeFragment child = childFragmentForAppearance();
+        if (child != null) {
+            return child.preferredNavigationBarColor();
+        }
+
         if (getShowsDialog()) {
             return mDialogDelegate.preferredNavigationBarColor();
         }
@@ -649,10 +611,19 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @NonNull
     protected BarStyle preferredNavigationBarStyle() {
+        AwesomeFragment child = childFragmentForAppearance();
+        if (child != null) {
+            return child.preferredNavigationBarStyle();
+        }
         return AppUtils.isBlackColor(preferredNavigationBarColor(), 176) ? BarStyle.LightContent : BarStyle.DarkContent;
     }
 
     protected boolean preferredNavigationBarHidden() {
+        AwesomeFragment child = childFragmentForAppearance();
+        if (child != null) {
+            return child.preferredNavigationBarHidden();
+        }
+
         if (getShowsDialog()) {
             return SystemUI.isNavigationBarHidden(requireActivity().getWindow());
         }
@@ -664,25 +635,17 @@ public abstract class AwesomeFragment extends InternalFragment {
             return;
         }
 
-        if (!isResumed()) {
-            return;
-        }
-
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             parent.setNeedsNavigationBarAppearanceUpdate();
             return;
         }
 
-        AwesomeFragment fragment = fragmentForNavigationBarAppearance();
-        if (!fragment.isResumed()) {
-            return;
-        }
-        setNavigationBarColor(fragment.preferredNavigationBarColor());
-        setNavigationBarStyle(fragment.preferredNavigationBarStyle());
-        setNavigationBarHidden(fragment.preferredNavigationBarHidden());
-        setNavigationBarLayoutHidden(fragment.preferredNavigationBarHidden() ||
-                Color.alpha(fragment.preferredNavigationBarColor()) < 255);
+        setNavigationBarColor(preferredNavigationBarColor());
+        setNavigationBarStyle(preferredNavigationBarStyle());
+        setNavigationBarHidden(preferredNavigationBarHidden());
+        setNavigationBarLayoutHidden(preferredNavigationBarHidden() ||
+                Color.alpha(preferredNavigationBarColor()) < 255);
     }
 
     private void setNavigationBarStyle(BarStyle barStyle) {
