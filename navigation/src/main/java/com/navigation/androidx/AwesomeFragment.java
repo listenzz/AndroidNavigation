@@ -396,8 +396,12 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @Nullable Runnable completion) {
+        presentFragment(fragment, requestCode, TransitionAnimation.Present, completion);
+    }
+
+    public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> {
-            mPresentationDelegate.presentFragment(fragment, requestCode, completion);
+            mPresentationDelegate.presentFragment(fragment, requestCode, animation, completion);
         });
     }
 
@@ -406,8 +410,12 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void dismissFragment(@Nullable Runnable completion) {
+        dismissFragment(TransitionAnimation.Present, completion);
+    }
+
+    public void dismissFragment(@NonNull TransitionAnimation animation, @Nullable Runnable completion) {
         scheduleTaskAtStarted(() -> {
-            mPresentationDelegate.dismissFragment(completion);
+            mPresentationDelegate.dismissFragment(animation, completion);
         });
     }
 

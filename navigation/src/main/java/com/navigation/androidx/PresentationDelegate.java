@@ -45,7 +45,7 @@ public class PresentationDelegate {
         outState.putBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, mDefinesPresentationContext);
     }
 
-    public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @Nullable Runnable completion) {
+    public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
         if (!FragmentHelper.canPresentFragment(mFragment, mFragment.requireActivity())) {
             if (completion != null) {
                 completion.run();
@@ -59,7 +59,7 @@ public class PresentationDelegate {
             if (definesPresentationContext()) {
                 presentFragment(mFragment, fragment, requestCode, completion);
             } else {
-                parent.presentFragment(fragment, requestCode, completion);
+                parent.presentFragment(fragment, requestCode, animation, completion);
             }
             return;
         }
@@ -67,7 +67,7 @@ public class PresentationDelegate {
         if (mPresentableActivity != null) {
             Bundle args = FragmentHelper.getArguments(fragment);
             args.putInt(ARGS_REQUEST_CODE, requestCode);
-            mPresentableActivity.presentFragment(fragment, completion);
+            mPresentableActivity.presentFragment(fragment, animation, completion);
         }
 
     }
@@ -83,7 +83,7 @@ public class PresentationDelegate {
         }
     }
 
-    public void dismissFragment(@Nullable Runnable completion) {
+    public void dismissFragment(@NonNull TransitionAnimation animation, @Nullable Runnable completion) {
         if (mFragment.getDialogFragment() != null) {
             throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `hideDialog`");
         }
@@ -93,7 +93,7 @@ public class PresentationDelegate {
             if (definesPresentationContext()) {
                 AwesomeFragment presented = getPresentedFragment();
                 if (presented != null) {
-                    FragmentHelper.handleDismissFragment(mFragment, presented, null);
+                    FragmentHelper.handleDismissFragment(mFragment, presented, null, animation);
                     if (completion != null) {
                         completion.run();
                     }
@@ -102,20 +102,20 @@ public class PresentationDelegate {
 
                 AwesomeFragment target = (AwesomeFragment) mFragment.getTargetFragment();
                 if (target != null) {
-                    FragmentHelper.handleDismissFragment(target, mFragment, mFragment);
+                    FragmentHelper.handleDismissFragment(target, mFragment, mFragment, animation);
                 }
 
                 if (completion != null) {
                     completion.run();
                 }
             } else {
-                parent.dismissFragment(completion);
+                parent.dismissFragment(animation, completion);
             }
             return;
         }
 
         if (mPresentableActivity != null) {
-            mPresentableActivity.dismissFragment(mFragment, completion);
+            mPresentableActivity.dismissFragment(mFragment, animation, completion);
         }
 
     }

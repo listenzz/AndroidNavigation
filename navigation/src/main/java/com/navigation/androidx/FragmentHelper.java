@@ -248,9 +248,9 @@ public class FragmentHelper {
         return dialog;
     }
 
-    public static void handleDismissFragment(@NonNull AwesomeFragment target, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top) {
+    public static void handleDismissFragment(@NonNull AwesomeFragment target, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top, @NonNull TransitionAnimation animation) {
         FragmentManager fragmentManager = target.getParentFragmentManager();
-        target.setAnimation(TransitionAnimation.Present);
+        target.setAnimation(animation);
 
         if (top == null) {
             top = (AwesomeFragment) fragmentManager.findFragmentById(target.getContainerId());
@@ -260,7 +260,7 @@ public class FragmentHelper {
             return;
         }
 
-        top.setAnimation(TransitionAnimation.Present);
+        top.setAnimation(animation);
         fragmentManager.beginTransaction().setMaxLifecycle(presented, Lifecycle.State.STARTED).commit();
         fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 

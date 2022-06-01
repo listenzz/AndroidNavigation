@@ -130,13 +130,17 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         presentFragment(fragment, null);
     }
 
-    @Override
     public void presentFragment(@NonNull AwesomeFragment fragment, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> presentFragmentSync(fragment, completion));
+        presentFragment(fragment, TransitionAnimation.Present, completion);
     }
 
-    private void presentFragmentSync(AwesomeFragment fragment, @Nullable Runnable completion) {
-        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, TransitionAnimation.Present);
+    @Override
+    public void presentFragment(@NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
+        scheduleTaskAtStarted(() -> presentFragmentSync(fragment, animation, completion));
+    }
+
+    private void presentFragmentSync(AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
+        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, animation);
         if (completion != null) {
             completion.run();
         }
@@ -146,19 +150,23 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         dismissFragment(fragment, null);
     }
 
-    @Override
     public void dismissFragment(@NonNull AwesomeFragment fragment, @Nullable Runnable completion) {
+        dismissFragment(fragment, TransitionAnimation.Present, completion);
+    }
+
+    @Override
+    public void dismissFragment(@NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
         if (fragment.getParentFragmentManager() == getSupportFragmentManager()) {
-            scheduleTaskAtStarted(() -> dismissFragmentSync(fragment, completion));
+            scheduleTaskAtStarted(() -> dismissFragmentSync(fragment, animation, completion));
             return;
         }
         fragment.dismissFragment(completion);
     }
 
-    private void dismissFragmentSync(AwesomeFragment fragment, @Nullable Runnable completion) {
+    private void dismissFragmentSync(AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
         AwesomeFragment presented = getPresentedFragment(fragment);
         if (presented != null) {
-            FragmentHelper.handleDismissFragment(fragment, presented, null);
+            FragmentHelper.handleDismissFragment(fragment, presented, null, animation);
             if (completion != null) {
                 completion.run();
             }
@@ -167,7 +175,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
         AwesomeFragment presenting = getPresentingFragment(fragment);
         if (presenting != null) {
-            FragmentHelper.handleDismissFragment(presenting, fragment, fragment);
+            FragmentHelper.handleDismissFragment(presenting, fragment, fragment, animation);
             if (completion != null) {
                 completion.run();
             }
