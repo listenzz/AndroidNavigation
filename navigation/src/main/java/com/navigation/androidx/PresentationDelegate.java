@@ -28,7 +28,7 @@ public class PresentationDelegate {
     private boolean mDefinesPresentationContext;
 
     public boolean definesPresentationContext() {
-        return mDefinesPresentationContext;
+        return mDefinesPresentationContext && mFragment.getPresentationStyle() == PresentationStyle.CurrentContext;
     }
 
     public void setDefinesPresentationContext(boolean defines) {
@@ -77,7 +77,7 @@ public class PresentationDelegate {
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         presented.setTargetFragment(presenting, requestCode);
         presented.setDefinesPresentationContext(true);
-        FragmentHelper.addFragmentToBackStack(presenting.getParentFragmentManager(), presenting.getContainerId(), presented, TransitionAnimation.Present);
+        FragmentHelper.handlePresentFragment(presenting.getParentFragmentManager(), presenting.getContainerId(), presented, TransitionAnimation.Present);
         if (completion != null) {
             completion.run();
         }
@@ -118,7 +118,7 @@ public class PresentationDelegate {
         if (presenting != null) {
             FragmentHelper.handleDismissFragment(presenting, mFragment, mFragment, animation);
         }
-        
+
         if (completion != null) {
             completion.run();
         }

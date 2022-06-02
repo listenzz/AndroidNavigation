@@ -43,6 +43,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private static final String SAVED_TAB_BAR_ITEM = "nav_tab_bar_item";
     private static final String SAVED_SCENE_ID = "nav_scene_id";
+    private static final String SAVED_PRESENTATION_STYLE = "presentation_style";
 
     private PresentableActivity mPresentableActivity;
     private final LifecycleDelegate mLifecycleDelegate = new LifecycleDelegate(this);
@@ -79,6 +80,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (savedInstanceState != null) {
             mSceneId = savedInstanceState.getString(SAVED_SCENE_ID);
             mTabBarItem = savedInstanceState.getParcelable(SAVED_TAB_BAR_ITEM);
+            String style = savedInstanceState.getString(SAVED_PRESENTATION_STYLE);
+            setPresentationStyle(PresentationStyle.valueOf(style));
         }
 
         mPresentationDelegate.onCreate(savedInstanceState);
@@ -92,6 +95,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         super.onSaveInstanceState(outState);
         outState.putString(SAVED_SCENE_ID, mSceneId);
         outState.putParcelable(SAVED_TAB_BAR_ITEM, mTabBarItem);
+        outState.putString(SAVED_PRESENTATION_STYLE, mPresentationStyle.name());
         mPresentationDelegate.onSaveInstanceState(outState);
     }
 
@@ -162,7 +166,9 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private void setBackgroundDrawable(View root, int color) {
         setBackgroundForView(root, color);
-        setBackgroundForWindow(color);
+        if (Color.alpha(color) == 255) {
+            setBackgroundForWindow(color);
+        }
     }
 
     private void setBackgroundForView(View root, int color) {
@@ -546,6 +552,16 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public boolean definesPresentationContext() {
         return mPresentationDelegate.definesPresentationContext();
+    }
+
+    private PresentationStyle mPresentationStyle = PresentationStyle.CurrentContext;
+
+    public void setPresentationStyle(PresentationStyle style) {
+        mPresentationStyle = style;
+    }
+
+    public PresentationStyle getPresentationStyle() {
+        return mPresentationStyle;
     }
 
     // ------ dialog -----

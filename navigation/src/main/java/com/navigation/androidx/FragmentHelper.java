@@ -248,6 +248,29 @@ public class FragmentHelper {
         return dialog;
     }
 
+    public static void handlePresentFragment(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation) {
+        if (fragmentManager.isDestroyed()) {
+            return;
+        }
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setReorderingAllowed(true);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentById(containerId);
+        if (topFragment != null && topFragment.isAdded()) {
+            topFragment.setAnimation(animation);
+            transaction.setMaxLifecycle(topFragment, Lifecycle.State.STARTED);
+            if (fragment.getPresentationStyle() == PresentationStyle.CurrentContext) {
+                transaction.hide(topFragment);
+            }
+        }
+        fragment.setAnimation(animation);
+
+        transaction.add(containerId, fragment, fragment.getSceneId());
+        transaction.addToBackStack(fragment.getSceneId());
+        transaction.commit();
+    }
+
     public static void handleDismissFragment(@NonNull AwesomeFragment presenting, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top, @NonNull TransitionAnimation animation) {
         FragmentManager fragmentManager = presenting.getParentFragmentManager();
         presenting.setAnimation(animation);

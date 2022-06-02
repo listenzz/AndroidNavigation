@@ -140,7 +140,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     private void presentFragmentSync(AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
-        FragmentHelper.addFragmentToBackStack(getSupportFragmentManager(), android.R.id.content, fragment, animation);
+        FragmentHelper.handlePresentFragment(getSupportFragmentManager(), android.R.id.content, fragment, animation);
         if (completion != null) {
             completion.run();
         }
@@ -176,9 +176,10 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         AwesomeFragment presenting = getPresentingFragment(fragment);
         if (presenting != null) {
             FragmentHelper.handleDismissFragment(presenting, fragment, fragment, animation);
-            if (completion != null) {
-                completion.run();
-            }
+        }
+
+        if (completion != null) {
+            completion.run();
         }
     }
 
