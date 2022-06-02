@@ -44,8 +44,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     private static final String SAVED_TAB_BAR_ITEM = "nav_tab_bar_item";
     private static final String SAVED_SCENE_ID = "nav_scene_id";
 
-
-    // ------- lifecycle methods -------
     private PresentableActivity mPresentableActivity;
     private final LifecycleDelegate mLifecycleDelegate = new LifecycleDelegate(this);
     private final PresentationDelegate mPresentationDelegate = new PresentationDelegate(this);
@@ -53,6 +51,8 @@ public abstract class AwesomeFragment extends InternalFragment {
     private final StackDelegate mStackDelegate = new StackDelegate(this);
 
     protected Style mStyle;
+
+    // -------- lifecycle --------
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -82,10 +82,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         mPresentationDelegate.onCreate(savedInstanceState);
+        mDialogDelegate.onCreate();
 
-        Bundle args = FragmentHelper.getArguments(this);
-        boolean showAsDialog = args.getBoolean(ARGS_SHOW_AS_DIALOG, false);
-        setShowsDialog(showAsDialog);
         setResult(0, null);
     }
 
@@ -151,7 +149,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             mStackDelegate.fitStackFragment(root);
         }
 
-        if (!isParentFragment()) {
+        if (!isParentAwesomeFragment()) {
             setBackgroundDrawable(root, mStyle.getScreenBackgroundColor());
         }
     }
@@ -163,52 +161,53 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     private void setBackgroundDrawable(View root, int color) {
-        setBackgroundDrawableForView(root, color);
-        setBackgroundDrawableForWindow(color);
+        setBackgroundForView(root, color);
+        setBackgroundForWindow(color);
     }
 
-    private void setBackgroundDrawableForView(View root, int color) {
+    private void setBackgroundForView(View root, int color) {
         if (getShowsDialog()) {
             return;
         }
         root.setBackground(new ColorDrawable(color));
     }
 
-    private void setBackgroundDrawableForWindow(int color) {
+    private void setBackgroundForWindow(int color) {
         Window window = getWindow();
-        if (window == null) {
-            return;
-        }
 
-        AwesomeFragment fragment = getDialogFragment();
+        AwesomeFragment fragment = getDialogAwesomeFragment();
         if (fragment != null) {
-            if (Color.alpha(color) < 255) {
-                window.setDimAmount(0);
-                window.setBackgroundDrawable(new ColorDrawable(color));
-            }
+            setBackgroundForDialogWindow(color, window);
             return;
         }
 
+        setBackgroundForActivityWindow(color, window);
+    }
+
+    private void setBackgroundForActivityWindow(int color, Window window) {
         window.setBackgroundDrawable(new ColorDrawable(color));
     }
 
-    @Nullable
+    private void setBackgroundForDialogWindow(int color, Window window) {
+        if (Color.alpha(color) < 255) {
+            window.setDimAmount(0);
+            window.setBackgroundDrawable(new ColorDrawable(color));
+        }
+    }
+
+    @NonNull
     public Window getWindow() {
-        AwesomeFragment fragment = getDialogFragment();
+        AwesomeFragment fragment = getDialogAwesomeFragment();
         if (fragment != null) {
             Dialog dialog = fragment.requireDialog();
             return dialog.getWindow();
         }
 
-        if (getActivity() != null) {
-            return getActivity().getWindow();
-        }
-
-        return null;
+        return requireActivity().getWindow();
     }
 
     @Nullable
-    public AwesomeFragment getDialogFragment() {
+    public AwesomeFragment getDialogAwesomeFragment() {
         if (getShowsDialog()) {
             return this;
         }
@@ -218,11 +217,19 @@ public abstract class AwesomeFragment extends InternalFragment {
             return null;
         }
 
-        return parent.getDialogFragment();
+        return parent.getDialogAwesomeFragment();
     }
 
     protected boolean isInDialog() {
-        return getDialogFragment() != null;
+        return getDialogAwesomeFragment() != null;
+    }
+
+    @NonNull
+    public List<AwesomeFragment> getChildAwesomeFragments() {
+        if (isAdded()) {
+            return FragmentHelper.getFragments(getChildFragmentManager());
+        }
+        return Collections.emptyList();
     }
 
     @Nullable
@@ -238,7 +245,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         return null;
     }
 
-    public boolean isParentFragment() {
+    public boolean isParentAwesomeFragment() {
         return false;
     }
 
@@ -266,7 +273,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        if (isResumed() && !isParentFragment()) {
+        if (isResumed() && !isParentAwesomeFragment()) {
             setDisplayCutoutWhenLandscape(newConfig.orientation);
         }
         super.onConfigurationChanged(newConfig);
@@ -311,21 +318,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         TransitionAnimation animation = getAnimation();
-
-        Animation anim = null;
-        if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
-            if (enter) {
-                anim = AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.enter : nextAnim);
-            } else {
-                anim = AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.exit : nextAnim);
-            }
-        } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
-            if (enter) {
-                anim = AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.popEnter : nextAnim);
-            } else {
-                anim = AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.popExit : nextAnim);
-            }
-        }
+        Animation anim = createOurAnimation(transit, enter, nextAnim, context, animation);
 
         if (!mStackDelegate.drawTabBarIfNeeded(transit, enter, anim)) {
             mStackDelegate.drawScrimIfNeeded(transit, enter, anim);
@@ -334,11 +327,45 @@ public abstract class AwesomeFragment extends InternalFragment {
         return anim;
     }
 
+    @Nullable
+    private Animation createOurAnimation(int transit, boolean enter, int nextAnim, Context context, TransitionAnimation animation) {
+        if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
+            if (enter) {
+                return AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.enter : nextAnim);
+            }
+            return AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.exit : nextAnim);
+        }
+
+        if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
+            if (enter) {
+                return AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.popEnter : nextAnim);
+            }
+            return AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.popExit : nextAnim);
+        }
+        return null;
+    }
+
     public void scheduleTaskAtStarted(Runnable runnable) {
         mLifecycleDelegate.scheduleTaskAtStarted(runnable);
     }
 
-    // ------- presentation ------
+    public void setActivityRootFragment(AwesomeFragment root) {
+        if (mPresentableActivity != null) {
+            mPresentableActivity.setActivityRootFragment(root);
+        }
+    }
+
+    public String getDebugTag() {
+        if (getActivity() == null) {
+            return null;
+        }
+        AwesomeFragment parent = getParentAwesomeFragment();
+        if (parent == null) {
+            return "#" + FragmentHelper.indexOf(this) + "-" + getClass().getSimpleName();
+        } else {
+            return parent.getDebugTag() + "#" + FragmentHelper.indexOf(this) + "-" + getClass().getSimpleName();
+        }
+    }
 
     private String mSceneId;
 
@@ -350,46 +377,130 @@ public abstract class AwesomeFragment extends InternalFragment {
         return mSceneId;
     }
 
-    public void setDefinesPresentationContext(boolean defines) {
-        mPresentationDelegate.setDefinesPresentationContext(defines);
-    }
-
-    public boolean definesPresentationContext() {
-        return mPresentationDelegate.definesPresentationContext();
-    }
-
     protected boolean dispatchBackPressed() {
         FragmentManager fragmentManager = getChildFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
-
-        if (fragment instanceof AwesomeFragment && ((AwesomeFragment) fragment).definesPresentationContext() && count > 0) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count - 1);
-            AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-            if (child != null) {
-                boolean processed = child.dispatchBackPressed() || onBackPressed();
-                if (!processed) {
-                    child.dismissFragment(null);
-                }
-                return true;
-            }
+        if (handlePresentationContext(fragmentManager)) {
+            return true;
         }
 
+        Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
         if (fragment instanceof AwesomeFragment) {
             AwesomeFragment child = (AwesomeFragment) fragment;
             return child.dispatchBackPressed() || onBackPressed();
-        } else if (count > 0) {
+        }
+
+        int count = fragmentManager.getBackStackEntryCount();
+        if (count > 0) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count - 1);
             AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
             return (child != null && child.dispatchBackPressed()) || onBackPressed();
-        } else {
-            return onBackPressed();
         }
+
+        return onBackPressed();
+    }
+
+    private boolean handlePresentationContext(FragmentManager fragmentManager) {
+        Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
+        if (!(fragment instanceof AwesomeFragment)) {
+            return false;
+        }
+
+        if (!((AwesomeFragment) fragment).definesPresentationContext()) {
+            return false;
+        }
+
+        int count = fragmentManager.getBackStackEntryCount();
+        if (count == 0) {
+            return false;
+        }
+
+        FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(count - 1);
+        AwesomeFragment child = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+        if (child == null) {
+            return false;
+        }
+
+        boolean processed = child.dispatchBackPressed() || onBackPressed();
+        if (!processed) {
+            child.dismissFragment(null);
+        }
+        return true;
     }
 
     protected boolean onBackPressed() {
         return false;
     }
+
+    // -------- result --------
+
+    private int mRequestCode;
+    private int mResultCode;
+    private Bundle mResult;
+
+    public void setResult(int resultCode, Bundle data) {
+        mResult = data;
+        mResultCode = resultCode;
+        if (definesPresentationContext()) {
+            return;
+        }
+
+        AwesomeFragment parent = getParentAwesomeFragment();
+        if (parent == null) {
+            return;
+        }
+        parent.setResult(resultCode, data);
+    }
+
+    public int getRequestCode() {
+        if (mRequestCode == 0) {
+            Bundle args = FragmentHelper.getArguments(this);
+            mRequestCode = args.getInt(ARGS_REQUEST_CODE);
+        }
+        return mRequestCode;
+    }
+
+    public int getResultCode() {
+        return mResultCode;
+    }
+
+    public Bundle getResultData() {
+        return mResult;
+    }
+
+    public void onFragmentResult(int requestCode, int resultCode, @Nullable Bundle data) {
+        // Log.i(TAG, toString() + "#onFragmentResult requestCode=" + requestCode + " resultCode=" + resultCode + " data=" + data);
+        if (this instanceof TabBarFragment) {
+            AwesomeFragment child = ((TabBarFragment) this).getSelectedFragment();
+            dispatchChildFragmentResult(requestCode, resultCode, data, child);
+            return;
+        }
+
+        if (this instanceof StackFragment) {
+            AwesomeFragment child = ((StackFragment) this).getTopFragment();
+            dispatchChildFragmentResult(requestCode, resultCode, data, child);
+            return;
+        }
+
+        if (this instanceof DrawerFragment) {
+            AwesomeFragment child = ((DrawerFragment) this).getContentFragment();
+            dispatchChildFragmentResult(requestCode, resultCode, data, child);
+            return;
+        }
+
+        List<AwesomeFragment> fragments = getChildAwesomeFragments();
+        for (AwesomeFragment child : fragments) {
+            child.onFragmentResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void dispatchChildFragmentResult(int requestCode, int resultCode, @Nullable Bundle data, @Nullable AwesomeFragment child) {
+        if (child == null) {
+            return;
+        }
+        child.onFragmentResult(requestCode, resultCode, data);
+    }
+
+    // ------- presentation -----
 
     public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode) {
         presentFragment(fragment, requestCode, null);
@@ -429,84 +540,68 @@ public abstract class AwesomeFragment extends InternalFragment {
         return mPresentationDelegate.getPresentingFragment();
     }
 
-    public void setActivityRootFragment(AwesomeFragment root) {
-        if (mPresentableActivity != null) {
-            mPresentableActivity.setActivityRootFragment(root);
-        }
+    public void setDefinesPresentationContext(boolean defines) {
+        mPresentationDelegate.setDefinesPresentationContext(defines);
     }
 
-    private int mRequestCode;
-    private int mResultCode;
-    private Bundle mResult;
-
-    public void setResult(int resultCode, Bundle data) {
-        mResult = data;
-        mResultCode = resultCode;
-        AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null && !definesPresentationContext()) {
-            parent.setResult(resultCode, data);
-        }
+    public boolean definesPresentationContext() {
+        return mPresentationDelegate.definesPresentationContext();
     }
 
-    public int getRequestCode() {
-        if (mRequestCode == 0) {
-            Bundle args = FragmentHelper.getArguments(this);
-            mRequestCode = args.getInt(ARGS_REQUEST_CODE);
-        }
-        return mRequestCode;
+    // ------ dialog -----
+
+    /**
+     * @deprecated call {@link #showAsDialog(AwesomeFragment, int)} instead of this method.
+     */
+    @Deprecated
+    @Override
+    public void show(@NonNull FragmentManager manager, String tag) {
+        super.show(manager, tag);
     }
 
-    public int getResultCode() {
-        return mResultCode;
+    /**
+     * @deprecated call {@link #showAsDialog(AwesomeFragment, int)} instead of this method.
+     */
+    @Deprecated
+    @Override
+    public int show(@NonNull FragmentTransaction transaction, String tag) {
+        return super.show(transaction, tag);
     }
 
-    public Bundle getResultData() {
-        return mResult;
+    /**
+     * @deprecated call {@link #hideAsDialog()} instead of this method.
+     */
+    @Deprecated
+    @Override
+    public void dismiss() {
+        super.dismiss();
     }
 
-    public void onFragmentResult(int requestCode, int resultCode, @Nullable Bundle data) {
-        // Log.i(TAG, toString() + "#onFragmentResult requestCode=" + requestCode + " resultCode=" + resultCode + " data=" + data);
-        if (this instanceof TabBarFragment) {
-            AwesomeFragment child = ((TabBarFragment) this).getSelectedFragment();
-            if (child != null) {
-                child.onFragmentResult(requestCode, resultCode, data);
-            }
-        } else if (this instanceof StackFragment) {
-            AwesomeFragment child = ((StackFragment) this).getTopFragment();
-            if (child != null) {
-                child.onFragmentResult(requestCode, resultCode, data);
-            }
-        } else if (this instanceof DrawerFragment) {
-            AwesomeFragment child = ((DrawerFragment) this).getContentFragment();
-            if (child != null) {
-                child.onFragmentResult(requestCode, resultCode, data);
-            }
-        } else {
-            List<AwesomeFragment> fragments = getChildFragments();
-            for (AwesomeFragment child : fragments) {
-                child.onFragmentResult(requestCode, resultCode, data);
-            }
-        }
+    public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode) {
+        showAsDialog(dialog, requestCode, null);
     }
 
-    public String getDebugTag() {
-        if (getActivity() == null) {
-            return null;
-        }
-        AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent == null) {
-            return "#" + FragmentHelper.indexOf(this) + "-" + getClass().getSimpleName();
-        } else {
-            return parent.getDebugTag() + "#" + FragmentHelper.indexOf(this) + "-" + getClass().getSimpleName();
-        }
+    public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+        scheduleTaskAtStarted(() -> {
+            mDialogDelegate.showAsDialog(dialog, requestCode, completion);
+        });
     }
 
-    @NonNull
-    public List<AwesomeFragment> getChildFragments() {
-        if (isAdded()) {
-            return FragmentHelper.getFragments(getChildFragmentManager());
-        }
-        return Collections.emptyList();
+    /**
+     * Dismiss the fragment as dialog.
+     */
+    public void hideAsDialog() {
+        hideAsDialog(null);
+    }
+
+    public void hideAsDialog(@Nullable Runnable completion) {
+        scheduleTaskAtStarted(() -> mDialogDelegate.hideAsDialog(completion, false));
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        mDialogDelegate.onDismiss();
     }
 
     // ------- statusBar --------
@@ -577,17 +672,11 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     private void setStatusBarHidden(boolean hidden) {
-        Window window = getWindow();
-        if (window != null) {
-            SystemUI.setStatusBarHidden(getWindow(), hidden);
-        }
+        SystemUI.setStatusBarHidden(getWindow(), hidden);
     }
 
     private void setStatusBarColor(int color, boolean animated) {
-        Window window = getWindow();
-        if (window != null) {
-            SystemUI.setStatusBarColor(getWindow(), color, animated);
-        }
+        SystemUI.setStatusBarColor(getWindow(), color, animated);
     }
 
     public void appendStatusBarPadding(View view) {
@@ -670,62 +759,6 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private void setNavigationBarLayoutHidden(boolean hidden) {
         SystemUI.setNavigationBarLayoutHidden(getWindow(), hidden);
-    }
-
-    // ------ dialog -----
-
-    /**
-     * @deprecated call {@link #showAsDialog(AwesomeFragment, int)} instead of this method.
-     */
-    @Deprecated
-    @Override
-    public void show(@NonNull FragmentManager manager, String tag) {
-        super.show(manager, tag);
-    }
-
-    /**
-     * @deprecated call {@link #showAsDialog(AwesomeFragment, int)} instead of this method.
-     */
-    @Deprecated
-    @Override
-    public int show(@NonNull FragmentTransaction transaction, String tag) {
-        return super.show(transaction, tag);
-    }
-
-    /**
-     * @deprecated call {@link #hideAsDialog()} instead of this method.
-     */
-    @Deprecated
-    @Override
-    public void dismiss() {
-        super.dismiss();
-    }
-
-    public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode) {
-        showAsDialog(dialog, requestCode, null);
-    }
-
-    public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> {
-            mDialogDelegate.showAsDialog(dialog, requestCode, completion);
-        });
-    }
-
-    /**
-     * Dismiss the fragment as dialog.
-     */
-    public void hideAsDialog() {
-        hideAsDialog(null);
-    }
-
-    public void hideAsDialog(@Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> mDialogDelegate.hideAsDialog(completion, false));
-    }
-
-    @Override
-    public void onDismiss(@NonNull DialogInterface dialog) {
-        super.onDismiss(dialog);
-        mDialogDelegate.onDismiss();
     }
 
     // ------ StackFragment -----
@@ -849,10 +882,11 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
-            return parent.getTabBarFragment();
+        if (parent == null) {
+            return null;
         }
-        return null;
+
+        return parent.getTabBarFragment();
     }
 
     private TabBarItem mTabBarItem;
@@ -884,10 +918,10 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
-            return parent.getDrawerFragment();
+        if (parent == null) {
+            return null;
         }
-        return null;
+        return parent.getDrawerFragment();
     }
 
 }

@@ -94,7 +94,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     @Override
-    public boolean isParentFragment() {
+    public boolean isParentAwesomeFragment() {
         return true;
     }
 

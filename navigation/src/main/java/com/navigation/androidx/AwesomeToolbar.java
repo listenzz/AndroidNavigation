@@ -298,6 +298,7 @@ public class AwesomeToolbar extends Toolbar {
 
     private void setButton(TextView button, ToolbarButtonItem buttonItem) {
         button.setOnClickListener(buttonItem.onClickListener);
+        button.setEnabled(buttonItem.enabled);
         button.setText(null);
         button.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         button.setMaxWidth(Integer.MAX_VALUE);
@@ -307,6 +308,7 @@ public class AwesomeToolbar extends Toolbar {
         ColorStateList colorStateList = AppUtils.buttonColorStateList(color);
 
         Drawable icon = drawableFromBarButtonItem(buttonItem);
+        
         if (icon != null) {
             if (!buttonItem.renderOriginal) {
                 DrawableCompat.setTintList(icon, colorStateList);
@@ -318,7 +320,6 @@ public class AwesomeToolbar extends Toolbar {
             button.setWidth(size);
             button.setHeight(size);
             button.setPaddingRelative(padding, 0, padding, 0);
-
         } else {
             int padding = AppUtils.dp2px(getContext(), 8);
             button.setPaddingRelative(padding, 0, padding, 0);
@@ -327,8 +328,6 @@ public class AwesomeToolbar extends Toolbar {
             button.setTextSize(buttonTextSize);
             button.setBackground(null);
         }
-
-        button.setEnabled(buttonItem.enabled);
     }
 
     private Drawable drawableFromBarButtonItem(ToolbarButtonItem barButtonItem) {

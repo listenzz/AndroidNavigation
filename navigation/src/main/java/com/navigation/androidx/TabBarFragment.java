@@ -145,7 +145,7 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     @Override
-    public boolean isParentFragment() {
+    public boolean isParentAwesomeFragment() {
         return true;
     }
 
@@ -179,7 +179,7 @@ public class TabBarFragment extends AwesomeFragment {
 
     @NonNull
     @Override
-    public List<AwesomeFragment> getChildFragments() {
+    public List<AwesomeFragment> getChildAwesomeFragments() {
         return mFragments;
     }
 

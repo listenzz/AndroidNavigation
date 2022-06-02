@@ -7,7 +7,6 @@ import static com.navigation.androidx.FragmentHelper.handleFragmentResult;
 import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -47,8 +46,7 @@ public class DialogDelegate {
     LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
         LayoutInflater layoutInflater = mFragment.requireActivity().getLayoutInflater();
         Window window = mFragment.getWindow();
-        boolean isFloating = window != null && window.isFloating();
-        if (!isFloating) {
+        if (!window.isFloating()) {
             layoutInflater = new DialogLayoutInflater(mFragment.requireContext(), layoutInflater,
                     () -> {
                         if (mFragment.isCancelable()) {
@@ -58,6 +56,12 @@ public class DialogDelegate {
         }
 
         return layoutInflater;
+    }
+
+    void onCreate() {
+        Bundle args = FragmentHelper.getArguments(mFragment);
+        boolean showAsDialog = args.getBoolean(ARGS_SHOW_AS_DIALOG, false);
+        mFragment.setShowsDialog(showAsDialog);
     }
 
     int preferredNavigationBarColor() {
@@ -74,11 +78,8 @@ public class DialogDelegate {
 
     void setupDialog() {
         Window window = mFragment.getWindow();
-
-        if (window != null) {
-            SystemUI.setStatusBarTranslucent(window, true);
-            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        }
+        SystemUI.setStatusBarTranslucent(window, true);
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         Dialog dialog = mFragment.requireDialog();
         dialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
@@ -122,7 +123,7 @@ public class DialogDelegate {
     }
 
     void hideAsDialog(@Nullable Runnable completion, boolean fromAnimation) {
-        if (mFragment.getDialogFragment() == null) {
+        if (mFragment.getDialogAwesomeFragment() == null) {
             throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
         }
 
@@ -283,5 +284,4 @@ public class DialogDelegate {
             }
         };
     }
-
 }
