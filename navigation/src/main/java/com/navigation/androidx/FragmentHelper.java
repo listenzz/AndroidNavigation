@@ -87,7 +87,7 @@ public class FragmentHelper {
     }
 
     public static int indexOf(@NonNull AwesomeFragment fragment) {
-        List<AwesomeFragment> list = getFragments(fragment.requireFragmentManager());
+        List<AwesomeFragment> list = getFragments(fragment.getParentFragmentManager());
         return list.indexOf(fragment);
     }
 
@@ -96,7 +96,7 @@ public class FragmentHelper {
         if (!fragment.isAdded()) {
             return null;
         }
-        FragmentManager fragmentManager = fragment.requireFragmentManager();
+        FragmentManager fragmentManager = fragment.getParentFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         int index = getIndexAtBackStack(fragment);
         if (index > -1 && index < count - 1) {
@@ -248,12 +248,12 @@ public class FragmentHelper {
         return dialog;
     }
 
-    public static void handleDismissFragment(@NonNull AwesomeFragment target, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top, @NonNull TransitionAnimation animation) {
-        FragmentManager fragmentManager = target.getParentFragmentManager();
-        target.setAnimation(animation);
+    public static void handleDismissFragment(@NonNull AwesomeFragment presenting, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top, @NonNull TransitionAnimation animation) {
+        FragmentManager fragmentManager = presenting.getParentFragmentManager();
+        presenting.setAnimation(animation);
 
         if (top == null) {
-            top = (AwesomeFragment) fragmentManager.findFragmentById(target.getContainerId());
+            top = (AwesomeFragment) fragmentManager.findFragmentById(presenting.getContainerId());
         }
 
         if (top == null) {
@@ -264,7 +264,7 @@ public class FragmentHelper {
         fragmentManager.beginTransaction().setMaxLifecycle(presented, Lifecycle.State.STARTED).commit();
         fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
-        handleFragmentResult(target, top);
+        handleFragmentResult(presenting, top);
     }
 
     public static void handleFragmentResult(AwesomeFragment target, AwesomeFragment resultFragment) {

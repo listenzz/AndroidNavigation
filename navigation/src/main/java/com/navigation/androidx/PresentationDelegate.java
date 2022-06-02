@@ -45,7 +45,7 @@ public class PresentationDelegate {
         outState.putBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, mDefinesPresentationContext);
     }
 
-    public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
+    public void presentFragment(@NonNull final AwesomeFragment presented, final int requestCode, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
         if (!FragmentHelper.canPresentFragment(mFragment, mFragment.requireActivity())) {
             if (completion != null) {
                 completion.run();
@@ -57,27 +57,27 @@ public class PresentationDelegate {
         AwesomeFragment parent = mFragment.getParentAwesomeFragment();
         if (parent != null) {
             if (definesPresentationContext()) {
-                presentFragment(mFragment, fragment, requestCode, completion);
+                presentFragmentInternal(mFragment, presented, requestCode, completion);
             } else {
-                parent.presentFragment(fragment, requestCode, animation, completion);
+                parent.presentFragment(presented, requestCode, animation, completion);
             }
             return;
         }
 
         if (mPresentableActivity != null) {
-            Bundle args = FragmentHelper.getArguments(fragment);
+            Bundle args = FragmentHelper.getArguments(presented);
             args.putInt(ARGS_REQUEST_CODE, requestCode);
-            mPresentableActivity.presentFragment(fragment, animation, completion);
+            mPresentableActivity.presentFragment(presented, animation, completion);
         }
 
     }
 
-    private void presentFragment(final AwesomeFragment target, final AwesomeFragment fragment, final int requestCode, @Nullable Runnable completion) {
-        Bundle args = FragmentHelper.getArguments(fragment);
+    private void presentFragmentInternal(final AwesomeFragment presenting, final AwesomeFragment presented, final int requestCode, @Nullable Runnable completion) {
+        Bundle args = FragmentHelper.getArguments(presented);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
-        fragment.setTargetFragment(target, requestCode);
-        fragment.setDefinesPresentationContext(true);
-        FragmentHelper.addFragmentToBackStack(target.getParentFragmentManager(), target.getContainerId(), fragment, TransitionAnimation.Present);
+        presented.setTargetFragment(presenting, requestCode);
+        presented.setDefinesPresentationContext(true);
+        FragmentHelper.addFragmentToBackStack(presenting.getParentFragmentManager(), presenting.getContainerId(), presented, TransitionAnimation.Present);
         if (completion != null) {
             completion.run();
         }
@@ -91,23 +91,7 @@ public class PresentationDelegate {
         AwesomeFragment parent = mFragment.getParentAwesomeFragment();
         if (parent != null) {
             if (definesPresentationContext()) {
-                AwesomeFragment presented = getPresentedFragment();
-                if (presented != null) {
-                    FragmentHelper.handleDismissFragment(mFragment, presented, null, animation);
-                    if (completion != null) {
-                        completion.run();
-                    }
-                    return;
-                }
-
-                AwesomeFragment target = (AwesomeFragment) mFragment.getTargetFragment();
-                if (target != null) {
-                    FragmentHelper.handleDismissFragment(target, mFragment, mFragment, animation);
-                }
-
-                if (completion != null) {
-                    completion.run();
-                }
+                dismissFragmentInternal(animation, completion);
             } else {
                 parent.dismissFragment(animation, completion);
             }
@@ -120,27 +104,34 @@ public class PresentationDelegate {
 
     }
 
+    private void dismissFragmentInternal(@NonNull TransitionAnimation animation, @Nullable Runnable completion) {
+        AwesomeFragment presented = getPresentedFragment();
+        if (presented != null) {
+            FragmentHelper.handleDismissFragment(mFragment, presented, null, animation);
+            if (completion != null) {
+                completion.run();
+            }
+            return;
+        }
+
+        AwesomeFragment presenting = getPresentingFragment();
+        if (presenting != null) {
+            FragmentHelper.handleDismissFragment(presenting, mFragment, mFragment, animation);
+        }
+        
+        if (completion != null) {
+            completion.run();
+        }
+    }
+
     @Nullable
     public AwesomeFragment getPresentedFragment() {
         AwesomeFragment parent = mFragment.getParentAwesomeFragment();
         if (parent != null) {
             if (definesPresentationContext()) {
-                FragmentManager fragmentManager = mFragment.getParentFragmentManager();
-                if (FragmentHelper.getIndexAtBackStack(mFragment) == -1) {
-                    if (FragmentHelper.getBackStackEntryCount(parent) != 0) {
-                        FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(0);
-                        AwesomeFragment presented = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-                        if (presented != null && presented.isAdded()) {
-                            return presented;
-                        }
-                    }
-                    return null;
-                } else {
-                    return FragmentHelper.getFragmentAfter(mFragment);
-                }
-            } else {
-                return parent.getPresentedFragment();
+                return getPresentedFragmentInternal();
             }
+            return parent.getPresentedFragment();
         }
 
         if (mPresentableActivity != null) {
@@ -151,24 +142,52 @@ public class PresentationDelegate {
     }
 
     @Nullable
+    private AwesomeFragment getPresentedFragmentInternal() {
+        if (FragmentHelper.getIndexAtBackStack(mFragment) == -1) {
+            return getFragmentFromBackStackAtZeroIndex();
+        }
+        return FragmentHelper.getFragmentAfter(mFragment);
+    }
+
+    @Nullable
+    private AwesomeFragment getFragmentFromBackStackAtZeroIndex() {
+        AwesomeFragment parent = mFragment.getParentAwesomeFragment();
+        assert parent != null;
+        if (FragmentHelper.getBackStackEntryCount(parent) == 0) {
+            return null;
+        }
+        FragmentManager fragmentManager = mFragment.getParentFragmentManager();
+        FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(0);
+        AwesomeFragment presented = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+        if (presented == null || !presented.isAdded()) {
+            return null;
+        }
+        return presented;
+    }
+
+    @Nullable
     public AwesomeFragment getPresentingFragment() {
         AwesomeFragment parent = mFragment.getParentAwesomeFragment();
         if (parent != null) {
             if (definesPresentationContext()) {
-                AwesomeFragment target = (AwesomeFragment) mFragment.getTargetFragment();
-                if (target != null && target.isAdded()) {
-                    return target;
-                }
-                return null;
-            } else {
-                return parent.getPresentingFragment();
+                return getPresentingFragmentInternal();
             }
+            return parent.getPresentingFragment();
         }
 
         if (mPresentableActivity != null) {
             return mPresentableActivity.getPresentingFragment(mFragment);
         }
 
+        return null;
+    }
+
+    @Nullable
+    private AwesomeFragment getPresentingFragmentInternal() {
+        AwesomeFragment target = (AwesomeFragment) mFragment.getTargetFragment();
+        if (target != null && target.isAdded()) {
+            return target;
+        }
         return null;
     }
 
