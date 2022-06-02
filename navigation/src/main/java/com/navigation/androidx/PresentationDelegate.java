@@ -28,7 +28,7 @@ public class PresentationDelegate {
     private boolean mDefinesPresentationContext;
 
     public boolean definesPresentationContext() {
-        return mDefinesPresentationContext && mFragment.getPresentationStyle() == PresentationStyle.CurrentContext;
+        return mDefinesPresentationContext;
     }
 
     public void setDefinesPresentationContext(boolean defines) {
@@ -56,7 +56,7 @@ public class PresentationDelegate {
 
         AwesomeFragment parent = mFragment.getParentAwesomeFragment();
         if (parent != null) {
-            if (definesPresentationContext()) {
+            if (definesPresentationContext() && presented.getPresentationStyle() == PresentationStyle.CurrentContext) {
                 presentFragmentInternal(mFragment, presented, requestCode, completion);
             } else {
                 parent.presentFragment(presented, requestCode, animation, completion);
@@ -90,7 +90,7 @@ public class PresentationDelegate {
 
         AwesomeFragment parent = mFragment.getParentAwesomeFragment();
         if (parent != null) {
-            if (definesPresentationContext()) {
+            if (definesPresentationContext() && mFragment.getPresentationStyle() == PresentationStyle.CurrentContext) {
                 dismissFragmentInternal(animation, completion);
             } else {
                 parent.dismissFragment(animation, completion);

@@ -385,7 +385,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     protected boolean dispatchBackPressed() {
         FragmentManager fragmentManager = getChildFragmentManager();
-        if (handlePresentationContext(fragmentManager)) {
+        if (onPresentationContextBackPressed(fragmentManager)) {
             return true;
         }
 
@@ -405,7 +405,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         return onBackPressed();
     }
 
-    private boolean handlePresentationContext(FragmentManager fragmentManager) {
+    private boolean onPresentationContextBackPressed(FragmentManager fragmentManager) {
         Fragment fragment = fragmentManager.getPrimaryNavigationFragment();
         if (!(fragment instanceof AwesomeFragment)) {
             return false;
