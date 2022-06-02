@@ -30,7 +30,7 @@ public class ViewPagerFragment extends BaseFragment {
     AwesomeToolbar toolbar;
 
     @Override
-    public boolean isParentFragment() {
+    public boolean isParentAwesomeFragment() {
         return true;
     }
 

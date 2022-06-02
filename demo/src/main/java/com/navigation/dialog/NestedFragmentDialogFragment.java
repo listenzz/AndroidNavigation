@@ -16,7 +16,7 @@ import com.navigation.androidx.TransitionAnimation;
 public class NestedFragmentDialogFragment extends AwesomeFragment {
 
     @Override
-    public boolean isParentFragment() {
+    public boolean isParentAwesomeFragment() {
         return true;
     }
 
