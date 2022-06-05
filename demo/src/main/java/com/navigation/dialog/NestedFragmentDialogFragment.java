@@ -16,14 +16,16 @@ import com.navigation.androidx.TransitionAnimation;
 public class NestedFragmentDialogFragment extends AwesomeFragment {
 
     @Override
-    public boolean isParentAwesomeFragment() {
-        return true;
+    public boolean isLeafAwesomeFragment() {
+        return false;
     }
 
-//    @Override
-//    protected AwesomeFragment childFragmentForAppearance() {
-//        return getContentFragment();
-//    }
+    @Nullable
+    @Override
+    protected AwesomeFragment childFragmentForAppearance() {
+        // 系统 UI （状态栏，导航栏）由这个 fragment 自身决定而不是由它的某个子 fragment 决定
+        return null;
+    }
 
     @Nullable
     @Override

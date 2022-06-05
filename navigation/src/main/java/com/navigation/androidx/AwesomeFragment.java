@@ -153,7 +153,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             mStackDelegate.fitStackFragment(root);
         }
 
-        if (!isParentAwesomeFragment()) {
+        if (isLeafAwesomeFragment()) {
             setBackgroundDrawable(root, mStyle.getScreenBackgroundColor());
         }
     }
@@ -164,6 +164,15 @@ public abstract class AwesomeFragment extends InternalFragment {
         super.onDestroyView();
     }
 
+    @Deprecated
+    public boolean isParentFragment() {
+        return !isLeafAwesomeFragment();
+    }
+
+    public boolean isLeafAwesomeFragment() {
+        return true;
+    }
+    
     private void setBackgroundDrawable(View root, int color) {
         setBackgroundForView(root, color);
         if (Color.alpha(color) == 255) {
@@ -226,6 +235,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         return parent.getDialogAwesomeFragment();
     }
 
+    @Deprecated
     protected boolean isInDialog() {
         return getDialogAwesomeFragment() != null;
     }
@@ -250,11 +260,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
         return null;
     }
-
-    public boolean isParentAwesomeFragment() {
-        return false;
-    }
-
+    
     @Override
     @CallSuper
     public void onResume() {
@@ -279,7 +285,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        if (isResumed() && !isParentAwesomeFragment()) {
+        if (isResumed() && isLeafAwesomeFragment()) {
             setDisplayCutoutWhenLandscape(newConfig.orientation);
         }
         super.onConfigurationChanged(newConfig);
@@ -368,9 +374,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent == null) {
             return "#" + FragmentHelper.indexOf(this) + "-" + getClass().getSimpleName();
-        } else {
-            return parent.getDebugTag() + "#" + FragmentHelper.indexOf(this) + "-" + getClass().getSimpleName();
         }
+        return parent.getDebugTag() + "#" + FragmentHelper.indexOf(this) + "-" + getClass().getSimpleName();
     }
 
     private String mSceneId;
@@ -665,7 +670,14 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     protected boolean preferredStatusBarColorAnimated() {
-        return getAnimation() != TransitionAnimation.None && mStyle.isStatusBarColorAnimated();
+        AwesomeFragment child = childFragmentForAppearance();
+        if (child != null) {
+            return child.preferredStatusBarColorAnimated();
+        }
+        if (getAnimation() == TransitionAnimation.None) {
+            return false;
+        }
+        return mStyle.isStatusBarColorAnimated();
     }
 
     public void setNeedsStatusBarAppearanceUpdate() {
@@ -675,11 +687,8 @@ public abstract class AwesomeFragment extends InternalFragment {
             return;
         }
 
-        // statusBarHidden
         setStatusBarHidden(preferredStatusBarHidden());
-        // statusBarStyle
         setStatusBarStyle(preferredStatusBarStyle());
-        // statusBarColor
         setStatusBarColor(preferredStatusBarColor(), preferredStatusBarColorAnimated());
     }
 
@@ -710,16 +719,13 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (child != null) {
             return child.preferredNavigationBarColor();
         }
-
         if (getShowsDialog()) {
             return mDialogDelegate.preferredNavigationBarColor();
         }
-
         if (mStyle.getNavigationBarColor() != Style.INVALID_COLOR) {
             return mStyle.getNavigationBarColor();
-        } else {
-            return mStyle.getScreenBackgroundColor();
         }
+        return mStyle.getScreenBackgroundColor();
     }
 
     @NonNull
@@ -728,7 +734,10 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (child != null) {
             return child.preferredNavigationBarStyle();
         }
-        return AppUtils.isBlackColor(preferredNavigationBarColor(), 176) ? BarStyle.LightContent : BarStyle.DarkContent;
+        if (AppUtils.isBlackColor(preferredNavigationBarColor(), 176)) {
+            return BarStyle.LightContent;
+        }
+        return BarStyle.DarkContent;
     }
 
     protected boolean preferredNavigationBarHidden() {

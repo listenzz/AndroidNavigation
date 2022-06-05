@@ -59,7 +59,7 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
 
     @Override
     public void appendStatusBarPadding(View view) {
-        if (!isInDialog()) {
+        if (getDialogAwesomeFragment() == null) {
             super.appendStatusBarPadding(view);
         }
     }

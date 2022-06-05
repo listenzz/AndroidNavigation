@@ -59,8 +59,8 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     }
 
     @Override
-    public boolean isParentAwesomeFragment() {
-        return true;
+    public boolean isLeafAwesomeFragment() {
+        return false;
     }
 
     @Nullable

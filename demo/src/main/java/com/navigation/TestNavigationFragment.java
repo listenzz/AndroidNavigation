@@ -44,7 +44,7 @@ public class TestNavigationFragment extends BaseFragment {
 
     @Override
     public void appendStatusBarPadding(View view) {
-        if (!isInDialog()) {
+        if (getDialogAwesomeFragment() == null) {
             super.appendStatusBarPadding(view);
         }
     }
@@ -140,7 +140,7 @@ public class TestNavigationFragment extends BaseFragment {
             root.findViewById(R.id.dismiss).setEnabled(false);
         }
 
-        if (isInDialog()) {
+        if (getDialogAwesomeFragment() != null) {
             root.findViewById(R.id.present).setEnabled(false);
         }
 
@@ -151,41 +151,66 @@ public class TestNavigationFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setTitle("导航");
+        setButton();
+    }
 
-        if (isStackRoot()) {
-            if (getPresentingFragment() == null) {
-                String iconUri = "font://FontAwesome/" + fromCharCode(61641) + "/24";
-                ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
-                builder.icon(iconUri).listener(v -> {
-                    DrawerFragment drawerFragment = getDrawerFragment();
-                    if (drawerFragment != null) {
-                        drawerFragment.toggleMenu();
-                    }
-                });
-                setLeftBarButtonItem(builder.build());
-            } else {
-                ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
-                builder.title("关闭").listener(v -> dismissFragment());
-                setLeftBarButtonItem(builder.build());
-            }
+    private void setButton() {
+        if (!isStackRoot()) {
+            return;
         }
+
+        if (getPresentingFragment() == null) {
+            setMenuButton();
+            return;
+        }
+
+        setCloseButton();
+    }
+
+    private void setCloseButton() {
+        ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
+        builder.title("关闭").listener(v -> dismissFragment());
+        setLeftBarButtonItem(builder.build());
+    }
+
+    private void setMenuButton() {
+        String iconUri = "font://FontAwesome/" + fromCharCode(61641) + "/24";
+        ToolbarButtonItem.Builder builder = new ToolbarButtonItem.Builder();
+        builder.icon(iconUri).listener(v -> {
+            DrawerFragment drawerFragment = getDrawerFragment();
+            if (drawerFragment != null) {
+                drawerFragment.toggleMenu();
+            }
+        });
+        setLeftBarButtonItem(builder.build());
     }
 
     @Override
     public void onFragmentResult(int requestCode, int resultCode, @Nullable Bundle data) {
         super.onFragmentResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE) {
-            if (resultCode != 0 && data != null) {
-                String text = data.getString("text", "");
-                resultText.setText("present result：" + text);
-            } else {
-                resultText.setText("ACTION CANCEL");
-            }
-        } else {
-            if (resultCode != 0 && data != null) {
-                String text = data.getString("text", "");
-                resultText.setText("pop result：" + text);
-            }
+        if ((requestCode != REQUEST_CODE)) {
+            handlePopResult(requestCode, data);
+            return;
         }
+
+        handleModalResult(resultCode, data);
+    }
+
+    private void handlePopResult(int resultCode, @Nullable Bundle data) {
+        if (resultCode == 0 || data == null) {
+            return;
+        }
+        String text = data.getString("text", "");
+        resultText.setText("pop result：" + text);
+    }
+
+    private void handleModalResult(int resultCode, @Nullable Bundle data) {
+        if ((resultCode == 0 || data == null)) {
+            resultText.setText("ACTION CANCEL");
+            return;
+        }
+
+        String text = data.getString("text", "");
+        resultText.setText("present result：" + text);
     }
 }

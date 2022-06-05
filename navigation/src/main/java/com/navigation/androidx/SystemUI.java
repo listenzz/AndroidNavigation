@@ -238,6 +238,11 @@ public class SystemUI {
         return false;
     }
 
+    public static BarStyle activityNavigationBarStyle(Activity activity) {
+        boolean isDark = isNavigationBarStyleDark(activity.getWindow());
+        return  isDark ? BarStyle.DarkContent : BarStyle.LightContent;
+    }
+
     public static boolean isNavigationBarHidden(Window window) {
         return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0;
     }

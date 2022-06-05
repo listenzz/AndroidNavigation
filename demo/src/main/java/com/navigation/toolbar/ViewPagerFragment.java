@@ -30,14 +30,14 @@ public class ViewPagerFragment extends BaseFragment {
     AwesomeToolbar toolbar;
 
     @Override
-    public boolean isParentAwesomeFragment() {
-        return true;
+    public boolean isLeafAwesomeFragment() {
+        return false;
     }
 
     @Nullable
     @Override
     protected AwesomeFragment childFragmentForAppearance() {
-        // 可以重写这个方法来指定由那个子 Fragment 来决定系统 UI（状态栏）的样式，否则由容器本身决定
+        // 可以重写这个方法来指定由那个子 Fragment 来决定系统 UI（状态栏，导航栏）的样式，默认由容器本身决定
         return super.childFragmentForAppearance();
     }
 

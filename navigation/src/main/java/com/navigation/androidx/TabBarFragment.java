@@ -145,8 +145,8 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     @Override
-    public boolean isParentAwesomeFragment() {
-        return true;
+    public boolean isLeafAwesomeFragment() {
+        return false;
     }
 
     @Override

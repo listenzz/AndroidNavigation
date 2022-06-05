@@ -71,9 +71,9 @@ public class DialogDelegate {
 
         if (getStyle().getNavigationBarColor() != Style.INVALID_COLOR) {
             return getStyle().getNavigationBarColor();
-        } else {
-            return mFragment.requireActivity().getWindow().getNavigationBarColor();
         }
+        return mFragment.requireActivity().getWindow().getNavigationBarColor();
+
     }
 
     void setupDialog() {
@@ -129,11 +129,10 @@ public class DialogDelegate {
 
         if (!mFragment.getShowsDialog()) {
             AwesomeFragment parent = mFragment.getParentAwesomeFragment();
-            if (parent != null) {
-                parent.hideAsDialog(completion);
-            } else {
+            if (parent == null) {
                 throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
             }
+            parent.hideAsDialog(completion);
             return;
         }
 
@@ -174,6 +173,7 @@ public class DialogDelegate {
         if (!(target instanceof AwesomeFragment)) {
             return;
         }
+
         if (!target.isAdded()) {
             return;
         }

@@ -35,7 +35,7 @@ public class TestStatusBarFragment extends BaseFragment {
 
     @Override
     public void appendStatusBarPadding(View view) {
-        if (!isInDialog()) {
+        if (getDialogAwesomeFragment() == null) {
             super.appendStatusBarPadding(view);
         }
     }
