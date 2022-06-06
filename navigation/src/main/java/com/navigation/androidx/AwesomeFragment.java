@@ -269,9 +269,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (childFragmentForAppearance() == null) {
             setNeedsStatusBarAppearanceUpdate();
             setNeedsNavigationBarAppearanceUpdate();
-        }
-
-        if (childFragmentForAppearance() == null) {
             setNeedsLayoutInDisplayCutoutModeUpdate();
         }
     }
