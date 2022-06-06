@@ -4,7 +4,7 @@ A library managing nested Fragment, translucent StatusBar and Toolbar for Androi
 
 You could use it as a single Activity Architecture Component.
 
-This is also the subproject of [react-native-navigation-hybrid](https://github.com/listenzz/react-native-navigation-hybrid).
+This is also the subproject of [hybrid-navigation](https://github.com/listenzz/hybrid-navigation).
 
 [**Download demo apk**](https://raw.githubusercontent.com/listenzz/AndroidNavigation/master/screenshot/demo-release.apk)
 
@@ -244,8 +244,8 @@ contentFragment 可以是一个像 TabBarFragment 这样的容器。可以参考
 
 ```java
 @Override
-public boolean isParentFragment() {
-    return true;
+public boolean isLeafAwesomeFragment() {
+    return false;
 }
 ```
 
@@ -745,7 +745,7 @@ protected boolean isSwipeBackEnabled() {
 如果你不希望自动为你创建 toolbar, 或者自动创建的 toolbar 所在 UI 层级不合适，你可以重写以下方法，返回 null 或者自定义的 toolbar。
 
 ```java
-protected AwesomeToolbar onCreateAwesomeToolbar(View parent) {
+protected AwesomeToolbar onCreateToolbar(View parent) {
     return null;
 }
 ```
