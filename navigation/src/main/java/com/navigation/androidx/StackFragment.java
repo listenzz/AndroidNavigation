@@ -28,16 +28,19 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root;
         if (mStyle.isSwipeBackEnabled()) {
-            root = inflater.inflate(R.layout.nav_fragment_navigation_swipe_back, container, false);
-            mSwipeBackLayout = root.findViewById(R.id.navigation_content);
-            mSwipeBackLayout.setSwipeListener(this);
-            int scrimAlpha = mStyle.getScrimAlpha();
-            mSwipeBackLayout.setScrimColor(scrimAlpha << 24);
-        } else {
-            root = inflater.inflate(R.layout.nav_fragment_navigation, container, false);
+            return swipeBackRootView(inflater, container);
         }
+        return inflater.inflate(R.layout.nav_fragment_navigation, container, false);
+    }
+
+    @NonNull
+    private View swipeBackRootView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
+        View root = inflater.inflate(R.layout.nav_fragment_navigation_swipe_back, container, false);
+        mSwipeBackLayout = root.findViewById(R.id.navigation_content);
+        mSwipeBackLayout.setSwipeListener(this);
+        int scrimAlpha = mStyle.getScrimAlpha();
+        mSwipeBackLayout.setScrimColor(scrimAlpha << 24);
         return root;
     }
 
@@ -47,10 +50,9 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         if (savedInstanceState == null) {
             if (mRootFragment == null) {
                 throw new IllegalArgumentException("Must specify rootFragment by `setRootFragment`.");
-            } else {
-                setRootFragmentSync(mRootFragment);
-                mRootFragment = null;
             }
+            setRootFragmentSync(mRootFragment);
+            mRootFragment = null;
         }
     }
 
@@ -83,13 +85,10 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         FragmentManager fragmentManager = getChildFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         if (count > 1) {
-            if (topFragment != null) {
-                popFragment();
-            }
+            popFragment();
             return true;
-        } else {
-            return super.onBackPressed();
         }
+        return super.onBackPressed();
     }
 
     private AwesomeFragment mRootFragment;
@@ -319,17 +318,14 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     @Nullable
     @Override
     public StackFragment getStackFragment() {
-        StackFragment navF = super.getStackFragment();
-        if (navF != null) {
-            AwesomeFragment parent = navF.getParentAwesomeFragment();
-            while (parent != null) {
-                if (parent instanceof StackFragment && parent.getWindow() == navF.getWindow()) {
-                    throw new IllegalStateException("should not nest StackFragment in the same window.");
-                }
-                parent = parent.getParentAwesomeFragment();
+        AwesomeFragment parent = getParentAwesomeFragment();
+        if (parent != null) {
+            StackFragment stack = parent.getStackFragment();
+            if (stack != null && stack.getWindow() == getWindow()) {
+                throw new IllegalStateException("should not nest StackFragment in the same window.");
             }
         }
-        return navF;
+        return this;
     }
 
     public SwipeBackLayout getSwipeBackLayout() {
@@ -346,48 +342,71 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         }
 
         if (state == SwipeBackLayout.STATE_DRAGGING) {
-            mDragging = true;
-            AwesomeFragment previous = FragmentHelper.getFragmentBefore(topFragment);
+            handleDraggingState(topFragment);
+            return;
+        }
 
-            if (previous != null && previous.getView() != null) {
-                previous.getView().setVisibility(View.VISIBLE);
-            }
-
-            if (previous != null && previous == getRootFragment() && previous.isAdded() && shouldHideTabBarWhenPushed()) {
-                TabBarFragment tabBarFragment = getTabBarFragment();
-                if (tabBarFragment != null && tabBarFragment.getTabBar() != null && tabBarFragment.getView() != null) {
-                    View tabBar = tabBarFragment.getTabBar();
-                    if (tabBar.getMeasuredWidth() == 0) {
-                        tabBar.measure(View.MeasureSpec.makeMeasureSpec(tabBarFragment.getView().getWidth(), View.MeasureSpec.EXACTLY),
-                                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                        tabBar.layout(0, 0, tabBar.getMeasuredWidth(), tabBar.getMeasuredHeight());
-                    }
-                    Bitmap bitmap = AppUtils.createBitmapFromView(tabBar);
-                    BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
-                    bitmapDrawable.setBounds(0, tabBarFragment.getView().getHeight() - tabBar.getHeight(),
-                            tabBar.getMeasuredWidth(), tabBarFragment.getView().getHeight());
-                    mSwipeBackLayout.setTabBar(bitmapDrawable);
-                }
-            }
-
-        } else if (state == SwipeBackLayout.STATE_IDLE) {
-            AwesomeFragment previous = FragmentHelper.getFragmentBefore(topFragment);
-
-            if (previous != null && previous.getView() != null) {
-                previous.getView().setVisibility(View.GONE);
-            }
-
-            if (previous != null && scrollPercent >= 1.0f) {
-                popFragmentSync(TransitionAnimation.None, null);
-                FragmentManager fragmentManager = getChildFragmentManager();
-                fragmentManager.executePendingTransactions();
-            }
-
-            mSwipeBackLayout.setTabBar(null);
-            mDragging = false;
+        if (state == SwipeBackLayout.STATE_IDLE) {
+            handleIdleState(scrollPercent, topFragment);
         }
     }
 
+    private void handleDraggingState(AwesomeFragment topFragment) {
+        mDragging = true;
+        AwesomeFragment previous = FragmentHelper.getFragmentBefore(topFragment);
+        if (previous == null) {
+            return;
+        }
+
+        if (previous.getView() != null) {
+            previous.getView().setVisibility(View.VISIBLE);
+        }
+
+        if (previous != getRootFragment() || !shouldHideTabBarWhenPushed()) {
+            return;
+        }
+
+        TabBarFragment tabBarFragment = getTabBarFragment();
+        if (tabBarFragment == null) {
+            return;
+        }
+
+        if (tabBarFragment.getTabBar() == null || tabBarFragment.getView() == null) {
+            return;
+        }
+
+        View tabBar = tabBarFragment.getTabBar();
+        if (tabBar.getMeasuredWidth() == 0) {
+            tabBar.measure(View.MeasureSpec.makeMeasureSpec(tabBarFragment.getView().getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            tabBar.layout(0, 0, tabBar.getMeasuredWidth(), tabBar.getMeasuredHeight());
+        }
+        Bitmap bitmap = AppUtils.createBitmapFromView(tabBar);
+        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
+        bitmapDrawable.setBounds(0, tabBarFragment.getView().getHeight() - tabBar.getHeight(),
+                tabBar.getMeasuredWidth(), tabBarFragment.getView().getHeight());
+        mSwipeBackLayout.setTabBar(bitmapDrawable);
+    }
+
+    private void handleIdleState(float scrollPercent, AwesomeFragment topFragment) {
+        mSwipeBackLayout.setTabBar(null);
+        mDragging = false;
+
+        AwesomeFragment previous = FragmentHelper.getFragmentBefore(topFragment);
+        if (previous == null) {
+            return;
+        }
+
+        if (previous.getView() != null) {
+            previous.getView().setVisibility(View.GONE);
+        }
+
+        if (scrollPercent >= 1.0f) {
+            popFragmentSync(TransitionAnimation.None, null);
+            FragmentManager fragmentManager = getChildFragmentManager();
+            fragmentManager.executePendingTransactions();
+        }
+    }
 
     public boolean shouldHideTabBarWhenPushed() {
         AwesomeFragment root = getRootFragment();

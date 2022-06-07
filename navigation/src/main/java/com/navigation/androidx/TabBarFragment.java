@@ -52,60 +52,59 @@ public class TabBarFragment extends AwesomeFragment {
     @Override
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
-        // fragments
         if (savedInstanceState != null) {
+            mSelectedIndex = savedInstanceState.getInt(SAVED_SELECTED_INDEX);
+            mTabBarHidden = savedInstanceState.getBoolean(SAVED_BOTTOM_BAR_HIDDEN, false);
+
             mFragmentTags = savedInstanceState.getStringArrayList(SAVED_FRAGMENT_TAGS);
             FragmentManager fragmentManager = getChildFragmentManager();
             for (int i = 0, size = mFragmentTags.size(); i < size; i++) {
                 mFragments.add((AwesomeFragment) fragmentManager.findFragmentByTag(mFragmentTags.get(i)));
             }
-            mSelectedIndex = savedInstanceState.getInt(SAVED_SELECTED_INDEX);
-            mTabBarHidden = savedInstanceState.getBoolean(SAVED_BOTTOM_BAR_HIDDEN, false);
+
             String providerClassName = savedInstanceState.getString(SAVED_TAB_BAR_PROVIDER_CLASS_NAME);
-            if (providerClassName != null) {
-                try {
-                    Class<?> clazz = Class.forName(providerClassName);
-                    mTabBarProvider = (TabBarProvider) clazz.newInstance();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            try {
+                Class<?> clazz = Class.forName(providerClassName);
+                mTabBarProvider = (TabBarProvider) clazz.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } else {
+        }
+
+        if (savedInstanceState == null) {
             if (mFragments == null || mFragments.size() == 0) {
-                throw new IllegalArgumentException("必须使用 `setChildFragments` 设置 childFragments ");
+                throw new IllegalArgumentException("必须使用 `setChildFragments` 设置 childFragments");
             }
-            setChildFragmentsSync(mFragments);
+            inflateChildFragments(mFragments);
         }
 
-        // create TabBar if needed
-        if (mTabBarProvider != null) {
-            List<TabBarItem> tabBarItems = new ArrayList<>();
-            for (int i = 0, size = mFragments.size(); i < size; i++) {
-                AwesomeFragment fragment = mFragments.get(i);
-                TabBarItem tabBarItem = fragment.getTabBarItem();
-                if (tabBarItem == null) {
-                    tabBarItem = new TabBarItem("TAB" + i);
-                }
-                tabBarItems.add(tabBarItem);
-            }
-            View tabBar = mTabBarProvider.onCreateTabBar(tabBarItems, this, savedInstanceState);
-            FrameLayout frameLayout = (FrameLayout) root;
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
-            layoutParams.gravity = Gravity.BOTTOM;
-            frameLayout.addView(tabBar, layoutParams);
-            mTabBarProvider.setSelectedIndex(mSelectedIndex);
-            mTabBar = tabBar;
-        }
+        mTabBar = createTabBar(root, savedInstanceState);
 
-        if (savedInstanceState != null) {
-            setSelectedIndexSync(mSelectedIndex, null);
-            if (mTabBarHidden && getTabBar() != null) {
-                hideTabBar();
-            }
+        if (mTabBarHidden) {
+            hideTabBar();
         }
     }
 
-    private void setChildFragmentsSync(List<AwesomeFragment> fragments) {
+    private View createTabBar(@NonNull View root, @Nullable Bundle savedInstanceState) {
+        List<TabBarItem> tabBarItems = new ArrayList<>();
+        for (int i = 0, size = mFragments.size(); i < size; i++) {
+            AwesomeFragment fragment = mFragments.get(i);
+            TabBarItem tabBarItem = fragment.getTabBarItem();
+            if (tabBarItem == null) {
+                tabBarItem = new TabBarItem("TAB" + i);
+            }
+            tabBarItems.add(tabBarItem);
+        }
+        View tabBar = mTabBarProvider.onCreateTabBar(tabBarItems, this, savedInstanceState);
+        FrameLayout frameLayout = (FrameLayout) root;
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+        layoutParams.gravity = Gravity.BOTTOM;
+        frameLayout.addView(tabBar, layoutParams);
+        mTabBarProvider.setSelectedIndex(mSelectedIndex);
+        return tabBar;
+    }
+
+    private void inflateChildFragments(List<AwesomeFragment> fragments) {
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         for (int i = 0, size = fragments.size(); i < size; i++) {
@@ -161,9 +160,8 @@ public class TabBarFragment extends AwesomeFragment {
         }
         if (mStyle.getNavigationBarColor() != Style.INVALID_COLOR) {
             return mStyle.getNavigationBarColor();
-        } else {
-            return Color.parseColor(mStyle.getTabBarBackgroundColor());
         }
+        return Color.parseColor(mStyle.getTabBarBackgroundColor());
     }
 
     public void setChildFragments(AwesomeFragment... fragments) {
@@ -198,10 +196,10 @@ public class TabBarFragment extends AwesomeFragment {
             return null;
         }
         AwesomeFragment selectedFragment = mFragments.get(getSelectedIndex());
-        if (selectedFragment.isAdded()) {
-            return selectedFragment;
+        if (!selectedFragment.isAdded()) {
+            return null;
         }
-        return null;
+        return selectedFragment;
     }
 
     public int getSelectedIndex() {
@@ -213,14 +211,14 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     public void setSelectedIndex(int index, @Nullable Runnable completion) {
-        if (isAdded()) {
-            scheduleTaskAtStarted(() -> setSelectedIndexSync(index, completion));
-        } else {
+        if (!isAdded()) {
             mSelectedIndex = index;
             if (completion != null) {
                 throw new IllegalStateException("Can't run completion callback when the fragment is not added.");
             }
+            return;
         }
+        scheduleTaskAtStarted(() -> setSelectedIndexSync(index, completion));
     }
 
     private void setSelectedIndexSync(int index, @Nullable Runnable completion) {
@@ -236,6 +234,34 @@ public class TabBarFragment extends AwesomeFragment {
         }
 
         mSelectedIndex = index;
+        AwesomeFragment current = switchChildFragment(index, completion);
+        setTabBarVisibility(current);
+    }
+
+    private void setTabBarVisibility(AwesomeFragment current) {
+        StackFragment nav = current.getStackFragment();
+        if ((nav == null)) {
+            return;
+        }
+        if (nav.getTabBarFragment() != this) {
+            return;
+        }
+
+        if (!nav.shouldHideTabBarWhenPushed()) {
+            showTabBar();
+            return;
+        }
+
+        if (nav.getTopFragment() == nav.getRootFragment()) {
+            showTabBar();
+            return;
+        }
+
+        hideTabBar();
+    }
+
+    @NonNull
+    private AwesomeFragment switchChildFragment(int index, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getChildFragmentManager();
         AwesomeFragment previous = (AwesomeFragment) fragmentManager.getPrimaryNavigationFragment();
         AwesomeFragment current = mFragments.get(index);
@@ -254,19 +280,7 @@ public class TabBarFragment extends AwesomeFragment {
         if (completion != null) {
             completion.run();
         }
-
-        if (mTabBar != null) {
-            StackFragment nav = current.getStackFragment();
-            if (nav != null && nav.getTabBarFragment() == this && nav.shouldHideTabBarWhenPushed()) {
-                if (nav.getTopFragment() == nav.getRootFragment()) {
-                    showTabBar();
-                } else {
-                    hideTabBar();
-                }
-            } else {
-                showTabBar();
-            }
-        }
+        return current;
     }
 
     protected void setPresentAnimation(AwesomeFragment current, AwesomeFragment previous) {
@@ -300,11 +314,12 @@ public class TabBarFragment extends AwesomeFragment {
             return;
         }
 
-        if (mTabBar != null) {
-            mTabBarHidden = false;
-            mTabBar.setVisibility(View.GONE);
-            handleTabBarVisibilityAnimated(anim);
+        if (mTabBar == null) {
+            return;
         }
+        mTabBarHidden = false;
+        mTabBar.setVisibility(View.GONE);
+        handleTabBarVisibilityAnimated(anim);
     }
 
     void hideTabBarAnimated(Animation anim) {
@@ -313,11 +328,12 @@ public class TabBarFragment extends AwesomeFragment {
             return;
         }
 
-        if (mTabBar != null) {
-            mTabBarHidden = true;
-            mTabBar.setVisibility(View.GONE);
-            handleTabBarVisibilityAnimated(anim);
+        if (mTabBar == null) {
+            return;
         }
+        mTabBarHidden = true;
+        mTabBar.setVisibility(View.GONE);
+        handleTabBarVisibilityAnimated(anim);
     }
 
     private void handleTabBarVisibilityAnimated(@NonNull Animation animation) {
@@ -330,18 +346,20 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     private void showTabBar() {
-        if (mTabBar != null) {
-            mTabBarHidden = false;
-            mTabBar.setVisibility(View.VISIBLE);
-            setNeedsNavigationBarAppearanceUpdate();
+        if (mTabBar == null) {
+            return;
         }
+        mTabBarHidden = false;
+        mTabBar.setVisibility(View.VISIBLE);
+        setNeedsNavigationBarAppearanceUpdate();
     }
 
     private void hideTabBar() {
-        if (mTabBar != null) {
-            mTabBarHidden = true;
-            mTabBar.setVisibility(View.GONE);
-            setNeedsNavigationBarAppearanceUpdate();
+        if (mTabBar == null) {
+            return;
         }
+        mTabBarHidden = true;
+        mTabBar.setVisibility(View.GONE);
+        setNeedsNavigationBarAppearanceUpdate();
     }
 }

@@ -164,11 +164,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         super.onDestroyView();
     }
 
-    @Deprecated
-    public boolean isParentFragment() {
-        return !isLeafAwesomeFragment();
-    }
-
     public boolean isLeafAwesomeFragment() {
         return true;
     }
@@ -233,11 +228,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         return parent.getDialogAwesomeFragment();
-    }
-
-    @Deprecated
-    protected boolean isInDialog() {
-        return getDialogAwesomeFragment() != null;
     }
 
     @NonNull
@@ -678,6 +668,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void setNeedsStatusBarAppearanceUpdate() {
+        if (!isResumed()) {
+            return;
+        }
+
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null) {
             parent.setNeedsStatusBarAppearanceUpdate();
@@ -751,6 +745,10 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     public void setNeedsNavigationBarAppearanceUpdate() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return;
+        }
+
+        if(!isResumed()) {
             return;
         }
 

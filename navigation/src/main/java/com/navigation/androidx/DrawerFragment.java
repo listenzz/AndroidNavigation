@@ -160,17 +160,20 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         scheduleTaskAtStarted(() -> {
             AwesomeFragment menu = getMenuFragment();
             AwesomeFragment content = getContentFragment();
-            if (menu != null && content != null) {
-                FragmentManager fragmentManager = getChildFragmentManager();
-                fragmentManager.beginTransaction()
-                        .setPrimaryNavigationFragment(menu)
-                        .setMaxLifecycle(menu, Lifecycle.State.RESUMED)
-                        .commit();
 
-                View menuView = menu.getView();
-                if (menuView != null) {
-                    menuView.setClickable(true);
-                }
+            if (menu == null || content == null) {
+                return;
+            }
+
+            FragmentManager fragmentManager = getChildFragmentManager();
+            fragmentManager.beginTransaction()
+                    .setPrimaryNavigationFragment(menu)
+                    .setMaxLifecycle(menu, Lifecycle.State.RESUMED)
+                    .commit();
+
+            View menuView = menu.getView();
+            if (menuView != null) {
+                menuView.setClickable(true);
             }
         });
     }
@@ -180,13 +183,15 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         scheduleTaskAtStarted(() -> {
             AwesomeFragment menu = getMenuFragment();
             AwesomeFragment content = getContentFragment();
-            if (menu != null && content != null) {
-                FragmentManager fragmentManager = getChildFragmentManager();
-                fragmentManager.beginTransaction()
-                        .setPrimaryNavigationFragment(content)
-                        .setMaxLifecycle(menu, Lifecycle.State.STARTED)
-                        .commit();
+            if (menu == null || content == null) {
+                return;
             }
+
+            FragmentManager fragmentManager = getChildFragmentManager();
+            fragmentManager.beginTransaction()
+                    .setPrimaryNavigationFragment(content)
+                    .setMaxLifecycle(menu, Lifecycle.State.STARTED)
+                    .commit();
         });
     }
 
@@ -249,20 +254,20 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             return;
         }
 
-        if (mDrawerLayout != null) {
-            mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-                @Override
-                public void onDrawerOpened(View drawerView) {
-                    mDrawerLayout.removeDrawerListener(this);
-                    if (completion != null) {
-                        completion.run();
-                    }
-                }
-            });
-            mDrawerLayout.openDrawer(GravityCompat.START);
-        } else {
+        if (mDrawerLayout == null) {
             throw new IllegalStateException("No drawer");
         }
+
+        mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                mDrawerLayout.removeDrawerListener(this);
+                if (completion != null) {
+                    completion.run();
+                }
+            }
+        });
+        mDrawerLayout.openDrawer(GravityCompat.START);
     }
 
     public void closeMenu() {
@@ -276,20 +281,21 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             }
             return;
         }
-        if (mDrawerLayout != null) {
-            mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-                @Override
-                public void onDrawerClosed(View drawerView) {
-                    mDrawerLayout.removeDrawerListener(this);
-                    if (completion != null) {
-                        completion.run();
-                    }
-                }
-            });
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-        } else {
+
+        if (mDrawerLayout == null) {
             throw new IllegalStateException("No drawer");
         }
+
+        mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                mDrawerLayout.removeDrawerListener(this);
+                if (completion != null) {
+                    completion.run();
+                }
+            }
+        });
+        mDrawerLayout.closeDrawer(GravityCompat.START);
     }
 
     public void setDrawerLockMode(final int lockMode) {
@@ -317,10 +323,10 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     public boolean isMenuOpened() {
-        if (mDrawerLayout != null) {
-            return mDrawerLayout.isDrawerOpen(GravityCompat.START);
+        if (mDrawerLayout == null) {
+            return false;
         }
-        return false;
+        return mDrawerLayout.isDrawerOpen(GravityCompat.START);
     }
 
     public boolean isMenuPrimary() {

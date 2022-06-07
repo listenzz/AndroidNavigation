@@ -28,7 +28,7 @@ public class MainActivity extends AwesomeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
-
+        Log.i(TAG, "MainActivity#onCreate");
         if (savedInstanceState == null) {
 
             TestNavigationFragment testNavigationFragment = new TestNavigationFragment();
