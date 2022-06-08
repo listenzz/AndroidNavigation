@@ -299,13 +299,14 @@ public class FragmentHelper {
 
     public static void handleFragmentResult(AwesomeFragment target, int requestCode, int resultCode, Bundle data) {
         View view = target.getView();
-        if (view != null) {
-            view.post(() -> {
-                if (target.isAdded()) {
-                    target.onFragmentResult(requestCode, resultCode, data);
-                }
-            });
+        if (view == null) {
+            return;
         }
+        view.post(() -> {
+            if (target.isAdded()) {
+                target.onFragmentResult(requestCode, resultCode, data);
+            }
+        });
     }
 
     public static boolean isRemoving(@NonNull AwesomeFragment fragment) {
