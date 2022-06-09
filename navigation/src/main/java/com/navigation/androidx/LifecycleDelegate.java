@@ -3,6 +3,7 @@ package com.navigation.androidx;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.UiThread;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -14,7 +15,7 @@ import java.util.Queue;
 /**
  * Created by Listen on 2018/1/31.
  */
-
+@UiThread
 public class LifecycleDelegate implements LifecycleObserver {
 
     public LifecycleDelegate(LifecycleOwner lifecycleOwner) {
@@ -31,11 +32,12 @@ public class LifecycleDelegate implements LifecycleObserver {
     private final Handler mHandler;
 
     public void scheduleTaskAtStarted(Runnable runnable) {
-        if (getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
-            assertMainThread();
-            mTasks.add(runnable);
-            considerExecute();
+        if (getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
+            return;
         }
+        assertMainThread();
+        mTasks.add(runnable);
+        considerExecute();
     }
 
     private boolean mExecuting;
@@ -46,22 +48,28 @@ public class LifecycleDelegate implements LifecycleObserver {
             mHandler.removeCallbacks(executeTask);
             mTasks.clear();
             getLifecycle().removeObserver(this);
-        } else {
-            considerExecute();
+            return;
         }
+        considerExecute();
     }
 
     void considerExecute() {
-        if (isAtLeastStarted() && !mExecuting) {
-            mExecuting = true;
-            Runnable runnable = mTasks.poll();
-            if (runnable != null) {
-                runnable.run();
-                mHandler.post(executeTask);
-            } else {
-                mExecuting = false;
-            }
+        if (!isAtLeastStarted()) {
+            return;
         }
+
+        if (mExecuting) {
+            return;
+        }
+
+        Runnable runnable = mTasks.poll();
+        if (runnable == null) {
+            return;
+        }
+
+        mExecuting = true;
+        runnable.run();
+        mHandler.post(executeTask);
     }
 
     private final Runnable executeTask = new Runnable() {
