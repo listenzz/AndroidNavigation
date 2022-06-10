@@ -169,33 +169,11 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
     
     private void setBackgroundDrawable(View root, int color) {
-        setBackgroundForView(root, color);
-        if (Color.alpha(color) == 255) {
-            setBackgroundForWindow(color);
-        }
-    }
-
-    private void setBackgroundForView(View root, int color) {
         if (getShowsDialog()) {
+            setBackgroundForDialogWindow(color, getWindow());
             return;
         }
         root.setBackground(new ColorDrawable(color));
-    }
-
-    private void setBackgroundForWindow(int color) {
-        Window window = getWindow();
-
-        AwesomeFragment fragment = getDialogAwesomeFragment();
-        if (fragment != null) {
-            setBackgroundForDialogWindow(color, window);
-            return;
-        }
-
-        setBackgroundForActivityWindow(color, window);
-    }
-
-    private void setBackgroundForActivityWindow(int color, Window window) {
-        window.setBackgroundDrawable(new ColorDrawable(color));
     }
 
     private void setBackgroundForDialogWindow(int color, Window window) {
