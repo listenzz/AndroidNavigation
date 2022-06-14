@@ -167,7 +167,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     public boolean isLeafAwesomeFragment() {
         return true;
     }
-    
+
     private void setBackgroundDrawable(View root, int color) {
         if (getShowsDialog()) {
             setBackgroundForDialogWindow(color, getWindow());
@@ -228,7 +228,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
         return null;
     }
-    
+
     @Override
     @CallSuper
     public void onResume() {
@@ -282,20 +282,15 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Override
     @CallSuper
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        Context context = getContext();
-        if (context == null) {
-            return null;
-        }
-
         // Log.i(TAG, getDebugTag() + "  " + " transit:" + transit + " enter:" + enter + " nextAnim:" + nextAnim + " isAdd:" + isAdded() + " inRemoving:" + isRemoving());
 
         AwesomeFragment parent = getParentAwesomeFragment();
         if (parent != null && FragmentHelper.isRemoving(parent)) {
-            return AnimationUtils.loadAnimation(context, R.anim.nav_delay);
+            return AnimationUtils.loadAnimation(requireContext(), R.anim.nav_delay);
         }
 
         TransitionAnimation animation = getAnimation();
-        Animation anim = createOurAnimation(transit, enter, nextAnim, context, animation);
+        Animation anim = createOurAnimation(transit, enter, nextAnim, animation);
 
         if (!mStackDelegate.drawTabBarIfNeeded(transit, enter, anim)) {
             mStackDelegate.drawScrimIfNeeded(transit, enter, anim);
@@ -305,19 +300,19 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     @Nullable
-    private Animation createOurAnimation(int transit, boolean enter, int nextAnim, Context context, TransitionAnimation animation) {
+    private Animation createOurAnimation(int transit, boolean enter, int nextAnim, TransitionAnimation animation) {
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
-                return AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.enter : nextAnim);
+                return AnimationUtils.loadAnimation(requireContext(), nextAnim == 0 ? animation.enter : nextAnim);
             }
-            return AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.exit : nextAnim);
+            return AnimationUtils.loadAnimation(requireContext(), nextAnim == 0 ? animation.exit : nextAnim);
         }
 
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE) {
             if (enter) {
-                return AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.popEnter : nextAnim);
+                return AnimationUtils.loadAnimation(requireContext(), nextAnim == 0 ? animation.popEnter : nextAnim);
             }
-            return AnimationUtils.loadAnimation(context, nextAnim == 0 ? animation.popExit : nextAnim);
+            return AnimationUtils.loadAnimation(requireContext(), nextAnim == 0 ? animation.popExit : nextAnim);
         }
         return null;
     }
@@ -726,7 +721,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return;
         }
 
-        if(!isResumed()) {
+        if (!isResumed()) {
             return;
         }
 
@@ -819,7 +814,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void setTitle(@StringRes int resId) {
-        mStackDelegate.setTitle(getContext(), resId);
+        mStackDelegate.setTitle(requireContext(), resId);
     }
 
     public void setTitle(CharSequence title) {

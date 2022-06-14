@@ -51,13 +51,9 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
             if (mRootFragment == null) {
                 throw new IllegalArgumentException("Must specify rootFragment by `setRootFragment`.");
             }
-            setRootFragmentSync(mRootFragment);
+            FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, mRootFragment, TransitionAnimation.None);
             mRootFragment = null;
         }
-    }
-
-    private void setRootFragmentSync(AwesomeFragment fragment) {
-        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, TransitionAnimation.None);
     }
 
     @Override
