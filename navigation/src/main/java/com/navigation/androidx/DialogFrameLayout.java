@@ -1,5 +1,6 @@
 package com.navigation.androidx;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.GestureDetector;
@@ -58,6 +59,7 @@ public class DialogFrameLayout extends FrameLayout {
         });
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return mGestureDetector.onTouchEvent(event);

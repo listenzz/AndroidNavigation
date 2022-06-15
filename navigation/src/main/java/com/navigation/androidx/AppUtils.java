@@ -116,13 +116,18 @@ public class AppUtils {
         if (window == null) {
             return;
         }
+
         InputMethodManager imm = (InputMethodManager) window.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            View view = window.getCurrentFocus();
-            if (view != null) {
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
+        if (imm == null) {
+            return;
         }
+
+        View view = window.getCurrentFocus();
+        if (view == null) {
+            return;
+        }
+
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     public static Drawable copyDrawable(Drawable drawable) {

@@ -352,7 +352,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         return mSceneId;
     }
 
-    protected boolean dispatchBackPressed() {
+    protected final boolean dispatchBackPressed() {
         FragmentManager fragmentManager = getChildFragmentManager();
         if (onPresentationContextBackPressed(fragmentManager)) {
             return true;
@@ -565,7 +565,8 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode) {
-        showAsDialog(dialog, requestCode, () -> {});
+        showAsDialog(dialog, requestCode, () -> {
+        });
     }
 
     public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @NonNull Runnable completion) {
@@ -578,7 +579,8 @@ public abstract class AwesomeFragment extends InternalFragment {
      * Dismiss the fragment as dialog.
      */
     public void hideAsDialog() {
-        hideAsDialog(() -> {});
+        hideAsDialog(() -> {
+        });
     }
 
     public void hideAsDialog(@NonNull Runnable completion) {

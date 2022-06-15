@@ -219,7 +219,11 @@ public class DialogDelegate {
     }
 
     private boolean shouldAnimateDialogTransition() {
-        DialogFrameLayout frameLayout = (DialogFrameLayout) getView();
+        View root = getView();
+        if (!(root instanceof DialogFrameLayout)) {
+            return false;
+        }
+        DialogFrameLayout frameLayout = (DialogFrameLayout) root;
         View contentView = frameLayout.getChildAt(0);
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
         return layoutParams.gravity == Gravity.BOTTOM;
