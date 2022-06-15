@@ -44,10 +44,8 @@ public class StackDelegate {
         return mFragment.requireContext();
     }
 
-    public LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
-        LayoutInflater layoutInflater = mFragment.requireActivity().getLayoutInflater();
-        layoutInflater = new StackLayoutInflater(requireContext(), layoutInflater);
-        return layoutInflater;
+    public LayoutInflater onGetLayoutInflater(LayoutInflater layoutInflater, @Nullable Bundle savedInstanceState) {
+        return  new StackLayoutInflater(requireContext(), layoutInflater);
     }
 
     public StackFragment getStackFragment() {
@@ -176,7 +174,7 @@ public class StackDelegate {
         }
 
         TabBarFragment tabBarFragment = mFragment.getTabBarFragment();
-        if (tabBarFragment == null || tabBarFragment.getTabBar() == null) {
+        if (tabBarFragment == null) {
             return;
         }
 
@@ -436,7 +434,7 @@ public class StackDelegate {
     }
 
     private void drawTabBar(@NonNull TabBarFragment tabBarFragment, long duration, boolean open) {
-        if (tabBarFragment.getTabBar() == null || tabBarFragment.getView() == null) {
+        if (tabBarFragment.getView() == null) {
             return;
         }
 

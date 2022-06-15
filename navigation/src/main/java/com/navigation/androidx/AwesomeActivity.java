@@ -58,7 +58,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         }
 
         if (count != 1) {
-            dismissFragment(fragment, null);
+            dismissFragment(fragment);
             return;
         }
 
@@ -128,49 +128,47 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     public void presentFragment(@NonNull AwesomeFragment fragment) {
-        presentFragment(fragment, null);
+        presentFragment(fragment, () -> {
+        });
     }
 
-    public void presentFragment(@NonNull AwesomeFragment fragment, @Nullable Runnable completion) {
-        presentFragment(fragment, TransitionAnimation.Present, completion);
+    public void presentFragment(@NonNull AwesomeFragment fragment, @NonNull Runnable completion) {
+        presentFragment(fragment, completion, TransitionAnimation.Present);
     }
 
     @Override
-    public void presentFragment(@NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> presentFragmentSync(fragment, animation, completion));
+    public void presentFragment(@NonNull AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
+        scheduleTaskAtStarted(() -> presentFragmentSync(fragment, completion, animation));
     }
 
-    private void presentFragmentSync(AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
+    private void presentFragmentSync(AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
         FragmentHelper.handlePresentFragment(getSupportFragmentManager(), android.R.id.content, fragment, animation);
-        if (completion != null) {
-            completion.run();
-        }
+        completion.run();
     }
 
     public void dismissFragment(@NonNull AwesomeFragment fragment) {
-        dismissFragment(fragment, null);
+        dismissFragment(fragment, () -> {
+        });
     }
 
-    public void dismissFragment(@NonNull AwesomeFragment fragment, @Nullable Runnable completion) {
-        dismissFragment(fragment, TransitionAnimation.Present, completion);
+    public void dismissFragment(@NonNull AwesomeFragment fragment, @NonNull Runnable completion) {
+        dismissFragment(fragment, completion, TransitionAnimation.Present);
     }
 
     @Override
-    public void dismissFragment(@NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
+    public void dismissFragment(@NonNull AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
         if (fragment.getParentFragmentManager() == getSupportFragmentManager()) {
-            scheduleTaskAtStarted(() -> dismissFragmentSync(fragment, animation, completion));
+            scheduleTaskAtStarted(() -> dismissFragmentSync(fragment, completion, animation));
             return;
         }
         fragment.dismissFragment(completion);
     }
 
-    private void dismissFragmentSync(AwesomeFragment fragment, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
+    private void dismissFragmentSync(AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
         AwesomeFragment presented = getPresentedFragment(fragment);
         if (presented != null) {
             FragmentHelper.handleDismissFragment(fragment, presented, null, animation);
-            if (completion != null) {
-                completion.run();
-            }
+            completion.run();
             return;
         }
 
@@ -179,9 +177,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
             FragmentHelper.handleDismissFragment(presenting, fragment, fragment, animation);
         }
 
-        if (completion != null) {
-            completion.run();
-        }
+        completion.run();
     }
 
     @Override
@@ -195,22 +191,15 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode) {
-        showAsDialog(dialog, requestCode, null);
+        showAsDialog(dialog, requestCode, () -> {
+        });
     }
 
-    public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+    public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @NonNull Runnable completion) {
         scheduleTaskAtStarted(() -> showAsDialogSync(dialog, requestCode, completion));
     }
 
-    public void hideAsDialog(@NonNull AwesomeFragment dialog) {
-        dialog.hideAsDialog(null);
-    }
-
-    public void hideAsDialog(@NonNull AwesomeFragment dialog, @Nullable Runnable completion) {
-        dialog.hideAsDialog(completion);
-    }
-
-    private void showAsDialogSync(AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+    private void showAsDialogSync(AwesomeFragment dialog, int requestCode, @NonNull Runnable completion) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (fragmentManager.getBackStackEntryCount() > 0) {
@@ -227,9 +216,16 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
                 .add(dialog, dialog.getSceneId())
                 .commit();
 
-        if (completion != null) {
-            completion.run();
-        }
+        completion.run();
+    }
+
+    public void hideAsDialog(@NonNull AwesomeFragment dialog) {
+        dialog.hideAsDialog(() -> {
+        });
+    }
+
+    public void hideAsDialog(@NonNull AwesomeFragment dialog, @NonNull Runnable completion) {
+        dialog.hideAsDialog(completion);
     }
 
     @Nullable

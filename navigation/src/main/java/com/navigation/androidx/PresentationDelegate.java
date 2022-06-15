@@ -45,11 +45,9 @@ public class PresentationDelegate {
         outState.putBoolean(SAVED_STATE_DEFINES_PRESENTATION_CONTEXT, mDefinesPresentationContext);
     }
 
-    public void presentFragment(@NonNull final AwesomeFragment presented, final int requestCode, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
+    public void presentFragment(@NonNull final AwesomeFragment presented, final int requestCode, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
         if (!FragmentHelper.canPresentFragment(mFragment, mFragment.requireActivity())) {
-            if (completion != null) {
-                completion.run();
-            }
+            completion.run();
             mFragment.onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
             return;
         }
@@ -59,7 +57,7 @@ public class PresentationDelegate {
             if (definesPresentationContext() && presented.getPresentationStyle() == PresentationStyle.CurrentContext) {
                 presentFragmentInternal(mFragment, presented, requestCode, completion);
             } else {
-                parent.presentFragment(presented, requestCode, animation, completion);
+                parent.presentFragment(presented, requestCode, completion, animation);
             }
             return;
         }
@@ -67,23 +65,21 @@ public class PresentationDelegate {
         if (mPresentableActivity != null) {
             Bundle args = FragmentHelper.getArguments(presented);
             args.putInt(ARGS_REQUEST_CODE, requestCode);
-            mPresentableActivity.presentFragment(presented, animation, completion);
+            mPresentableActivity.presentFragment(presented, completion, animation);
         }
 
     }
 
-    private void presentFragmentInternal(final AwesomeFragment presenting, final AwesomeFragment presented, final int requestCode, @Nullable Runnable completion) {
+    private void presentFragmentInternal(final AwesomeFragment presenting, final AwesomeFragment presented, final int requestCode, @NonNull Runnable completion) {
         Bundle args = FragmentHelper.getArguments(presented);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         presented.setTargetFragment(presenting, requestCode);
         presented.setDefinesPresentationContext(true);
         FragmentHelper.handlePresentFragment(presenting.getParentFragmentManager(), presenting.getContainerId(), presented, TransitionAnimation.Present);
-        if (completion != null) {
-            completion.run();
-        }
+        completion.run();
     }
 
-    public void dismissFragment(@NonNull TransitionAnimation animation, @Nullable Runnable completion) {
+    public void dismissFragment(@NonNull Runnable completion, @NonNull TransitionAnimation animation) {
         if (mFragment.getDialogAwesomeFragment() != null) {
             throw new IllegalStateException("在 dialog 中， 不能执行此操作, 如需隐藏 dialog , 请调用 `hideDialog`");
         }
@@ -91,26 +87,24 @@ public class PresentationDelegate {
         AwesomeFragment parent = mFragment.getParentAwesomeFragment();
         if (parent != null) {
             if (definesPresentationContext() && mFragment.getPresentationStyle() == PresentationStyle.CurrentContext) {
-                dismissFragmentInternal(animation, completion);
+                dismissFragmentInternal(completion, animation);
             } else {
-                parent.dismissFragment(animation, completion);
+                parent.dismissFragment(completion, animation);
             }
             return;
         }
 
         if (mPresentableActivity != null) {
-            mPresentableActivity.dismissFragment(mFragment, animation, completion);
+            mPresentableActivity.dismissFragment(mFragment, completion, animation);
         }
 
     }
 
-    private void dismissFragmentInternal(@NonNull TransitionAnimation animation, @Nullable Runnable completion) {
+    private void dismissFragmentInternal(@NonNull Runnable completion, @NonNull TransitionAnimation animation) {
         AwesomeFragment presented = getPresentedFragment();
         if (presented != null) {
             FragmentHelper.handleDismissFragment(mFragment, presented, null, animation);
-            if (completion != null) {
-                completion.run();
-            }
+            completion.run();
             return;
         }
 
@@ -119,9 +113,7 @@ public class PresentationDelegate {
             FragmentHelper.handleDismissFragment(presenting, mFragment, mFragment, animation);
         }
 
-        if (completion != null) {
-            completion.run();
-        }
+        completion.run();
     }
 
     @Nullable

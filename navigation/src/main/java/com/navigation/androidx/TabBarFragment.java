@@ -39,7 +39,7 @@ public class TabBarFragment extends AwesomeFragment {
     private int mSelectedIndex;
     private boolean mTabBarHidden;
 
-    private TabBarProvider mTabBarProvider = new DefaultTabBarProvider();
+    private TabBarProvider mTabBarProvider;
 
     private View mTabBar;
 
@@ -55,13 +55,37 @@ public class TabBarFragment extends AwesomeFragment {
         if (savedInstanceState != null) {
             mSelectedIndex = savedInstanceState.getInt(SAVED_SELECTED_INDEX);
             mTabBarHidden = savedInstanceState.getBoolean(SAVED_BOTTOM_BAR_HIDDEN, false);
+        }
 
+        ensureChildFragments(savedInstanceState);
+        ensureTabBarProvider(savedInstanceState);
+
+        mTabBar = createTabBar(root, savedInstanceState);
+
+        if (mTabBarHidden) {
+            hideTabBar();
+        }
+    }
+
+    private void ensureChildFragments(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
             mFragmentTags = savedInstanceState.getStringArrayList(SAVED_FRAGMENT_TAGS);
             FragmentManager fragmentManager = getChildFragmentManager();
             for (int i = 0, size = mFragmentTags.size(); i < size; i++) {
                 mFragments.add((AwesomeFragment) fragmentManager.findFragmentByTag(mFragmentTags.get(i)));
             }
+            return;
+        }
 
+        if (mFragments == null || mFragments.size() == 0) {
+            throw new IllegalArgumentException("必须使用 `setChildFragments` 设置 childFragments");
+        }
+
+        inflateChildFragments(mFragments);
+    }
+
+    private void ensureTabBarProvider(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
             String providerClassName = savedInstanceState.getString(SAVED_TAB_BAR_PROVIDER_CLASS_NAME);
             try {
                 Class<?> clazz = Class.forName(providerClassName);
@@ -71,17 +95,8 @@ public class TabBarFragment extends AwesomeFragment {
             }
         }
 
-        if (savedInstanceState == null) {
-            if (mFragments == null || mFragments.size() == 0) {
-                throw new IllegalArgumentException("必须使用 `setChildFragments` 设置 childFragments");
-            }
-            inflateChildFragments(mFragments);
-        }
-
-        mTabBar = createTabBar(root, savedInstanceState);
-
-        if (mTabBarHidden) {
-            hideTabBar();
+        if (mTabBarProvider == null) {
+            setTabBarProvider(createDefaultTabBarProvider());
         }
     }
 
@@ -182,10 +197,11 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     public void setSelectedFragment(AwesomeFragment fragment) {
-        setSelectedFragment(fragment, null);
+        setSelectedFragment(fragment, () -> {
+        });
     }
 
-    public void setSelectedFragment(AwesomeFragment fragment, @Nullable Runnable completion) {
+    public void setSelectedFragment(AwesomeFragment fragment, @NonNull Runnable completion) {
         int index = mFragments.indexOf(fragment);
         setSelectedIndex(index, completion);
     }
@@ -202,34 +218,45 @@ public class TabBarFragment extends AwesomeFragment {
         return selectedFragment;
     }
 
+    @NonNull
+    public AwesomeFragment requireSelectedFragment() {
+        AwesomeFragment fragment = getSelectedFragment();
+        if (fragment == null) {
+            throw new NullPointerException("NO selected fragment.");
+        }
+        return fragment;
+    }
+
     public int getSelectedIndex() {
         return mSelectedIndex;
     }
 
     public void setSelectedIndex(int index) {
-        setSelectedIndex(index, null);
+        setSelectedIndex(index, () -> {
+        });
     }
 
-    public void setSelectedIndex(int index, @Nullable Runnable completion) {
+    public void setSelectedIndex(int index, @NonNull Runnable completion) {
         if (!isAdded()) {
             mSelectedIndex = index;
-            if (completion != null) {
-                throw new IllegalStateException("Can't run completion callback when the fragment is not added.");
-            }
+            completion.run();
             return;
         }
         scheduleTaskAtStarted(() -> setSelectedIndexSync(index, completion));
     }
 
-    private void setSelectedIndexSync(int index, @Nullable Runnable completion) {
-        if (mTabBarProvider != null) {
-            mTabBarProvider.setSelectedIndex(index);
+    public void setTabBarSelectedIndex(int index) {
+        if (mTabBarProvider == null) {
+            return;
         }
+        mTabBarProvider.setSelectedIndex(index);
+    }
+
+    private void setSelectedIndexSync(int index, @NonNull Runnable completion) {
+        setTabBarSelectedIndex(index);
 
         if (mSelectedIndex == index) {
-            if (completion != null) {
-                completion.run();
-            }
+            completion.run();
             return;
         }
 
@@ -289,7 +316,6 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable
     public <T extends View> T getTabBar() {
         return (T) mTabBar;
     }
@@ -298,14 +324,15 @@ public class TabBarFragment extends AwesomeFragment {
         mTabBarProvider = tabBarProvider;
     }
 
-    public TabBarProvider getTabBarProvider() {
-        return mTabBarProvider;
+    protected TabBarProvider createDefaultTabBarProvider() {
+        return new DefaultTabBarProvider();
     }
 
     public void updateTabBar(Bundle options) {
-        if (mTabBarProvider != null && options != null) {
-            mTabBarProvider.updateTabBar(options);
+        if (mTabBarProvider == null || options == null) {
+            return;
         }
+        mTabBarProvider.updateTabBar(options);
     }
 
     void showTabBarAnimated(Animation anim) {

@@ -43,19 +43,19 @@ public class DialogDelegate {
         return mFragment.mStyle;
     }
 
-    LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
-        LayoutInflater layoutInflater = mFragment.requireActivity().getLayoutInflater();
+    LayoutInflater onGetLayoutInflater(LayoutInflater layoutInflater, @Nullable Bundle savedInstanceState) {
         Window window = mFragment.getWindow();
-        if (!window.isFloating()) {
-            layoutInflater = new DialogLayoutInflater(mFragment.requireContext(), layoutInflater,
-                    () -> {
-                        if (mFragment.isCancelable()) {
-                            hideAsDialog(null, false);
-                        }
-                    });
+        if (window.isFloating()) {
+            return layoutInflater;
         }
 
-        return layoutInflater;
+        return new DialogLayoutInflater(mFragment.requireContext(), layoutInflater,
+                () -> {
+                    if (mFragment.isCancelable()) {
+                        hideAsDialog(() -> {
+                        }, false);
+                    }
+                });
     }
 
     void onCreate() {
@@ -83,30 +83,28 @@ public class DialogDelegate {
 
         Dialog dialog = mFragment.requireDialog();
         dialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
-            if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                if (!mFragment.dispatchBackPressed() && mFragment.isCancelable()) {
-                    hideAsDialog(null, false);
-                }
+            if (event.getAction() != KeyEvent.ACTION_UP || keyCode != KeyEvent.KEYCODE_BACK) {
+                return false;
+            }
+            if (mFragment.dispatchBackPressed()) {
                 return true;
             }
-            return false;
+            return mFragment.onBackPressed();
         });
 
         animateInIfNeeded();
     }
 
-    void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+    void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @NonNull Runnable completion) {
         if (!FragmentHelper.canShowDialog(mFragment, mFragment.requireActivity())) {
-            if (completion != null) {
-                completion.run();
-            }
+            completion.run();
             mFragment.onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
             return;
         }
         showAsDialog(mFragment, dialog, requestCode, completion);
     }
 
-    private void showAsDialog(AwesomeFragment target, AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+    private void showAsDialog(AwesomeFragment target, AwesomeFragment dialog, int requestCode, @NonNull Runnable completion) {
         Bundle args = FragmentHelper.getArguments(dialog);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         args.putBoolean(ARGS_SHOW_AS_DIALOG, true);
@@ -117,12 +115,10 @@ public class DialogDelegate {
                 .add(dialog, dialog.getSceneId())
                 .commit();
 
-        if (completion != null) {
-            completion.run();
-        }
+        completion.run();
     }
 
-    void hideAsDialog(@Nullable Runnable completion, boolean fromAnimation) {
+    void hideAsDialog(@NonNull Runnable completion, boolean fromAnimation) {
         if (mFragment.getDialogAwesomeFragment() == null) {
             throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
         }
@@ -152,16 +148,14 @@ public class DialogDelegate {
                 .setMaxLifecycle(mFragment, Lifecycle.State.STARTED)
                 .remove(mFragment)
                 .commit();
+
         Fragment target = mFragment.getTargetFragment();
-        if (target instanceof AwesomeFragment && target.isAdded()) {
+        if (target != null && target.isAdded()) {
             fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
-            AwesomeFragment fragment = (AwesomeFragment) target;
-            handleFragmentResult(fragment, mFragment);
+            handleFragmentResult((AwesomeFragment) target, mFragment);
         }
 
-        if (completion != null) {
-            completion.run();
-        }
+        completion.run();
     }
 
     void onDismiss() {
@@ -208,7 +202,7 @@ public class DialogDelegate {
         animateUpIn(contentView);
     }
 
-    private boolean animateOutIfNeeded(@Nullable Runnable completion) {
+    private boolean animateOutIfNeeded(@NonNull Runnable completion) {
         View root = getView();
         if (!(root instanceof DialogFrameLayout)) {
             return false;
@@ -225,18 +219,13 @@ public class DialogDelegate {
     }
 
     private boolean shouldAnimateDialogTransition() {
-        View root = getView();
-        if (!(root instanceof DialogFrameLayout)) {
-            return false;
-        }
-
-        DialogFrameLayout frameLayout = (DialogFrameLayout) root;
+        DialogFrameLayout frameLayout = (DialogFrameLayout) getView();
         View contentView = frameLayout.getChildAt(0);
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
         return layoutParams.gravity == Gravity.BOTTOM;
     }
 
-    private void animateDownOut(@NonNull final View contentView, @Nullable Runnable completion) {
+    private void animateDownOut(@NonNull final View contentView, @NonNull Runnable completion) {
         TranslateAnimation translate = new TranslateAnimation(
                 Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f,
                 Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 1f
@@ -267,7 +256,7 @@ public class DialogDelegate {
         contentView.startAnimation(set);
     }
 
-    private Animation.AnimationListener createAnimationListener(@NonNull final View animationView, @Nullable Runnable completion) {
+    private Animation.AnimationListener createAnimationListener(@NonNull final View animationView, @NonNull Runnable completion) {
         return new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {

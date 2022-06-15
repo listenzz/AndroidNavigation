@@ -217,6 +217,15 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_content);
     }
 
+    @NonNull
+    public AwesomeFragment requireContentFragment() {
+        AwesomeFragment fragment = getContentFragment();
+        if (fragment == null) {
+            throw new NullPointerException("NO content fragment");
+        }
+        return fragment;
+    }
+
     private AwesomeFragment mMenuFragment;
 
     public void setMenuFragment(AwesomeFragment fragment) {
@@ -243,14 +252,13 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     public void openMenu() {
-        openMenu(null);
+        openMenu(() -> {
+        });
     }
 
-    public void openMenu(@Nullable Runnable completion) {
+    public void openMenu(@NonNull Runnable completion) {
         if (isMenuOpened()) {
-            if (completion != null) {
-                completion.run();
-            }
+            completion.run();
             return;
         }
 
@@ -262,23 +270,20 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             @Override
             public void onDrawerOpened(View drawerView) {
                 mDrawerLayout.removeDrawerListener(this);
-                if (completion != null) {
-                    completion.run();
-                }
+                completion.run();
             }
         });
         mDrawerLayout.openDrawer(GravityCompat.START);
     }
 
     public void closeMenu() {
-        closeMenu(null);
+        closeMenu(() -> {
+        });
     }
 
-    public void closeMenu(@Nullable Runnable completion) {
+    public void closeMenu(@NonNull Runnable completion) {
         if (!isMenuOpened()) {
-            if (completion != null) {
-                completion.run();
-            }
+            completion.run();
             return;
         }
 
@@ -290,9 +295,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             @Override
             public void onDrawerClosed(View drawerView) {
                 mDrawerLayout.removeDrawerListener(this);
-                if (completion != null) {
-                    completion.run();
-                }
+                completion.run();
             }
         });
         mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -311,10 +314,11 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     public void toggleMenu() {
-        toggleMenu(null);
+        toggleMenu(() -> {
+        });
     }
 
-    public void toggleMenu(@Nullable Runnable completion) {
+    public void toggleMenu(@NonNull Runnable completion) {
         if (isMenuOpened()) {
             closeMenu(completion);
         } else {

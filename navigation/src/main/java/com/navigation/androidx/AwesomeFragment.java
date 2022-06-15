@@ -106,14 +106,18 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         if (getShowsDialog()) {
             setStyle(STYLE_NORMAL, R.style.Theme_Nav_FullScreenDialog);
-            super.onGetLayoutInflater(savedInstanceState);
-            return mDialogDelegate.onGetLayoutInflater(savedInstanceState);
+        }
+
+        LayoutInflater layoutInflater = super.onGetLayoutInflater(savedInstanceState);
+        if (getShowsDialog()) {
+            return mDialogDelegate.onGetLayoutInflater(layoutInflater, savedInstanceState);
         }
 
         if (mStackDelegate.hasStackParent()) {
-            return mStackDelegate.onGetLayoutInflater(savedInstanceState);
+            return mStackDelegate.onGetLayoutInflater(layoutInflater, savedInstanceState);
         }
-        return super.onGetLayoutInflater(savedInstanceState);
+
+        return layoutInflater;
     }
 
     private void inflateStyle() {
@@ -393,12 +397,16 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         boolean processed = child.dispatchBackPressed() || onBackPressed();
         if (!processed) {
-            child.dismissFragment(null);
+            child.dismissFragment();
         }
         return true;
     }
 
     protected boolean onBackPressed() {
+        if (getShowsDialog() && isCancelable()) {
+            hideAsDialog();
+            return true;
+        }
         return false;
     }
 
@@ -474,31 +482,29 @@ public abstract class AwesomeFragment extends InternalFragment {
     // ------- presentation -----
 
     public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode) {
-        presentFragment(fragment, requestCode, null);
-    }
-
-    public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @Nullable Runnable completion) {
-        presentFragment(fragment, requestCode, TransitionAnimation.Present, completion);
-    }
-
-    public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @NonNull TransitionAnimation animation, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> {
-            mPresentationDelegate.presentFragment(fragment, requestCode, animation, completion);
+        presentFragment(fragment, requestCode, () -> {
         });
+    }
+
+    public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @NonNull Runnable completion) {
+        presentFragment(fragment, requestCode, completion, TransitionAnimation.Present);
+    }
+
+    public void presentFragment(@NonNull final AwesomeFragment fragment, final int requestCode, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
+        scheduleTaskAtStarted(() -> mPresentationDelegate.presentFragment(fragment, requestCode, completion, animation));
     }
 
     public void dismissFragment() {
-        dismissFragment(null);
-    }
-
-    public void dismissFragment(@Nullable Runnable completion) {
-        dismissFragment(TransitionAnimation.Present, completion);
-    }
-
-    public void dismissFragment(@NonNull TransitionAnimation animation, @Nullable Runnable completion) {
-        scheduleTaskAtStarted(() -> {
-            mPresentationDelegate.dismissFragment(animation, completion);
+        dismissFragment(() -> {
         });
+    }
+
+    public void dismissFragment(@NonNull Runnable completion) {
+        dismissFragment(completion, TransitionAnimation.Present);
+    }
+
+    public void dismissFragment(@NonNull Runnable completion, @NonNull TransitionAnimation animation) {
+        scheduleTaskAtStarted(() -> mPresentationDelegate.dismissFragment(completion, animation));
     }
 
     @Nullable
@@ -559,10 +565,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode) {
-        showAsDialog(dialog, requestCode, null);
+        showAsDialog(dialog, requestCode, () -> {});
     }
 
-    public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @Nullable Runnable completion) {
+    public void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @NonNull Runnable completion) {
         scheduleTaskAtStarted(() -> {
             mDialogDelegate.showAsDialog(dialog, requestCode, completion);
         });
@@ -572,10 +578,10 @@ public abstract class AwesomeFragment extends InternalFragment {
      * Dismiss the fragment as dialog.
      */
     public void hideAsDialog() {
-        hideAsDialog(null);
+        hideAsDialog(() -> {});
     }
 
-    public void hideAsDialog(@Nullable Runnable completion) {
+    public void hideAsDialog(@NonNull Runnable completion) {
         scheduleTaskAtStarted(() -> mDialogDelegate.hideAsDialog(completion, false));
     }
 
