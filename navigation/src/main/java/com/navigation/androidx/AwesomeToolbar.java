@@ -28,10 +28,6 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Listen on 2017/11/22.
- */
-
 public class AwesomeToolbar extends Toolbar {
 
     private TextView titleView;

@@ -24,10 +24,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-/**
- * Created by Listen on 2017/12/26.
- */
-
 public class DrawableUtils {
 
     private static final String TAG = "Navigation";

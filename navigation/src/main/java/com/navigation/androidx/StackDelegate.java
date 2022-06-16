@@ -167,7 +167,7 @@ public class StackDelegate {
     }
 
     private boolean shouldHideTabBarWhenPushed() {
-        StackFragment stackFragment = mFragment.getStackFragment();
+        StackFragment stackFragment = mFragment.requireStackFragment();
         AwesomeFragment root = stackFragment.getRootFragment();
         if (root != null && root.isAdded()) {
             return root.hideTabBarWhenPushed();

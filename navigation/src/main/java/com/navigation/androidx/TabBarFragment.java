@@ -22,10 +22,6 @@ import java.util.List;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-/**
- * Created by Listen on 2018/1/11.
- */
-
 public class TabBarFragment extends AwesomeFragment {
 
     private static final String SAVED_FRAGMENT_TAGS = "nav_fragment_tags";
@@ -290,15 +286,15 @@ public class TabBarFragment extends AwesomeFragment {
     @NonNull
     private AwesomeFragment switchChildFragment(int index, @Nullable Runnable completion) {
         FragmentManager fragmentManager = getChildFragmentManager();
-        AwesomeFragment previous = (AwesomeFragment) fragmentManager.getPrimaryNavigationFragment();
+        AwesomeFragment precursor = (AwesomeFragment) fragmentManager.getPrimaryNavigationFragment();
         AwesomeFragment current = mFragments.get(index);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.setPrimaryNavigationFragment(current);
-        if (previous != null && previous.isAdded()) {
-            setPresentAnimation(current, previous);
-            transaction.setMaxLifecycle(previous, Lifecycle.State.STARTED);
-            transaction.hide(previous);
+        if (precursor != null && precursor.isAdded()) {
+            setPresentAnimation(current, precursor);
+            transaction.setMaxLifecycle(precursor, Lifecycle.State.STARTED);
+            transaction.hide(precursor);
         }
         transaction.setMaxLifecycle(current, Lifecycle.State.RESUMED);
         transaction.show(current);

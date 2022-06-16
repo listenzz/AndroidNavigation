@@ -30,10 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by Listen on 2018/1/11.
- */
-
 public abstract class AwesomeFragment extends InternalFragment {
 
     public static final String TAG = "Navigation";
@@ -584,7 +580,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void hideAsDialog(@NonNull Runnable completion) {
-        scheduleTaskAtStarted(() -> mDialogDelegate.hideAsDialog(completion, false));
+        scheduleTaskAtStarted(() -> mDialogDelegate.hideAsDialog(completion));
     }
 
     @Override

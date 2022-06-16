@@ -27,10 +27,8 @@ public class AlertDialogFragment extends AwesomeFragment {
                     setResult(0, result);
                 })
                 .create();
+
         return dialog;
     }
-
-
-
 
 }

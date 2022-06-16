@@ -17,10 +17,6 @@ import androidx.lifecycle.Lifecycle;
 
 import java.util.List;
 
-/**
- * Created by Listen on 2018/1/11.
- */
-
 public class StackFragment extends AwesomeFragment implements SwipeBackLayout.SwipeListener {
 
     private SwipeBackLayout mSwipeBackLayout;
@@ -155,9 +151,9 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
         fragmentManager.popBackStack(fragment.getSceneId(), 0);
         fragmentManager.beginTransaction().setMaxLifecycle(fragment, Lifecycle.State.RESUMED).commit();
+        completion.run();
 
         handleFragmentResult(fragment, topFragment);
-        completion.run();
     }
 
     public void popFragment() {
@@ -180,13 +176,13 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
             return;
         }
 
-        AwesomeFragment previous = FragmentHelper.getFragmentBefore(topFragment);
-        if (previous == null) {
+        AwesomeFragment precursor = FragmentHelper.getFragmentBefore(topFragment);
+        if (precursor == null) {
             completion.run();
             return;
         }
 
-        popToFragmentSync(previous, completion, animation);
+        popToFragmentSync(precursor, completion, animation);
     }
 
     public void popToRootFragment() {
@@ -241,23 +237,22 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
             from = topFragment;
         }
 
-        AwesomeFragment previous = FragmentHelper.getFragmentBefore(from);
+        AwesomeFragment precursor = FragmentHelper.getFragmentBefore(from);
 
         topFragment.setAnimation(animation);
-        if (previous != null && previous.isAdded()) {
-            previous.setAnimation(animation);
+        if (precursor != null && precursor.isAdded()) {
+            precursor.setAnimation(animation);
         }
 
         fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
-
         fragmentManager.popBackStack(from.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        if (previous != null && previous.isAdded()) {
-            transaction.hide(previous);
-            transaction.setMaxLifecycle(previous, Lifecycle.State.STARTED);
+        if (precursor != null && precursor.isAdded()) {
+            transaction.hide(precursor);
+            transaction.setMaxLifecycle(precursor, Lifecycle.State.STARTED);
         }
         fragment.setAnimation(animation);
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
@@ -307,16 +302,16 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
 
     private void handleDraggingState(AwesomeFragment topFragment) {
         mDragging = true;
-        AwesomeFragment previous = FragmentHelper.getFragmentBefore(topFragment);
-        if (previous == null) {
+        AwesomeFragment precursor = FragmentHelper.getFragmentBefore(topFragment);
+        if (precursor == null) {
             return;
         }
 
-        if (previous.getView() != null) {
-            previous.getView().setVisibility(View.VISIBLE);
+        if (precursor.getView() != null) {
+            precursor.getView().setVisibility(View.VISIBLE);
         }
 
-        if (previous != getRootFragment() || !shouldHideTabBarWhenPushed()) {
+        if (precursor != getRootFragment() || !shouldHideTabBarWhenPushed()) {
             return;
         }
 
@@ -346,13 +341,13 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         mSwipeBackLayout.setTabBar(null);
         mDragging = false;
 
-        AwesomeFragment previous = FragmentHelper.getFragmentBefore(topFragment);
-        if (previous == null) {
+        AwesomeFragment precursor = FragmentHelper.getFragmentBefore(topFragment);
+        if (precursor == null) {
             return;
         }
 
-        if (previous.getView() != null) {
-            previous.getView().setVisibility(View.GONE);
+        if (precursor.getView() != null) {
+            precursor.getView().setVisibility(View.GONE);
         }
 
         if (scrollPercent >= 1.0f) {

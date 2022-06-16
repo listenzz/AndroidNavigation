@@ -12,9 +12,6 @@ import androidx.lifecycle.OnLifecycleEvent;
 import java.util.LinkedList;
 import java.util.Queue;
 
-/**
- * Created by Listen on 2018/1/31.
- */
 @UiThread
 public class LifecycleDelegate implements LifecycleObserver {
 

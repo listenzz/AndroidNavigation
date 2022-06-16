@@ -18,10 +18,6 @@ import androidx.annotation.ColorInt;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-/**
- * Created by listen on 2018/2/3.
- */
-
 public class AppUtils {
 
     private static final String TAG = "Navigation";

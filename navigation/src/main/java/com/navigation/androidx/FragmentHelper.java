@@ -1,24 +1,17 @@
 package com.navigation.androidx;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Created by Listen on 2018/1/11.
- */
 
 public class FragmentHelper {
 
@@ -96,15 +89,18 @@ public class FragmentHelper {
         if (!fragment.isAdded()) {
             return null;
         }
+
         FragmentManager fragmentManager = fragment.getParentFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         int index = getIndexAtBackStack(fragment);
-        if (index > -1 && index < count - 1) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(index + 1);
-            AwesomeFragment next = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-            if (next != null && next.isAdded()) {
-                return next;
-            }
+        if (index < 0 || index > count - 2) {
+            return null;
+        }
+
+        FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(index + 1);
+        AwesomeFragment successor = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+        if (successor != null && successor.isAdded()) {
+            return successor;
         }
         return null;
     }
@@ -117,28 +113,30 @@ public class FragmentHelper {
         FragmentManager fragmentManager = fragment.getParentFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
         int index = getIndexAtBackStack(fragment);
-        if (index > 0 && index < count) {
-            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(index - 1);
-            AwesomeFragment previous = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-            if (previous != null && previous.isAdded()) {
-                return previous;
-            }
+        if (index < 1 || index > count - 1) {
+            return null;
         }
+
+        FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(index - 1);
+        AwesomeFragment precursor = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
+        if (precursor != null && precursor.isAdded()) {
+            return precursor;
+        }
+
         return null;
     }
 
     public static int getIndexAtBackStack(@NonNull AwesomeFragment fragment) {
         FragmentManager fragmentManager = fragment.getParentFragmentManager();
         int count = fragmentManager.getBackStackEntryCount();
-        int index = -1;
         for (int i = 0; i < count; i++) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(i);
             String tag = fragment.getTag();
             if (tag != null && tag.equals(backStackEntry.getName())) {
-                index = i;
+                return i;
             }
         }
-        return index;
+        return -1;
     }
 
     public static int getBackStackEntryCount(@NonNull AwesomeFragment fragment) {
@@ -166,54 +164,58 @@ public class FragmentHelper {
 
     @Nullable
     public static Fragment findFragment(@NonNull FragmentManager fragmentManager, @NonNull String tag) {
-        Fragment target = fragmentManager.findFragmentByTag(tag);
-        if (target == null) {
-            List<Fragment> fragments = fragmentManager.getFragments();
-            int count = fragments.size();
-            for (int i = count - 1; i > -1; i--) {
-                Fragment fragment = fragments.get(i);
-                if (fragment.isAdded()) {
-                    if (tag.equals(fragment.getTag())) {
-                        target = fragment;
-                    }
+        if (fragmentManager.isDestroyed()) {
+            return null;
+        }
 
-                    if (target == null) {
-                        target = findFragment(fragment.getChildFragmentManager(), tag);
-                    }
+        List<Fragment> fragments = fragmentManager.getFragments();
+        int count = fragments.size();
 
-                    if (target != null) {
-                        break;
-                    }
-                }
+        for (int i = count - 1; i > -1; i--) {
+            Fragment fragment = fragments.get(i);
+            if (!fragment.isAdded()) {
+                continue;
+            }
+
+            if (tag.equals(fragment.getTag())) {
+                return fragment;
+            }
+
+            Fragment child = findFragment(fragment.getChildFragmentManager(), tag);
+            if (child != null) {
+                return child;
             }
         }
 
-        return target;
+        return null;
     }
 
     @Nullable
     public static Fragment findFragment(@NonNull FragmentManager fragmentManager, @NonNull Class<? extends Fragment> type) {
+        if (fragmentManager.isDestroyed()) {
+            return null;
+        }
+
         List<Fragment> fragments = fragmentManager.getFragments();
         int count = fragments.size();
-        Fragment target = null;
+
         for (int i = count - 1; i > -1; i--) {
             Fragment fragment = fragments.get(i);
-            if (fragment.isAdded()) {
-                if (type.isAssignableFrom(fragment.getClass())) {
-                    target = fragment;
-                }
+            if (!fragment.isAdded()) {
+                continue;
+            }
 
-                if (target == null) {
-                    target = findFragment(fragment.getChildFragmentManager(), type);
-                }
+            if (fragment.getClass().isAssignableFrom(type)) {
+                return fragment;
+            }
 
-                if (target != null) {
-                    break;
-                }
+            Fragment child = findFragment(fragment.getChildFragmentManager(), type);
+            if (child != null) {
+                return child;
             }
         }
 
-        return target;
+        return null;
     }
 
     @Nullable
@@ -225,27 +227,23 @@ public class FragmentHelper {
         List<Fragment> fragments = fragmentManager.getFragments();
         int count = fragments.size();
 
-        AwesomeFragment dialog = null;
-
         for (int i = count - 1; i > -1; i--) {
             Fragment fragment = fragments.get(i);
-            if (fragment instanceof AwesomeFragment && fragment.isAdded()) {
-                AwesomeFragment dialogFragment = (AwesomeFragment) fragment;
-                if (dialogFragment.getShowsDialog()) {
-                    dialog = dialogFragment;
-                }
+            if (!fragment.isAdded()) {
+                continue;
+            }
 
-                if (dialog == null) {
-                    dialog = getAwesomeDialogFragment(fragment.getChildFragmentManager());
-                }
+            if (fragment instanceof AwesomeFragment && ((AwesomeFragment) fragment).getShowsDialog()) {
+                return (AwesomeFragment) fragment;
+            }
 
-                if (dialog != null) {
-                    break;
-                }
+            AwesomeFragment child = getAwesomeDialogFragment(fragment.getChildFragmentManager());
+            if (child != null) {
+                return child;
             }
         }
 
-        return dialog;
+        return null;
     }
 
     public static void handlePresentFragment(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation) {
@@ -273,7 +271,6 @@ public class FragmentHelper {
 
     public static void handleDismissFragment(@NonNull AwesomeFragment presenting, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top, @NonNull TransitionAnimation animation) {
         FragmentManager fragmentManager = presenting.getParentFragmentManager();
-        presenting.setAnimation(animation);
 
         if (top == null) {
             top = (AwesomeFragment) fragmentManager.findFragmentById(presenting.getContainerId());
@@ -283,6 +280,7 @@ public class FragmentHelper {
             return;
         }
 
+        presenting.setAnimation(animation);
         top.setAnimation(animation);
         fragmentManager.beginTransaction().setMaxLifecycle(presented, Lifecycle.State.STARTED).commit();
         fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -328,36 +326,4 @@ public class FragmentHelper {
         }
         return false;
     }
-
-    public static boolean canPresentFragment(@NonNull AwesomeFragment fragment, @NonNull FragmentActivity activity) {
-        AwesomeFragment presented = fragment.getPresentedFragment();
-        if (presented != null) {
-            Log.w(TAG, "Can't present since the fragment had present another fragment already.");
-            return false;
-        }
-
-        DialogFragment dialog = getAwesomeDialogFragment(activity.getSupportFragmentManager());
-        if (dialog != null) {
-            Log.w(TAG, "Can't present a fragment over a dialog.");
-            return false;
-        }
-
-        return true;
-    }
-
-    public static boolean canShowDialog(@NonNull AwesomeFragment fragment, @NonNull FragmentActivity activity) {
-        AwesomeFragment presented = fragment.getPresentedFragment();
-        if (presented != null) {
-            Log.w(TAG, "Can't show dialog since the fragment had present another fragment already.");
-            return false;
-        }
-
-        DialogFragment dialog = getAwesomeDialogFragment(activity.getSupportFragmentManager());
-        if (dialog != null && dialog != fragment) {
-            Log.w(TAG, "Can't show dialog since there are another dialog over there.");
-            return false;
-        }
-        return true;
-    }
-
 }

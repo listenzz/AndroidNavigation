@@ -11,17 +11,12 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.ColorUtils;
 import androidx.core.graphics.drawable.DrawableCompat;
-
-/**
- * Created by Listen on 2018/1/9.
- */
 
 public class Style implements Cloneable {
 
     public static int INVALID_COLOR = Integer.MAX_VALUE;
-    private static Drawable defaultShadow = new ColorDrawable(Color.parseColor("#F0F0F0"));
+    private static final Drawable defaultShadow = new ColorDrawable(Color.parseColor("#F0F0F0"));
 
     private int screenBackgroundColor = Color.WHITE;
 
@@ -399,6 +394,7 @@ public class Style implements Cloneable {
         return scrimAlpha;
     }
 
+    @NonNull
     @Override
     public Style clone() throws CloneNotSupportedException {
         return (Style) super.clone();

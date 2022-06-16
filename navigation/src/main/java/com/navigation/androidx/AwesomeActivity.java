@@ -175,6 +175,8 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         AwesomeFragment presenting = getPresentingFragment(fragment);
         if (presenting != null) {
             FragmentHelper.handleDismissFragment(presenting, fragment, fragment, animation);
+            completion.run();
+            return;
         }
 
         completion.run();

@@ -4,7 +4,6 @@ import static com.navigation.androidx.AwesomeFragment.ARGS_REQUEST_CODE;
 import static com.navigation.androidx.AwesomeFragment.ARGS_SHOW_AS_DIALOG;
 import static com.navigation.androidx.FragmentHelper.handleFragmentResult;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -53,7 +52,7 @@ public class DialogDelegate {
                 () -> {
                     if (mFragment.isCancelable()) {
                         hideAsDialog(() -> {
-                        }, false);
+                        });
                     }
                 });
     }
@@ -96,11 +95,6 @@ public class DialogDelegate {
     }
 
     void showAsDialog(@NonNull AwesomeFragment dialog, int requestCode, @NonNull Runnable completion) {
-        if (!FragmentHelper.canShowDialog(mFragment, mFragment.requireActivity())) {
-            completion.run();
-            mFragment.onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
-            return;
-        }
         showAsDialog(mFragment, dialog, requestCode, completion);
     }
 
@@ -118,7 +112,7 @@ public class DialogDelegate {
         completion.run();
     }
 
-    void hideAsDialog(@NonNull Runnable completion, boolean fromAnimation) {
+    void hideAsDialog(@NonNull Runnable completion) {
         if (!mFragment.getShowsDialog()) {
             AwesomeFragment dialog = mFragment.getDialogAwesomeFragment();
             if (dialog == null) {
@@ -128,15 +122,20 @@ public class DialogDelegate {
             return;
         }
 
-        AppUtils.hideSoftInput(mFragment.getWindow());
-
-        if (!fromAnimation && animateOutIfNeeded(completion)) {
+        if (animateOutIfNeeded(completion)) {
             return;
         }
 
+        realHideAsDialog(completion);
+    }
+
+    private void realHideAsDialog(@NonNull Runnable completion) {
         if (!mFragment.isAdded()) {
+            completion.run();
             return;
         }
+
+        AppUtils.hideSoftInput(mFragment.getWindow());
 
         FragmentManager fragmentManager = mFragment.getParentFragmentManager();
         fragmentManager
@@ -216,13 +215,13 @@ public class DialogDelegate {
 
     private boolean shouldAnimateDialogTransition() {
         View root = getView();
-        if (!(root instanceof DialogFrameLayout)) {
-            return false;
+        if (root instanceof DialogFrameLayout) {
+            DialogFrameLayout frameLayout = (DialogFrameLayout) root;
+            View contentView = frameLayout.getChildAt(0);
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
+            return layoutParams.gravity == Gravity.BOTTOM;
         }
-        DialogFrameLayout frameLayout = (DialogFrameLayout) root;
-        View contentView = frameLayout.getChildAt(0);
-        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
-        return layoutParams.gravity == Gravity.BOTTOM;
+        return false;
     }
 
     private void animateDownOut(@NonNull final View contentView, @NonNull Runnable completion) {
@@ -264,7 +263,7 @@ public class DialogDelegate {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                animationView.post(() -> hideAsDialog(completion, true));
+                animationView.post(() -> realHideAsDialog(completion));
             }
 
             @Override

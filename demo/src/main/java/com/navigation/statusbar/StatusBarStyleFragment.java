@@ -8,20 +8,7 @@ import androidx.annotation.NonNull;
 import com.navigation.androidx.BarStyle;
 import com.navigation.androidx.Style;
 
-
-/**
- * Created by listen on 2018/1/13.
- */
-
 public class StatusBarStyleFragment extends TestStatusBarFragment {
-
-    private BarStyle barStyle = BarStyle.DarkContent;
-
-    @NonNull
-    @Override
-    protected BarStyle preferredStatusBarStyle() {
-        return barStyle;
-    }
 
     @Override
     protected void onCustomStyle(@NonNull Style style) {

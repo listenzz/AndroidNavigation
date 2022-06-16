@@ -13,10 +13,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 
-/**
- * Created by Listen on 2018/1/11.
- */
-
 public class DrawerFragment extends AwesomeFragment implements DrawerLayout.DrawerListener {
 
     private static final String MIN_DRAWER_MARGIN_KEY = "MIN_DRAWER_MARGIN_KEY";

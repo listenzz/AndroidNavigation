@@ -2,7 +2,6 @@ package com.navigation.androidx;
 
 import static com.navigation.androidx.AwesomeFragment.ARGS_REQUEST_CODE;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -46,12 +45,6 @@ public class PresentationDelegate {
     }
 
     public void presentFragment(@NonNull final AwesomeFragment presented, final int requestCode, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
-        if (!FragmentHelper.canPresentFragment(mFragment, mFragment.requireActivity())) {
-            completion.run();
-            mFragment.onFragmentResult(requestCode, Activity.RESULT_CANCELED, null);
-            return;
-        }
-
         AwesomeFragment parent = mFragment.getParentAwesomeFragment();
         if (parent != null) {
             if (definesPresentationContext() && presented.getPresentationStyle() == PresentationStyle.CurrentContext) {
@@ -111,6 +104,8 @@ public class PresentationDelegate {
         AwesomeFragment presenting = getPresentingFragment();
         if (presenting != null) {
             FragmentHelper.handleDismissFragment(presenting, mFragment, mFragment, animation);
+            completion.run();
+            return;
         }
 
         completion.run();

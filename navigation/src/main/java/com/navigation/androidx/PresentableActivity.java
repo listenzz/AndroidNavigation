@@ -3,10 +3,6 @@ package com.navigation.androidx;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-/**
- * Created by Listen on 2018/1/11.
- */
-
 public interface PresentableActivity {
 
     void presentFragment(@NonNull AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation);

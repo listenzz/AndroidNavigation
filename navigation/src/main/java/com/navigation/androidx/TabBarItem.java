@@ -7,11 +7,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-
-/**
- * Created by Listen on 2018/1/11.
- */
-
 public class TabBarItem implements Parcelable {
 
     @NonNull

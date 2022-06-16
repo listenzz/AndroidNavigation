@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import com.bigkoo.pickerview.view.WheelOptions;
 import com.navigation.R;
 import com.navigation.androidx.AwesomeFragment;
+import com.navigation.androidx.BarStyle;
+import com.navigation.androidx.SystemUI;
 
 public class AreaPickerDialogFragment extends AwesomeFragment {
 
@@ -50,5 +52,11 @@ public class AreaPickerDialogFragment extends AwesomeFragment {
         areaUtils.initJsonData();
         wheelOptions.setCyclic(false);
         wheelOptions.setPicker(areaUtils.getOptions1Items(), areaUtils.getOptions2Items(), areaUtils.getOptions3Items());
+    }
+
+    @NonNull
+    @Override
+    protected BarStyle preferredStatusBarStyle() {
+        return SystemUI.activityStatusBarStyle(requireActivity());
     }
 }

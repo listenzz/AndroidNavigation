@@ -96,6 +96,11 @@ public class SystemUI {
         return false;
     }
 
+    public static BarStyle activityStatusBarStyle(Activity activity) {
+        boolean isDark = isStatusBarStyleDark(activity.getWindow());
+        return isDark ? BarStyle.DarkContent : BarStyle.LightContent;
+    }
+
     public static void setStatusBarHidden(Window window, boolean hidden) {
         View decorView = window.getDecorView();
         int systemUi = decorView.getSystemUiVisibility();

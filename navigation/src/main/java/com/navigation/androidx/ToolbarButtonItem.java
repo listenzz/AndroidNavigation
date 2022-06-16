@@ -9,10 +9,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-/**
- * Created by listen on 2018/4/5.
- */
-
 public class ToolbarButtonItem {
 
     public static class Builder {

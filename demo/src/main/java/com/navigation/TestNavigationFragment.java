@@ -189,7 +189,7 @@ public class TestNavigationFragment extends BaseFragment {
     public void onFragmentResult(int requestCode, int resultCode, @Nullable Bundle data) {
         super.onFragmentResult(requestCode, resultCode, data);
         if ((requestCode != REQUEST_CODE)) {
-            handlePopResult(requestCode, data);
+            handlePopResult(resultCode, data);
             return;
         }
 

@@ -2,10 +2,6 @@ package com.navigation.androidx;
 
 import androidx.annotation.AnimRes;
 
-/**
- * Created by Listen on 2017/11/20.
- */
-
 public class TransitionAnimation {
 
     public final static TransitionAnimation Push = new TransitionAnimation(R.anim.nav_push_enter, R.anim.nav_push_exit, R.anim.nav_pop_enter, R.anim.nav_pop_exit);

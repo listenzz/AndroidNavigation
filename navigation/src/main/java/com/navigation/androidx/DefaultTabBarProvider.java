@@ -8,9 +8,6 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-/**
- * Created by Listen on 2018/06/29.
- */
 public class DefaultTabBarProvider implements TabBarProvider {
 
     private TabBar mTabBar;
