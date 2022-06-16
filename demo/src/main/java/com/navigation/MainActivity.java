@@ -32,15 +32,13 @@ public class MainActivity extends AwesomeActivity {
         Log.i(TAG, "MainActivity#onCreate");
         if (savedInstanceState == null) {
 
-            TestNavigationFragment testNavigationFragment = new TestNavigationFragment();
             StackFragment navigation = new StackFragment();
-            navigation.setRootFragment(testNavigationFragment);
+            navigation.setRootFragment(new TestNavigationFragment());
             String iconUri = "font://FontAwesome/" + fromCharCode(61732) + "/24";
             navigation.setTabBarItem(new TabBarItem("导航", iconUri));
 
-            TestStatusBarFragment testStatusBarFragment = new TestStatusBarFragment();
             StackFragment statusBar = new StackFragment();
-            statusBar.setRootFragment(testStatusBarFragment);
+            statusBar.setRootFragment(new TestStatusBarFragment());
             statusBar.setTabBarItem(new TabBarItem("状态栏", R.drawable.flower));
 
             TabBarFragment tabBarFragment = new TabBarFragment();

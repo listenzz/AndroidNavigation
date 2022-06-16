@@ -122,7 +122,7 @@ public class DialogDelegate {
         if (!mFragment.getShowsDialog()) {
             AwesomeFragment dialog = mFragment.getDialogAwesomeFragment();
             if (dialog == null) {
-                throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
+                throw new IllegalStateException("不存在 dialog，你是否想调用 `dismissFragment` ?");
             }
             dialog.hideAsDialog(completion);
             return;
