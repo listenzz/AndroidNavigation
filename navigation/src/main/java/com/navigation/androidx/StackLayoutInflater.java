@@ -1,5 +1,7 @@
 package com.navigation.androidx;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +27,7 @@ public class StackLayoutInflater extends LayoutInflater {
     @Override
     public View inflate(int resource, @Nullable ViewGroup root, boolean attachToRoot) {
         FrameLayout frameLayout = new FrameLayout(getContext());
-        frameLayout.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+        frameLayout.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
         mLayoutInflater.inflate(resource, frameLayout, true);
         return frameLayout;
     }
