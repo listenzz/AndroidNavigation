@@ -775,7 +775,16 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @Nullable
     public StackFragment getStackFragment() {
-        return mStackDelegate.getStackFragment();
+        if (this instanceof StackFragment) {
+            return (StackFragment) this;
+        }
+
+        AwesomeFragment parent = getParentAwesomeFragment();
+        if (parent == null) {
+            return null;
+        }
+
+        return parent.getStackFragment();
     }
 
     public boolean isStackRoot() {

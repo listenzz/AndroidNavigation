@@ -83,13 +83,14 @@ public class MenuFragment extends AwesomeFragment {
     @Override
     public StackFragment getStackFragment() {
         DrawerFragment drawerFragment = getDrawerFragment();
-        if (drawerFragment != null) {
-            TabBarFragment tabBarFragment = drawerFragment.getContentFragment().getTabBarFragment();
-            if (tabBarFragment != null) {
-                return tabBarFragment.getSelectedFragment().getStackFragment();
-            }
-            return drawerFragment.getContentFragment().getStackFragment();
+        if (drawerFragment == null) {
+            return super.getStackFragment();
         }
-        return super.getStackFragment();
+
+        TabBarFragment tabBarFragment = drawerFragment.requireContentFragment().getTabBarFragment();
+        if (tabBarFragment == null) {
+            return drawerFragment.requireContentFragment().getStackFragment();
+        }
+        return tabBarFragment.requireSelectedFragment().getStackFragment();
     }
 }

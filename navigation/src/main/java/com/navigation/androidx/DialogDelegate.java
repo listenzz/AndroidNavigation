@@ -119,16 +119,12 @@ public class DialogDelegate {
     }
 
     void hideAsDialog(@NonNull Runnable completion, boolean fromAnimation) {
-        if (mFragment.getDialogAwesomeFragment() == null) {
-            throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
-        }
-
         if (!mFragment.getShowsDialog()) {
-            AwesomeFragment parent = mFragment.getParentAwesomeFragment();
-            if (parent == null) {
+            AwesomeFragment dialog = mFragment.getDialogAwesomeFragment();
+            if (dialog == null) {
                 throw new IllegalStateException("Can't find a dialog, do you mean `dismissFragment`?");
             }
-            parent.hideAsDialog(completion);
+            dialog.hideAsDialog(completion);
             return;
         }
 

@@ -48,24 +48,8 @@ public class StackDelegate {
         return  new StackLayoutInflater(requireContext(), layoutInflater);
     }
 
-    public StackFragment getStackFragment() {
-        if (mFragment instanceof StackFragment) {
-            return (StackFragment) mFragment;
-        }
-
-        if (mFragment.getShowsDialog()) {
-            return null;
-        }
-
-        AwesomeFragment parent = mFragment.getParentAwesomeFragment();
-        if (parent != null) {
-            return parent.getStackFragment();
-        }
-        return null;
-    }
-
     public boolean isStackRoot() {
-        StackFragment stackFragment = getStackFragment();
+        StackFragment stackFragment = mFragment.getStackFragment();
         if (stackFragment != null) {
             AwesomeFragment fragment = stackFragment.getRootFragment();
             return fragment == mFragment;
@@ -183,7 +167,7 @@ public class StackDelegate {
     }
 
     private boolean shouldHideTabBarWhenPushed() {
-        StackFragment stackFragment = getStackFragment();
+        StackFragment stackFragment = mFragment.getStackFragment();
         AwesomeFragment root = stackFragment.getRootFragment();
         if (root != null && root.isAdded()) {
             return root.hideTabBarWhenPushed();
@@ -225,7 +209,7 @@ public class StackDelegate {
 
         toolbar.setNavigationIcon(style.getBackIcon());
         toolbar.setNavigationOnClickListener(view -> {
-            StackFragment stackFragment = getStackFragment();
+            StackFragment stackFragment = mFragment.getStackFragment();
             if (stackFragment != null) {
                 stackFragment.dispatchBackPressed();
             }

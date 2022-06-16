@@ -282,19 +282,6 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         return null;
     }
 
-    @Nullable
-    @Override
-    public StackFragment getStackFragment() {
-        AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent != null) {
-            StackFragment stack = parent.getStackFragment();
-            if (stack != null && stack.getWindow() == getWindow()) {
-                throw new IllegalStateException("should not nest StackFragment in the same window.");
-            }
-        }
-        return this;
-    }
-
     public SwipeBackLayout getSwipeBackLayout() {
         return mSwipeBackLayout;
     }
