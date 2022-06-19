@@ -56,17 +56,19 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState == null) {
-            if (mContentFragment == null) {
-                throw new IllegalArgumentException("必须调用 `setContentFragment` 设置 contentFragment");
-            }
-            if (mMenuFragment == null) {
-                throw new IllegalArgumentException("必须调用 `setMenuFragment` 设置 menuFragment");
-            }
-
-            FragmentHelper.addFragment(getChildFragmentManager(), R.id.drawer_content, mContentFragment, Lifecycle.State.RESUMED);
-            FragmentHelper.addFragment(getChildFragmentManager(), R.id.drawer_menu, mMenuFragment, Lifecycle.State.STARTED, false);
+        if (savedInstanceState != null) {
+            return;
         }
+
+        if (mContentFragment == null) {
+            throw new IllegalArgumentException("必须调用 `setContentFragment` 设置 contentFragment");
+        }
+        if (mMenuFragment == null) {
+            throw new IllegalArgumentException("必须调用 `setMenuFragment` 设置 menuFragment");
+        }
+
+        FragmentHelper.addFragment(getChildFragmentManager(), R.id.drawer_content, mContentFragment, Lifecycle.State.RESUMED);
+        FragmentHelper.addFragment(getChildFragmentManager(), R.id.drawer_menu, mMenuFragment, Lifecycle.State.STARTED, false);
     }
 
     @Override
@@ -167,10 +169,8 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
                     .setMaxLifecycle(menu, Lifecycle.State.RESUMED)
                     .commit();
 
-            View menuView = menu.getView();
-            if (menuView != null) {
-                menuView.setClickable(true);
-            }
+            View menuView = menu.requireView();
+            menuView.setClickable(true);
         });
     }
 
@@ -207,17 +207,17 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Nullable
     public AwesomeFragment getContentFragment() {
-        if (!isAdded()) {
-            return null;
+        if (isAdded()) {
+            return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_content);
         }
-        return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_content);
+        return null;
     }
 
     @NonNull
     public AwesomeFragment requireContentFragment() {
         AwesomeFragment fragment = getContentFragment();
         if (fragment == null) {
-            throw new NullPointerException("NO content fragment");
+            throw new NullPointerException("No content fragment");
         }
         return fragment;
     }
@@ -233,10 +233,10 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     @Nullable
     public AwesomeFragment getMenuFragment() {
-        if (!isAdded()) {
-            return null;
+        if (isAdded()) {
+            return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_menu);
         }
-        return (AwesomeFragment) getChildFragmentManager().findFragmentById(R.id.drawer_menu);
+        return null;
     }
 
     public void setMinDrawerMargin(int dp) {
@@ -323,10 +323,10 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     public boolean isMenuOpened() {
-        if (mDrawerLayout == null) {
-            return false;
+        if (mDrawerLayout != null) {
+            return mDrawerLayout.isDrawerOpen(GravityCompat.START);
         }
-        return mDrawerLayout.isDrawerOpen(GravityCompat.START);
+        return false;
     }
 
     public boolean isMenuPrimary() {

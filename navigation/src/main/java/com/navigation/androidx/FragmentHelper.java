@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FragmentHelper {
 
@@ -270,22 +271,25 @@ public class FragmentHelper {
     }
 
     public static void handleDismissFragment(@NonNull AwesomeFragment presenting, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top, @NonNull TransitionAnimation animation) {
-        FragmentManager fragmentManager = presenting.getParentFragmentManager();
-
-        if (top == null) {
-            top = (AwesomeFragment) fragmentManager.findFragmentById(presenting.getContainerId());
-        }
-
-        if (top == null) {
-            return;
-        }
-
+        AwesomeFragment result = getResultFragment(presenting, top);
+        result.setAnimation(animation);
         presenting.setAnimation(animation);
-        top.setAnimation(animation);
+
+        FragmentManager fragmentManager = presenting.getParentFragmentManager();
         fragmentManager.beginTransaction().setMaxLifecycle(presented, Lifecycle.State.STARTED).commit();
         fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
-        handleFragmentResult(presenting, top);
+        handleFragmentResult(presenting, result);
+    }
+
+    @NonNull
+    private static AwesomeFragment getResultFragment(@NonNull AwesomeFragment presenting, @Nullable AwesomeFragment top) {
+        if (top != null) {
+            return top;
+        }
+
+        FragmentManager fragmentManager = presenting.getParentFragmentManager();
+        return (AwesomeFragment) Objects.requireNonNull(fragmentManager.findFragmentById(presenting.getContainerId()));
     }
 
     public static void handleFragmentResult(AwesomeFragment target, AwesomeFragment resultFragment) {
@@ -300,6 +304,7 @@ public class FragmentHelper {
         if (view == null) {
             return;
         }
+
         view.post(() -> {
             if (target.isAdded()) {
                 target.onFragmentResult(requestCode, resultCode, data);
@@ -308,22 +313,28 @@ public class FragmentHelper {
     }
 
     public static boolean isRemoving(@NonNull AwesomeFragment fragment) {
-        while (fragment != null) {
-            if (fragment.isRemoving()) {
-                return true;
-            }
-            fragment = fragment.getParentAwesomeFragment();
+        if (fragment.isRemoving()) {
+            return true;
         }
+
+        AwesomeFragment parent = fragment.getParentAwesomeFragment();
+        if (parent != null) {
+            return isRemoving(parent);
+        }
+
         return false;
     }
 
     public static boolean isHidden(@NonNull AwesomeFragment fragment) {
-        while (fragment != null) {
-            if (fragment.isHidden()) {
-                return true;
-            }
-            fragment = fragment.getParentAwesomeFragment();
+        if (fragment.isHidden()) {
+            return true;
         }
+
+        AwesomeFragment parent = fragment.getParentAwesomeFragment();
+        if (parent != null) {
+            return isHidden(parent);
+        }
+
         return false;
     }
 }

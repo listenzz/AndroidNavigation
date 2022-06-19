@@ -43,13 +43,16 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     @Override
     protected void performCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.performCreateView(inflater, container, savedInstanceState);
-        if (savedInstanceState == null) {
-            if (mRootFragment == null) {
-                throw new IllegalArgumentException("Must specify rootFragment by `setRootFragment`.");
-            }
-            FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, mRootFragment, TransitionAnimation.None);
-            mRootFragment = null;
+        if (savedInstanceState != null) {
+            return;
         }
+
+        if (mRootFragment == null) {
+            throw new IllegalArgumentException("Must specify rootFragment by `setRootFragment`.");
+        }
+
+        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, mRootFragment, TransitionAnimation.None);
+        mRootFragment = null;
     }
 
     @Override
@@ -137,8 +140,6 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     }
 
     protected void popToFragmentSync(AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
-        FragmentManager fragmentManager = getChildFragmentManager();
-
         AwesomeFragment topFragment = getTopFragment();
         if (topFragment == null || topFragment == fragment) {
             completion.run();
@@ -148,6 +149,7 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         topFragment.setAnimation(animation);
         fragment.setAnimation(animation);
 
+        FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
         fragmentManager.popBackStack(fragment.getSceneId(), 0);
         fragmentManager.beginTransaction().setMaxLifecycle(fragment, Lifecycle.State.RESUMED).commit();
@@ -225,27 +227,27 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     }
 
     protected void redirectToFragmentSync(@NonNull AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation, @Nullable AwesomeFragment from) {
-        FragmentManager fragmentManager = getChildFragmentManager();
-
         AwesomeFragment topFragment = getTopFragment();
         if (topFragment == null) {
             completion.run();
             return;
         }
 
-        if (from == null) {
-            from = topFragment;
+        topFragment.setAnimation(animation);
+
+        AwesomeFragment target = from;
+        if (target == null) {
+            target = topFragment;
         }
 
-        AwesomeFragment precursor = FragmentHelper.getFragmentBefore(from);
-
-        topFragment.setAnimation(animation);
+        AwesomeFragment precursor = FragmentHelper.getFragmentBefore(target);
         if (precursor != null && precursor.isAdded()) {
             precursor.setAnimation(animation);
         }
 
+        FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
-        fragmentManager.popBackStack(from.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        fragmentManager.popBackStack(target.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
@@ -303,37 +305,35 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     private void handleDraggingState(AwesomeFragment topFragment) {
         mDragging = true;
         AwesomeFragment precursor = FragmentHelper.getFragmentBefore(topFragment);
-        if (precursor == null) {
-            return;
-        }
+        assert precursor != null;
+        precursor.requireView().setVisibility(View.VISIBLE);
+        drawTabBarIfNeeded(precursor);
+    }
 
-        if (precursor.getView() != null) {
-            precursor.getView().setVisibility(View.VISIBLE);
-        }
-
-        if (precursor != getRootFragment() || !shouldHideTabBarWhenPushed()) {
-            return;
-        }
-
+    private void drawTabBarIfNeeded(AwesomeFragment precursor) {
         TabBarFragment tabBarFragment = getTabBarFragment();
         if (tabBarFragment == null) {
             return;
         }
 
-        if (tabBarFragment.getView() == null) {
+        if (precursor != getRootFragment() || shouldShowTabBarWhenPushed()) {
             return;
         }
 
         View tabBar = tabBarFragment.getTabBar();
+
+        int vWidth = tabBarFragment.requireView().getWidth();
+        int vHeight = tabBarFragment.requireView().getHeight();
+
         if (tabBar.getMeasuredWidth() == 0) {
-            tabBar.measure(View.MeasureSpec.makeMeasureSpec(tabBarFragment.getView().getWidth(), View.MeasureSpec.EXACTLY),
+            tabBar.measure(View.MeasureSpec.makeMeasureSpec(vWidth, View.MeasureSpec.EXACTLY),
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
             tabBar.layout(0, 0, tabBar.getMeasuredWidth(), tabBar.getMeasuredHeight());
         }
         Bitmap bitmap = AppUtils.createBitmapFromView(tabBar);
         BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
-        bitmapDrawable.setBounds(0, tabBarFragment.getView().getHeight() - tabBar.getHeight(),
-                tabBar.getMeasuredWidth(), tabBarFragment.getView().getHeight());
+        bitmapDrawable.setBounds(0, vHeight - tabBar.getHeight(),
+                tabBar.getMeasuredWidth(), vHeight);
         mSwipeBackLayout.setTabBar(bitmapDrawable);
     }
 
@@ -342,28 +342,22 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         mDragging = false;
 
         AwesomeFragment precursor = FragmentHelper.getFragmentBefore(topFragment);
-        if (precursor == null) {
-            return;
-        }
-
-        if (precursor.getView() != null) {
-            precursor.getView().setVisibility(View.GONE);
-        }
+        assert precursor != null;
+        precursor.requireView().setVisibility(View.GONE);
 
         if (scrollPercent >= 1.0f) {
             popFragmentSync(() -> {
             }, TransitionAnimation.None);
-            FragmentManager fragmentManager = getChildFragmentManager();
-            fragmentManager.executePendingTransactions();
+            getChildFragmentManager().executePendingTransactions();
         }
     }
 
-    public boolean shouldHideTabBarWhenPushed() {
+    protected boolean shouldShowTabBarWhenPushed() {
         AwesomeFragment root = getRootFragment();
-        if (root != null && root.isAdded()) {
-            return root.hideTabBarWhenPushed();
+        if (root != null) {
+            return !root.hideTabBarWhenPushed();
         }
-        return true;
+        return false;
     }
 
     @Override

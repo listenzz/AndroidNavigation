@@ -21,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 public class StackDelegate {
@@ -32,8 +31,8 @@ public class StackDelegate {
         mFragment = fragment;
     }
 
-    private View getView() {
-        return mFragment.getView();
+    private FrameLayout requireView() {
+        return (FrameLayout) mFragment.requireView();
     }
 
     private Style getStyle() {
@@ -45,54 +44,15 @@ public class StackDelegate {
     }
 
     public LayoutInflater onGetLayoutInflater(LayoutInflater layoutInflater, @Nullable Bundle savedInstanceState) {
-        return  new StackLayoutInflater(requireContext(), layoutInflater);
+        return new StackLayoutInflater(requireContext(), layoutInflater);
     }
 
     public boolean isStackRoot() {
-        StackFragment stackFragment = mFragment.getStackFragment();
-        if (stackFragment != null) {
-            AwesomeFragment fragment = stackFragment.getRootFragment();
-            return fragment == mFragment;
+        if (!hasStackParent()) {
+            return false;
         }
-        return false;
-    }
-
-    public void setNeedsToolbarAppearanceUpdate() {
-        AwesomeToolbar toolbar = getToolbar();
-        if (toolbar == null) {
-            return;
-        }
-
-        Style style = getStyle();
-        setupToolbar(toolbar, style);
-        setLeftButtonItemTintColor(style);
-        setRightButtonItemTintColor(style);
-    }
-
-    private void setRightButtonItemTintColor(Style style) {
-        if (mRightBarButtonItems != null) {
-            for (ToolbarButtonItem item : mRightBarButtonItems) {
-                item.setTintColor(style.getToolbarTintColor());
-            }
-            return;
-        }
-
-        if (mRightBarButtonItem != null) {
-            mRightBarButtonItem.setTintColor(style.getToolbarTintColor());
-        }
-    }
-
-    private void setLeftButtonItemTintColor(Style style) {
-        if (mLeftBarButtonItems != null) {
-            for (ToolbarButtonItem item : mLeftBarButtonItems) {
-                item.setTintColor(style.getToolbarTintColor());
-            }
-            return;
-        }
-
-        if (mLeftBarButtonItem != null) {
-            mLeftBarButtonItem.setTintColor(style.getToolbarTintColor());
-        }
+        StackFragment stackFragment = mFragment.requireStackFragment();
+        return mFragment == stackFragment.getRootFragment();
     }
 
     public boolean hasStackParent() {
@@ -100,9 +60,9 @@ public class StackDelegate {
         return (parent instanceof StackFragment);
     }
 
-    public void fitStackFragment(@NonNull View root) {
-        createToolbar(root);
-        fitTabBar(root);
+    public void fitStackFragment() {
+        createToolbar();
+        fitTabBarIfNeeded();
     }
 
     private AwesomeToolbar mToolbar;
@@ -111,16 +71,14 @@ public class StackDelegate {
         return mToolbar;
     }
 
-    private void createToolbar(@NonNull View root) {
-        AwesomeToolbar toolbar = mFragment.onCreateToolbar(root);
-        if (toolbar != null) {
-            setupToolbar(toolbar, getStyle());
+    private void createToolbar() {
+        mToolbar = mFragment.onCreateToolbar(requireView());
+        if (mToolbar != null) {
+            setupToolbar();
         }
-        mToolbar = toolbar;
     }
 
-    public AwesomeToolbar onCreateToolbar(View parent) {
-        if (getView() == null) return null;
+    public AwesomeToolbar onCreateToolbar(@NonNull View parent) {
         int toolbarHeight = mFragment.getToolbarHeight();
         AwesomeToolbar toolbar = new AwesomeToolbar(requireContext());
         FrameLayout frameLayout = (FrameLayout) parent;
@@ -146,36 +104,9 @@ public class StackDelegate {
         child.setPadding(0, statusBarHeight + toolbarHeight, 0, 0);
     }
 
-    private void fitTabBar(final View root) {
-        int index = FragmentHelper.getIndexAtBackStack(mFragment);
-        if (index != 0 && shouldHideTabBarWhenPushed()) {
-            return;
-        }
-
-        int color = Color.parseColor(getStyle().getTabBarBackgroundColor());
-        if (Color.alpha(color) != 255) {
-            return;
-        }
-
-        TabBarFragment tabBarFragment = mFragment.getTabBarFragment();
-        if (tabBarFragment == null) {
-            return;
-        }
-
-        int bottomPadding = (int) mFragment.getResources().getDimension(R.dimen.nav_tab_bar_height);
-        root.setPadding(0, 0, 0, bottomPadding);
-    }
-
-    private boolean shouldHideTabBarWhenPushed() {
-        StackFragment stackFragment = mFragment.requireStackFragment();
-        AwesomeFragment root = stackFragment.getRootFragment();
-        if (root != null && root.isAdded()) {
-            return root.hideTabBarWhenPushed();
-        }
-        return true;
-    }
-
-    private void setupToolbar(AwesomeToolbar toolbar, Style style) {
+    private void setupToolbar() {
+        AwesomeToolbar toolbar = mToolbar;
+        Style style = getStyle();
         toolbar.setBackgroundColor(style.getToolbarBackgroundColor());
         toolbar.setButtonTintColor(style.getToolbarTintColor());
         toolbar.setButtonTextSize(style.getToolbarButtonTextSize());
@@ -189,10 +120,10 @@ public class StackDelegate {
         }
         toolbar.setAlpha(style.getToolbarAlpha());
 
-        setToolbarBackButton(toolbar, style);
+        setToolbarBackButton();
     }
 
-    private void setToolbarBackButton(AwesomeToolbar toolbar, Style style) {
+    private void setToolbarBackButton() {
         if (isStackRoot()) {
             return;
         }
@@ -201,19 +132,82 @@ public class StackDelegate {
             return;
         }
 
+        AwesomeToolbar toolbar = mToolbar;
+
         if (mFragment.shouldHideBackButton()) {
             toolbar.setNavigationIcon(null);
             toolbar.setNavigationOnClickListener(null);
+        } else {
+            toolbar.setNavigationIcon(getStyle().getBackIcon());
+            toolbar.setNavigationOnClickListener(view -> {
+                StackFragment stackFragment = mFragment.requireStackFragment();
+                stackFragment.dispatchBackPressed();
+            });
+        }
+    }
+
+    private void fitTabBarIfNeeded() {
+        if (!hasStackParent()) {
             return;
         }
 
-        toolbar.setNavigationIcon(style.getBackIcon());
-        toolbar.setNavigationOnClickListener(view -> {
-            StackFragment stackFragment = mFragment.getStackFragment();
-            if (stackFragment != null) {
-                stackFragment.dispatchBackPressed();
+        StackFragment stackFragment = mFragment.requireStackFragment();
+        TabBarFragment tabBarFragment = stackFragment.getTabBarFragment();
+        if (tabBarFragment == null || tabBarFragment.getSelectedFragment() != stackFragment) {
+            return;
+        }
+
+        if (mFragment == stackFragment.getRootFragment() || stackFragment.shouldShowTabBarWhenPushed()) {
+            fitTabBar();
+        }
+    }
+
+    private void fitTabBar() {
+        int color = Color.parseColor(getStyle().getTabBarBackgroundColor());
+        if (Color.alpha(color) == 255) {
+            int bottomPadding = (int) mFragment.getResources().getDimension(R.dimen.nav_tab_bar_height);
+            requireView().setPadding(0, 0, 0, bottomPadding);
+        }
+    }
+
+    public void setNeedsToolbarAppearanceUpdate() {
+        if (mToolbar == null) {
+            return;
+        }
+
+        setupToolbar();
+        setLeftButtonItemTintColor();
+        setRightButtonItemTintColor();
+    }
+
+    private void setLeftButtonItemTintColor() {
+        Style style = getStyle();
+
+        if (mLeftBarButtonItems != null) {
+            for (ToolbarButtonItem item : mLeftBarButtonItems) {
+                item.setTintColor(style.getToolbarTintColor());
             }
-        });
+            return;
+        }
+
+        if (mLeftBarButtonItem != null) {
+            mLeftBarButtonItem.setTintColor(style.getToolbarTintColor());
+        }
+    }
+
+    private void setRightButtonItemTintColor() {
+        Style style = getStyle();
+
+        if (mRightBarButtonItems != null) {
+            for (ToolbarButtonItem item : mRightBarButtonItems) {
+                item.setTintColor(style.getToolbarTintColor());
+            }
+            return;
+        }
+
+        if (mRightBarButtonItem != null) {
+            mRightBarButtonItem.setTintColor(style.getToolbarTintColor());
+        }
     }
 
     public void setTitle(Context context, @StringRes int resId) {
@@ -221,31 +215,28 @@ public class StackDelegate {
     }
 
     public void setTitle(CharSequence title) {
-        AwesomeToolbar toolbar = getToolbar();
-        if (toolbar == null) {
-            return;
+        if (mToolbar != null) {
+            mToolbar.setAwesomeTitle(title);
         }
-        toolbar.setAwesomeTitle(title);
     }
 
     private ToolbarButtonItem[] mLeftBarButtonItems;
 
     public void setLeftBarButtonItems(@Nullable ToolbarButtonItem[] barButtonItems) {
         mLeftBarButtonItems = barButtonItems;
-        AwesomeToolbar toolbar = getToolbar();
-        if (toolbar == null) {
+        if (mToolbar == null) {
             return;
         }
 
-        toolbar.clearLeftButtons();
+        mToolbar.clearLeftButtons();
 
         if (barButtonItems == null) {
-            setToolbarBackButton(toolbar, getStyle());
+            setToolbarBackButton();
             return;
         }
 
         for (ToolbarButtonItem barButtonItem : barButtonItems) {
-            toolbar.addLeftButton(barButtonItem);
+            mToolbar.addLeftButton(barButtonItem);
         }
     }
 
@@ -258,16 +249,17 @@ public class StackDelegate {
 
     void setRightBarButtonItems(@Nullable ToolbarButtonItem[] barButtonItems) {
         mRightBarButtonItems = barButtonItems;
-        AwesomeToolbar toolbar = getToolbar();
-        if (toolbar == null) {
+        if (mToolbar == null) {
             return;
         }
-        toolbar.clearRightButtons();
+
+        mToolbar.clearRightButtons();
         if (barButtonItems == null) {
             return;
         }
+
         for (ToolbarButtonItem barButtonItem : barButtonItems) {
-            toolbar.addRightButton(barButtonItem);
+            mToolbar.addRightButton(barButtonItem);
         }
     }
 
@@ -280,19 +272,19 @@ public class StackDelegate {
 
     void setLeftBarButtonItem(@Nullable ToolbarButtonItem barButtonItem) {
         mLeftBarButtonItem = barButtonItem;
-        AwesomeToolbar toolbar = getToolbar();
-        if (toolbar == null) {
+        if (mToolbar == null) {
             return;
         }
 
-        toolbar.clearLeftButton();
+        mToolbar.clearLeftButton();
 
         if (barButtonItem == null) {
-            setToolbarBackButton(toolbar, getStyle());
+            setToolbarBackButton();
             return;
         }
-        toolbar.setLeftButton(barButtonItem);
-        barButtonItem.attach(toolbar.getLeftButton());
+
+        mToolbar.setLeftButton(barButtonItem);
+        barButtonItem.attach(mToolbar.getLeftButton());
     }
 
     ToolbarButtonItem getLeftBarButtonItem() {
@@ -303,16 +295,18 @@ public class StackDelegate {
 
     void setRightBarButtonItem(@Nullable ToolbarButtonItem barButtonItem) {
         mRightBarButtonItem = barButtonItem;
-        AwesomeToolbar toolbar = getToolbar();
-        if (toolbar == null) {
+        if (mToolbar == null) {
             return;
         }
-        toolbar.clearRightButton();
+
+        mToolbar.clearRightButton();
+
         if (barButtonItem == null) {
             return;
         }
-        toolbar.setRightButton(barButtonItem);
-        barButtonItem.attach(toolbar.getRightButton());
+
+        mToolbar.setRightButton(barButtonItem);
+        barButtonItem.attach(mToolbar.getRightButton());
     }
 
     public ToolbarButtonItem getRightBarButtonItem() {
@@ -320,110 +314,39 @@ public class StackDelegate {
     }
 
     boolean drawTabBarIfNeeded(int transit, boolean enter, Animation anim) {
-        Fragment parent = mFragment.getParentFragment();
-        if (!(parent instanceof StackFragment)) {
+        if (!hasStackParent()) {
             return false;
         }
 
-        StackFragment stackFragment = (StackFragment) parent;
+        StackFragment stackFragment = mFragment.requireStackFragment();
         TabBarFragment tabBarFragment = stackFragment.getTabBarFragment();
 
-        if (tabBarFragment == null) {
+        if (tabBarFragment == null || tabBarFragment.getSelectedFragment() != stackFragment) {
             return false;
         }
 
-        if (stackFragment != tabBarFragment.getSelectedFragment()) {
-            return false;
-        }
-
-        if (!shouldHideTabBarWhenPushed()) {
+        if (mFragment != stackFragment.getRootFragment() || stackFragment.shouldShowTabBarWhenPushed()) {
             return false;
         }
 
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN && !enter) {
-            if (mFragment == stackFragment.getRootFragment()) {
-                drawTabBar(tabBarFragment, anim.getDuration(), true);
-                tabBarFragment.hideTabBarAnimated(anim);
-                return true;
-            }
+            drawTabBar(tabBarFragment, anim.getDuration(), true);
+            tabBarFragment.hideTabBarAnimated(anim);
+            return true;
         }
 
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
-            if (mFragment == stackFragment.getRootFragment()) {
-                drawTabBar(tabBarFragment, anim.getDuration(), false);
-                tabBarFragment.showTabBarAnimated(anim);
-                return true;
-            }
+            drawTabBar(tabBarFragment, anim.getDuration(), false);
+            tabBarFragment.showTabBarAnimated(anim);
+            return true;
         }
 
         return false;
     }
 
-    void drawScrimIfNeeded(int transit, boolean enter, Animation anim) {
-        Fragment parent = mFragment.getParentFragment();
-        if (!(parent instanceof StackFragment)) {
-            return;
-        }
-
-        StackFragment stackFragment = (StackFragment) parent;
-        TransitionAnimation animation = mFragment.getAnimation();
-        if (animation.exit == animation.popEnter) {
-            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && !enter) {
-                if (getView() != null) {
-                    ViewCompat.setTranslationZ(getView(), -1f);
-                }
-                drawScrim(stackFragment, anim.getDuration(), true);
-            }
-        } else {
-            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN && !enter) {
-                drawScrim(stackFragment, anim.getDuration(), true);
-            } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
-                drawScrim(stackFragment, anim.getDuration(), false);
-            }
-        }
-    }
-
-    private void drawScrim(@NonNull StackFragment stackFragment, long duration, boolean open) {
-        if (stackFragment.getView() == null) {
-            return;
-        }
-
-        int vWidth = stackFragment.getView().getWidth();
-        int vHeight = stackFragment.getView().getHeight();
-
-        ColorDrawable colorDrawable = new ColorDrawable(0x00000000);
-        colorDrawable.setBounds(0, 0, vWidth, vHeight);
-
-        View root = getView();
-        if (!(root instanceof FrameLayout)) {
-            return;
-        }
-
-        FrameLayout frameLayout = (FrameLayout) root;
-        frameLayout.setForeground(colorDrawable);
-        int scrimAlpha = getStyle().getScrimAlpha();
-        ValueAnimator valueAnimator = open ? ValueAnimator.ofInt(0, scrimAlpha) : ValueAnimator.ofInt(scrimAlpha, 0);
-        valueAnimator.setDuration(duration);
-        valueAnimator.addUpdateListener(animation -> {
-            int value = (Integer) animation.getAnimatedValue();
-            colorDrawable.setColor(value << 24);
-        });
-        valueAnimator.start();
-
-        root.postDelayed(() -> {
-            if (mFragment.isAdded()) {
-                frameLayout.setForeground(null);
-            }
-        }, duration);
-    }
-
     private void drawTabBar(@NonNull TabBarFragment tabBarFragment, long duration, boolean open) {
-        if (tabBarFragment.getView() == null) {
-            return;
-        }
-
-        int vWidth = tabBarFragment.getView().getWidth();
-        int vHeight = tabBarFragment.getView().getHeight();
+        int vWidth = tabBarFragment.requireView().getWidth();
+        int vHeight = tabBarFragment.requireView().getHeight();
 
         View tabBar = tabBarFragment.getTabBar();
         if (tabBar.getMeasuredWidth() == 0) {
@@ -445,13 +368,8 @@ public class StackDelegate {
         LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{bitmapDrawable, colorDrawable,});
         layerDrawable.setBounds(0, 0, vWidth, vHeight);
 
-        View root = getView();
-        if (!(root instanceof FrameLayout)) {
-            return;
-        }
-
-        FrameLayout frameLayout = (FrameLayout) root;
-        frameLayout.setForeground(layerDrawable);
+        FrameLayout root = (FrameLayout) requireView();
+        root.setForeground(layerDrawable);
         int scrimAlpha = getStyle().getScrimAlpha();
         ValueAnimator valueAnimator = open ? ValueAnimator.ofInt(0, scrimAlpha) : ValueAnimator.ofInt(scrimAlpha, 0);
         valueAnimator.setDuration(duration);
@@ -463,9 +381,56 @@ public class StackDelegate {
 
         root.postDelayed(() -> {
             if (mFragment.isAdded()) {
-                frameLayout.setForeground(null);
+                root.setForeground(null);
             }
         }, duration);
 
     }
+
+    void drawScrimIfNeeded(int transit, boolean enter, Animation anim) {
+        if (!hasStackParent()) {
+            return;
+        }
+        StackFragment stackFragment = mFragment.requireStackFragment();
+
+        TransitionAnimation animation = mFragment.getAnimation();
+        if (animation.exit == animation.popEnter) {
+            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && !enter) {
+                ViewCompat.setTranslationZ(requireView(), -1f);
+                drawScrim(stackFragment, anim.getDuration(), true);
+            }
+        } else {
+            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN && !enter) {
+                drawScrim(stackFragment, anim.getDuration(), true);
+            } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_CLOSE && enter) {
+                drawScrim(stackFragment, anim.getDuration(), false);
+            }
+        }
+    }
+
+    private void drawScrim(@NonNull StackFragment stackFragment, long duration, boolean open) {
+        int vWidth = stackFragment.requireView().getWidth();
+        int vHeight = stackFragment.requireView().getHeight();
+
+        ColorDrawable colorDrawable = new ColorDrawable(0x00000000);
+        colorDrawable.setBounds(0, 0, vWidth, vHeight);
+
+        FrameLayout root = requireView();
+        root.setForeground(colorDrawable);
+        int scrimAlpha = getStyle().getScrimAlpha();
+        ValueAnimator valueAnimator = open ? ValueAnimator.ofInt(0, scrimAlpha) : ValueAnimator.ofInt(scrimAlpha, 0);
+        valueAnimator.setDuration(duration);
+        valueAnimator.addUpdateListener(animation -> {
+            int value = (Integer) animation.getAnimatedValue();
+            colorDrawable.setColor(value << 24);
+        });
+        valueAnimator.start();
+
+        root.postDelayed(() -> {
+            if (mFragment.isAdded()) {
+                root.setForeground(null);
+            }
+        }, duration);
+    }
+
 }

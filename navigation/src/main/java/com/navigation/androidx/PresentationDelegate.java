@@ -60,7 +60,6 @@ public class PresentationDelegate {
             args.putInt(ARGS_REQUEST_CODE, requestCode);
             mPresentableActivity.presentFragment(presented, completion, animation);
         }
-
     }
 
     private void presentFragmentInternal(final AwesomeFragment presenting, final AwesomeFragment presented, final int requestCode, @NonNull Runnable completion) {
@@ -90,7 +89,6 @@ public class PresentationDelegate {
         if (mPresentableActivity != null) {
             mPresentableActivity.dismissFragment(mFragment, completion, animation);
         }
-
     }
 
     private void dismissFragmentInternal(@NonNull Runnable completion, @NonNull TransitionAnimation animation) {
@@ -143,13 +141,15 @@ public class PresentationDelegate {
         if (FragmentHelper.getBackStackEntryCount(parent) == 0) {
             return null;
         }
+
         FragmentManager fragmentManager = mFragment.getParentFragmentManager();
         FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(0);
         AwesomeFragment presented = (AwesomeFragment) fragmentManager.findFragmentByTag(backStackEntry.getName());
-        if (presented == null || !presented.isAdded()) {
-            return null;
+        if (presented != null && presented.isAdded()) {
+            return presented;
         }
-        return presented;
+
+        return null;
     }
 
     @Nullable

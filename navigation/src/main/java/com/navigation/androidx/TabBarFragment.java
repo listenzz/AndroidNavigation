@@ -207,18 +207,20 @@ public class TabBarFragment extends AwesomeFragment {
         if (mFragments == null) {
             return null;
         }
-        AwesomeFragment selectedFragment = mFragments.get(getSelectedIndex());
-        if (!selectedFragment.isAdded()) {
-            return null;
+
+        AwesomeFragment fragment = mFragments.get(getSelectedIndex());
+        if (fragment.isAdded()) {
+            return fragment;
         }
-        return selectedFragment;
+
+        return null;
     }
 
     @NonNull
     public AwesomeFragment requireSelectedFragment() {
         AwesomeFragment fragment = getSelectedFragment();
         if (fragment == null) {
-            throw new NullPointerException("NO selected fragment.");
+            throw new NullPointerException("No selected fragment.");
         }
         return fragment;
     }
@@ -233,19 +235,18 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     public void setSelectedIndex(int index, @NonNull Runnable completion) {
-        if (!isAdded()) {
+        if (isAdded()) {
+            scheduleTaskAtStarted(() -> setSelectedIndexSync(index, completion));
+        } else {
             mSelectedIndex = index;
             completion.run();
-            return;
         }
-        scheduleTaskAtStarted(() -> setSelectedIndexSync(index, completion));
     }
 
     public void setTabBarSelectedIndex(int index) {
-        if (mTabBarProvider == null) {
-            return;
+        if (mTabBarProvider != null) {
+            mTabBarProvider.setSelectedIndex(index);
         }
-        mTabBarProvider.setSelectedIndex(index);
     }
 
     private void setSelectedIndexSync(int index, @NonNull Runnable completion) {
@@ -253,29 +254,25 @@ public class TabBarFragment extends AwesomeFragment {
 
         if (mSelectedIndex == index) {
             completion.run();
-            return;
+        } else {
+            mSelectedIndex = index;
+            AwesomeFragment current = switchChildFragment(index, completion);
+            setTabBarVisibility(current);
         }
-
-        mSelectedIndex = index;
-        AwesomeFragment current = switchChildFragment(index, completion);
-        setTabBarVisibility(current);
     }
 
     private void setTabBarVisibility(AwesomeFragment current) {
-        StackFragment nav = current.getStackFragment();
-        if ((nav == null)) {
-            return;
-        }
-        if (nav.getTabBarFragment() != this) {
+        StackFragment stackFragment = current.getStackFragment();
+        if (stackFragment == null || stackFragment.getTabBarFragment() != this) {
             return;
         }
 
-        if (!nav.shouldHideTabBarWhenPushed()) {
+        if (stackFragment.shouldShowTabBarWhenPushed()) {
             showTabBar();
             return;
         }
 
-        if (nav.getTopFragment() == nav.getRootFragment()) {
+        if (stackFragment.getTopFragment() == stackFragment.getRootFragment()) {
             showTabBar();
             return;
         }
@@ -325,10 +322,9 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     public void updateTabBar(Bundle options) {
-        if (mTabBarProvider == null || options == null) {
-            return;
+        if (mTabBarProvider != null && options != null) {
+            mTabBarProvider.updateTabBar(options);
         }
-        mTabBarProvider.updateTabBar(options);
     }
 
     void showTabBarAnimated(Animation anim) {
@@ -337,9 +333,6 @@ public class TabBarFragment extends AwesomeFragment {
             return;
         }
 
-        if (mTabBar == null) {
-            return;
-        }
         mTabBarHidden = false;
         mTabBar.setVisibility(View.GONE);
         handleTabBarVisibilityAnimated(anim);
@@ -351,9 +344,6 @@ public class TabBarFragment extends AwesomeFragment {
             return;
         }
 
-        if (mTabBar == null) {
-            return;
-        }
         mTabBarHidden = true;
         mTabBar.setVisibility(View.GONE);
         handleTabBarVisibilityAnimated(anim);
@@ -369,18 +359,12 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     private void showTabBar() {
-        if (mTabBar == null) {
-            return;
-        }
         mTabBarHidden = false;
         mTabBar.setVisibility(View.VISIBLE);
         setNeedsNavigationBarAppearanceUpdate();
     }
 
     private void hideTabBar() {
-        if (mTabBar == null) {
-            return;
-        }
         mTabBarHidden = true;
         mTabBar.setVisibility(View.GONE);
         setNeedsNavigationBarAppearanceUpdate();

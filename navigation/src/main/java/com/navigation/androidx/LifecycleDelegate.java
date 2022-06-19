@@ -60,13 +60,11 @@ public class LifecycleDelegate implements LifecycleObserver {
         }
 
         Runnable runnable = mTasks.poll();
-        if (runnable == null) {
-            return;
+        if (runnable != null) {
+            mExecuting = true;
+            runnable.run();
+            mHandler.post(executeTask);
         }
-
-        mExecuting = true;
-        runnable.run();
-        mHandler.post(executeTask);
     }
 
     private final Runnable executeTask = new Runnable() {

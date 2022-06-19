@@ -34,8 +34,8 @@ public class DialogDelegate {
         mFragment = fragment;
     }
 
-    private View getView() {
-        return mFragment.getView();
+    private FrameLayout getView() {
+        return (FrameLayout) mFragment.getView();
     }
 
     private Style getStyle() {
@@ -71,8 +71,8 @@ public class DialogDelegate {
         if (getStyle().getNavigationBarColor() != Style.INVALID_COLOR) {
             return getStyle().getNavigationBarColor();
         }
-        return mFragment.requireActivity().getWindow().getNavigationBarColor();
 
+        return mFragment.requireActivity().getWindow().getNavigationBarColor();
     }
 
     void setupDialog() {
@@ -183,45 +183,40 @@ public class DialogDelegate {
     }
 
     private void animateInIfNeeded() {
-        View root = getView();
-        if (!(root instanceof DialogFrameLayout)) {
+        FrameLayout root = getView();
+        if (root == null) {
             return;
         }
 
-        if (!shouldAnimateDialogTransition()) {
-            return;
+        if (shouldAnimateDialogTransition()) {
+            animateUpIn(root.getChildAt(0));
         }
-
-        DialogFrameLayout frameLayout = (DialogFrameLayout) root;
-        View contentView = frameLayout.getChildAt(0);
-        animateUpIn(contentView);
     }
 
     private boolean animateOutIfNeeded(@NonNull Runnable completion) {
-        View root = getView();
-        if (!(root instanceof DialogFrameLayout)) {
+        FrameLayout root = getView();
+        if (root == null) {
             return false;
         }
 
-        if (!shouldAnimateDialogTransition()) {
-            return false;
+        if (shouldAnimateDialogTransition()) {
+            animateDownOut(root.getChildAt(0), completion);
+            return true;
         }
 
-        DialogFrameLayout frameLayout = (DialogFrameLayout) root;
-        View contentView = frameLayout.getChildAt(0);
-        animateDownOut(contentView, completion);
-        return true;
+        return false;
     }
 
     private boolean shouldAnimateDialogTransition() {
-        View root = getView();
-        if (root instanceof DialogFrameLayout) {
-            DialogFrameLayout frameLayout = (DialogFrameLayout) root;
-            View contentView = frameLayout.getChildAt(0);
-            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
-            return layoutParams.gravity == Gravity.BOTTOM;
+        FrameLayout root = getView();
+        if (root == null) {
+            return false;
         }
-        return false;
+
+        View contentView = root.getChildAt(0);
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
+        return layoutParams.gravity == Gravity.BOTTOM;
+
     }
 
     private void animateDownOut(@NonNull final View contentView, @NonNull Runnable completion) {

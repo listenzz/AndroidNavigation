@@ -15,11 +15,12 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 
 public class SystemUI {
 
-    public static void setStatusBarTranslucent(Window window, boolean translucent) {
+    public static void setStatusBarTranslucent(@NonNull Window window, boolean translucent) {
         View decorView = window.getDecorView();
         if (translucent) {
             decorView.setOnApplyWindowInsetsListener((v, insets) -> {
@@ -43,19 +44,21 @@ public class SystemUI {
         ViewCompat.requestApplyInsets(decorView);
     }
 
-    public static void setRenderContentInShortEdgeCutoutAreas(Window window, boolean shortEdges) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            WindowManager.LayoutParams layoutParams = window.getAttributes();
-            if (shortEdges) {
-                layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-            } else {
-                layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
-            }
-            window.setAttributes(layoutParams);
+    public static void setRenderContentInShortEdgeCutoutAreas(@NonNull Window window, boolean shortEdges) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            return;
         }
+
+        WindowManager.LayoutParams layoutParams = window.getAttributes();
+        if (shortEdges) {
+            layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+        } else {
+            layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
+        }
+        window.setAttributes(layoutParams);
     }
 
-    public static void setStatusBarColor(final Window window, int color, boolean animated) {
+    public static void setStatusBarColor(@NonNull Window window, int color, boolean animated) {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.setNavigationBarContrastEnforced(false);
@@ -72,36 +75,38 @@ public class SystemUI {
         }
     }
 
-    public static int getStatusBarColor(final Window window) {
+    public static int getStatusBarColor(@NonNull Window window) {
         return window.getStatusBarColor();
     }
 
-    public static void setStatusBarStyle(Window window, boolean dark) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decorView = window.getDecorView();
-            int systemUi = decorView.getSystemUiVisibility();
-            if (dark) {
-                systemUi |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            } else {
-                systemUi &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            }
-            decorView.setSystemUiVisibility(systemUi);
+    public static void setStatusBarStyle(@NonNull Window window, boolean dark) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return;
         }
+
+        View decorView = window.getDecorView();
+        int systemUi = decorView.getSystemUiVisibility();
+        if (dark) {
+            systemUi |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        } else {
+            systemUi &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        }
+        decorView.setSystemUiVisibility(systemUi);
     }
 
-    public static boolean isStatusBarStyleDark(Window window) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
+    public static boolean isStatusBarStyleDark(@NonNull Window window) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return false;
         }
-        return false;
+        return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
     }
 
-    public static BarStyle activityStatusBarStyle(Activity activity) {
+    public static BarStyle activityStatusBarStyle(@NonNull Activity activity) {
         boolean isDark = isStatusBarStyleDark(activity.getWindow());
         return isDark ? BarStyle.DarkContent : BarStyle.LightContent;
     }
 
-    public static void setStatusBarHidden(Window window, boolean hidden) {
+    public static void setStatusBarHidden(@NonNull Window window, boolean hidden) {
         View decorView = window.getDecorView();
         int systemUi = decorView.getSystemUiVisibility();
         if (hidden) {
@@ -112,14 +117,11 @@ public class SystemUI {
         window.getDecorView().setSystemUiVisibility(systemUi);
     }
 
-    public static boolean isStatusBarHidden(Window window) {
+    public static boolean isStatusBarHidden(@NonNull Window window) {
         return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0;
     }
 
-    public static void appendStatusBarPadding(Context context, View view) {
-        if (view == null) {
-            return;
-        }
+    public static void appendStatusBarPadding(@NonNull Context context, @NonNull View view) {
         int statusBarHeight = getStatusBarHeight(context);
         ViewGroup.LayoutParams lp = view.getLayoutParams();
         if (lp != null && lp.height > 0) {
@@ -129,10 +131,7 @@ public class SystemUI {
                 view.getPaddingRight(), view.getPaddingBottom());
     }
 
-    public static void removeStatusBarPadding(Context context, View view) {
-        if (view == null) {
-            return;
-        }
+    public static void removeStatusBarPadding(@NonNull Context context, @NonNull View view) {
         int statusBarHeight = getStatusBarHeight(context);
         ViewGroup.LayoutParams lp = view.getLayoutParams();
         if (lp != null && lp.height > 0) {
@@ -142,7 +141,7 @@ public class SystemUI {
                 view.getPaddingRight(), view.getPaddingBottom());
     }
 
-    public static void appendStatusBarMargin(Context context, View view) {
+    public static void appendStatusBarMargin(@NonNull Context context, @NonNull View view) {
         ViewGroup.LayoutParams lp = view.getLayoutParams();
         if (lp instanceof ViewGroup.MarginLayoutParams) {
             ((ViewGroup.MarginLayoutParams) lp).topMargin += getStatusBarHeight(context);

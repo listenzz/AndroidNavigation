@@ -140,21 +140,17 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Override
     protected void performCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.performCreateView(inflater, container, savedInstanceState);
-        View root = getView();
-        if (root == null) {
-            return;
-        }
 
         if (getShowsDialog()) {
             mDialogDelegate.setupDialog();
         }
 
         if (mStackDelegate.hasStackParent()) {
-            mStackDelegate.fitStackFragment(root);
+            mStackDelegate.fitStackFragment();
         }
 
         if (isLeafAwesomeFragment()) {
-            setBackgroundDrawable(root, mStyle.getScreenBackgroundColor());
+            setBackgroundDrawable();
         }
     }
 
@@ -168,16 +164,18 @@ public abstract class AwesomeFragment extends InternalFragment {
         return true;
     }
 
-    private void setBackgroundDrawable(View root, int color) {
+    private void setBackgroundDrawable() {
         if (getShowsDialog()) {
-            setBackgroundForDialogWindow(color, getWindow());
+            setBackgroundForDialogWindow();
             return;
         }
-        root.setBackground(new ColorDrawable(color));
+        requireView().setBackground(new ColorDrawable(mStyle.getScreenBackgroundColor()));
     }
 
-    private void setBackgroundForDialogWindow(int color, Window window) {
+    private void setBackgroundForDialogWindow() {
+        int color = mStyle.getScreenBackgroundColor();
         if (Color.alpha(color) < 255) {
+            Window window = getWindow();
             window.setDimAmount(0);
             window.setBackgroundDrawable(new ColorDrawable(color));
         }
@@ -201,11 +199,11 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent == null) {
-            return null;
+        if (parent != null) {
+            return parent.getDialogAwesomeFragment();
         }
 
-        return parent.getDialogAwesomeFragment();
+        return null;
     }
 
     @NonNull
@@ -226,6 +224,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (fragment instanceof AwesomeFragment) {
             return (AwesomeFragment) fragment;
         }
+
         return null;
     }
 
@@ -289,8 +288,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return AnimationUtils.loadAnimation(requireContext(), R.anim.nav_delay);
         }
 
-        TransitionAnimation animation = getAnimation();
-        Animation anim = createOurAnimation(transit, enter, nextAnim, animation);
+        Animation anim = createOurAnimation(transit, enter, nextAnim);
 
         if (!mStackDelegate.drawTabBarIfNeeded(transit, enter, anim)) {
             mStackDelegate.drawScrimIfNeeded(transit, enter, anim);
@@ -300,7 +298,8 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     @Nullable
-    private Animation createOurAnimation(int transit, boolean enter, int nextAnim, TransitionAnimation animation) {
+    private Animation createOurAnimation(int transit, boolean enter, int nextAnim) {
+        TransitionAnimation animation = getAnimation();
         if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
             if (enter) {
                 return AnimationUtils.loadAnimation(requireContext(), nextAnim == 0 ? animation.enter : nextAnim);
@@ -314,6 +313,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             }
             return AnimationUtils.loadAnimation(requireContext(), nextAnim == 0 ? animation.popExit : nextAnim);
         }
+
         return null;
     }
 
@@ -420,10 +420,9 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent == null) {
-            return;
+        if (parent != null) {
+            parent.setResult(resultCode, data);
         }
-        parent.setResult(resultCode, data);
     }
 
     public int getRequestCode() {
@@ -776,11 +775,11 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent == null) {
-            return null;
+        if (parent != null) {
+            return parent.getStackFragment();
         }
 
-        return parent.getStackFragment();
+        return null;
     }
 
     public boolean isStackRoot() {
@@ -888,11 +887,11 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent == null) {
-            return null;
+        if (parent != null) {
+            return parent.getTabBarFragment();
         }
 
-        return parent.getTabBarFragment();
+        return null;
     }
 
     private TabBarItem mTabBarItem;
@@ -924,10 +923,11 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent == null) {
-            return null;
+        if (parent != null) {
+            return parent.getDrawerFragment();
         }
-        return parent.getDrawerFragment();
+
+        return null;
     }
 
 }
