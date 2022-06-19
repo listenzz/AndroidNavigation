@@ -12,17 +12,7 @@ import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.BarStyle;
 import com.navigation.statusbar.TestStatusBarFragment;
 
-/**
- * Created by Listen on 2018/2/1.
- */
-
 public class NoToolbarFragment extends TestStatusBarFragment {
-
-    @Override
-    public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(root, savedInstanceState);
-        appendStatusBarPadding(root);
-    }
 
     @NonNull
     @Override
@@ -36,6 +26,12 @@ public class NoToolbarFragment extends TestStatusBarFragment {
             return Color.parseColor("#4A4A4A");
         }
         return Color.TRANSPARENT;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(root, savedInstanceState);
+        appendStatusBarPadding(root);
     }
 
     @Override

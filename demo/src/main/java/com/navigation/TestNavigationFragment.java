@@ -20,11 +20,6 @@ import com.navigation.androidx.TabBarFragment;
 import com.navigation.androidx.TabBarItem;
 import com.navigation.androidx.ToolbarButtonItem;
 
-
-/**
- * Created by Listen on 2018/1/11.
- */
-
 public class TestNavigationFragment extends BaseFragment {
 
     public static String fromCharCode(int... codePoints) {

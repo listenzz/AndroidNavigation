@@ -20,10 +20,6 @@ import com.navigation.androidx.FragmentHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Listen on 2018/2/1.
- */
-
 public class PageFragment extends BaseFragment {
 
     private static final String ARG_TITLE = "title";

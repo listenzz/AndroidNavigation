@@ -18,19 +18,16 @@ import com.navigation.androidx.Style;
 import com.navigation.androidx.ToolbarButtonItem;
 import com.navigation.toolbar.NoToolbarFragment;
 
-/**
- * Created by listen on 2018/1/12.
- */
-
 public class TestStatusBarFragment extends BaseFragment {
 
     public static String fromCharCode(int... codePoints) {
         return new String(codePoints, 0, codePoints.length);
     }
 
+    @NonNull
     @Override
-    protected void onCustomStyle(@NonNull Style style) {
-        style.setStatusBarStyle(BarStyle.LightContent);
+    protected BarStyle preferredStatusBarStyle() {
+        return BarStyle.LightContent;
     }
 
     @Override

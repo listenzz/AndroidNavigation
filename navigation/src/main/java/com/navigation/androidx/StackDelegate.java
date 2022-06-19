@@ -1,9 +1,11 @@
 package com.navigation.androidx;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static com.navigation.androidx.Style.INVALID_COLOR;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -88,6 +90,13 @@ public class StackDelegate {
         return toolbar;
     }
 
+    protected boolean extendedLayoutIncludesToolbar() {
+        Style style = getStyle();
+        int color = getToolbarBackgroundColor();
+        float alpha = style.getToolbarAlpha();
+        return Color.alpha(color) < 255 || alpha < 1.0;
+    }
+
     private void appendToolbarPadding(View parent) {
         if (mFragment.extendedLayoutIncludesToolbar()) {
             return;
@@ -107,10 +116,10 @@ public class StackDelegate {
     private void setupToolbar() {
         AwesomeToolbar toolbar = mToolbar;
         Style style = getStyle();
-        toolbar.setBackgroundColor(style.getToolbarBackgroundColor());
-        toolbar.setButtonTintColor(style.getToolbarTintColor());
+        toolbar.setBackgroundColor(getToolbarBackgroundColor());
+        toolbar.setButtonTintColor(getToolbarTintColor());
         toolbar.setButtonTextSize(style.getToolbarButtonTextSize());
-        toolbar.setTitleTextColor(style.getTitleTextColor());
+        toolbar.setTitleTextColor(getTitleTextColor());
         toolbar.setTitleTextSize(style.getTitleTextSize());
         toolbar.setTitleGravity(style.getTitleGravity());
         if (style.isToolbarShadowHidden()) {
@@ -121,6 +130,76 @@ public class StackDelegate {
         toolbar.setAlpha(style.getToolbarAlpha());
 
         setToolbarBackButton();
+    }
+
+    public int getToolbarBackgroundColor() {
+        BarStyle barStyle = mFragment.preferredStatusBarStyle();
+        Style style = getStyle();
+
+        if (barStyle == BarStyle.DarkContent && style.getToolbarBackgroundColorDarkContent() != INVALID_COLOR) {
+            return style.getToolbarBackgroundColorDarkContent();
+        }
+
+        if (barStyle == BarStyle.LightContent && style.getToolbarBackgroundColorLightContent() != INVALID_COLOR) {
+            return style.getToolbarBackgroundColorLightContent();
+        }
+
+        if (style.getToolbarBackgroundColor() != INVALID_COLOR) {
+            return style.getToolbarBackgroundColor();
+        }
+
+        if (barStyle == BarStyle.LightContent) {
+            return Color.BLACK;
+        }
+
+        return Color.WHITE;
+    }
+
+    private int getToolbarTintColor() {
+        BarStyle barStyle = mFragment.preferredStatusBarStyle();
+        Style style = getStyle();
+
+        if (barStyle == BarStyle.DarkContent && style.getToolbarTintColorDarkContent() != INVALID_COLOR) {
+            return style.getToolbarTintColorDarkContent();
+        }
+
+        if (barStyle == BarStyle.LightContent && style.getToolbarTintColorLightContent() != INVALID_COLOR) {
+            return style.getToolbarTintColorLightContent();
+        }
+
+        if (style.getToolbarTintColor() != INVALID_COLOR) {
+            return style.getToolbarTintColor();
+        }
+
+        if (barStyle == BarStyle.LightContent) {
+            return Color.WHITE;
+        }
+
+        return Color.parseColor("#131940");
+
+    }
+
+    public int getTitleTextColor() {
+        BarStyle barStyle = mFragment.preferredStatusBarStyle();
+        Style style = getStyle();
+
+        if (barStyle == BarStyle.DarkContent && style.getTitleTextColorDarkContent() != INVALID_COLOR) {
+            return style.getTitleTextColorDarkContent();
+        }
+
+        if (barStyle == BarStyle.LightContent && style.getTitleTextColorLightContent() != INVALID_COLOR) {
+            return style.getTitleTextColorLightContent();
+        }
+
+        if (style.getTitleTextColor() != INVALID_COLOR) {
+            return style.getTitleTextColor();
+        }
+
+        if (barStyle == BarStyle.LightContent) {
+            return Color.WHITE;
+        }
+
+        return Color.parseColor("#131940");
     }
 
     private void setToolbarBackButton() {
@@ -138,12 +217,23 @@ public class StackDelegate {
             toolbar.setNavigationIcon(null);
             toolbar.setNavigationOnClickListener(null);
         } else {
-            toolbar.setNavigationIcon(getStyle().getBackIcon());
+            toolbar.setNavigationIcon(getBackIcon());
             toolbar.setNavigationOnClickListener(view -> {
                 StackFragment stackFragment = mFragment.requireStackFragment();
                 stackFragment.dispatchBackPressed();
             });
         }
+    }
+
+    private Drawable getBackIcon() {
+        Style style = getStyle();
+        Drawable icon = style.getBackIcon();
+        icon.setTintList(getBackIconTintList());
+        return icon;
+    }
+
+    private ColorStateList getBackIconTintList() {
+        return AppUtils.buttonColorStateList(getToolbarTintColor());
     }
 
     private void fitTabBarIfNeeded() {
@@ -185,13 +275,13 @@ public class StackDelegate {
 
         if (mLeftBarButtonItems != null) {
             for (ToolbarButtonItem item : mLeftBarButtonItems) {
-                item.setTintColor(style.getToolbarTintColor());
+                item.setTintColor(getToolbarTintColor());
             }
             return;
         }
 
         if (mLeftBarButtonItem != null) {
-            mLeftBarButtonItem.setTintColor(style.getToolbarTintColor());
+            mLeftBarButtonItem.setTintColor(getToolbarTintColor());
         }
     }
 
@@ -200,13 +290,13 @@ public class StackDelegate {
 
         if (mRightBarButtonItems != null) {
             for (ToolbarButtonItem item : mRightBarButtonItems) {
-                item.setTintColor(style.getToolbarTintColor());
+                item.setTintColor(getToolbarTintColor());
             }
             return;
         }
 
         if (mRightBarButtonItem != null) {
-            mRightBarButtonItem.setTintColor(style.getToolbarTintColor());
+            mRightBarButtonItem.setTintColor(getToolbarTintColor());
         }
     }
 

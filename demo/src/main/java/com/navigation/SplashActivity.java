@@ -8,10 +8,6 @@ import androidx.annotation.Nullable;
 
 import com.navigation.androidx.AwesomeActivity;
 
-/**
- * Created by Listen on 2018/2/9.
- */
-
 public class SplashActivity extends AwesomeActivity {
 
     @Override

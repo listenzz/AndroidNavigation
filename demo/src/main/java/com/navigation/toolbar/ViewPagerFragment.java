@@ -20,11 +20,6 @@ import com.navigation.androidx.AwesomeFragment;
 import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.Style;
 
-
-/**
- * Created by Listen on 2018/2/1.
- */
-
 public class ViewPagerFragment extends BaseFragment {
 
     AwesomeToolbar toolbar;

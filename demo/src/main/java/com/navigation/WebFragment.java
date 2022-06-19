@@ -9,10 +9,6 @@ import android.webkit.WebView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-/**
- * Created by Listen on 2018/2/2.
- */
-
 public class WebFragment extends BaseFragment {
 
     WebView webView;

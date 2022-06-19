@@ -21,6 +21,12 @@ public class AreaPickerDialogFragment extends AwesomeFragment {
 
     WheelOptions<String> wheelOptions;
 
+    @NonNull
+    @Override
+    protected BarStyle preferredStatusBarStyle() {
+        return SystemUI.activityStatusBarStyle(requireActivity());
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -52,11 +58,5 @@ public class AreaPickerDialogFragment extends AwesomeFragment {
         areaUtils.initJsonData();
         wheelOptions.setCyclic(false);
         wheelOptions.setPicker(areaUtils.getOptions1Items(), areaUtils.getOptions2Items(), areaUtils.getOptions3Items());
-    }
-
-    @NonNull
-    @Override
-    protected BarStyle preferredStatusBarStyle() {
-        return SystemUI.activityStatusBarStyle(requireActivity());
     }
 }

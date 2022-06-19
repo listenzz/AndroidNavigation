@@ -10,12 +10,10 @@ import com.navigation.androidx.Style;
 
 public class StatusBarStyleFragment extends TestStatusBarFragment {
 
+    @NonNull
     @Override
-    protected void onCustomStyle(@NonNull Style style) {
-        super.onCustomStyle(style);
-        style.setStatusBarStyle(BarStyle.DarkContent);
-        style.setStatusBarColor(Color.TRANSPARENT);
-        style.setToolbarBackgroundColor(Color.WHITE);
+    protected BarStyle preferredStatusBarStyle() {
+        return BarStyle.DarkContent;
     }
 
     @Override
@@ -24,6 +22,12 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
             return Color.parseColor("#4A4A4A");
         }
         return Color.TRANSPARENT;
+    }
+
+    @Override
+    protected void onCustomStyle(@NonNull Style style) {
+        super.onCustomStyle(style);
+        style.setToolbarBackgroundColor(Color.WHITE);
     }
 
 }

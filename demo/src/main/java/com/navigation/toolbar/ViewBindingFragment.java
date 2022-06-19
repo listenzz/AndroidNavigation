@@ -13,14 +13,16 @@ import com.navigation.statusbar.TestStatusBarFragment;
 
 public class ViewBindingFragment extends BaseBindingFragment<FragmentViewBindingBinding> {
 
+    @NonNull
+    @Override
+    protected BarStyle preferredStatusBarStyle() {
+        return BarStyle.DarkContent;
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mBinding.button.setOnClickListener(v -> requireStackFragment().pushFragment(new TestStatusBarFragment()));
     }
 
-    @Override
-    protected void onCustomStyle(@NonNull Style style) {
-        style.setStatusBarStyle(BarStyle.DarkContent);
-    }
 }

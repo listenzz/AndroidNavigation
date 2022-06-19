@@ -20,11 +20,6 @@ import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.BarStyle;
 import com.navigation.androidx.Style;
 
-
-/**
- * Created by listen on 2018/2/2.
- */
-
 public class CustomSystemUIFragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener{
 
     AwesomeToolbar toolbar;
@@ -67,7 +62,6 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
     @Override
     protected void onCustomStyle(@NonNull Style style) {
         super.onCustomStyle(style);
-        style.setStatusBarColor(Color.TRANSPARENT);
         style.setToolbarBackgroundColor(Color.TRANSPARENT);
     }
 
@@ -76,21 +70,18 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
         textView.setText("");
         switch (buttonView.getId()) {
             case R.id.tinting:
-                int statusBarColor = isChecked ? Color.MAGENTA : Color.TRANSPARENT;
-                mStyle.setStatusBarColor(statusBarColor);
+                statusBarColor = isChecked ? Color.MAGENTA : Color.TRANSPARENT;
                 setNeedsStatusBarAppearanceUpdate();
                 break;
             case R.id.dark: // 深色状态栏 6.0 以上生效
-                BarStyle barStyle = isChecked ? BarStyle.DarkContent : BarStyle.LightContent;
-                mStyle.setStatusBarStyle(barStyle);
+                statusBarStyle = isChecked ? BarStyle.DarkContent : BarStyle.LightContent;
                 setNeedsStatusBarAppearanceUpdate();
-
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     textView.setText("只有在 6.0 以上系统才能看到效果");
                 }
                 break;
             case R.id.hidden:
-                mStyle.setStatusBarHidden(isChecked);
+                statusBarHidden = isChecked;
                 setNeedsStatusBarAppearanceUpdate();
                 break;
 
@@ -110,7 +101,6 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
             case R.id.display_cutout:
                 mStyle.setDisplayCutoutWhenLandscape(isChecked);
                 setNeedsLayoutInDisplayCutoutModeUpdate();
-
                 textView.setText("旋转屏幕看看");
                 break;
         }
@@ -143,4 +133,25 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
         return navHiddenChecked;
     }
 
+    BarStyle statusBarStyle = BarStyle.LightContent;
+
+    @NonNull
+    @Override
+    protected BarStyle preferredStatusBarStyle() {
+        return statusBarStyle;
+    }
+
+    int statusBarColor = Color.TRANSPARENT;
+
+    @Override
+    protected int preferredStatusBarColor() {
+        return statusBarColor;
+    }
+
+    boolean statusBarHidden = false;
+
+    @Override
+    protected boolean preferredStatusBarHidden() {
+        return statusBarHidden;
+    }
 }

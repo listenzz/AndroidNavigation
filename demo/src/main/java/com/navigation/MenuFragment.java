@@ -21,10 +21,6 @@ import com.navigation.toolbar.ToolbarColorTransitionFragment;
 import com.navigation.toolbar.ViewBindingFragment;
 import com.navigation.toolbar.ViewPagerFragment;
 
-/**
- * Created by listen on 2018/1/13.
- */
-
 public class MenuFragment extends AwesomeFragment {
 
     @Nullable

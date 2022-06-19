@@ -18,17 +18,18 @@ import com.navigation.androidx.StackFragment;
 import com.navigation.androidx.Style;
 import com.navigation.statusbar.TestStatusBarFragment;
 
-
-/**
- * Created by listen on 2018/2/3.
- */
-
 public class DialogEntryFragment extends BaseFragment {
 
     private static final int REQUEST_CODE_DATETIME = 1;
     private static final int REQUEST_CODE_AREA = 2;
 
     TextView resultText;
+
+    @NonNull
+    @Override
+    protected BarStyle preferredStatusBarStyle() {
+        return BarStyle.DarkContent;
+    }
 
     @Nullable
     @Override
@@ -107,9 +108,4 @@ public class DialogEntryFragment extends BaseFragment {
         }
     }
 
-
-    @Override
-    protected void onCustomStyle(@NonNull Style style) {
-        style.setStatusBarStyle(BarStyle.DarkContent);
-    }
 }

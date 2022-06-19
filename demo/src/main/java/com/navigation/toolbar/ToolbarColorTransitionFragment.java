@@ -14,11 +14,6 @@ import com.navigation.BaseFragment;
 import com.navigation.R;
 import com.navigation.androidx.Style;
 
-
-/**
- * Created by Listen on 2018/2/1.
- */
-
 public class ToolbarColorTransitionFragment extends BaseFragment {
 
     @Override

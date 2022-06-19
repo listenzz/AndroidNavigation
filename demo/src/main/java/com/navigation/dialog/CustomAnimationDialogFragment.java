@@ -16,9 +16,6 @@ import androidx.annotation.Nullable;
 import com.navigation.R;
 import com.navigation.androidx.AwesomeFragment;
 
-/**
- * Created by Listen on 2018/2/2.
- */
 public class CustomAnimationDialogFragment extends AwesomeFragment {
 
     @Nullable

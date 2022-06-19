@@ -164,32 +164,24 @@ public class Style implements Cloneable {
         toolbarBackgroundColorLightContent = color;
     }
 
+    public int getToolbarBackgroundColor() {
+        return toolbarBackgroundColor;
+    }
+
     public void setToolbarBackgroundColorDarkContent(int toolbarBackgroundColorDarkContent) {
         this.toolbarBackgroundColorDarkContent = toolbarBackgroundColorDarkContent;
+    }
+
+    public int getToolbarBackgroundColorDarkContent() {
+        return toolbarBackgroundColorDarkContent;
     }
 
     public void setToolbarBackgroundColorLightContent(int toolbarBackgroundColorLightContent) {
         this.toolbarBackgroundColorLightContent = toolbarBackgroundColorLightContent;
     }
 
-    public int getToolbarBackgroundColor() {
-        if (statusBarStyle == BarStyle.DarkContent && toolbarBackgroundColorDarkContent != INVALID_COLOR) {
-            return toolbarBackgroundColorDarkContent;
-        }
-
-        if (statusBarStyle == BarStyle.LightContent && toolbarBackgroundColorLightContent != INVALID_COLOR) {
-            return toolbarBackgroundColorLightContent;
-        }
-
-        if (toolbarBackgroundColor != INVALID_COLOR) {
-            return toolbarBackgroundColor;
-        }
-
-        if (statusBarStyle == BarStyle.LightContent) {
-            return Color.BLACK;
-        }
-
-        return Color.WHITE;
+    public int getToolbarBackgroundColorLightContent() {
+        return toolbarBackgroundColorLightContent;
     }
 
     public void setElevation(int dp) {
@@ -200,8 +192,7 @@ public class Style implements Cloneable {
         if (elevation != -1) {
             return elevation;
         }
-        elevation = AppUtils.dp2px(context, 1);
-        return elevation;
+        return AppUtils.dp2px(context, 1);
     }
 
     public void setToolbarTintColor(int color) {
@@ -210,36 +201,40 @@ public class Style implements Cloneable {
         toolbarTintColorLightContent = color;
     }
 
+    public int getToolbarTintColor() {
+        return toolbarTintColor;
+    }
+
     public void setToolbarTintColorDarkContent(int toolbarTintColorDarkContent) {
         this.toolbarTintColorDarkContent = toolbarTintColorDarkContent;
+    }
+
+    public int getToolbarTintColorDarkContent() {
+        return toolbarTintColorDarkContent;
     }
 
     public void setToolbarTintColorLightContent(int toolbarTintColorLightContent) {
         this.toolbarTintColorLightContent = toolbarTintColorLightContent;
     }
 
-    public int getToolbarTintColor() {
-        if (statusBarStyle == BarStyle.DarkContent && toolbarTintColorDarkContent != INVALID_COLOR) {
-            return toolbarTintColorDarkContent;
-        }
-
-        if (statusBarStyle == BarStyle.LightContent && toolbarTintColorLightContent != INVALID_COLOR) {
-            return toolbarTintColorLightContent;
-        }
-
-        if (toolbarTintColor != INVALID_COLOR) {
-            return toolbarTintColor;
-        }
-
-        if (statusBarStyle == BarStyle.LightContent) {
-            return Color.WHITE;
-        }
-
-        return Color.parseColor("#131940");
+    public int getToolbarTintColorLightContent() {
+        return toolbarTintColorLightContent;
     }
 
     public void setBackIcon(Drawable icon) {
         backIcon = icon;
+    }
+
+    public Drawable getBackIcon() {
+        if (backIcon == null) {
+            backIcon = getDefaultBackIcon();
+        }
+
+        if (backIcon.getConstantState() != null) {
+            return DrawableCompat.wrap(AppUtils.copyDrawable(backIcon)).mutate();
+        } else {
+            return DrawableCompat.wrap(backIcon).mutate();
+        }
     }
 
     @NonNull
@@ -251,58 +246,30 @@ public class Style implements Cloneable {
         return drawable;
     }
 
-    public Drawable getBackIcon() {
-        if (backIcon == null) {
-            backIcon = getDefaultBackIcon();
-        }
-        Drawable icon;
-        if (backIcon.getConstantState() != null) {
-            icon = AppUtils.copyDrawable(backIcon);
-        } else {
-            icon = backIcon;
-        }
-        icon = DrawableCompat.wrap(icon).mutate();
-        DrawableCompat.setTintList(icon, getBackIconColor());
-        return icon;
-    }
-
-    private ColorStateList getBackIconColor() {
-        int tintColor = getToolbarTintColor();
-        return AppUtils.buttonColorStateList(tintColor);
-    }
-
     public void setTitleTextColor(int color) {
         titleTextColor = color;
         titleTextColorDarkContent = color;
         titleTextColorLightContent = color;
     }
 
+    public int getTitleTextColor() {
+        return titleTextColor;
+    }
+
     public void setTitleTextColorDarkContent(int titleTextColorDarkContent) {
         this.titleTextColorDarkContent = titleTextColorDarkContent;
+    }
+
+    public int getTitleTextColorDarkContent() {
+        return titleTextColorDarkContent;
     }
 
     public void setTitleTextColorLightContent(int titleTextColorLightContent) {
         this.titleTextColorLightContent = titleTextColorLightContent;
     }
 
-    public int getTitleTextColor() {
-        if (statusBarStyle == BarStyle.DarkContent && titleTextColorDarkContent != INVALID_COLOR) {
-            return titleTextColorDarkContent;
-        }
-
-        if (statusBarStyle == BarStyle.LightContent && titleTextColorLightContent != INVALID_COLOR) {
-            return titleTextColorLightContent;
-        }
-
-        if (titleTextColor != INVALID_COLOR) {
-            return titleTextColor;
-        }
-
-        if (statusBarStyle == BarStyle.LightContent) {
-            return Color.WHITE;
-        }
-
-        return Color.parseColor("#131940");
+    public int getTitleTextColorLightContent() {
+        return titleTextColorLightContent;
     }
 
     public void setTitleTextSize(int dp) {

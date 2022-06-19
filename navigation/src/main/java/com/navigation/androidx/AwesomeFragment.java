@@ -812,9 +812,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     protected boolean extendedLayoutIncludesToolbar() {
-        int color = mStyle.getToolbarBackgroundColor();
-        float alpha = mStyle.getToolbarAlpha();
-        return Color.alpha(color) < 255 || alpha < 1.0;
+        return mStackDelegate.extendedLayoutIncludesToolbar();
     }
 
     public int getToolbarHeight() {
