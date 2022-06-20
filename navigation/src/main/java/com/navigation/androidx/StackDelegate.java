@@ -271,8 +271,6 @@ public class StackDelegate {
     }
 
     private void setLeftButtonItemTintColor() {
-        Style style = getStyle();
-
         if (mLeftBarButtonItems != null) {
             for (ToolbarButtonItem item : mLeftBarButtonItems) {
                 item.setTintColor(getToolbarTintColor());
@@ -286,8 +284,6 @@ public class StackDelegate {
     }
 
     private void setRightButtonItemTintColor() {
-        Style style = getStyle();
-
         if (mRightBarButtonItems != null) {
             for (ToolbarButtonItem item : mRightBarButtonItems) {
                 item.setTintColor(getToolbarTintColor());

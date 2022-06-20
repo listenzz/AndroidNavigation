@@ -38,7 +38,7 @@ public class AppUtils {
     }
 
     public static ColorStateList buttonColorStateList(int tintColor) {
-        int disableColor = ColorUtils.setAlphaComponent(AppUtils.toGrey(tintColor), 100);
+        int disableColor = ColorUtils.setAlphaComponent(tintColor, 100);
         int pressedColor = ColorUtils.setAlphaComponent(tintColor, 150);
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_pressed},  // pressed

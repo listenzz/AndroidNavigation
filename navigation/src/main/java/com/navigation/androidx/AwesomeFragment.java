@@ -120,6 +120,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (mStyle != null) {
             return;
         }
+
         if (mPresentableActivity == null || mPresentableActivity.getStyle() == null) {
             return;
         }

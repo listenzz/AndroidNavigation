@@ -204,11 +204,9 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     private void showAsDialogSync(AwesomeFragment dialog, int requestCode, @NonNull Runnable completion) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            Fragment fragment = fragmentManager.findFragmentById(android.R.id.content);
-            if (fragment != null && fragment.isAdded()) {
-                dialog.setTargetFragment(fragment, requestCode);
-            }
+        Fragment fragment = fragmentManager.findFragmentById(android.R.id.content);
+        if (fragment != null && fragment.isAdded()) {
+            dialog.setTargetFragment(fragment, requestCode);
         }
 
         Bundle args = FragmentHelper.getArguments(dialog);
