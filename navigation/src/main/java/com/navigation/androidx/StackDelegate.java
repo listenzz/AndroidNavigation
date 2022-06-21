@@ -469,7 +469,7 @@ public class StackDelegate {
             if (mFragment.isAdded()) {
                 root.setForeground(null);
             }
-        }, duration);
+        }, duration + 8);
 
     }
 
