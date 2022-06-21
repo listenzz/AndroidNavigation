@@ -147,8 +147,12 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     public void dismissFragment(@NonNull AwesomeFragment fragment) {
-        dismissFragment(fragment, () -> {
-        });
+        if (fragment.getPresentationStyle() == PresentationStyle.OverFullScreen) {
+            dismissFragment(fragment, () -> {}, fragment.getAnimation());
+        } else {
+            dismissFragment(fragment, () -> {
+            });
+        }
     }
 
     public void dismissFragment(@NonNull AwesomeFragment fragment, @NonNull Runnable completion) {
