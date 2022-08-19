@@ -243,7 +243,7 @@ public class StackDelegate {
 
         StackFragment stackFragment = mFragment.requireStackFragment();
         TabBarFragment tabBarFragment = stackFragment.getTabBarFragment();
-        if (tabBarFragment == null || tabBarFragment.getSelectedFragment() != stackFragment) {
+        if (tabBarFragment == null) {
             return;
         }
 
