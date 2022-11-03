@@ -169,6 +169,8 @@ public class FragmentHelper {
             return null;
         }
 
+        ensureChildFragments(fragmentManager);
+
         List<Fragment> fragments = fragmentManager.getFragments();
         int count = fragments.size();
 
@@ -196,6 +198,8 @@ public class FragmentHelper {
         if (fragmentManager.isDestroyed()) {
             return null;
         }
+
+        ensureChildFragments(fragmentManager);
 
         List<Fragment> fragments = fragmentManager.getFragments();
         int count = fragments.size();
@@ -225,6 +229,8 @@ public class FragmentHelper {
             return null;
         }
 
+        ensureChildFragments(fragmentManager);
+
         List<Fragment> fragments = fragmentManager.getFragments();
         int count = fragments.size();
 
@@ -245,6 +251,14 @@ public class FragmentHelper {
         }
 
         return null;
+    }
+
+    private static void ensureChildFragments(@NonNull FragmentManager fragmentManager) {
+        try {
+            fragmentManager.executePendingTransactions();
+        } catch (Exception e) {
+            // ignore
+        }
     }
 
     public static void handlePresentFragment(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation) {
