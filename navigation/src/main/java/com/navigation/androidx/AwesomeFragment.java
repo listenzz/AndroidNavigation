@@ -319,7 +319,10 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void scheduleTaskAtStarted(Runnable runnable) {
-        mLifecycleDelegate.scheduleTaskAtStarted(runnable);
+        AwesomeActivity activity = (AwesomeActivity) getActivity();
+        if (activity != null) {
+            activity.scheduleTaskAtStarted(() -> mLifecycleDelegate.scheduleTaskAtStarted(runnable));
+        }
     }
 
     public void setActivityRootFragment(AwesomeFragment root) {

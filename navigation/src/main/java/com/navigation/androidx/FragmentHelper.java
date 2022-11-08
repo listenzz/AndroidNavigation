@@ -1,7 +1,6 @@
 package com.navigation.androidx;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -70,7 +69,6 @@ public class FragmentHelper {
 
     @NonNull
     public static List<AwesomeFragment> getFragments(@NonNull FragmentManager fragmentManager) {
-        ensureChildFragments(fragmentManager);
         List<AwesomeFragment> children = new ArrayList<>();
         List<Fragment> fragments = fragmentManager.getFragments();
         for (int i = 0, size = fragments.size(); i < size; i++) {
@@ -94,7 +92,6 @@ public class FragmentHelper {
         }
 
         FragmentManager fragmentManager = fragment.getParentFragmentManager();
-        ensureChildFragments(fragmentManager);
         int count = fragmentManager.getBackStackEntryCount();
         int index = getIndexAtBackStack(fragment);
         if (index < 0 || index > count - 2) {
@@ -115,7 +112,6 @@ public class FragmentHelper {
             return null;
         }
         FragmentManager fragmentManager = fragment.getParentFragmentManager();
-        ensureChildFragments(fragmentManager);
         int count = fragmentManager.getBackStackEntryCount();
         int index = getIndexAtBackStack(fragment);
         if (index < 1 || index > count - 1) {
@@ -133,7 +129,6 @@ public class FragmentHelper {
 
     public static int getIndexAtBackStack(@NonNull AwesomeFragment fragment) {
         FragmentManager fragmentManager = fragment.getParentFragmentManager();
-        ensureChildFragments(fragmentManager);
         int count = fragmentManager.getBackStackEntryCount();
         for (int i = 0; i < count; i++) {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(i);
@@ -147,7 +142,6 @@ public class FragmentHelper {
 
     public static int getBackStackEntryCount(@NonNull AwesomeFragment fragment) {
         FragmentManager fragmentManager = fragment.getChildFragmentManager();
-        ensureChildFragments(fragmentManager);
         return fragmentManager.getBackStackEntryCount();
     }
 
@@ -175,7 +169,6 @@ public class FragmentHelper {
             return null;
         }
 
-        ensureChildFragments(fragmentManager);
         List<Fragment> fragments = fragmentManager.getFragments();
         int count = fragments.size();
 
@@ -204,7 +197,6 @@ public class FragmentHelper {
             return null;
         }
 
-        ensureChildFragments(fragmentManager);
         List<Fragment> fragments = fragmentManager.getFragments();
         int count = fragments.size();
 
@@ -233,7 +225,6 @@ public class FragmentHelper {
             return null;
         }
 
-        ensureChildFragments(fragmentManager);
         List<Fragment> fragments = fragmentManager.getFragments();
         int count = fragments.size();
 
@@ -254,15 +245,6 @@ public class FragmentHelper {
         }
 
         return null;
-    }
-
-    private static void ensureChildFragments(@NonNull FragmentManager fragmentManager) {
-        try {
-            fragmentManager.executePendingTransactions();
-        } catch (Exception e) {
-            // ignore
-            Log.wtf(TAG, e);
-        }
     }
 
     public static void handlePresentFragment(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull TransitionAnimation animation) {
