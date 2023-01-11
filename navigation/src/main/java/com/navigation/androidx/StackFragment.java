@@ -123,6 +123,10 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
 
     protected void pushFragmentSync(AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
         FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, animation);
+        FragmentManager fragmentManager = getChildFragmentManager();
+        if (!fragmentManager.isDestroyed()) {
+            fragmentManager.executePendingTransactions();
+        }
         completion.run();
     }
 
@@ -153,8 +157,9 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
         fragmentManager.popBackStack(fragment.getSceneId(), 0);
         fragmentManager.beginTransaction().setMaxLifecycle(fragment, Lifecycle.State.RESUMED).commit();
-        completion.run();
+        fragmentManager.executePendingTransactions();
 
+        completion.run();
         handleFragmentResult(fragment, topFragment);
     }
 
@@ -260,6 +265,7 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         transaction.add(R.id.navigation_content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
+        fragmentManager.executePendingTransactions();
 
         completion.run();
     }

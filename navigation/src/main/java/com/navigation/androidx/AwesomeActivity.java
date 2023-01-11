@@ -78,11 +78,16 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         if (isFinishing()) {
             return;
         }
-        if (getSupportFragmentManager().isStateSaved()) {
+
+        if (isStateSaved()) {
             scheduleTaskAtStarted(() -> setActivityRootFragmentSync(rootFragment));
             return;
         }
         setActivityRootFragmentSync(rootFragment);
+    }
+
+    public boolean isStateSaved() {
+        return getSupportFragmentManager().isStateSaved();
     }
 
     protected void setActivityRootFragmentSync(AwesomeFragment fragment) {

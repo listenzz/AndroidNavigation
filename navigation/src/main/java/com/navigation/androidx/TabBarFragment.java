@@ -296,6 +296,7 @@ public class TabBarFragment extends AwesomeFragment {
         transaction.setMaxLifecycle(current, Lifecycle.State.RESUMED);
         transaction.show(current);
         transaction.commit();
+        fragmentManager.executePendingTransactions();
 
         if (completion != null) {
             completion.run();

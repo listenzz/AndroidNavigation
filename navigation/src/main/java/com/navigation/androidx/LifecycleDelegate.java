@@ -1,6 +1,5 @@
 package com.navigation.androidx;
 
-import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.UiThread;
@@ -17,7 +16,6 @@ public class LifecycleDelegate implements LifecycleObserver {
 
     public LifecycleDelegate(LifecycleOwner lifecycleOwner) {
         mLifecycleOwner = lifecycleOwner;
-        mHandler = new Handler(Looper.getMainLooper());
         lifecycleOwner.getLifecycle().addObserver(this);
     }
 
@@ -26,7 +24,6 @@ public class LifecycleDelegate implements LifecycleObserver {
     private final Queue<Runnable> mTasks = new LinkedList<>();
 
     private final LifecycleOwner mLifecycleOwner;
-    private final Handler mHandler;
 
     public void scheduleTaskAtStarted(Runnable runnable) {
         if (getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
@@ -42,7 +39,6 @@ public class LifecycleDelegate implements LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     void onStateChange() {
         if (getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
-            mHandler.removeCallbacks(executeTask);
             mTasks.clear();
             getLifecycle().removeObserver(this);
             return;
@@ -60,20 +56,14 @@ public class LifecycleDelegate implements LifecycleObserver {
         }
 
         Runnable runnable = mTasks.poll();
-        if (runnable != null) {
+        while (runnable != null) {
             mExecuting = true;
             runnable.run();
-            mHandler.post(executeTask);
+            runnable = mTasks.poll();
         }
-    }
 
-    private final Runnable executeTask = new Runnable() {
-        @Override
-        public void run() {
-            mExecuting = false;
-            considerExecute();
-        }
-    };
+        mExecuting = false;
+    }
 
     boolean isAtLeastStarted() {
         return getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED);
