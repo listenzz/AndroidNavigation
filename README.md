@@ -33,7 +33,7 @@ implementation 'androidx.appcompat:appcompat:1.2.0'
 ```
 
 ```groovy
-implementation 'io.github.listenzz:AndroidNavigation:12.5.12'
+implementation 'io.github.listenzz:AndroidNavigation:12.5.13'
 implementation 'androidx.appcompat:appcompat:1.3.1'
 ```
 
