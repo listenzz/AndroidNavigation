@@ -47,12 +47,16 @@ public class DetailsFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // 确保 toolbar 已经设置好 padding
+        postponeEnterTransition();
         return inflater.inflate(R.layout.fragment_shared_details, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // 执行被延迟的转场动画
+        view.post(this::startPostponedEnterTransition);
 
         ImageView image = (ImageView) view.findViewById(R.id.image);
 

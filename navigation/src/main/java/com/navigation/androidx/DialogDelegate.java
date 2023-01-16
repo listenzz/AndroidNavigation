@@ -2,10 +2,10 @@ package com.navigation.androidx;
 
 import static com.navigation.androidx.AwesomeFragment.ARGS_REQUEST_CODE;
 import static com.navigation.androidx.AwesomeFragment.ARGS_SHOW_AS_DIALOG;
-import static com.navigation.androidx.FragmentHelper.handleFragmentResult;
 
 import android.app.Dialog;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -64,6 +64,10 @@ public class DialogDelegate {
     }
 
     int preferredNavigationBarColor() {
+        if (SystemUI.isGestureNavigationEnabled(mFragment.getContentResolver()) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return Color.TRANSPARENT;
+        }
+
         if (!shouldAnimateDialogTransition()) {
             return Color.TRANSPARENT;
         }
@@ -77,7 +81,7 @@ public class DialogDelegate {
 
     void setupDialog() {
         Window window = mFragment.getWindow();
-        SystemUI.setStatusBarTranslucent(window, true);
+        SystemUI.setDecorFitsSystemWindows(window, false);
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         Dialog dialog = mFragment.requireDialog();
@@ -135,7 +139,7 @@ public class DialogDelegate {
             return;
         }
 
-        AppUtils.hideSoftInput(mFragment.getWindow());
+        SystemUI.hideIme(mFragment.getWindow());
 
         FragmentManager fragmentManager = mFragment.getParentFragmentManager();
         fragmentManager
@@ -147,7 +151,12 @@ public class DialogDelegate {
         Fragment target = mFragment.getTargetFragment();
         if (target != null && target.isAdded()) {
             fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
-            handleFragmentResult((AwesomeFragment) target, mFragment);
+        }
+
+        fragmentManager.executePendingTransactions();
+
+        if (target != null) {
+            FragmentHelper.handleFragmentResult((AwesomeFragment) target, mFragment);
         }
 
         completion.run();
@@ -167,18 +176,16 @@ public class DialogDelegate {
             return;
         }
 
-        final int requestCode = mFragment.getRequestCode();
-        final int resultCode = mFragment.getResultCode();
-        final Bundle data = mFragment.getResultData();
-
         ((AwesomeFragment) target).scheduleTaskAtStarted(() -> {
             FragmentManager fragmentManager = target.getParentFragmentManager();
             fragmentManager
                     .beginTransaction()
                     .setMaxLifecycle(target, Lifecycle.State.RESUMED)
                     .commit();
+            fragmentManager.executePendingTransactions();
+
             AwesomeFragment fragment = (AwesomeFragment) target;
-            handleFragmentResult(fragment, requestCode, resultCode, data);
+            FragmentHelper.handleFragmentResult(fragment, mFragment);
         });
     }
 

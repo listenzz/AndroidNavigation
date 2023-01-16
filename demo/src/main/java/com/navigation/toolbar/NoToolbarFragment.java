@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.BarStyle;
+import com.navigation.androidx.SystemUI;
 import com.navigation.statusbar.TestStatusBarFragment;
 
 public class NoToolbarFragment extends TestStatusBarFragment {
@@ -31,11 +32,12 @@ public class NoToolbarFragment extends TestStatusBarFragment {
     @Override
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
-        appendStatusBarPadding(root);
+        SystemUI.applyStatusBarPaddingIfNeeded(getWindow(), root);
     }
 
     @Override
     protected AwesomeToolbar onCreateToolbar(View parent) {
         return null;
     }
+
 }

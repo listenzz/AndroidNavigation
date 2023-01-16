@@ -1,7 +1,10 @@
 package com.navigation.androidx;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
@@ -12,9 +15,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
@@ -141,23 +146,58 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Override
     protected void performCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.performCreateView(inflater, container, savedInstanceState);
-
         if (getShowsDialog()) {
             mDialogDelegate.setupDialog();
         }
 
         if (mStackDelegate.hasStackParent()) {
-            mStackDelegate.fitStackFragment();
+            mStackDelegate.createToolbar();
         }
 
         if (isLeafAwesomeFragment()) {
             setBackgroundDrawable();
         }
+
+        handleAttacheStateChange(getView());
+    }
+
+    private void handleAttacheStateChange(View root) {
+        if (root == null) {
+            return;
+        }
+
+        root.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                root.getViewTreeObserver().removeOnPreDrawListener(this);
+                fitsNavigationBarIfNeeded();
+                mStackDelegate.fitsStatusBar();
+                mStackDelegate.fitsTabBarIfNeeded();
+                return false;
+            }
+        });
+    }
+
+    private void fitsNavigationBarIfNeeded() {
+        if (!isLeafAwesomeFragment()) {
+            return;
+        }
+
+        if (!shouldFitsNavigationBar()) {
+            return;
+        }
+
+        View root = requireView();
+        root.setPadding(0, 0, 0, SystemUI.navigationBarHeight(getWindow()));
+    }
+
+    boolean shouldFitsNavigationBar() {
+        return !preferredDecorFitsSystemWindows() && AppUtils.isOpaque(preferredNavigationBarColor());
     }
 
     @Override
     public void onDestroyView() {
-        AppUtils.hideSoftInput(getWindow());
+        SystemUI.hideIme(getWindow());
         super.onDestroyView();
     }
 
@@ -175,7 +215,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private void setBackgroundForDialogWindow() {
         int color = mStyle.getScreenBackgroundColor();
-        if (Color.alpha(color) < 255) {
+        if (AppUtils.isTranslucent(color)) {
             Window window = getWindow();
             window.setDimAmount(0);
             window.setBackgroundDrawable(new ColorDrawable(color));
@@ -402,6 +442,11 @@ public abstract class AwesomeFragment extends InternalFragment {
     protected boolean onBackPressed() {
         if (getShowsDialog() && isCancelable()) {
             hideAsDialog();
+            return true;
+        }
+
+        if (SystemUI.isImeVisible(requireView())) {
+            SystemUI.hideIme(getWindow());
             return true;
         }
         return false;
@@ -672,14 +717,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         SystemUI.setStatusBarColor(getWindow(), color, animated);
     }
 
-    public void appendStatusBarPadding(View view) {
-        SystemUI.appendStatusBarPadding(requireContext(), view);
-    }
-
-    public void removeStatusBarPadding(View view) {
-        SystemUI.removeStatusBarPadding(requireContext(), view);
-    }
-
     // ------- NavigationBar --------
     @ColorInt
     protected int preferredNavigationBarColor() {
@@ -687,12 +724,19 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (child != null) {
             return child.preferredNavigationBarColor();
         }
+
         if (getShowsDialog()) {
             return mDialogDelegate.preferredNavigationBarColor();
         }
+
+        if (SystemUI.isGestureNavigationEnabled(getContentResolver()) && !preferredDecorFitsSystemWindows()) {
+            return Color.TRANSPARENT;
+        }
+
         if (mStyle.getNavigationBarColor() != Style.INVALID_COLOR) {
             return mStyle.getNavigationBarColor();
         }
+
         return mStyle.getScreenBackgroundColor();
     }
 
@@ -702,9 +746,11 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (child != null) {
             return child.preferredNavigationBarStyle();
         }
+
         if (AppUtils.isBlackColor(preferredNavigationBarColor(), 176)) {
             return BarStyle.LightContent;
         }
+
         return BarStyle.DarkContent;
     }
 
@@ -720,11 +766,15 @@ public abstract class AwesomeFragment extends InternalFragment {
         return mStyle.isNavigationBarHidden();
     }
 
-    public void setNeedsNavigationBarAppearanceUpdate() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return;
+    public boolean preferredDecorFitsSystemWindows() {
+        AwesomeFragment child = childFragmentForAppearance();
+        if (child != null) {
+            return child.preferredDecorFitsSystemWindows();
         }
+        return false;
+    }
 
+    public void setNeedsNavigationBarAppearanceUpdate() {
         if (!isResumed()) {
             return;
         }
@@ -737,7 +787,7 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         setNavigationBarColor(preferredNavigationBarColor());
         setNavigationBarHidden(preferredNavigationBarHidden());
-        setNavigationBarLayoutHidden(preferredNavigationBarHidden() || Color.alpha(preferredNavigationBarColor()) < 255);
+        setDecorFitsSystemWindows(preferredDecorFitsSystemWindows());
         setNavigationBarStyle(preferredNavigationBarStyle());
     }
 
@@ -753,8 +803,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         SystemUI.setNavigationBarHidden(getWindow(), hidden);
     }
 
-    private void setNavigationBarLayoutHidden(boolean hidden) {
-        SystemUI.setNavigationBarLayoutHidden(getWindow(), hidden);
+    private void setDecorFitsSystemWindows(boolean fits) {
+        SystemUI.setDecorFitsSystemWindows(getWindow(), fits);
     }
 
     // ------ StackFragment -----
@@ -806,17 +856,20 @@ public abstract class AwesomeFragment extends InternalFragment {
         return mStackDelegate.getToolbar();
     }
 
+
     @Nullable
     protected AwesomeToolbar onCreateToolbar(View parent) {
-        return mStackDelegate.onCreateToolbar(parent);
+        AwesomeToolbar toolbar = new AwesomeToolbar(requireContext());
+        FrameLayout frameLayout = (FrameLayout) requireView();
+        frameLayout.addView(toolbar, new FrameLayout.LayoutParams(MATCH_PARENT, mStyle.getToolbarHeight()));
+        return toolbar;
     }
 
     protected boolean extendedLayoutIncludesToolbar() {
-        return mStackDelegate.extendedLayoutIncludesToolbar();
-    }
-
-    public int getToolbarHeight() {
-        return mStyle.getToolbarHeight();
+        Style style = mStyle;
+        int color = mStackDelegate.getToolbarBackgroundColor();
+        float alpha = style.getToolbarAlpha();
+        return AppUtils.isTranslucent(color) || alpha < 1.0;
     }
 
     public void setNeedsToolbarAppearanceUpdate() {
@@ -926,6 +979,10 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         return null;
+    }
+
+    public ContentResolver getContentResolver() {
+        return requireActivity().getContentResolver();
     }
 
 }

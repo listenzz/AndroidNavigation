@@ -2,6 +2,7 @@ package com.navigation;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,15 +11,23 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsAnimationCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.navigation.androidx.BarStyle;
 import com.navigation.androidx.DrawerFragment;
+import com.navigation.androidx.EdgeInsets;
 import com.navigation.androidx.StackFragment;
 import com.navigation.androidx.Style;
+import com.navigation.androidx.SystemUI;
 import com.navigation.androidx.TabBar;
 import com.navigation.androidx.TabBarFragment;
 import com.navigation.androidx.TabBarItem;
 import com.navigation.androidx.ToolbarButtonItem;
+
+import java.util.List;
 
 public class TestNavigationFragment extends BaseFragment {
 
@@ -35,13 +44,6 @@ public class TestNavigationFragment extends BaseFragment {
     @Override
     protected void onCustomStyle(@NonNull Style style) {
         style.setStatusBarStyle(BarStyle.DarkContent);
-    }
-
-    @Override
-    public void appendStatusBarPadding(View view) {
-        if (getDialogAwesomeFragment() == null) {
-            super.appendStatusBarPadding(view);
-        }
     }
 
     @Nullable
@@ -147,6 +149,34 @@ public class TestNavigationFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         setTitle("导航");
         setButton();
+
+        View child = ((ViewGroup) view).getChildAt(0);
+        ViewCompat.setWindowInsetsAnimationCallback(view, new WindowInsetsAnimationCompat.Callback(WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP) {
+            @NonNull
+            @Override
+            public WindowInsetsCompat onProgress(@NonNull WindowInsetsCompat insets, @NonNull List<WindowInsetsAnimationCompat> runningAnimations) {
+                Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+                View focus = child.findFocus();
+                Log.i(getDebugTag(), "WindowInsetsAnimationCompat.Callback");
+                if (isResumed() && focus != null) {
+                    EdgeInsets edgeInsets = SystemUI.getEdgeInsetsForView(focus);
+                    Log.i(getDebugTag(), "edgeInsets.bottom:" + edgeInsets.bottom + "  imeInsets.bottom:" + imeInsets.bottom);
+                    child.setTranslationY(-Math.max(imeInsets.bottom - edgeInsets.bottom, 0));
+                }
+
+                // 消费掉
+                return WindowInsetsCompat.CONSUMED;
+            }
+        });
+
+        ViewCompat.setOnApplyWindowInsetsListener(view, (v, insetsCompat) -> {
+            Insets insets = insetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars());
+            Log.w(getDebugTag(), "onApplyWindowInsets bottom:" + insets.bottom);
+            if (!isStackRoot()) {
+                view.setPadding(0, 0, 0, insets.bottom);
+            }
+            return insetsCompat;
+        });
     }
 
     private void setButton() {

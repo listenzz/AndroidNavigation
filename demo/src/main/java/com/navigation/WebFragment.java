@@ -43,4 +43,11 @@ public class WebFragment extends BaseFragment {
         webView.loadUrl("file:///android_asset/input_webview.html");
         setTitle("WebView");
     }
+
+    @Override
+    public boolean preferredDecorFitsSystemWindows() {
+        // 适配在 WebView 上使用键盘
+        return true;
+    }
+
 }

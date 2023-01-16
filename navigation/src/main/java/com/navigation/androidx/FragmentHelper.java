@@ -1,7 +1,6 @@
 package com.navigation.androidx;
 
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -278,6 +277,7 @@ public class FragmentHelper {
         FragmentManager fragmentManager = presenting.getParentFragmentManager();
         fragmentManager.beginTransaction().setMaxLifecycle(presented, Lifecycle.State.STARTED).commit();
         fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        fragmentManager.executePendingTransactions();
 
         handleFragmentResult(presenting, result);
     }
@@ -296,20 +296,9 @@ public class FragmentHelper {
         final int requestCode = resultFragment.getRequestCode();
         final int resultCode = resultFragment.getResultCode();
         final Bundle data = resultFragment.getResultData();
-        handleFragmentResult(target, requestCode, resultCode, data);
-    }
-
-    public static void handleFragmentResult(AwesomeFragment target, int requestCode, int resultCode, Bundle data) {
-        View view = target.getView();
-        if (view == null) {
-            return;
+        if (target.isAdded()) {
+            target.onFragmentResult(requestCode, resultCode, data);
         }
-
-        view.post(() -> {
-            if (target.isAdded()) {
-                target.onFragmentResult(requestCode, resultCode, data);
-            }
-        });
     }
 
     public static boolean isRemoving(@NonNull AwesomeFragment fragment) {

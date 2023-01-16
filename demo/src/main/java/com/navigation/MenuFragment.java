@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import com.navigation.androidx.AwesomeFragment;
 import com.navigation.androidx.DrawerFragment;
 import com.navigation.androidx.StackFragment;
+import com.navigation.androidx.SystemUI;
 import com.navigation.androidx.TabBarFragment;
 import com.navigation.dialog.DialogEntryFragment;
 import com.navigation.sharedelement.GridFragment;
@@ -71,7 +72,7 @@ public class MenuFragment extends AwesomeFragment {
             requireDrawerFragment().closeMenu();
         });
 
-        appendStatusBarPadding(root);
+        SystemUI.applyStatusBarPaddingIfNeeded(getWindow(), root);
 
         return root;
     }

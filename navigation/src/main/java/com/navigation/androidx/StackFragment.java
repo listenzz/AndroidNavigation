@@ -1,7 +1,5 @@
 package com.navigation.androidx;
 
-import static com.navigation.androidx.FragmentHelper.handleFragmentResult;
-
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -24,7 +22,7 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (mStyle.isSwipeBackEnabled()) {
+        if (mStyle.isSwipeBackEnabled() && !SystemUI.isGestureNavigationEnabled(getContentResolver())) {
             return swipeBackRootView(inflater, container);
         }
         return inflater.inflate(R.layout.nav_fragment_navigation, container, false);
@@ -123,10 +121,6 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
 
     protected void pushFragmentSync(AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
         FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, animation);
-        FragmentManager fragmentManager = getChildFragmentManager();
-        if (!fragmentManager.isDestroyed()) {
-            fragmentManager.executePendingTransactions();
-        }
         completion.run();
     }
 
@@ -160,7 +154,7 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         fragmentManager.executePendingTransactions();
 
         completion.run();
-        handleFragmentResult(fragment, topFragment);
+        FragmentHelper.handleFragmentResult(fragment, topFragment);
     }
 
     public void popFragment() {
@@ -352,9 +346,7 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         precursor.requireView().setVisibility(View.GONE);
 
         if (scrollPercent >= 1.0f) {
-            popFragmentSync(() -> {
-            }, TransitionAnimation.None);
-            getChildFragmentManager().executePendingTransactions();
+            popFragmentSync(() -> {/*empty*/}, TransitionAnimation.None);
         }
     }
 

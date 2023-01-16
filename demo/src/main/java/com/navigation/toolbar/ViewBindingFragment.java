@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.navigation.androidx.BarStyle;
-import com.navigation.androidx.Style;
 import com.navigation.databinding.FragmentViewBindingBinding;
 import com.navigation.statusbar.TestStatusBarFragment;
 

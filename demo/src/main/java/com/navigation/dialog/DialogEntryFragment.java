@@ -13,10 +13,9 @@ import androidx.annotation.Nullable;
 
 import com.navigation.BaseFragment;
 import com.navigation.R;
+import com.navigation.TestNavigationFragment;
 import com.navigation.androidx.BarStyle;
 import com.navigation.androidx.StackFragment;
-import com.navigation.androidx.Style;
-import com.navigation.statusbar.TestStatusBarFragment;
 
 public class DialogEntryFragment extends BaseFragment {
 
@@ -66,7 +65,7 @@ public class DialogEntryFragment extends BaseFragment {
 
         root.findViewById(R.id.nested_fragment).setOnClickListener(view -> {
             StackFragment stackFragment = new StackFragment();
-            stackFragment.setRootFragment(new TestStatusBarFragment());
+            stackFragment.setRootFragment(new TestNavigationFragment());
             NestedFragmentDialogFragment dialog = new NestedFragmentDialogFragment();
             dialog.setContentFragment(stackFragment);
             // dialog.setCancelable(false);

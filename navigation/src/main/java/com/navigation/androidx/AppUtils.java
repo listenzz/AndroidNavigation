@@ -10,9 +10,7 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.ColorInt;
 import androidx.core.graphics.ColorUtils;
@@ -26,6 +24,9 @@ public class AppUtils {
     }
 
     public static boolean isBlackColor(int color, int level) {
+        if (Color.alpha(color) < level) {
+            return false;
+        }
         int grey = toGrey(color);
         return grey < level;
     }
@@ -35,6 +36,14 @@ public class AppUtils {
         int green = (rgb & 0x0000FF00) >> 8;
         int red = (rgb & 0x00FF0000) >> 16;
         return (red * 38 + green * 75 + blue * 15) >> 7;
+    }
+
+    public static boolean isTranslucent(int color) {
+        return Color.alpha(color) < 255;
+    }
+
+    public static boolean isOpaque(int color) {
+        return Color.alpha(color) == 255;
     }
 
     public static ColorStateList buttonColorStateList(int tintColor) {
@@ -106,24 +115,6 @@ public class AppUtils {
     public static int dp2px(Context context, float dp) {
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
         return (int) px;
-    }
-
-    public static void hideSoftInput(Window window) {
-        if (window == null) {
-            return;
-        }
-
-        InputMethodManager imm = (InputMethodManager) window.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm == null) {
-            return;
-        }
-
-        View view = window.getCurrentFocus();
-        if (view == null) {
-            return;
-        }
-
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     public static Drawable copyDrawable(Drawable drawable) {

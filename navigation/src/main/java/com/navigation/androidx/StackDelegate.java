@@ -1,6 +1,5 @@
 package com.navigation.androidx;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.navigation.androidx.Style.INVALID_COLOR;
 
 import android.animation.ValueAnimator;
@@ -16,6 +15,8 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.widget.FrameLayout;
 
@@ -31,6 +32,10 @@ public class StackDelegate {
 
     public StackDelegate(AwesomeFragment fragment) {
         mFragment = fragment;
+    }
+
+    public Window getWindow() {
+        return mFragment.getWindow();
     }
 
     private FrameLayout requireView() {
@@ -62,59 +67,20 @@ public class StackDelegate {
         return (parent instanceof StackFragment);
     }
 
-    public void fitStackFragment() {
-        createToolbar();
-        fitTabBarIfNeeded();
-    }
-
     private AwesomeToolbar mToolbar;
 
     public AwesomeToolbar getToolbar() {
         return mToolbar;
     }
 
-    private void createToolbar() {
+    public void createToolbar() {
         mToolbar = mFragment.onCreateToolbar(requireView());
         if (mToolbar != null) {
-            setupToolbar();
+            renderToolbar(mToolbar);
         }
     }
 
-    public AwesomeToolbar onCreateToolbar(@NonNull View parent) {
-        int toolbarHeight = mFragment.getToolbarHeight();
-        AwesomeToolbar toolbar = new AwesomeToolbar(requireContext());
-        FrameLayout frameLayout = (FrameLayout) parent;
-        frameLayout.addView(toolbar, new FrameLayout.LayoutParams(MATCH_PARENT, toolbarHeight));
-        mFragment.appendStatusBarPadding(toolbar);
-        appendToolbarPadding(parent);
-        return toolbar;
-    }
-
-    protected boolean extendedLayoutIncludesToolbar() {
-        Style style = getStyle();
-        int color = getToolbarBackgroundColor();
-        float alpha = style.getToolbarAlpha();
-        return Color.alpha(color) < 255 || alpha < 1.0;
-    }
-
-    private void appendToolbarPadding(View parent) {
-        if (mFragment.extendedLayoutIncludesToolbar()) {
-            return;
-        }
-
-        FrameLayout frameLayout = (FrameLayout) parent;
-        if (frameLayout.getChildCount() == 0) {
-            return;
-        }
-
-        View child = frameLayout.getChildAt(0);
-        int statusBarHeight = SystemUI.getStatusBarHeight(requireContext());
-        int toolbarHeight = mFragment.getToolbarHeight();
-        child.setPadding(0, statusBarHeight + toolbarHeight, 0, 0);
-    }
-
-    private void setupToolbar() {
-        AwesomeToolbar toolbar = mToolbar;
+    public void renderToolbar(AwesomeToolbar toolbar) {
         Style style = getStyle();
         toolbar.setBackgroundColor(getToolbarBackgroundColor());
         toolbar.setButtonTintColor(getToolbarTintColor());
@@ -130,6 +96,82 @@ public class StackDelegate {
         toolbar.setAlpha(style.getToolbarAlpha());
 
         setToolbarBackButton();
+    }
+
+    void fitsStatusBar() {
+        if (!hasStackParent()) {
+            return;
+        }
+
+        AwesomeToolbar toolbar = getToolbar();
+        FrameLayout root = requireView();
+        if (toolbar != null && root.getChildAt(1) == toolbar) {
+            fitsToolbar(toolbar);
+            fitsWrappedView();
+        }
+    }
+
+    public void fitsToolbar(@NonNull AwesomeToolbar toolbar) {
+        EdgeInsets edge = SystemUI.getEdgeInsetsForView(toolbar);
+        if (edge.top > 0) {
+            return;
+        }
+
+        int statusBarHeight = SystemUI.statusBarHeight(getWindow());
+        ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
+        if (lp != null && lp.height > 0) {
+            lp.height += statusBarHeight;
+        }
+        toolbar.setPadding(0, statusBarHeight, 0, 0);
+    }
+
+    private void fitsWrappedView() {
+        if (mFragment.extendedLayoutIncludesToolbar()) {
+            return;
+        }
+        View root = getWrappedView();
+        if (root == null) {
+            return;
+        }
+        int statusBarHeight = SystemUI.statusBarHeight(getWindow());
+        root.setPadding(0, statusBarHeight + getToolbarHeight(), 0, 0);
+    }
+
+    private View getWrappedView() {
+        FrameLayout frameLayout = (FrameLayout) requireView();
+        if (frameLayout.getChildCount() == 0) {
+            return null;
+        }
+        return frameLayout.getChildAt(0);
+    }
+
+    void fitsTabBarIfNeeded() {
+        if (!hasStackParent()) {
+            return;
+        }
+
+        StackFragment stackFragment = mFragment.requireStackFragment();
+        TabBarFragment tabBarFragment = stackFragment.getTabBarFragment();
+        if (tabBarFragment == null) {
+            return;
+        }
+
+        if (mFragment == stackFragment.getRootFragment() || stackFragment.shouldShowTabBarWhenPushed()) {
+            fitsTabBar(tabBarFragment);
+        }
+    }
+
+    private void fitsTabBar(TabBarFragment tabBarFragment) {
+        int bottomPadding = (int) mFragment.getResources().getDimension(R.dimen.nav_tab_bar_height);
+        if (tabBarFragment.shouldFitsNavigationBar()) {
+            requireView().setPadding(0, 0, 0, bottomPadding + SystemUI.navigationBarHeight(getWindow()));
+        } else {
+            requireView().setPadding(0, 0, 0, bottomPadding);
+        }
+    }
+
+    public int getToolbarHeight() {
+        return getStyle().getToolbarHeight();
     }
 
     public int getToolbarBackgroundColor() {
@@ -236,36 +278,12 @@ public class StackDelegate {
         return AppUtils.buttonColorStateList(getToolbarTintColor());
     }
 
-    private void fitTabBarIfNeeded() {
-        if (!hasStackParent()) {
-            return;
-        }
-
-        StackFragment stackFragment = mFragment.requireStackFragment();
-        TabBarFragment tabBarFragment = stackFragment.getTabBarFragment();
-        if (tabBarFragment == null) {
-            return;
-        }
-
-        if (mFragment == stackFragment.getRootFragment() || stackFragment.shouldShowTabBarWhenPushed()) {
-            fitTabBar();
-        }
-    }
-
-    private void fitTabBar() {
-        int color = Color.parseColor(getStyle().getTabBarBackgroundColor());
-        if (Color.alpha(color) == 255) {
-            int bottomPadding = (int) mFragment.getResources().getDimension(R.dimen.nav_tab_bar_height);
-            requireView().setPadding(0, 0, 0, bottomPadding);
-        }
-    }
-
     public void setNeedsToolbarAppearanceUpdate() {
         if (mToolbar == null) {
             return;
         }
 
-        setupToolbar();
+        renderToolbar(getToolbar());
         setLeftButtonItemTintColor();
         setRightButtonItemTintColor();
     }
@@ -518,5 +536,4 @@ public class StackDelegate {
             }
         }, duration);
     }
-
 }

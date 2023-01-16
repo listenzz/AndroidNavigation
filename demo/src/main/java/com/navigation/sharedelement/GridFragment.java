@@ -1,6 +1,5 @@
 package com.navigation.sharedelement;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.transition.Fade;
 import android.view.LayoutInflater;

@@ -19,6 +19,7 @@ import com.navigation.R;
 import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.BarStyle;
 import com.navigation.androidx.Style;
+import com.navigation.androidx.SystemUI;
 
 public class CustomSystemUIFragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener{
 
@@ -35,7 +36,8 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_custom_system_ui, container, false);
         toolbar = root.findViewById(R.id.toolbar);
-        appendStatusBarPadding(toolbar);
+
+        SystemUI.applyStatusBarPaddingIfNeeded(getWindow(), toolbar);
 
         textView = root.findViewById(R.id.hint);
 
@@ -50,13 +52,6 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
         ((CheckBox)root.findViewById(R.id.display_cutout)).setOnCheckedChangeListener(this);
 
         return root;
-    }
-
-    @Override
-    public void appendStatusBarPadding(View view) {
-        if (getDialogAwesomeFragment() == null) {
-            super.appendStatusBarPadding(view);
-        }
     }
 
     @Override

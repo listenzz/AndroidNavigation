@@ -1,5 +1,7 @@
 package com.navigation;
 
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,8 +17,6 @@ import com.navigation.androidx.SystemUI;
 import com.navigation.androidx.TabBarFragment;
 import com.navigation.androidx.TabBarItem;
 import com.navigation.statusbar.TestStatusBarFragment;
-
-import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 
 public class MainActivity extends AwesomeActivity {
 
@@ -57,7 +57,7 @@ public class MainActivity extends AwesomeActivity {
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Log.i(TAG, "onAttachedToWindow 是否刘海眉：" + SystemUI.isCutout(this));
+        Log.i(TAG, "onAttachedToWindow 是否刘海眉：" + SystemUI.isCutout(getWindow()));
     }
 
     @Override

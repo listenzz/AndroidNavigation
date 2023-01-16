@@ -19,10 +19,13 @@ import com.navigation.R;
 import com.navigation.androidx.AwesomeFragment;
 import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.Style;
+import com.navigation.androidx.SystemUI;
 
 public class ViewPagerFragment extends BaseFragment {
 
     AwesomeToolbar toolbar;
+
+    AppBarLayout appBarLayout;
 
     @Override
     public boolean isLeafAwesomeFragment() {
@@ -56,13 +59,9 @@ public class ViewPagerFragment extends BaseFragment {
     }
 
     private void initView(View view) {
-
         toolbar = view.findViewById(R.id.toolbar);
-
-        AppBarLayout appBarLayout = view.findViewById(R.id.appbar_layout);
-
-        // important
-        appendStatusBarPadding(appBarLayout);
+        appBarLayout = view.findViewById(R.id.appbar_layout);
+        SystemUI.applyStatusBarPaddingIfNeeded(getWindow(), appBarLayout);
 
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         ViewPager2 viewPager = view.findViewById(R.id.view_pager);
@@ -80,7 +79,6 @@ public class ViewPagerFragment extends BaseFragment {
         }).attach();
 
         viewPager.setCurrentItem(0);
-
     }
 
     @Override

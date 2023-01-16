@@ -25,7 +25,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         super.onCreate(savedInstanceState);
         mStyle = new Style(this);
         onCustomStyle(mStyle);
-        SystemUI.setStatusBarTranslucent(getWindow(), true);
+        SystemUI.setDecorFitsSystemWindows(getWindow(), false);
     }
 
     @Override
@@ -100,7 +100,6 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
         transaction.add(android.R.id.content, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
-        fragmentManager.executePendingTransactions();
         getWindow().setBackgroundDrawable(null);
     }
 

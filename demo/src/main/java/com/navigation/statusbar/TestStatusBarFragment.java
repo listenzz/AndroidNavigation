@@ -14,7 +14,6 @@ import com.navigation.R;
 import com.navigation.androidx.BarStyle;
 import com.navigation.androidx.DrawerFragment;
 import com.navigation.androidx.StackFragment;
-import com.navigation.androidx.Style;
 import com.navigation.androidx.ToolbarButtonItem;
 import com.navigation.toolbar.NoToolbarFragment;
 
@@ -28,13 +27,6 @@ public class TestStatusBarFragment extends BaseFragment {
     @Override
     protected BarStyle preferredStatusBarStyle() {
         return BarStyle.LightContent;
-    }
-
-    @Override
-    public void appendStatusBarPadding(View view) {
-        if (getDialogAwesomeFragment() == null) {
-            super.appendStatusBarPadding(view);
-        }
     }
 
     @Nullable

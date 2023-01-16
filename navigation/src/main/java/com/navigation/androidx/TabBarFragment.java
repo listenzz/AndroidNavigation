@@ -1,11 +1,15 @@
 package com.navigation.androidx;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.widget.FrameLayout;
 
@@ -18,9 +22,6 @@ import androidx.lifecycle.Lifecycle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class TabBarFragment extends AwesomeFragment {
 
@@ -57,10 +58,26 @@ public class TabBarFragment extends AwesomeFragment {
         ensureTabBarProvider(savedInstanceState);
 
         mTabBar = createTabBar(root, savedInstanceState);
+        fitsTabBar();
 
         if (mTabBarHidden) {
             hideTabBar();
         }
+    }
+
+    private void fitsTabBar() {
+        mTabBar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mTabBar.getViewTreeObserver().removeOnPreDrawListener(this);
+                if (shouldFitsNavigationBar()) {
+                    mTabBar.setPadding(0, 0, 0, SystemUI.navigationBarHeight(getWindow()));
+                } else {
+                    mTabBar.setPadding(0, 0, 0, 0);
+                }
+                return false;
+            }
+        });
     }
 
     private void ensureChildFragments(@Nullable Bundle savedInstanceState) {
@@ -112,6 +129,7 @@ public class TabBarFragment extends AwesomeFragment {
         layoutParams.gravity = Gravity.BOTTOM;
         frameLayout.addView(tabBar, layoutParams);
         mTabBarProvider.setSelectedIndex(mSelectedIndex);
+
         return tabBar;
     }
 
@@ -169,10 +187,22 @@ public class TabBarFragment extends AwesomeFragment {
         if (mTabBarHidden) {
             return super.preferredNavigationBarColor();
         }
+
+        if (SystemUI.isGestureNavigationEnabled(getContentResolver()) && !preferredDecorFitsSystemWindows()) {
+            return Color.TRANSPARENT;
+        }
+
         if (mStyle.getNavigationBarColor() != Style.INVALID_COLOR) {
             return mStyle.getNavigationBarColor();
         }
+
         return Color.parseColor(mStyle.getTabBarBackgroundColor());
+    }
+
+    @Override
+    boolean shouldFitsNavigationBar() {
+        return !preferredDecorFitsSystemWindows()
+                && (SystemUI.isGestureNavigationEnabled(getContentResolver()) || AppUtils.isOpaque(preferredNavigationBarColor()));
     }
 
     public void setChildFragments(AwesomeFragment... fragments) {
@@ -296,7 +326,6 @@ public class TabBarFragment extends AwesomeFragment {
         transaction.setMaxLifecycle(current, Lifecycle.State.RESUMED);
         transaction.show(current);
         transaction.commit();
-        fragmentManager.executePendingTransactions();
 
         if (completion != null) {
             completion.run();

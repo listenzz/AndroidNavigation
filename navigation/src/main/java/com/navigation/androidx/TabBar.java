@@ -170,7 +170,7 @@ public class TabBar extends FrameLayout {
         if (!tabBarItems.isEmpty()) {
             tabContainer.removeAllViews();
 
-            container.setBackgroundColor(barBackgroundColor);
+            setBackgroundColor(barBackgroundColor);
 
             int screenWidth = AppUtils.getScreenWidth(getContext());
             int itemWidth = getTabWidth(getContext(), screenWidth, tabBarItems.size());
