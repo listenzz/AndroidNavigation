@@ -1,5 +1,7 @@
 package com.navigation.androidx;
 
+import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
+
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
@@ -13,18 +15,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
-public class SystemUI {
+public class SystemUI30 {
 
+    @TargetApi(30)
     public static void setStatusBarTranslucent(@NonNull Window window, boolean translucent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setStatusBarTranslucent(window, translucent);
-            return;
-        }
         View decorView = window.getDecorView();
         if (translucent) {
             decorView.setOnApplyWindowInsetsListener((v, insets) -> {
@@ -41,40 +43,31 @@ public class SystemUI {
         }
 
         int systemUi = decorView.getSystemUiVisibility();
-        systemUi |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        systemUi |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+        systemUi &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        systemUi &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
         decorView.setSystemUiVisibility(systemUi);
 
+        window.setDecorFitsSystemWindows(false);
+        WindowInsetsController controller = decorView.getWindowInsetsController();
+        controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
         ViewCompat.requestApplyInsets(decorView);
     }
 
+    @TargetApi(30)
     public static void setRenderContentInShortEdgeCutoutAreas(@NonNull Window window, boolean shortEdges) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setRenderContentInShortEdgeCutoutAreas(window, shortEdges);
-            return;
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            return;
-        }
-
-        WindowManager.LayoutParams layoutParams = window.getAttributes();
-        if (shortEdges) {
-            layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-        } else {
-            layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
-        }
-        window.setAttributes(layoutParams);
+//        WindowManager.LayoutParams layoutParams = window.getAttributes();
+//        if (shortEdges) {
+//            layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+//        } else {
+//            layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
+//        }
+//        window.setAttributes(layoutParams);
     }
 
+    @TargetApi(30)
     public static void setStatusBarColor(@NonNull Window window, int color, boolean animated) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setStatusBarColor(window, color, animated);
-            return;
-        }
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            window.setNavigationBarContrastEnforced(false);
-        }
+        window.setStatusBarContrastEnforced(false);
+
         if (animated) {
             int curColor = window.getStatusBarColor();
             ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
@@ -88,70 +81,44 @@ public class SystemUI {
     }
 
     public static int getStatusBarColor(@NonNull Window window) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return SystemUI30.getStatusBarColor(window);
-        }
         return window.getStatusBarColor();
     }
 
+    @TargetApi(30)
     public static void setStatusBarStyle(@NonNull Window window, boolean dark) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setStatusBarStyle(window, dark);
-            return;
-        }
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return;
-        }
-
-        View decorView = window.getDecorView();
-        int systemUi = decorView.getSystemUiVisibility();
-        if (dark) {
-            systemUi |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-        } else {
-            systemUi &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-        }
-        decorView.setSystemUiVisibility(systemUi);
+        WindowInsetsController controller = window.getInsetsController();
+        controller.setSystemBarsAppearance(dark ? APPEARANCE_LIGHT_STATUS_BARS : 0, APPEARANCE_LIGHT_STATUS_BARS);
     }
 
+    @TargetApi(30)
     public static boolean isStatusBarStyleDark(@NonNull Window window) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return SystemUI30.isStatusBarStyleDark(window);
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return false;
-        }
-        return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
+        WindowInsetsControllerCompat controller = ViewCompat.getWindowInsetsController(window.getDecorView());
+        assert controller != null;
+        return controller.isAppearanceLightStatusBars();
     }
 
     public static BarStyle activityStatusBarStyle(@NonNull Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return SystemUI30.activityStatusBarStyle(activity);
-        }
         boolean isDark = isStatusBarStyleDark(activity.getWindow());
         return isDark ? BarStyle.DarkContent : BarStyle.LightContent;
     }
 
+    @TargetApi(30)
     public static void setStatusBarHidden(@NonNull Window window, boolean hidden) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setStatusBarHidden(window, hidden);
-            return;
-        }
-        View decorView = window.getDecorView();
-        int systemUi = decorView.getSystemUiVisibility();
+        WindowInsetsControllerCompat controller = ViewCompat.getWindowInsetsController(window.getDecorView());
+        assert controller != null;
         if (hidden) {
-            systemUi |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+            controller.hide(WindowInsetsCompat.Type.statusBars());
         } else {
-            systemUi &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
+            controller.show(WindowInsetsCompat.Type.statusBars());
         }
-        window.getDecorView().setSystemUiVisibility(systemUi);
     }
 
+    @TargetApi(30)
     public static boolean isStatusBarHidden(@NonNull Window window) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return SystemUI30.isStatusBarHidden(window);
-        }
-        return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0;
+        View decorView = window.getDecorView();
+        WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(decorView);
+        assert insets != null;
+        return insets.isVisible(WindowInsetsCompat.Type.statusBars());
     }
 
     public static void appendStatusBarPadding(@NonNull Context context, @NonNull View view) {
@@ -246,47 +213,24 @@ public class SystemUI {
         }
     }
 
+    @TargetApi(30)
     public static void setNavigationBarColor(final Window window, int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setNavigationBarColor(window, color);
-            return;
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            window.setNavigationBarContrastEnforced(false);
-        }
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setNavigationBarContrastEnforced(false);
         window.setNavigationBarColor(color);
     }
 
+    @TargetApi(30)
     public static void setNavigationBarStyle(Window window, boolean dark) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setNavigationBarStyle(window, dark);
-            return;
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return;
-        }
-        View decorView = window.getDecorView();
-        int systemUi = decorView.getSystemUiVisibility();
-        if (dark) {
-            systemUi |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-        } else {
-            systemUi &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-        }
-        decorView.setSystemUiVisibility(systemUi);
+        WindowInsetsControllerCompat controller = ViewCompat.getWindowInsetsController(window.getDecorView());
+        assert (controller != null);
+        controller.setAppearanceLightNavigationBars(dark);
     }
 
+    @TargetApi(30)
     public static boolean isNavigationBarStyleDark(Window window) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return SystemUI30.isNavigationBarStyleDark(window);
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return false;
-        }
-        return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR) != 0;
+        WindowInsetsControllerCompat controller = ViewCompat.getWindowInsetsController(window.getDecorView());
+        assert (controller != null);
+        return controller.isAppearanceLightNavigationBars();
     }
 
     public static BarStyle activityNavigationBarStyle(Activity activity) {
@@ -294,47 +238,30 @@ public class SystemUI {
         return isDark ? BarStyle.DarkContent : BarStyle.LightContent;
     }
 
+    @TargetApi(30)
     public static boolean isNavigationBarHidden(Window window) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return SystemUI30.isNavigationBarHidden(window);
-        }
-        return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0;
+        WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(window.getDecorView());
+        assert (insets != null);
+        return insets.isVisible(WindowInsetsCompat.Type.navigationBars());
     }
 
+    @TargetApi(30)
     public static void setNavigationBarHidden(Window window, boolean hidden) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setNavigationBarHidden(window, hidden);
-            return;
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return;
-        }
-        View decorView = window.getDecorView();
-        int systemUi = decorView.getSystemUiVisibility();
+        WindowInsetsControllerCompat controller = ViewCompat.getWindowInsetsController(window.getDecorView());
+        assert (controller != null);
         if (hidden) {
-            systemUi |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            controller.hide(WindowInsetsCompat.Type.navigationBars());
         } else {
-            systemUi &= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            controller.show(WindowInsetsCompat.Type.navigationBars());
         }
-        window.getDecorView().setSystemUiVisibility(systemUi);
     }
 
+    @TargetApi(30)
     public static void setNavigationBarLayoutHidden(Window window, boolean hidden) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setNavigationBarLayoutHidden(window, hidden);
-            return;
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return;
-        }
-        View decorView = window.getDecorView();
-        int systemUi = decorView.getSystemUiVisibility();
-        if (hidden) {
-            systemUi |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+        if (window.isFloating()) {
+            window.setNavigationBarContrastEnforced(true);
         } else {
-            systemUi &= ~View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            window.setDecorFitsSystemWindows(!hidden);
         }
-        window.getDecorView().setSystemUiVisibility(systemUi);
     }
-
 }

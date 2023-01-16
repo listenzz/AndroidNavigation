@@ -655,9 +655,9 @@ public abstract class AwesomeFragment extends InternalFragment {
             return;
         }
 
+        setStatusBarColor(preferredStatusBarColor(), preferredStatusBarColorAnimated());
         setStatusBarHidden(preferredStatusBarHidden());
         setStatusBarStyle(preferredStatusBarStyle());
-        setStatusBarColor(preferredStatusBarColor(), preferredStatusBarColorAnimated());
     }
 
     private void setStatusBarStyle(BarStyle barStyle) {
@@ -736,10 +736,9 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         setNavigationBarColor(preferredNavigationBarColor());
-        setNavigationBarStyle(preferredNavigationBarStyle());
         setNavigationBarHidden(preferredNavigationBarHidden());
-        setNavigationBarLayoutHidden(preferredNavigationBarHidden() ||
-                Color.alpha(preferredNavigationBarColor()) < 255);
+        setNavigationBarLayoutHidden(preferredNavigationBarHidden() || Color.alpha(preferredNavigationBarColor()) < 255);
+        setNavigationBarStyle(preferredNavigationBarStyle());
     }
 
     private void setNavigationBarStyle(BarStyle barStyle) {
