@@ -45,9 +45,9 @@ public class WebFragment extends BaseFragment {
     }
 
     @Override
-    public boolean preferredDecorFitsSystemWindows() {
+    public boolean preferredEdgeToEdge() {
         // 适配在 WebView 上使用键盘
-        return true;
+        return false;
     }
 
 }

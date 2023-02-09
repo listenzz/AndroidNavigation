@@ -60,8 +60,9 @@ public class ViewPagerFragment extends BaseFragment {
 
     private void initView(View view) {
         toolbar = view.findViewById(R.id.toolbar);
+
+        // android:fitsSystemWindows="true"
         appBarLayout = view.findViewById(R.id.appbar_layout);
-        SystemUI.applyStatusBarPaddingIfNeeded(getWindow(), appBarLayout);
 
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         ViewPager2 viewPager = view.findViewById(R.id.view_pager);

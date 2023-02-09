@@ -98,20 +98,21 @@ public class StackDelegate {
         setToolbarBackButton();
     }
 
-    void fitsStatusBar() {
-        if (!hasStackParent()) {
-            return;
-        }
-
-        AwesomeToolbar toolbar = getToolbar();
-        FrameLayout root = requireView();
-        if (toolbar != null && root.getChildAt(1) == toolbar) {
-            fitsToolbar(toolbar);
-            fitsWrappedView();
+    public void fitsToolbarIfNeeded() {
+        if (shouldFitsToolbar()) {
+            fitsToolbar(getToolbar());
         }
     }
 
-    public void fitsToolbar(@NonNull AwesomeToolbar toolbar) {
+    private boolean shouldFitsToolbar() {
+        if (!hasStackParent()) {
+            return false;
+        }
+
+        return getToolbar() != null;
+    }
+
+    private void fitsToolbar(@NonNull AwesomeToolbar toolbar) {
         EdgeInsets edge = SystemUI.getEdgeInsetsForView(toolbar);
         if (edge.top > 0) {
             return;
@@ -119,59 +120,55 @@ public class StackDelegate {
 
         int statusBarHeight = SystemUI.statusBarHeight(getWindow());
         ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
-        if (lp != null && lp.height > 0) {
-            lp.height += statusBarHeight;
-        }
+        lp.height += statusBarHeight;
         toolbar.setPadding(0, statusBarHeight, 0, 0);
     }
 
-    private void fitsWrappedView() {
-        if (mFragment.extendedLayoutIncludesToolbar()) {
-            return;
+    public void fitsContentViewIfNeeded() {
+        if (shouldFitsContentView()) {
+            fitsContentView(getToolbar());
         }
-        View root = getWrappedView();
-        if (root == null) {
-            return;
-        }
-        int statusBarHeight = SystemUI.statusBarHeight(getWindow());
-        root.setPadding(0, statusBarHeight + getToolbarHeight(), 0, 0);
     }
 
-    private View getWrappedView() {
-        FrameLayout frameLayout = (FrameLayout) requireView();
-        if (frameLayout.getChildCount() == 0) {
-            return null;
+    private boolean shouldFitsContentView() {
+        if (mFragment.extendedLayoutIncludesToolbar()) {
+            return false;
         }
+
+        if (!shouldFitsToolbar()) {
+            return false;
+        }
+
+        FrameLayout root = requireView();
+        AwesomeToolbar toolbar = getToolbar();
+        return root.getChildAt(1) == toolbar;
+    }
+
+    private void fitsContentView(@NonNull AwesomeToolbar toolbar) {
+        View content = getContentView();
+        assert content != null;
+        content.setFitsSystemWindows(false);
+        ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
+        content.setPadding(0, lp.height, 0, 0);
+    }
+
+    private View getContentView() {
+        FrameLayout frameLayout = requireView();
         return frameLayout.getChildAt(0);
     }
 
-    void fitsTabBarIfNeeded() {
+    public boolean shouldFitsTabBar() {
         if (!hasStackParent()) {
-            return;
+            return false;
         }
 
         StackFragment stackFragment = mFragment.requireStackFragment();
         TabBarFragment tabBarFragment = stackFragment.getTabBarFragment();
         if (tabBarFragment == null) {
-            return;
+            return false;
         }
 
-        if (mFragment == stackFragment.getRootFragment() || stackFragment.shouldShowTabBarWhenPushed()) {
-            fitsTabBar(tabBarFragment);
-        }
-    }
-
-    private void fitsTabBar(TabBarFragment tabBarFragment) {
-        int bottomPadding = (int) mFragment.getResources().getDimension(R.dimen.nav_tab_bar_height);
-        if (tabBarFragment.shouldFitsNavigationBar()) {
-            requireView().setPadding(0, 0, 0, bottomPadding + SystemUI.navigationBarHeight(getWindow()));
-        } else {
-            requireView().setPadding(0, 0, 0, bottomPadding);
-        }
-    }
-
-    public int getToolbarHeight() {
-        return getStyle().getToolbarHeight();
+        return mFragment == stackFragment.getRootFragment() || stackFragment.shouldShowTabBarWhenPushed();
     }
 
     public int getToolbarBackgroundColor() {
@@ -472,7 +469,7 @@ public class StackDelegate {
         LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{bitmapDrawable, colorDrawable,});
         layerDrawable.setBounds(0, 0, vWidth, vHeight);
 
-        FrameLayout root = (FrameLayout) requireView();
+        FrameLayout root = requireView();
         root.setForeground(layerDrawable);
         int scrimAlpha = getStyle().getScrimAlpha();
         ValueAnimator valueAnimator = open ? ValueAnimator.ofInt(0, scrimAlpha) : ValueAnimator.ofInt(scrimAlpha, 0);

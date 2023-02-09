@@ -121,4 +121,8 @@ public class AppUtils {
         return DrawableCompat.wrap(drawable.getConstantState().newDrawable()).mutate();
     }
 
+    public static boolean isPaddingEquals(View view, EdgeInsets padding) {
+        return view.getPaddingLeft() == padding.left && view.getPaddingTop() == padding.top && view.getPaddingRight() == padding.right && view.getPaddingBottom() == padding.bottom;
+    }
+
 }

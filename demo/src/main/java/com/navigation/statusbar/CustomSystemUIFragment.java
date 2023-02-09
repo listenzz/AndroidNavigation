@@ -37,8 +37,6 @@ public class CustomSystemUIFragment extends BaseFragment implements CompoundButt
         View root = inflater.inflate(R.layout.fragment_custom_system_ui, container, false);
         toolbar = root.findViewById(R.id.toolbar);
 
-        SystemUI.applyStatusBarPaddingIfNeeded(getWindow(), toolbar);
-
         textView = root.findViewById(R.id.hint);
 
         ((CheckBox)root.findViewById(R.id.tinting)).setOnCheckedChangeListener(this);

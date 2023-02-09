@@ -169,14 +169,6 @@ public class TestNavigationFragment extends BaseFragment {
             }
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(view, (v, insetsCompat) -> {
-            Insets insets = insetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars());
-            Log.w(getDebugTag(), "onApplyWindowInsets bottom:" + insets.bottom);
-            if (!isStackRoot()) {
-                view.setPadding(0, 0, 0, insets.bottom);
-            }
-            return insetsCompat;
-        });
     }
 
     private void setButton() {

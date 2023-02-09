@@ -8,11 +8,9 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.DisplayCutout;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
@@ -56,19 +54,19 @@ public class SystemUI {
     }
 
     public static void setRenderContentInShortEdgeCutoutAreas(@NonNull Window window, boolean shortEdges) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setRenderContentInShortEdgeCutoutAreas(window, shortEdges);
-            return;
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             WindowManager.LayoutParams layoutParams = window.getAttributes();
             if (shortEdges) {
-                layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+                if (layoutParams.layoutInDisplayCutoutMode != WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES) {
+                    layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+                    window.setAttributes(layoutParams);
+                }
             } else {
-                layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
+                if (layoutParams.layoutInDisplayCutoutMode != WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER) {
+                    layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
+                    window.setAttributes(layoutParams);
+                }
             }
-            window.setAttributes(layoutParams);
         }
     }
 
@@ -176,30 +174,6 @@ public class SystemUI {
         WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(window.getDecorView());
         assert windowInsets != null;
         return windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars()).bottom;
-    }
-
-    public static void applyStatusBarPaddingIfNeeded(@NonNull Window window, @NonNull View v) {
-        v.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                v.getViewTreeObserver().removeOnPreDrawListener(this);
-
-                EdgeInsets edge = getEdgeInsetsForView(v);
-                if (edge.top > 0) {
-                    return true;
-                }
-
-                int statusBarHeight = SystemUI.statusBarHeight(window);
-                if (v instanceof AwesomeToolbar) {
-                    ViewGroup.LayoutParams lp = v.getLayoutParams();
-                    if (lp != null && lp.height > 0) {
-                        lp.height += statusBarHeight;
-                    }
-                }
-                v.setPadding(0, statusBarHeight + v.getPaddingTop(), 0, 0);
-                return false;
-            }
-        });
     }
 
     // 是否刘海屏
@@ -310,13 +284,13 @@ public class SystemUI {
     }
 
     public static boolean isImeVisible(@NonNull View view) {
-        WindowInsetsCompat insetsCompat = ViewCompat.getRootWindowInsets(view);
+        WindowInsetsCompat insetsCompat = ViewCompat.getRootWindowInsets(view.getRootView());
         assert insetsCompat != null;
         return insetsCompat.isVisible(WindowInsetsCompat.Type.ime());
     }
 
     public static int imeHeight(@NonNull View view) {
-        WindowInsetsCompat insetsCompat = ViewCompat.getRootWindowInsets(view);
+        WindowInsetsCompat insetsCompat = ViewCompat.getRootWindowInsets(view.getRootView());
         assert insetsCompat != null;
         return insetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
     }
@@ -333,6 +307,12 @@ public class SystemUI {
         controller.hide(WindowInsetsCompat.Type.ime());
     }
 
+    public static void hideIme(@NonNull View view) {
+        WindowInsetsControllerCompat controller = ViewCompat.getWindowInsetsController(view.getRootView());
+        assert controller != null;
+        controller.hide(WindowInsetsCompat.Type.ime());
+    }
+
     public static EdgeInsets getEdgeInsetsForView(@NonNull View view) {
         ViewGroup root = (ViewGroup) view.getRootView();
 
@@ -341,7 +321,12 @@ public class SystemUI {
 
         Rect offset = new Rect();
         view.getDrawingRect(offset);
-        root.offsetDescendantRectToMyCoords(view, offset);
+
+        try {
+            root.offsetDescendantRectToMyCoords(view, offset);
+        } catch (Exception e) {
+            // ignore
+        }
 
         int leftMargin = 0;
         int topMargin = 0;

@@ -72,8 +72,6 @@ public class MenuFragment extends AwesomeFragment {
             requireDrawerFragment().closeMenu();
         });
 
-        SystemUI.applyStatusBarPaddingIfNeeded(getWindow(), root);
-
         return root;
     }
 

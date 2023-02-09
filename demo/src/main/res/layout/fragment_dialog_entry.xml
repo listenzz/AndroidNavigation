@@ -4,11 +4,12 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_marginTop="32dp"
         android:id="@+id/tag"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:gravity="center"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:textColor="#000000"
         android:textSize="12dp" />
 

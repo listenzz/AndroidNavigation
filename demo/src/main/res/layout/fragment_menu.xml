@@ -1,94 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tag"
-        android:layout_marginTop="32dp"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:gravity="center"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:textColor="#000000"
         android:textSize="12dp" />
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/toolbar_color_transition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="Toolbar Color Transition"
         android:textAllCaps="false" />
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/coordinator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="Toolbar with CoordinatorLayout"
         android:textAllCaps="false" />
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="Toolbar with SearchBar"
         android:textAllCaps="false" />
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="ViewPagerFragment"
         android:textAllCaps="false" />
 
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/shared_element"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="Shared Element Transition"
         android:textAllCaps="false" />
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/web"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="WebView"
         android:textAllCaps="false" />
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="Dialog"
         android:textAllCaps="false" />
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/view_binding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="ViewBinding"
         android:textAllCaps="false" />

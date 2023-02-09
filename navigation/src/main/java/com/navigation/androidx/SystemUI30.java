@@ -46,10 +46,6 @@ public class SystemUI30 {
         decorView.setSystemUiVisibility(systemUi);
     }
 
-    public static void setRenderContentInShortEdgeCutoutAreas(@NonNull Window window, boolean shortEdges) {
-
-    }
-
     public static void setStatusBarColor(@NonNull Window window, int color, boolean animated) {
         window.setStatusBarContrastEnforced(false);
 
@@ -117,7 +113,6 @@ public class SystemUI30 {
         return (controller.getSystemBarsAppearance() & APPEARANCE_LIGHT_NAVIGATION_BARS) != 0;
     }
 
-
     public static boolean isNavigationBarHidden(Window window) {
         View decorView = window.getDecorView();
         WindowInsets insets = decorView.getRootWindowInsets();
@@ -129,7 +124,6 @@ public class SystemUI30 {
 
     public static void setNavigationBarHidden(Window window, boolean hidden) {
         WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
-
         if (hidden) {
             controller.hide(WindowInsets.Type.navigationBars());
         } else {
@@ -137,7 +131,4 @@ public class SystemUI30 {
         }
     }
 
-    public static void setNavigationBarLayoutHidden(Window window, boolean hidden) {
-        disableDecorFitsSystemWindows(window, !hidden);
-    }
 }

@@ -1,76 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:gravity="center"
         android:textColor="#000000"
         android:textSize="12dp" />
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/pop_to_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="popToRoot  ☜☜"
         android:textAllCaps="false" />
-    
+
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/status_bar_style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAllCaps="false"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="StatusBar Style"
-         />
+        android:textAllCaps="false" />
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/status_bar_hidden"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
-        android:textAllCaps="false"
         android:text="StatusBar Hidden"
-         />
+        android:textAllCaps="false" />
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/status_bar_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="StatusBar Color"
         android:textAllCaps="false" />
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/no_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="No Toolbar"
         android:textAllCaps="false" />
 
     <Button
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
         android:id="@+id/custom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="Custom System UI"
         android:textAllCaps="false" />

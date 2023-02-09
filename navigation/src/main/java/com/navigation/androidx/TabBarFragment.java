@@ -188,7 +188,7 @@ public class TabBarFragment extends AwesomeFragment {
             return super.preferredNavigationBarColor();
         }
 
-        if (SystemUI.isGestureNavigationEnabled(getContentResolver()) && !preferredDecorFitsSystemWindows()) {
+        if (SystemUI.isGestureNavigationEnabled(getContentResolver()) && preferredEdgeToEdge()) {
             return Color.TRANSPARENT;
         }
 
@@ -201,10 +201,16 @@ public class TabBarFragment extends AwesomeFragment {
 
     @Override
     boolean shouldFitsNavigationBar() {
-        return !preferredDecorFitsSystemWindows()
-                && (SystemUI.isGestureNavigationEnabled(getContentResolver()) || AppUtils.isOpaque(preferredNavigationBarColor()));
-    }
+        if (preferredNavigationBarHidden()) {
+            return false;
+        }
 
+        if (!preferredEdgeToEdge()) {
+            return false;
+        }
+
+        return SystemUI.isGestureNavigationEnabled(getContentResolver()) || AppUtils.isOpaque(preferredNavigationBarColor());
+    }
     public void setChildFragments(AwesomeFragment... fragments) {
         setChildFragments(Arrays.asList(fragments));
     }

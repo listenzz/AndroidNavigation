@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,9 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -161,6 +165,19 @@ public abstract class AwesomeFragment extends InternalFragment {
         handleAttacheStateChange(getView());
     }
 
+    @Override
+    public void onDestroyView() {
+        SystemUI.hideIme(getWindow());
+
+        View rootView = getView();
+        if (rootView != null && mPreDrawListener != null) {
+            rootView.getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
+        }
+        super.onDestroyView();
+    }
+
+    private ViewTreeObserver.OnPreDrawListener mPreDrawListener = null;
+
     private void handleAttacheStateChange(View root) {
         if (root == null) {
             return;
@@ -170,35 +187,76 @@ public abstract class AwesomeFragment extends InternalFragment {
             @Override
             public boolean onPreDraw() {
                 root.getViewTreeObserver().removeOnPreDrawListener(this);
-                fitsNavigationBarIfNeeded();
-                mStackDelegate.fitsStatusBar();
-                mStackDelegate.fitsTabBarIfNeeded();
+                mStackDelegate.fitsToolbarIfNeeded();
+                mStackDelegate.fitsContentViewIfNeeded();
                 return false;
             }
         });
+
+        mPreDrawListener = () -> !fitsSafeAreaIfNeeded();
+
+        root.getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
     }
 
-    private void fitsNavigationBarIfNeeded() {
+    private boolean fitsSafeAreaIfNeeded() {
         if (!isLeafAwesomeFragment()) {
-            return;
+            return false;
         }
 
-        if (!shouldFitsNavigationBar()) {
-            return;
+        View root = getView();
+        if (root == null) {
+            return false;
         }
 
-        View root = requireView();
-        root.setPadding(0, 0, 0, SystemUI.navigationBarHeight(getWindow()));
+        WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(getWindow().getDecorView());
+        assert windowInsets != null;
+        Insets navigationBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
+        Insets statusBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars());
+        Insets displayCutoutInsets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout());
+
+        EdgeInsets edge = new EdgeInsets();
+
+        if (mStackDelegate.shouldFitsTabBar()) {
+            edge.bottom = (int) getResources().getDimension(R.dimen.nav_tab_bar_height);
+        }
+
+        EdgeInsets rootEdge = SystemUI.getEdgeInsetsForView(root);
+
+        if (shouldFitsNavigationBar() && rootEdge.bottom == 0) {
+            edge.plus(navigationBarInsets);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                if (displayCutoutInsets.left > 0) {
+                    edge.left -= navigationBarInsets.left;
+                }
+                if (displayCutoutInsets.right > 0) {
+                    edge.right -= navigationBarInsets.right;
+                }
+            }
+        }
+
+        if (root.getFitsSystemWindows() && rootEdge.top == 0) {
+            edge.top += statusBarInsets.top;
+        }
+
+        if (!AppUtils.isPaddingEquals(root, edge)) {
+            root.setPadding(edge.left, edge.top, edge.right, edge.bottom);
+            root.requestLayout();
+            return true;
+        }
+
+        return false;
     }
 
     boolean shouldFitsNavigationBar() {
-        return !preferredDecorFitsSystemWindows() && AppUtils.isOpaque(preferredNavigationBarColor());
-    }
+        if (preferredNavigationBarHidden()) {
+            return false;
+        }
 
-    @Override
-    public void onDestroyView() {
-        SystemUI.hideIme(getWindow());
-        super.onDestroyView();
+        if (!preferredEdgeToEdge()) {
+            return false;
+        }
+
+        return mStackDelegate.shouldFitsTabBar() || AppUtils.isOpaque(preferredNavigationBarColor());
     }
 
     public boolean isLeafAwesomeFragment() {
@@ -297,7 +355,12 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public void setNeedsLayoutInDisplayCutoutModeUpdate() {
-        setDisplayCutoutWhenLandscape(getResources().getConfiguration().orientation);
+        int orientation = getResources().getConfiguration().orientation;
+        setDisplayCutoutWhenLandscape(orientation);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            setNeedsStatusBarAppearanceUpdate();
+            setNeedsNavigationBarAppearanceUpdate();
+        }
     }
 
     private void setDisplayCutoutWhenLandscape(int orientation) {
@@ -369,14 +432,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     public String getDebugTag() {
-        if (getActivity() == null) {
-            return null;
-        }
-        AwesomeFragment parent = getParentAwesomeFragment();
-        if (parent == null) {
-            return "#" + FragmentHelper.indexOf(this) + "-" + getClass().getSimpleName();
-        }
-        return parent.getDebugTag() + "#" + FragmentHelper.indexOf(this) + "-" + getClass().getSimpleName();
+        return "[" + getClass().getSimpleName() + "]";
     }
 
     private String mSceneId;
@@ -449,6 +505,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             SystemUI.hideIme(getWindow());
             return true;
         }
+
         return false;
     }
 
@@ -729,7 +786,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return mDialogDelegate.preferredNavigationBarColor();
         }
 
-        if (SystemUI.isGestureNavigationEnabled(getContentResolver()) && !preferredDecorFitsSystemWindows()) {
+        if (SystemUI.isGestureNavigationEnabled(getContentResolver()) && preferredEdgeToEdge()) {
             return Color.TRANSPARENT;
         }
 
@@ -745,6 +802,10 @@ public abstract class AwesomeFragment extends InternalFragment {
         AwesomeFragment child = childFragmentForAppearance();
         if (child != null) {
             return child.preferredNavigationBarStyle();
+        }
+
+        if (getShowsDialog()) {
+            return mDialogDelegate.preferredNavigationBarStyle();
         }
 
         if (AppUtils.isBlackColor(preferredNavigationBarColor(), 176)) {
@@ -766,12 +827,12 @@ public abstract class AwesomeFragment extends InternalFragment {
         return mStyle.isNavigationBarHidden();
     }
 
-    public boolean preferredDecorFitsSystemWindows() {
+    public boolean preferredEdgeToEdge() {
         AwesomeFragment child = childFragmentForAppearance();
         if (child != null) {
-            return child.preferredDecorFitsSystemWindows();
+            return child.preferredEdgeToEdge();
         }
-        return false;
+        return true;
     }
 
     public void setNeedsNavigationBarAppearanceUpdate() {
@@ -787,8 +848,8 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         setNavigationBarColor(preferredNavigationBarColor());
         setNavigationBarHidden(preferredNavigationBarHidden());
-        setDecorFitsSystemWindows(preferredDecorFitsSystemWindows());
         setNavigationBarStyle(preferredNavigationBarStyle());
+        setDecorFitsSystemWindows(!preferredEdgeToEdge());
     }
 
     private void setNavigationBarStyle(BarStyle barStyle) {

@@ -1,10 +1,17 @@
 package com.navigation.androidx;
 
+import androidx.core.graphics.Insets;
+
 public class EdgeInsets {
     public int left;
     public int top;
     public int right;
     public int bottom;
+
+
+    public static EdgeInsets of(Insets insets) {
+        return new EdgeInsets(insets.left, insets.top, insets.right, insets.bottom);
+    }
 
     public EdgeInsets() {
 
@@ -15,6 +22,13 @@ public class EdgeInsets {
         this.top = top;
         this.right = right;
         this.bottom = bottom;
+    }
+
+    public void plus(Insets insets) {
+        left += insets.left;
+        top += insets.top;
+        right += insets.right;
+        bottom += insets.bottom;
     }
 
     @Override

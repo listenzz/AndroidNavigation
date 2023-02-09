@@ -40,7 +40,7 @@ public class CoordinatorFragment extends BaseFragment {
         View root = inflater.inflate(R.layout.fragment_coordinator, container, false);
 
         toolbar = root.findViewById(R.id.toolbar);
-        SystemUI.applyStatusBarPaddingIfNeeded(getWindow(), toolbar);
+
 
         return root;
     }

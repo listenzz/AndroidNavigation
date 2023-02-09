@@ -79,6 +79,18 @@ public class DialogDelegate {
         return mFragment.requireActivity().getWindow().getNavigationBarColor();
     }
 
+    BarStyle preferredNavigationBarStyle() {
+        if (Color.TRANSPARENT == preferredNavigationBarColor()) {
+            return BarStyle.LightContent;
+        }
+
+        if (AppUtils.isBlackColor(preferredNavigationBarColor(), 176)) {
+            return BarStyle.LightContent;
+        }
+
+        return BarStyle.DarkContent;
+    }
+
     void setupDialog() {
         Window window = mFragment.getWindow();
         SystemUI.setDecorFitsSystemWindows(window, false);
