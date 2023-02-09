@@ -28,7 +28,7 @@ This is also the subproject of [hybrid-navigation](https://github.com/listenzz/h
 ## Installation
 
 ```groovy
-implementation 'io.github.listenzz:AndroidNavigation:12.5.13'
+implementation 'io.github.listenzz:AndroidNavigation:13.0.0'
 implementation 'androidx.appcompat:appcompat:1.3.1'
 ```
 
@@ -515,7 +515,7 @@ StackFragment 是个容器，以栈的方式管理子 fragment，支持 push、p
 
   `Activity#getSupportFragmentManager` 会将 fragment 添加到 activity
 
-  `Fragment#getFragmentManager` 拿到的是上一级的 fragmentManager, 通过它添加的 fragment 会成为当前 fragment 的兄弟。
+  `Fragment#getParentFragmentManager` 拿到的是上一级的 fragmentManager, 通过它添加的 fragment 会成为当前 fragment 的兄弟。
 
   `Fragment#getChildFragmentManager` 会将 fragment 添加为当前 fragment 的子 fragment。
 
@@ -769,7 +769,7 @@ protected void onCustomStyle(@NonNull Style style) {
 }
 ```
 
-如果开启了沉浸式(默认就是开启的)，那么需要使用 `appendStatusBarPadding` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
+如果开启了沉浸式(默认就是开启的)，那么需要使用 `SystemUI.applyStatusBarPaddingIfNeeded` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
 
 <a name="setting-navigationbar"></a>
 
@@ -783,9 +783,9 @@ protected void onCustomStyle(@NonNull Style style) {
 
   导航栏背景默认规则如下：
 
-  - 含「底部 Tab」的页面，虚拟键设置为「底部 Tab」的颜色
+  - 含「底部 TabBar」的页面，虚拟键设置为「底部 TabBar」的颜色
 
-  - 不含「底部 Tab」的页面，默认使用页面背景颜色，也就是 `style.getScreenBackgroundColor()` 的值
+  - 不含「底部 TabBar」的页面，默认使用页面背景颜色，也就是 `style.getScreenBackgroundColor()` 的值
 
   - dialog 为透明色，但如果 dialog 的 animationType 设置为 slide, 则使用 activity 当前 navigation bar 的颜色
 
