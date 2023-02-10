@@ -28,7 +28,7 @@ This is also the subproject of [hybrid-navigation](https://github.com/listenzz/h
 ## Installation
 
 ```groovy
-implementation 'io.github.listenzz:AndroidNavigation:13.0.0'
+implementation 'io.github.listenzz:AndroidNavigation:13.1.0'
 implementation 'androidx.appcompat:appcompat:1.3.1'
 ```
 
@@ -769,8 +769,6 @@ protected void onCustomStyle(@NonNull Style style) {
 }
 ```
 
-如果开启了沉浸式(默认就是开启的)，那么需要使用 `SystemUI.applyStatusBarPaddingIfNeeded` 这个方法来给恰当的 view 添加 padding，请参考上面说到的那两个类。
-
 <a name="setting-navigationbar"></a>
 
 ### 设置导航栏（虚拟键）
@@ -787,7 +785,7 @@ protected void onCustomStyle(@NonNull Style style) {
 
   - 不含「底部 TabBar」的页面，默认使用页面背景颜色，也就是 `style.getScreenBackgroundColor()` 的值
 
-  - dialog 为透明色，但如果 dialog 的 animationType 设置为 slide, 则使用 activity 当前 navigation bar 的颜色
+  - dialog 为透明色，但如果 dialog 的 animationType 设置为 slide, 则使用 activity 当前 NavigationBar 的颜色
 
   如果页面含有复杂背景/纹理，建议设置为透明，这需要开发者自行覆写 `preferredNavigationBarColor`。
 
