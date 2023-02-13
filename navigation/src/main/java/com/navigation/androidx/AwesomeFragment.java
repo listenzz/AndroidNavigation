@@ -256,6 +256,10 @@ public abstract class AwesomeFragment extends InternalFragment {
             return false;
         }
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return true;
+        }
+
         return mStackDelegate.shouldFitsTabBar() || AppUtils.isOpaque(preferredNavigationBarColor());
     }
 
