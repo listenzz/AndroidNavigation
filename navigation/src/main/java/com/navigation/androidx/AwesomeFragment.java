@@ -210,9 +210,9 @@ public abstract class AwesomeFragment extends InternalFragment {
 
         WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(getWindow().getDecorView());
         assert windowInsets != null;
-        Insets navigationBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
-        Insets statusBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars());
-        Insets displayCutoutInsets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout());
+        Insets navigationBarInsets = windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
+        Insets statusBarInsets = windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.statusBars());
+        Insets displayCutoutInsets = windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.displayCutout());
 
         EdgeInsets edge = new EdgeInsets();
 
