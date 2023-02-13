@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 @TargetApi(30)
 public class SystemUI30 {
 
-    public static void disableDecorFitsSystemWindows(@NonNull Window window, boolean excludeBottom) {
+    public static void setDecorFitsSystemWindows(@NonNull Window window, boolean excludeBottom) {
         View decorView = window.getDecorView();
         if (excludeBottom) {
             window.setDecorFitsSystemWindows(true);
@@ -39,16 +39,14 @@ public class SystemUI30 {
 
         WindowInsetsController controller = decorView.getWindowInsetsController();
         controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-
-        int systemUi = decorView.getSystemUiVisibility();
-        systemUi &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-        systemUi &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-        decorView.setSystemUiVisibility(systemUi);
     }
 
     public static void setStatusBarColor(@NonNull Window window, int color, boolean animated) {
-        window.setStatusBarContrastEnforced(false);
+        if (window.getStatusBarColor() == color) {
+            return;
+        }
 
+        window.setStatusBarContrastEnforced(false);
         if (animated) {
             int curColor = window.getStatusBarColor();
             ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
@@ -61,13 +59,11 @@ public class SystemUI30 {
         }
     }
 
-    public static int getStatusBarColor(@NonNull Window window) {
-        return window.getStatusBarColor();
-    }
-
     public static void setStatusBarStyle(@NonNull Window window, boolean dark) {
-        WindowInsetsController controller = window.getInsetsController();
-        controller.setSystemBarsAppearance(dark ? APPEARANCE_LIGHT_STATUS_BARS : 0, APPEARANCE_LIGHT_STATUS_BARS);
+        if (isStatusBarStyleDark(window) != dark) {
+            WindowInsetsController controller = window.getInsetsController();
+            controller.setSystemBarsAppearance(dark ? APPEARANCE_LIGHT_STATUS_BARS : 0, APPEARANCE_LIGHT_STATUS_BARS);
+        }
     }
 
     public static boolean isStatusBarStyleDark(@NonNull Window window) {
@@ -99,13 +95,18 @@ public class SystemUI30 {
     }
 
     public static void setNavigationBarColor(final Window window, int color) {
+        if (window.getNavigationBarColor() == color) {
+           return;
+        }
         window.setNavigationBarContrastEnforced(false);
         window.setNavigationBarColor(color);
     }
 
     public static void setNavigationBarStyle(Window window, boolean dark) {
-        WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
-        controller.setSystemBarsAppearance(dark ? APPEARANCE_LIGHT_NAVIGATION_BARS : 0, APPEARANCE_LIGHT_NAVIGATION_BARS);
+        if (isNavigationBarStyleDark(window) != dark) {
+            WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
+            controller.setSystemBarsAppearance(dark ? APPEARANCE_LIGHT_NAVIGATION_BARS : 0, APPEARANCE_LIGHT_NAVIGATION_BARS);
+        }
     }
 
     public static boolean isNavigationBarStyleDark(Window window) {

@@ -25,7 +25,7 @@ public class SystemUI {
 
     public static void setDecorFitsSystemWindows(@NonNull Window window, boolean decorFitsSystemWindows) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.disableDecorFitsSystemWindows(window, decorFitsSystemWindows);
+            SystemUI30.setDecorFitsSystemWindows(window, decorFitsSystemWindows);
             return;
         }
 
@@ -92,13 +92,6 @@ public class SystemUI {
         } else {
             window.setStatusBarColor(color);
         }
-    }
-
-    public static int getStatusBarColor(@NonNull Window window) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return SystemUI30.getStatusBarColor(window);
-        }
-        return window.getStatusBarColor();
     }
 
     public static void setStatusBarStyle(@NonNull Window window, boolean dark) {
