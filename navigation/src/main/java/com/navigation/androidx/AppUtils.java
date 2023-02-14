@@ -24,10 +24,6 @@ public class AppUtils {
     }
 
     public static boolean isDark(int color) {
-        if (Color.alpha(color) < 176) {
-            return false;
-        }
-
         int grey = toGrey(color);
         return grey < 176;
     }

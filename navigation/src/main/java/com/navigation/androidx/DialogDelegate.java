@@ -63,22 +63,14 @@ public class DialogDelegate {
     }
 
     int preferredNavigationBarColor() {
-        if (!shouldAnimateDialogTransition()) {
-            return Color.TRANSPARENT;
+        if (shouldAnimateDialogTransition()) {
+            return mFragment.requireActivity().getWindow().getNavigationBarColor();
         }
 
-        if (getStyle().getNavigationBarColor() != Style.INVALID_COLOR) {
-            return getStyle().getNavigationBarColor();
-        }
-
-        return mFragment.requireActivity().getWindow().getNavigationBarColor();
+        return Color.TRANSPARENT;
     }
 
     BarStyle preferredNavigationBarStyle() {
-        if (Color.TRANSPARENT == preferredNavigationBarColor()) {
-            return BarStyle.LightContent;
-        }
-
         if (AppUtils.isDark(preferredNavigationBarColor())) {
             return BarStyle.LightContent;
         }
@@ -230,7 +222,6 @@ public class DialogDelegate {
         View contentView = root.getChildAt(0);
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) contentView.getLayoutParams();
         return layoutParams.gravity == Gravity.BOTTOM;
-
     }
 
     private void animateDownOut(@NonNull final View contentView, @NonNull Runnable completion) {

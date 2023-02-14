@@ -336,9 +336,9 @@ public abstract class AwesomeFragment extends InternalFragment {
         super.onResume();
         //Log.i(TAG, getDebugTag() + "#onResume");
         if (childFragmentForAppearance() == null) {
-            setNeedsStatusBarAppearanceUpdate();
-            setNeedsNavigationBarAppearanceUpdate();
             setNeedsLayoutInDisplayCutoutModeUpdate();
+            setNeedsNavigationBarAppearanceUpdate();
+            setNeedsStatusBarAppearanceUpdate();
         }
     }
 
@@ -711,6 +711,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (getShowsDialog()) {
             return BarStyle.LightContent;
         }
+
         return mStyle.getStatusBarStyle();
     }
 
@@ -723,6 +724,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (getShowsDialog()) {
             return SystemUI.isStatusBarHidden(requireActivity().getWindow());
         }
+
         return mStyle.isStatusBarHidden();
     }
 
@@ -735,6 +737,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (getShowsDialog()) {
             return Color.TRANSPARENT;
         }
+
         return mStyle.getStatusBarColor();
     }
 
@@ -743,9 +746,11 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (child != null) {
             return child.preferredStatusBarColorAnimated();
         }
+
         if (getAnimation() == TransitionAnimation.None) {
             return false;
         }
+
         return mStyle.isStatusBarColorAnimated();
     }
 
@@ -811,7 +816,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return mDialogDelegate.preferredNavigationBarStyle();
         }
 
-        if (AppUtils.isDark(preferredNavigationBarColor())) {
+        if (AppUtils.isDark(preferredNavigationBarColor()) && AppUtils.isOpaque(preferredNavigationBarColor())) {
             return BarStyle.LightContent;
         }
 
