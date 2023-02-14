@@ -5,7 +5,6 @@ import static com.navigation.androidx.AwesomeFragment.ARGS_SHOW_AS_DIALOG;
 
 import android.app.Dialog;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -64,10 +63,6 @@ public class DialogDelegate {
     }
 
     int preferredNavigationBarColor() {
-        if (SystemUI.isGestureNavigationEnabled(mFragment.getContentResolver()) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return Color.TRANSPARENT;
-        }
-
         if (!shouldAnimateDialogTransition()) {
             return Color.TRANSPARENT;
         }
@@ -84,7 +79,7 @@ public class DialogDelegate {
             return BarStyle.LightContent;
         }
 
-        if (AppUtils.isBlackColor(preferredNavigationBarColor(), 176)) {
+        if (AppUtils.isDark(preferredNavigationBarColor())) {
             return BarStyle.LightContent;
         }
 

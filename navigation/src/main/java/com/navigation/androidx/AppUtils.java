@@ -23,12 +23,13 @@ public class AppUtils {
     private AppUtils() {
     }
 
-    public static boolean isBlackColor(int color, int level) {
-        if (Color.alpha(color) < level) {
+    public static boolean isDark(int color) {
+        if (Color.alpha(color) < 176) {
             return false;
         }
+
         int grey = toGrey(color);
-        return grey < level;
+        return grey < 176;
     }
 
     public static int toGrey(int rgb) {

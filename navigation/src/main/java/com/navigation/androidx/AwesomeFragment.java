@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -786,12 +785,12 @@ public abstract class AwesomeFragment extends InternalFragment {
             return child.preferredNavigationBarColor();
         }
 
-        if (getShowsDialog()) {
-            return mDialogDelegate.preferredNavigationBarColor();
-        }
-
         if (SystemUI.isGestureNavigationEnabled(getContentResolver()) && preferredEdgeToEdge()) {
             return Color.TRANSPARENT;
+        }
+
+        if (getShowsDialog()) {
+            return mDialogDelegate.preferredNavigationBarColor();
         }
 
         if (mStyle.getNavigationBarColor() != Style.INVALID_COLOR) {
@@ -812,7 +811,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return mDialogDelegate.preferredNavigationBarStyle();
         }
 
-        if (AppUtils.isBlackColor(preferredNavigationBarColor(), 176)) {
+        if (AppUtils.isDark(preferredNavigationBarColor())) {
             return BarStyle.LightContent;
         }
 
@@ -828,6 +827,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (getShowsDialog()) {
             return SystemUI.isNavigationBarHidden(requireActivity().getWindow());
         }
+
         return mStyle.isNavigationBarHidden();
     }
 

@@ -1,7 +1,6 @@
 package com.navigation.androidx;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -66,7 +65,7 @@ public class Style implements Cloneable {
         statusBarColor = AppUtils.fetchContextColor(context, android.R.attr.statusBarColor);
         toolbarBackgroundColor = AppUtils.fetchContextColor(context, R.attr.colorPrimary);
         toolbarHeight = AppUtils.fetchContextDimension(context, R.attr.actionBarSize);
-        boolean isLightStyle = AppUtils.isBlackColor(toolbarBackgroundColor, 176);
+        boolean isLightStyle = AppUtils.isDark(toolbarBackgroundColor);
         statusBarStyle = isLightStyle ? BarStyle.LightContent : BarStyle.DarkContent;
     }
 
