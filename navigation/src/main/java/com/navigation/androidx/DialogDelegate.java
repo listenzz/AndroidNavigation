@@ -152,8 +152,6 @@ public class DialogDelegate {
             fragmentManager.beginTransaction().setMaxLifecycle(target, Lifecycle.State.RESUMED).commit();
         }
 
-        fragmentManager.executePendingTransactions();
-
         if (target != null) {
             FragmentHelper.handleFragmentResult((AwesomeFragment) target, mFragment);
         }
