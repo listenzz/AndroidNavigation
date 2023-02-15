@@ -198,7 +198,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     }
 
     private boolean fitsSafeAreaIfNeeded() {
-        if (!isLeafAwesomeFragment()) {
+        if (!isLeafAwesomeFragment() && !mStackDelegate.shouldFitsTabBar()) {
             return false;
         }
 
