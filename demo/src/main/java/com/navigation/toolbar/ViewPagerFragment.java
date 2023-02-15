@@ -62,6 +62,8 @@ public class ViewPagerFragment extends BaseFragment {
         toolbar = view.findViewById(R.id.toolbar);
 
         // android:fitsSystemWindows="true"
+        // 上面这个方案，Android 11 以上有兼容性问题
+        // TODO: 有心情再处理了
         appBarLayout = view.findViewById(R.id.appbar_layout);
 
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);

@@ -109,9 +109,7 @@ public class StackDelegate {
             return false;
         }
 
-        FrameLayout root = requireView();
-        AwesomeToolbar toolbar = getToolbar();
-        return toolbar != null && root.getChildAt(1) == toolbar;
+        return getToolbar() != null;
     }
 
     private void fitsToolbar(@NonNull AwesomeToolbar toolbar) {
