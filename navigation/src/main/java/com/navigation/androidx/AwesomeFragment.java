@@ -337,8 +337,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         //Log.i(TAG, getDebugTag() + "#onResume");
         if (childFragmentForAppearance() == null) {
             setNeedsLayoutInDisplayCutoutModeUpdate();
-            setNeedsNavigationBarAppearanceUpdate();
             setNeedsStatusBarAppearanceUpdate();
+            setNeedsNavigationBarAppearanceUpdate();
         }
     }
 
@@ -360,10 +360,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void setNeedsLayoutInDisplayCutoutModeUpdate() {
         int orientation = getResources().getConfiguration().orientation;
         setDisplayCutoutWhenLandscape(orientation);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            setNeedsStatusBarAppearanceUpdate();
-            setNeedsNavigationBarAppearanceUpdate();
-        }
     }
 
     private void setDisplayCutoutWhenLandscape(int orientation) {
@@ -741,19 +737,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         return mStyle.getStatusBarColor();
     }
 
-    protected boolean preferredStatusBarColorAnimated() {
-        AwesomeFragment child = childFragmentForAppearance();
-        if (child != null) {
-            return child.preferredStatusBarColorAnimated();
-        }
-
-        if (getAnimation() == TransitionAnimation.None) {
-            return false;
-        }
-
-        return mStyle.isStatusBarColorAnimated();
-    }
-
     public void setNeedsStatusBarAppearanceUpdate() {
         if (!isResumed()) {
             return;
@@ -765,7 +748,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return;
         }
 
-        setStatusBarColor(preferredStatusBarColor(), preferredStatusBarColorAnimated());
+        setStatusBarColor(preferredStatusBarColor());
         setStatusBarHidden(preferredStatusBarHidden());
         setStatusBarStyle(preferredStatusBarStyle());
     }
@@ -778,8 +761,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         SystemUI.setStatusBarHidden(getWindow(), hidden);
     }
 
-    private void setStatusBarColor(int color, boolean animated) {
-        SystemUI.setStatusBarColor(getWindow(), color, animated);
+    private void setStatusBarColor(int color) {
+        SystemUI.setStatusBarColor(getWindow(), color);
     }
 
     // ------- NavigationBar --------

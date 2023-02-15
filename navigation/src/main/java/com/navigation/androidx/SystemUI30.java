@@ -1,12 +1,6 @@
 package com.navigation.androidx;
 
-import static android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
-import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
-
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.res.Configuration;
 import android.view.View;
 import android.view.Window;
@@ -41,41 +35,6 @@ public class SystemUI30 {
         controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
     }
 
-    public static void setStatusBarColor(@NonNull Window window, int color, boolean animated) {
-        if (window.getStatusBarColor() == color) {
-            return;
-        }
-
-        window.setStatusBarContrastEnforced(false);
-        if (animated) {
-            int curColor = window.getStatusBarColor();
-            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
-            colorAnimation.addUpdateListener(
-                    animator -> window.setStatusBarColor((Integer) animator.getAnimatedValue()));
-            colorAnimation.setDuration(200).setStartDelay(0);
-            colorAnimation.start();
-        } else {
-            window.setStatusBarColor(color);
-        }
-    }
-
-    public static void setStatusBarStyle(@NonNull Window window, boolean dark) {
-        if (isStatusBarStyleDark(window) != dark) {
-            WindowInsetsController controller = window.getInsetsController();
-            controller.setSystemBarsAppearance(dark ? APPEARANCE_LIGHT_STATUS_BARS : 0, APPEARANCE_LIGHT_STATUS_BARS);
-        }
-    }
-
-    public static boolean isStatusBarStyleDark(@NonNull Window window) {
-        WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
-        return (controller.getSystemBarsAppearance() & APPEARANCE_LIGHT_STATUS_BARS) != 0;
-    }
-
-    public static BarStyle activityStatusBarStyle(@NonNull Activity activity) {
-        boolean isDark = isStatusBarStyleDark(activity.getWindow());
-        return isDark ? BarStyle.DarkContent : BarStyle.LightContent;
-    }
-
     public static void setStatusBarHidden(@NonNull Window window, boolean hidden) {
         WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
         if (hidden) {
@@ -94,24 +53,13 @@ public class SystemUI30 {
         return !insets.isVisible(WindowInsets.Type.statusBars());
     }
 
-    public static void setNavigationBarColor(final Window window, int color) {
-        if (window.getNavigationBarColor() == color) {
-           return;
-        }
-        window.setNavigationBarContrastEnforced(false);
-        window.setNavigationBarColor(color);
-    }
-
-    public static void setNavigationBarStyle(Window window, boolean dark) {
-        if (isNavigationBarStyleDark(window) != dark) {
-            WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
-            controller.setSystemBarsAppearance(dark ? APPEARANCE_LIGHT_NAVIGATION_BARS : 0, APPEARANCE_LIGHT_NAVIGATION_BARS);
-        }
-    }
-
-    public static boolean isNavigationBarStyleDark(Window window) {
+    public static void setNavigationBarHidden(Window window, boolean hidden) {
         WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
-        return (controller.getSystemBarsAppearance() & APPEARANCE_LIGHT_NAVIGATION_BARS) != 0;
+        if (hidden) {
+            controller.hide(WindowInsets.Type.navigationBars());
+        } else {
+            controller.show(WindowInsets.Type.navigationBars());
+        }
     }
 
     public static boolean isNavigationBarHidden(Window window) {
@@ -122,14 +70,4 @@ public class SystemUI30 {
         }
         return !insets.isVisible(WindowInsets.Type.navigationBars());
     }
-
-    public static void setNavigationBarHidden(Window window, boolean hidden) {
-        WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
-        if (hidden) {
-            controller.hide(WindowInsets.Type.navigationBars());
-        } else {
-            controller.show(WindowInsets.Type.navigationBars());
-        }
-    }
-
 }

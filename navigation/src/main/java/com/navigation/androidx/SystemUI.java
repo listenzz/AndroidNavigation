@@ -1,7 +1,5 @@
 package com.navigation.androidx;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.res.Configuration;
@@ -57,50 +55,25 @@ public class SystemUI {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             WindowManager.LayoutParams layoutParams = window.getAttributes();
             if (shortEdges) {
-                if (layoutParams.layoutInDisplayCutoutMode != WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES) {
-                    layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-                    window.setAttributes(layoutParams);
-                }
+                layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
             } else {
-                if (layoutParams.layoutInDisplayCutoutMode != WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER) {
-                    layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
-                    window.setAttributes(layoutParams);
-                }
+
+                layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
             }
+            window.setAttributes(layoutParams);
         }
     }
 
-    public static void setStatusBarColor(@NonNull Window window, int color, boolean animated) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setStatusBarColor(window, color, animated);
-            return;
-        }
-
+    public static void setStatusBarColor(@NonNull Window window, int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.setStatusBarContrastEnforced(false);
         }
-
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-        if (animated) {
-            int curColor = window.getStatusBarColor();
-            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
-            colorAnimation.addUpdateListener(
-                    animator -> window.setStatusBarColor((Integer) animator.getAnimatedValue()));
-            colorAnimation.setDuration(200).setStartDelay(0);
-            colorAnimation.start();
-        } else {
-            window.setStatusBarColor(color);
-        }
+        window.setStatusBarColor(color);
     }
 
     public static void setStatusBarStyle(@NonNull Window window, boolean dark) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setStatusBarStyle(window, dark);
             return;
         }
 
@@ -119,17 +92,10 @@ public class SystemUI {
             return false;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return SystemUI30.isStatusBarStyleDark(window);
-        }
-
         return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
     }
 
     public static BarStyle activityStatusBarStyle(@NonNull Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return SystemUI30.activityStatusBarStyle(activity);
-        }
         boolean isDark = isStatusBarStyleDark(activity.getWindow());
         return isDark ? BarStyle.DarkContent : BarStyle.LightContent;
     }
@@ -193,11 +159,6 @@ public class SystemUI {
             return;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setNavigationBarColor(window, color);
-            return;
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.setNavigationBarContrastEnforced(false);
         }
@@ -208,11 +169,6 @@ public class SystemUI {
 
     public static void setNavigationBarStyle(Window window, boolean dark) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setNavigationBarStyle(window, dark);
             return;
         }
 
@@ -231,10 +187,6 @@ public class SystemUI {
             return false;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return SystemUI30.isNavigationBarStyleDark(window);
-        }
-
         return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR) != 0;
     }
 
@@ -251,10 +203,6 @@ public class SystemUI {
     }
 
     public static void setNavigationBarHidden(Window window, boolean hidden) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return;
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             SystemUI30.setNavigationBarHidden(window, hidden);
             return;
