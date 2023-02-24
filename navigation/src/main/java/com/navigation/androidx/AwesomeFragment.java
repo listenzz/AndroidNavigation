@@ -259,7 +259,15 @@ public abstract class AwesomeFragment extends InternalFragment {
             return true;
         }
 
-        return mStackDelegate.shouldFitsTabBar() || AppUtils.isOpaque(preferredNavigationBarColor());
+        if (mStackDelegate.shouldFitsTabBar()) {
+            return true;
+        }
+
+        return AppUtils.isOpaque(preferredNavigationBarColor()) && shouldFitsOpaqueNavigationBar();
+    }
+
+    protected boolean shouldFitsOpaqueNavigationBar() {
+        return true;
     }
 
     public boolean isLeafAwesomeFragment() {
