@@ -246,7 +246,11 @@ public abstract class AwesomeFragment extends InternalFragment {
         return false;
     }
 
-    boolean shouldFitsNavigationBar() {
+    protected boolean shouldFitsTabBar() {
+        return mStackDelegate.shouldFitsTabBar();
+    }
+
+    protected boolean shouldFitsNavigationBar() {
         if (preferredNavigationBarHidden()) {
             return false;
         }
@@ -255,19 +259,15 @@ public abstract class AwesomeFragment extends InternalFragment {
             return false;
         }
 
+        if (shouldFitsTabBar()) {
+            return true;
+        }
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return true;
         }
 
-        if (mStackDelegate.shouldFitsTabBar()) {
-            return true;
-        }
-
-        return AppUtils.isOpaque(preferredNavigationBarColor()) && shouldFitsOpaqueNavigationBar();
-    }
-
-    protected boolean shouldFitsOpaqueNavigationBar() {
-        return true;
+        return AppUtils.isOpaque(preferredNavigationBarColor());
     }
 
     public boolean isLeafAwesomeFragment() {

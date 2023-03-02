@@ -200,7 +200,7 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     @Override
-    boolean shouldFitsNavigationBar() {
+    protected boolean shouldFitsNavigationBar() {
         if (preferredNavigationBarHidden()) {
             return false;
         }
