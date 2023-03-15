@@ -508,7 +508,8 @@ public abstract class AwesomeFragment extends InternalFragment {
             return true;
         }
 
-        if (SystemUI.isImeVisible(requireView())) {
+        View root = getView();
+        if (root != null && SystemUI.isImeVisible(root)) {
             SystemUI.hideIme(getWindow());
             return true;
         }
