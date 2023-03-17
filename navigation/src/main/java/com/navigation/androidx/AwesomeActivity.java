@@ -146,7 +146,9 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     private void presentFragmentSync(AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
-        FragmentHelper.handlePresentFragment(getSupportFragmentManager(), android.R.id.content, fragment, animation);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentHelper.handlePresentFragment(fragmentManager, android.R.id.content, fragment, animation);
+        fragmentManager.executePendingTransactions();
         completion.run();
     }
 

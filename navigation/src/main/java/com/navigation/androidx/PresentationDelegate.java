@@ -63,11 +63,13 @@ public class PresentationDelegate {
     }
 
     private void presentFragmentInternal(final AwesomeFragment presenting, final AwesomeFragment presented, final int requestCode, @NonNull Runnable completion) {
+        FragmentManager fragmentManager = presenting.getParentFragmentManager();
         Bundle args = FragmentHelper.getArguments(presented);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         presented.setTargetFragment(presenting, requestCode);
         presented.setDefinesPresentationContext(true);
-        FragmentHelper.handlePresentFragment(presenting.getParentFragmentManager(), presenting.getContainerId(), presented, TransitionAnimation.Present);
+        FragmentHelper.handlePresentFragment(fragmentManager, presenting.getContainerId(), presented, TransitionAnimation.Present);
+        fragmentManager.executePendingTransactions();
         completion.run();
     }
 

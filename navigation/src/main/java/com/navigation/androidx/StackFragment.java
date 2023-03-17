@@ -120,7 +120,9 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     }
 
     protected void pushFragmentSync(AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
-        FragmentHelper.addFragmentToBackStack(getChildFragmentManager(), R.id.navigation_content, fragment, animation);
+        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentHelper.addFragmentToBackStack(fragmentManager, R.id.navigation_content, fragment, animation);
+        fragmentManager.executePendingTransactions();
         completion.run();
     }
 
