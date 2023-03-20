@@ -60,6 +60,8 @@ public class Style implements Cloneable {
 
     private boolean displayCutoutWhenLandscape = true;
 
+    private boolean fitsOpaqueNavigationBar = true;
+
     protected Style(Context context) {
         this.context = context;
         statusBarColor = AppUtils.fetchContextColor(context, android.R.attr.statusBarColor);
@@ -91,13 +93,6 @@ public class Style implements Cloneable {
 
     // ----- tabBar  -----
 
-    public int getToolbarHeight() {
-        return toolbarHeight;
-    }
-
-    public void setToolbarHeight(int toolbarHeight) {
-        this.toolbarHeight = toolbarHeight;
-    }
 
     public void setTabBarBackgroundColor(String tabBarBackgroundColor) {
         this.tabBarBackgroundColor = tabBarBackgroundColor;
@@ -124,6 +119,14 @@ public class Style implements Cloneable {
     }
 
     // ------- toolbar ---------
+
+    public int getToolbarHeight() {
+        return toolbarHeight;
+    }
+
+    public void setToolbarHeight(int toolbarHeight) {
+        this.toolbarHeight = toolbarHeight;
+    }
 
     public void setStatusBarStyle(BarStyle barStyle) {
         statusBarStyle = barStyle;
@@ -350,6 +353,14 @@ public class Style implements Cloneable {
 
     public void setNavigationBarHidden(boolean hidden) {
         this.navigationBarHidden = hidden;
+    }
+
+    public boolean shouldFitsOpaqueNavigationBar() {
+        return fitsOpaqueNavigationBar;
+    }
+
+    public void setFitsOpaqueNavigationBar(boolean fitsOpaqueNavigationBar) {
+        this.fitsOpaqueNavigationBar = fitsOpaqueNavigationBar;
     }
 
     public void setScrimAlpha(@IntRange(from = 0, to = 255) int scrimAlpha) {

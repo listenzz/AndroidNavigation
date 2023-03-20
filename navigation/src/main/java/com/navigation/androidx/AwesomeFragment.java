@@ -267,7 +267,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return true;
         }
 
-        return AppUtils.isOpaque(preferredNavigationBarColor());
+        return mStyle.shouldFitsOpaqueNavigationBar() && AppUtils.isOpaque(preferredNavigationBarColor());
     }
 
     public boolean isLeafAwesomeFragment() {
