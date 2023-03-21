@@ -267,6 +267,8 @@ public class FragmentHelper {
         transaction.add(containerId, fragment, fragment.getSceneId());
         transaction.addToBackStack(fragment.getSceneId());
         transaction.commit();
+
+        fragmentManager.executePendingTransactions();
     }
 
     public static void handleDismissFragment(@NonNull AwesomeFragment presenting, @NonNull AwesomeFragment presented, @Nullable AwesomeFragment top, @NonNull TransitionAnimation animation) {

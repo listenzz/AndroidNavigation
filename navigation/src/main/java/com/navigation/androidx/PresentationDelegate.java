@@ -69,7 +69,6 @@ public class PresentationDelegate {
         presented.setTargetFragment(presenting, requestCode);
         presented.setDefinesPresentationContext(true);
         FragmentHelper.handlePresentFragment(fragmentManager, presenting.getContainerId(), presented, TransitionAnimation.Present);
-        fragmentManager.executePendingTransactions();
         completion.run();
     }
 
