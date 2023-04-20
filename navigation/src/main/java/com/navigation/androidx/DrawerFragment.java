@@ -108,7 +108,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     protected boolean shouldHideStatusBarWhenMenuOpened() {
-        return (opening || opened) && !SystemUI.isCutout(getWindow());
+        return (opening || opened) && requireView().isAttachedToWindow() && !SystemUI.isCutout(getWindow());
     }
 
     @Override
@@ -299,7 +299,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
 
     public void setDrawerLockMode(final int lockMode) {
         scheduleTaskAtStarted(() -> {
-            if (mDrawerLayout != null) {
+            if (mDrawerLayout != null && !isMenuOpened()) {
                 mDrawerLayout.setDrawerLockMode(lockMode);
             }
         });
