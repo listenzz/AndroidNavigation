@@ -161,7 +161,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             setBackgroundDrawable();
         }
 
-        handleAttacheStateChange(getView());
+        applyWindowInsets(getView());
     }
 
     @Override
@@ -175,23 +175,33 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private ViewTreeObserver.OnPreDrawListener mPreDrawListener = null;
 
-    private void handleAttacheStateChange(View root) {
+    private void applyWindowInsets(View root) {
         if (root == null) {
             return;
         }
 
-        root.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                root.getViewTreeObserver().removeOnPreDrawListener(this);
-                mStackDelegate.fitsToolbarIfNeeded();
-                mStackDelegate.fitsContentViewIfNeeded();
-                return false;
-            }
-        });
+        WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(getWindow().getDecorView());
+
+        if (windowInsets != null) {
+            mStackDelegate.fitsToolbarIfNeeded();
+            mStackDelegate.fitsContentViewIfNeeded();
+        } else {
+            root.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    root.getViewTreeObserver().removeOnPreDrawListener(this);
+                    mStackDelegate.fitsToolbarIfNeeded();
+                    mStackDelegate.fitsContentViewIfNeeded();
+                    return false;
+                }
+            });
+        }
+
+        if (windowInsets != null) {
+            fitsSafeAreaIfNeeded();
+        }
 
         mPreDrawListener = () -> !fitsSafeAreaIfNeeded();
-
         root.getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
     }
 
