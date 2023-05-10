@@ -138,7 +138,9 @@ public class DialogDelegate {
             return;
         }
 
-        SystemUI.hideIme(mFragment.getWindow());
+        if (SystemUI.isImeVisible(mFragment.getWindow())) {
+            SystemUI.hideIme(mFragment.getWindow());
+        }
 
         FragmentManager fragmentManager = mFragment.getParentFragmentManager();
         fragmentManager

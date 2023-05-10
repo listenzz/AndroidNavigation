@@ -166,8 +166,6 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @Override
     public void onDestroyView() {
-        SystemUI.hideIme(getWindow());
-
         View rootView = getView();
         if (rootView != null && mPreDrawListener != null) {
             rootView.getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);

@@ -174,6 +174,10 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
     }
 
     private void dismissFragmentSync(AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
+        if (SystemUI.isImeVisible(getWindow())) {
+            SystemUI.hideIme(getWindow());
+        }
+
         AwesomeFragment presented = getPresentedFragment(fragment);
         if (presented != null) {
             FragmentHelper.handleDismissFragment(fragment, presented, null, animation);
