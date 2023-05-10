@@ -28,7 +28,7 @@ This is also the subproject of [hybrid-navigation](https://github.com/listenzz/h
 ## Installation
 
 ```groovy
-implementation 'io.github.listenzz:AndroidNavigation:13.5.7'
+implementation 'io.github.listenzz:AndroidNavigation:13.5.8'
 implementation 'androidx.appcompat:appcompat:1.3.1'
 ```
 
