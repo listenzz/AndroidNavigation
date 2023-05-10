@@ -140,6 +140,10 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
     }
 
     protected void popToFragmentSync(AwesomeFragment fragment, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
+        if (SystemUI.isImeVisible(getWindow())) {
+            SystemUI.hideIme(getWindow());
+        }
+
         AwesomeFragment topFragment = getTopFragment();
         if (topFragment == null || topFragment == fragment) {
             completion.run();

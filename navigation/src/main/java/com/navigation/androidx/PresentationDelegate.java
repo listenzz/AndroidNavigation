@@ -95,7 +95,6 @@ public class PresentationDelegate {
     private void dismissFragmentInternal(@NonNull Runnable completion, @NonNull TransitionAnimation animation) {
         if (SystemUI.isImeVisible(mFragment.getWindow())) {
             SystemUI.hideIme(mFragment.getWindow());
-            return;
         }
 
         AwesomeFragment presented = getPresentedFragment();
