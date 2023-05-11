@@ -298,17 +298,9 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
     }
 
     public void setDrawerLockMode(final int lockMode) {
-        scheduleTaskAtStarted(() -> {
-            if (mDrawerLayout != null) {
-                if (lockMode == DrawerLayout.LOCK_MODE_LOCKED_CLOSED) {
-                    if (closed || closing) {
-                        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-                    }
-                } else {
-                    mDrawerLayout.setDrawerLockMode(lockMode);
-                }
-            }
-        });
+        if (mDrawerLayout != null) {
+            mDrawerLayout.setDrawerLockMode(lockMode);
+        }
     }
 
     public void setMenuInteractive(boolean enabled) {
