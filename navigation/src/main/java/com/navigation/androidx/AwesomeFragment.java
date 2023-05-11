@@ -181,21 +181,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(getWindow().getDecorView());
-
-        if (windowInsets != null) {
-            mStackDelegate.fitsToolbarIfNeeded();
-            mStackDelegate.fitsContentViewIfNeeded();
-        } else {
-            root.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    root.getViewTreeObserver().removeOnPreDrawListener(this);
-                    mStackDelegate.fitsToolbarIfNeeded();
-                    mStackDelegate.fitsContentViewIfNeeded();
-                    return false;
-                }
-            });
-        }
+        mStackDelegate.fitsToolbarIfNeeded(windowInsets);
 
         if (windowInsets != null) {
             fitsSafeAreaIfNeeded();

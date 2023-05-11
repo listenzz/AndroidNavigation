@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentTransaction;
 
 public class StackDelegate {
@@ -98,9 +99,9 @@ public class StackDelegate {
         setToolbarBackButton();
     }
 
-    public void fitsToolbarIfNeeded() {
+    public void fitsToolbarIfNeeded(WindowInsetsCompat windowInsets) {
         if (shouldFitsToolbar()) {
-            fitsToolbar(getToolbar());
+            fitsToolbar(getToolbar(), windowInsets);
         }
     }
 
@@ -112,44 +113,37 @@ public class StackDelegate {
         return getToolbar() != null;
     }
 
-    private void fitsToolbar(@NonNull AwesomeToolbar toolbar) {
+    private void fitsToolbar(@NonNull AwesomeToolbar toolbar, WindowInsetsCompat windowInsets) {
+        ViewUtils.doOnPreDrawOnce(toolbar, windowInsets, (view, initialProps) -> {
+            ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
+            if (lp.height > 0) {
+                doFitsToolbar(toolbar, initialProps);
+                doFitsContentView(toolbar);
+            }
+        });
+    }
+
+    private void doFitsContentView(@NonNull AwesomeToolbar toolbar) {
+        if (!mFragment.extendedLayoutIncludesToolbar() && toolbar == requireView().getChildAt(1)) {
+            View content = getContentView();
+            assert content != null;
+            content.setFitsSystemWindows(false);
+            ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
+            content.setPadding(0, lp.height, 0, 0);
+        }
+    }
+
+    private void doFitsToolbar(@NonNull AwesomeToolbar toolbar, ViewUtils.LayoutProps initialProps) {
         EdgeInsets edge = SystemUI.getEdgeInsetsForView(toolbar);
-        if (edge.top > 0) {
-            return;
-        }
-
-        int statusBarHeight = SystemUI.statusBarHeight(getWindow());
         ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
-        lp.height += statusBarHeight;
-        toolbar.setPadding(0, statusBarHeight, 0, 0);
-    }
-
-    public void fitsContentViewIfNeeded() {
-        if (shouldFitsContentView()) {
-            fitsContentView(getToolbar());
+        if (edge.top == 0) {
+            int statusBarHeight = SystemUI.statusBarHeight(getWindow());
+            lp.height = initialProps.height + statusBarHeight;
+            toolbar.setPadding(0, statusBarHeight, 0, 0);
+        } else {
+            lp.height = initialProps.height;
+            toolbar.setPadding(0, 0, 0, 0);
         }
-    }
-
-    private boolean shouldFitsContentView() {
-        if (mFragment.extendedLayoutIncludesToolbar()) {
-            return false;
-        }
-
-        if (!shouldFitsToolbar()) {
-            return false;
-        }
-
-        FrameLayout root = requireView();
-        AwesomeToolbar toolbar = getToolbar();
-        return root.getChildAt(1) == toolbar;
-    }
-
-    private void fitsContentView(@NonNull AwesomeToolbar toolbar) {
-        View content = getContentView();
-        assert content != null;
-        content.setFitsSystemWindows(false);
-        ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
-        content.setPadding(0, lp.height, 0, 0);
     }
 
     private View getContentView() {
