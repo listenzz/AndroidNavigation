@@ -238,6 +238,10 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
             return;
         }
 
+        if (SystemUI.isImeVisible(getWindow())) {
+            SystemUI.hideIme(getWindow());
+        }
+
         topFragment.setAnimation(animation);
 
         AwesomeFragment target = from;
