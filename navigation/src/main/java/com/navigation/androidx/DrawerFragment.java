@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 
 public class DrawerFragment extends AwesomeFragment implements DrawerLayout.DrawerListener {
@@ -67,8 +68,26 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             throw new IllegalArgumentException("必须调用 `setMenuFragment` 设置 menuFragment");
         }
 
-        FragmentHelper.addFragment(getChildFragmentManager(), R.id.drawer_content, mContentFragment, Lifecycle.State.RESUMED);
-        FragmentHelper.addFragment(getChildFragmentManager(), R.id.drawer_menu, mMenuFragment, Lifecycle.State.STARTED, false);
+        addContentFragment();
+        addMenuFragment();
+    }
+
+    private void addContentFragment() {
+        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.drawer_content, mContentFragment, mContentFragment.getSceneId());
+        transaction.setPrimaryNavigationFragment(mContentFragment); // primary
+        transaction.setMaxLifecycle(mContentFragment, Lifecycle.State.RESUMED);
+        transaction.commit();
+    }
+
+    private void addMenuFragment() {
+        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.drawer_menu, mMenuFragment, mMenuFragment.getSceneId());
+        transaction.setMaxLifecycle(mMenuFragment, Lifecycle.State.STARTED);
+        transaction.hide(mMenuFragment);
+        transaction.commit();
     }
 
     @Override
@@ -131,6 +150,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             if (closed) {
                 if (!opening) {
                     opening = true;
+                    showMenuFragment();
                     setNeedsStatusBarAppearanceUpdate();
                 }
             } else if (opened) {
@@ -145,6 +165,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             closed = true;
             opened = false;
             opening = false;
+            hideMenuFragment();
             setNeedsStatusBarAppearanceUpdate();
         } else if (slideOffset == 1) {
             opened = true;
@@ -168,6 +189,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
                     .setPrimaryNavigationFragment(menu)
                     .setMaxLifecycle(menu, Lifecycle.State.RESUMED)
                     .commit();
+            fragmentManager.executePendingTransactions();
 
             View menuView = menu.requireView();
             menuView.setClickable(true);
@@ -252,6 +274,11 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         });
     }
 
+    public void closeMenu() {
+        closeMenu(() -> {
+        });
+    }
+
     public void openMenu(@NonNull Runnable completion) {
         if (isMenuOpened()) {
             completion.run();
@@ -269,11 +296,10 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
                 completion.run();
             }
         });
-        mDrawerLayout.openDrawer(GravityCompat.START);
-    }
 
-    public void closeMenu() {
-        closeMenu(() -> {
+        scheduleTaskAtStarted(() -> {
+            showMenuFragment();
+            mDrawerLayout.openDrawer(GravityCompat.START);
         });
     }
 
@@ -294,7 +320,40 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
                 completion.run();
             }
         });
-        mDrawerLayout.closeDrawer(GravityCompat.START);
+
+        scheduleTaskAtStarted(() -> {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        });
+    }
+
+    private void showMenuFragment() {
+        AwesomeFragment menu = getMenuFragment();
+        AwesomeFragment content = getContentFragment();
+
+        if (menu == null || content == null) {
+            return;
+        }
+
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.beginTransaction()
+                .show(menu)
+                .commit();
+        fragmentManager.executePendingTransactions();
+    }
+
+    private void hideMenuFragment() {
+        AwesomeFragment menu = getMenuFragment();
+        AwesomeFragment content = getContentFragment();
+
+        if (menu == null || content == null) {
+            return;
+        }
+
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.beginTransaction()
+                .hide(menu)
+                .commit();
+        fragmentManager.executePendingTransactions();
     }
 
     public void setDrawerLockMode(final int lockMode) {

@@ -48,24 +48,6 @@ public class FragmentHelper {
         transaction.commit();
     }
 
-    public static void addFragment(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull Lifecycle.State maxLifecycle) {
-        addFragment(fragmentManager, containerId, fragment, maxLifecycle, true);
-    }
-
-    public static void addFragment(@NonNull FragmentManager fragmentManager, int containerId, @NonNull AwesomeFragment fragment, @NonNull Lifecycle.State maxLifecycle, boolean primary) {
-        if (fragmentManager.isDestroyed()) {
-            return;
-        }
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(containerId, fragment, fragment.getSceneId());
-        if (primary) {
-            transaction.setPrimaryNavigationFragment(fragment); // primary
-        }
-        transaction.setMaxLifecycle(fragment, maxLifecycle);
-        transaction.commit();
-    }
-
     @NonNull
     public static List<AwesomeFragment> getFragments(@NonNull FragmentManager fragmentManager) {
         List<AwesomeFragment> children = new ArrayList<>();
@@ -79,10 +61,7 @@ public class FragmentHelper {
         return children;
     }
 
-    public static int indexOf(@NonNull AwesomeFragment fragment) {
-        List<AwesomeFragment> list = getFragments(fragment.getParentFragmentManager());
-        return list.indexOf(fragment);
-    }
+
 
     @Nullable
     public static AwesomeFragment getFragmentAfter(@NonNull AwesomeFragment fragment) {
