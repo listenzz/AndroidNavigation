@@ -28,6 +28,7 @@ public class PageFragment extends BaseFragment {
         PageFragment fragment = new PageFragment();
         Bundle args = FragmentHelper.getArguments(fragment);
         args.putString(ARG_TITLE, title);
+        fragment.setArguments(args);
         return fragment;
     }
 

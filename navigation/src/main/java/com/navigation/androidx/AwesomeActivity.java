@@ -224,6 +224,7 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
         Bundle args = FragmentHelper.getArguments(dialog);
         args.putBoolean(AwesomeFragment.ARGS_SHOW_AS_DIALOG, true);
+        dialog.setArguments(args);
         fragmentManager
                 .beginTransaction()
                 .add(dialog, dialog.getSceneId())

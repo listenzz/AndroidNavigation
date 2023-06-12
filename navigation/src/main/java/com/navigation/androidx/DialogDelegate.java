@@ -105,6 +105,7 @@ public class DialogDelegate {
         Bundle args = FragmentHelper.getArguments(dialog);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
         args.putBoolean(ARGS_SHOW_AS_DIALOG, true);
+        dialog.setArguments(args);
         dialog.setTargetFragment(target, requestCode);
         FragmentManager fragmentManager = target.getParentFragmentManager();
         fragmentManager.beginTransaction()

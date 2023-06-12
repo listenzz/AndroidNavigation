@@ -29,6 +29,7 @@ public class DatetimePickerDialogFragment extends AwesomeFragment {
         DatetimePickerDialogFragment fragment = new DatetimePickerDialogFragment();
         Bundle args = FragmentHelper.getArguments(fragment);
         args.putString(KEY_TIME, time);
+        fragment.setArguments(args);
         return fragment;
     }
 

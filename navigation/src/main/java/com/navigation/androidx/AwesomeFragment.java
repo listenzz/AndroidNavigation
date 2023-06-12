@@ -102,7 +102,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         outState.putString(SAVED_PRESENTATION_STYLE, mPresentationStyle.name());
         mPresentationDelegate.onSaveInstanceState(outState);
     }
-
+    
     @Override
     @NonNull
     public LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {

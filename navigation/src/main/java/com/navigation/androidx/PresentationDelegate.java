@@ -58,6 +58,7 @@ public class PresentationDelegate {
         if (mPresentableActivity != null) {
             Bundle args = FragmentHelper.getArguments(presented);
             args.putInt(ARGS_REQUEST_CODE, requestCode);
+            presented.setArguments(args);
             mPresentableActivity.presentFragment(presented, completion, animation);
         }
     }
@@ -66,6 +67,7 @@ public class PresentationDelegate {
         FragmentManager fragmentManager = presenting.getParentFragmentManager();
         Bundle args = FragmentHelper.getArguments(presented);
         args.putInt(ARGS_REQUEST_CODE, requestCode);
+        presented.setArguments(args);
         presented.setTargetFragment(presenting, requestCode);
         presented.setDefinesPresentationContext(true);
         FragmentHelper.handlePresentFragment(fragmentManager, presenting.getContainerId(), presented, TransitionAnimation.Present);

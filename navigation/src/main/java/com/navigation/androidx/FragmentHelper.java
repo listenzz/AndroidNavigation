@@ -22,7 +22,6 @@ public class FragmentHelper {
         Bundle args = fragment.getArguments();
         if (args == null) {
             args = new Bundle();
-            fragment.setArguments(args);
         }
         return args;
     }
