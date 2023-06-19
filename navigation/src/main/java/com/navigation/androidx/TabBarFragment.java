@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
@@ -59,6 +60,11 @@ public class TabBarFragment extends AwesomeFragment {
 
         mTabBar = createTabBar(root, savedInstanceState);
         fitsTabBar();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+            fitsTabBar();
+            return insets;
+        });
 
         if (mTabBarHidden) {
             hideTabBar();
@@ -211,6 +217,7 @@ public class TabBarFragment extends AwesomeFragment {
 
         return SystemUI.isGestureNavigationEnabled(getContentResolver()) || AppUtils.isOpaque(preferredNavigationBarColor());
     }
+
     public void setChildFragments(AwesomeFragment... fragments) {
         setChildFragments(Arrays.asList(fragments));
     }
