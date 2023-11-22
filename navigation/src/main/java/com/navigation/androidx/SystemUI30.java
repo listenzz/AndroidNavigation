@@ -32,11 +32,13 @@ public class SystemUI30 {
         decorView.requestApplyInsets();
 
         WindowInsetsController controller = decorView.getWindowInsetsController();
+        assert controller != null;
         controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
     }
 
     public static void setStatusBarHidden(@NonNull Window window, boolean hidden) {
         WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
+        assert controller != null;
         if (hidden) {
             controller.hide(WindowInsets.Type.statusBars());
         } else {
@@ -55,6 +57,7 @@ public class SystemUI30 {
 
     public static void setNavigationBarHidden(Window window, boolean hidden) {
         WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
+        assert controller != null;
         if (hidden) {
             controller.hide(WindowInsets.Type.navigationBars());
         } else {

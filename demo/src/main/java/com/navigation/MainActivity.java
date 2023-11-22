@@ -69,4 +69,10 @@ public class MainActivity extends AwesomeActivity {
         style.setSwipeBackEnabled(true); // 开启手势返回
         style.setNavigationBarColor(Color.WHITE);
     }
+
+    @Override
+    protected boolean handleBackPressed() {
+        moveTaskToBack(false);
+        return true;
+    }
 }
