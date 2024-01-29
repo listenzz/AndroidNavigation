@@ -23,6 +23,7 @@
         <activity android:name=".SplashActivity"
             android:theme="@style/SplashTheme"
             android:noHistory="true"
+            android:exported="true"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,6 +33,7 @@
 
         <activity android:name="com.navigation.MainActivity"
             android:windowSoftInputMode="adjustResize|stateHidden"
+            android:exported="true"
             >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
