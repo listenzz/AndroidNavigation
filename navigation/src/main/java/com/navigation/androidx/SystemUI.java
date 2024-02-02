@@ -73,6 +73,11 @@ public class SystemUI {
     }
 
     public static void setStatusBarStyle(@NonNull Window window, boolean dark) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            SystemUI30.setStatusBarStyle(window, dark);
+            return;
+        }
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return;
         }
@@ -87,17 +92,21 @@ public class SystemUI {
         decorView.setSystemUiVisibility(systemUi);
     }
 
+    public static BarStyle activityStatusBarStyle(@NonNull Activity activity) {
+        boolean isDark = isStatusBarStyleDark(activity.getWindow());
+        return isDark ? BarStyle.DarkContent : BarStyle.LightContent;
+    }
+
     public static boolean isStatusBarStyleDark(@NonNull Window window) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return SystemUI30.isStatusBarStyleDark(window);
+        }
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return false;
         }
 
         return (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0;
-    }
-
-    public static BarStyle activityStatusBarStyle(@NonNull Activity activity) {
-        boolean isDark = isStatusBarStyleDark(activity.getWindow());
-        return isDark ? BarStyle.DarkContent : BarStyle.LightContent;
     }
 
     public static void setStatusBarHidden(@NonNull Window window, boolean hidden) {
@@ -168,6 +177,11 @@ public class SystemUI {
     }
 
     public static void setNavigationBarStyle(Window window, boolean dark) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            SystemUI30.setNavigationBarStyle(window, dark);
+            return;
+        }
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return;
         }
@@ -183,6 +197,10 @@ public class SystemUI {
     }
 
     public static boolean isNavigationBarStyleDark(Window window) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return SystemUI30.isNavigationBarStyleDark(window);
+        }
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return false;
         }

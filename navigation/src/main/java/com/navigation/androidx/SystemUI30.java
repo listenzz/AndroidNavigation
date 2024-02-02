@@ -1,5 +1,8 @@
 package com.navigation.androidx;
 
+import static android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
+import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
+
 import android.annotation.TargetApi;
 import android.content.res.Configuration;
 import android.view.View;
@@ -36,6 +39,18 @@ public class SystemUI30 {
         controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
     }
 
+    public static void setStatusBarStyle(@NonNull Window window, boolean dark) {
+        WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
+        assert controller != null;
+        controller.setSystemBarsAppearance(dark ? APPEARANCE_LIGHT_STATUS_BARS : 0, APPEARANCE_LIGHT_STATUS_BARS);
+    }
+
+    public static boolean isStatusBarStyleDark(@NonNull Window window) {
+        WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
+        assert controller != null;
+        return (controller.getSystemBarsAppearance() & APPEARANCE_LIGHT_STATUS_BARS) != 0;
+    }
+
     public static void setStatusBarHidden(@NonNull Window window, boolean hidden) {
         WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
         assert controller != null;
@@ -53,6 +68,18 @@ public class SystemUI30 {
             return false;
         }
         return !insets.isVisible(WindowInsets.Type.statusBars());
+    }
+
+    public static void setNavigationBarStyle(Window window, boolean dark) {
+        WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
+        assert controller != null;
+        controller.setSystemBarsAppearance(dark ? APPEARANCE_LIGHT_NAVIGATION_BARS : 0, APPEARANCE_LIGHT_NAVIGATION_BARS);
+    }
+
+    public static boolean isNavigationBarStyleDark(Window window) {
+        WindowInsetsController controller = window.getDecorView().getWindowInsetsController();
+        assert controller != null;
+        return (controller.getSystemBarsAppearance() & APPEARANCE_LIGHT_NAVIGATION_BARS) != 0;
     }
 
     public static void setNavigationBarHidden(Window window, boolean hidden) {
