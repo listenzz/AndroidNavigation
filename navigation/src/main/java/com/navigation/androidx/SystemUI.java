@@ -73,7 +73,7 @@ public class SystemUI {
     }
 
     public static void setStatusBarStyle(@NonNull Window window, boolean dark) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             SystemUI30.setStatusBarStyle(window, dark);
             return;
         }
@@ -98,7 +98,7 @@ public class SystemUI {
     }
 
     public static boolean isStatusBarStyleDark(@NonNull Window window) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return SystemUI30.isStatusBarStyleDark(window);
         }
 
@@ -177,7 +177,7 @@ public class SystemUI {
     }
 
     public static void setNavigationBarStyle(Window window, boolean dark) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             SystemUI30.setNavigationBarStyle(window, dark);
             return;
         }
@@ -197,7 +197,7 @@ public class SystemUI {
     }
 
     public static boolean isNavigationBarStyleDark(Window window) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return SystemUI30.isNavigationBarStyleDark(window);
         }
 
