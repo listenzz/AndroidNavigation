@@ -45,6 +45,8 @@ public class PresentationDelegate {
     }
 
     public void presentFragment(@NonNull final AwesomeFragment presented, final int requestCode, @NonNull Runnable completion, @NonNull TransitionAnimation animation) {
+        memoForResult(presented);
+
         AwesomeFragment parent = mFragment.getParentAwesomeFragment();
         if (parent != null) {
             if (definesPresentationContext() && presented.getPresentationStyle() == PresentationStyle.CurrentContext) {
@@ -60,6 +62,15 @@ public class PresentationDelegate {
             args.putInt(ARGS_REQUEST_CODE, requestCode);
             presented.setArguments(args);
             mPresentableActivity.presentFragment(presented, completion, animation);
+        }
+    }
+
+    private void memoForResult(AwesomeFragment presented) {
+        Bundle args = FragmentHelper.getArguments(presented);
+        String presenting = args.getString(PresentableActivity.ARG_PRESENTING_SCENE_ID);
+        if (presenting == null) {
+            args.putString(PresentableActivity.ARG_PRESENTING_SCENE_ID, mFragment.getSceneId());
+            presented.setArguments(args);
         }
     }
 

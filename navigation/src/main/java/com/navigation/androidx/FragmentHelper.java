@@ -273,7 +273,30 @@ public class FragmentHelper {
         fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         fragmentManager.executePendingTransactions();
 
-        handleFragmentResult(presenting, result);
+        Bundle args = getArguments(presented);
+        String presentingSceneId = args.getString(PresentableActivity.ARG_PRESENTING_SCENE_ID);
+        boolean consumed = presentingSceneId != null && dispatchFragmentResult(presenting, presented, presentingSceneId);
+        if (!consumed) {
+            handleFragmentResult(presenting, result);
+        }
+    }
+
+    private static boolean dispatchFragmentResult(AwesomeFragment presenting, AwesomeFragment presented, String sceneId) {
+        if (sceneId.equals(presenting.getSceneId())) {
+            handleFragmentResult(presenting, presented);
+            return true;
+        }
+
+        List<AwesomeFragment> fragments = presenting.getChildAwesomeFragments();
+        for (int i = 0; i < fragments.size(); i++) {
+            AwesomeFragment fragment = fragments.get(i);
+            boolean consumed = dispatchFragmentResult(fragment, presented, sceneId);
+            if (consumed) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @NonNull
@@ -290,6 +313,7 @@ public class FragmentHelper {
         final int requestCode = resultFragment.getRequestCode();
         final int resultCode = resultFragment.getResultCode();
         final Bundle data = resultFragment.getResultData();
+
         if (target.isAdded()) {
             target.onFragmentResult(requestCode, resultCode, data);
         }

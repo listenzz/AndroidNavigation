@@ -18,4 +18,6 @@ public interface PresentableActivity {
     @Nullable
     Style getStyle();
 
+     String ARG_PRESENTING_SCENE_ID = "ARG_PRESENTING_SCENE_ID";
+
 }
