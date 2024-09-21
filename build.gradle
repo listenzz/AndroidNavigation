@@ -8,30 +8,23 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:7.4.2")
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.13.0'
+        classpath("com.android.tools.build:gradle:8.4.0")
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.29.0'
         classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.4.30'
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
-
 ext {
     // sdk and tools
-    minSdkVersion = 21
-    compileSdkVersion = 33
-    targetSdkVersion = 33
-    buildToolsVersion = "33.0.0"
+    minSdkVersion = 27
+    compileSdkVersion = 34
+    targetSdkVersion = 34
+    buildToolsVersion = "34.0.0"
 }

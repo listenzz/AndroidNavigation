@@ -18,9 +18,6 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
 
     @Override
     protected int preferredStatusBarColor() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return Color.parseColor("#4A4A4A");
-        }
         return Color.TRANSPARENT;
     }
 

@@ -62,7 +62,7 @@ public class TabBar extends FrameLayout {
     }
 
     private void init(Context context) {
-        selectedItemColor = AppUtils.fetchContextColor(context, R.attr.colorAccent);
+        selectedItemColor = AppUtils.fetchContextColor(context, android.R.attr.colorAccent);
         unselectedItemColor = Color.LTGRAY;
         barBackgroundColor = Color.WHITE;
         badgeColor = Color.parseColor("#FF3B30");

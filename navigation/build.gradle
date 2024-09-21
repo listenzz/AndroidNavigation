@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
+    namespace 'com.navigation.androidx'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -37,18 +38,11 @@ dependencies {
 }
 
 apply plugin: 'com.vanniktech.maven.publish'
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 
-def PUBLISH_VERSION = android.defaultConfig.versionName
-
-publishing {
-    repositories {
-        maven {
-            version = PUBLISH_VERSION
-            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
-            credentials {
-                username = ossrhUsername
-                password = ossrhPassword
-            }
-        }
-    }
+mavenPublishing {
+    // the first parameter represennts which variant is published
+    // the second whether to publish a sources jar
+    // the third whether to publish a javadoc jar
+    configure(new AndroidSingleVariantLibrary("release", true, false))
 }

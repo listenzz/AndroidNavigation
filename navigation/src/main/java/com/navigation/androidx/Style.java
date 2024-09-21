@@ -65,8 +65,8 @@ public class Style implements Cloneable {
     protected Style(Context context) {
         this.context = context;
         statusBarColor = AppUtils.fetchContextColor(context, android.R.attr.statusBarColor);
-        toolbarBackgroundColor = AppUtils.fetchContextColor(context, R.attr.colorPrimary);
-        toolbarHeight = AppUtils.fetchContextDimension(context, R.attr.actionBarSize);
+        toolbarBackgroundColor = AppUtils.fetchContextColor(context, android.R.attr.colorPrimary);
+        toolbarHeight = AppUtils.fetchContextDimension(context, android.R.attr.actionBarSize);
         boolean isLightStyle = AppUtils.isDark(toolbarBackgroundColor);
         statusBarStyle = isLightStyle ? BarStyle.LightContent : BarStyle.DarkContent;
     }

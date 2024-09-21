@@ -1,6 +1,5 @@
 package com.navigation.dialog;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,16 +47,6 @@ public class DialogEntryFragment extends BaseFragment {
             showAsDialog(dialog, 0);
         });
 
-        root.findViewById(R.id.datetime_picker).setOnClickListener(v -> {
-            DatetimePickerDialogFragment dialog = DatetimePickerDialogFragment.newInstance(null);
-            showAsDialog(dialog, REQUEST_CODE_DATETIME);
-        });
-
-        root.findViewById(R.id.area_picker).setOnClickListener(v -> {
-            AreaPickerDialogFragment dialog = new AreaPickerDialogFragment();
-            showAsDialog(dialog, REQUEST_CODE_AREA);
-        });
-
         root.findViewById(R.id.data_binding).setOnClickListener(view -> {
             DataBindingDialogFragment fragment = new DataBindingDialogFragment();
             showAsDialog(fragment, 0);
@@ -83,27 +72,11 @@ public class DialogEntryFragment extends BaseFragment {
     public void onFragmentResult(int requestCode, int resultCode, @Nullable Bundle data) {
         super.onFragmentResult(requestCode, resultCode, data);
         Log.i(TAG, "onFragmentResult");
-        if (requestCode == REQUEST_CODE_DATETIME) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                String time = data.getString(DatetimePickerDialogFragment.KEY_TIME);
-                resultText.setText("选中的时间是：" + time);
-            } else {
-                resultText.setText("");
-            }
-        } else if (requestCode == REQUEST_CODE_AREA) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                String area = data.getString(AreaPickerDialogFragment.KEY_SELECTED_AREA);
-                resultText.setText("选中的区域是：" + area);
-            } else {
-                resultText.setText("");
-            }
+        if (data != null) {
+            String words = data.getString("text", "");
+            resultText.setText(words);
         } else {
-            if (data != null) {
-                String words = data.getString("text", "");
-                resultText.setText(words);
-            } else {
-                resultText.setText("");
-            }
+            resultText.setText("");
         }
     }
 
