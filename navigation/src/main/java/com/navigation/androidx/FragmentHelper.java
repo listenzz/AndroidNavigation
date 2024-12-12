@@ -249,8 +249,8 @@ public class FragmentHelper {
         AwesomeFragment topFragment = (AwesomeFragment) fragmentManager.findFragmentById(containerId);
         if (topFragment != null && topFragment.isAdded()) {
             topFragment.setAnimation(animation);
-            transaction.setMaxLifecycle(topFragment, Lifecycle.State.STARTED);
             if (fragment.getPresentationStyle() == PresentationStyle.CurrentContext) {
+                transaction.setMaxLifecycle(topFragment, Lifecycle.State.STARTED);
                 transaction.hide(topFragment);
             }
         }
