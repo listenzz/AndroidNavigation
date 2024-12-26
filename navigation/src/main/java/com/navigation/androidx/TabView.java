@@ -152,10 +152,10 @@ public class TabView extends FrameLayout {
 
     public void showDotBadge() {
         FrameLayout.LayoutParams layoutParams = (LayoutParams) badgeView.getLayoutParams();
-        layoutParams.topMargin = AppUtils.dp2px(getContext(), 6);
-        layoutParams.rightMargin = AppUtils.dp2px(getContext(), 5);
-        badgeView.setMinWidth(AppUtils.dp2px(getContext(), 10));
-        badgeView.setHeight(AppUtils.dp2px(getContext(), 10));
+        layoutParams.topMargin = AppUtils.dp2px(getContext(), 8);
+        layoutParams.rightMargin = AppUtils.dp2px(getContext(), 8);
+        badgeView.setMinWidth(AppUtils.dp2px(getContext(), 8));
+        badgeView.setHeight(AppUtils.dp2px(getContext(), 8));
         badgeView.setPadding(0, 0, 0, 0);
         Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.nav_dot_badge_background);
         assert drawable != null;
