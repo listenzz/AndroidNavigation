@@ -38,11 +38,9 @@ dependencies {
 }
 
 apply plugin: 'com.vanniktech.maven.publish'
-import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 
 mavenPublishing {
-    // the first parameter represennts which variant is published
-    // the second whether to publish a sources jar
-    // the third whether to publish a javadoc jar
-    configure(new AndroidSingleVariantLibrary("release", true, false))
+    publishToMavenCentral()
+
+    signAllPublications()
 }
