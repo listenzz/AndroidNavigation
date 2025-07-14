@@ -115,11 +115,8 @@ public class StackDelegate {
 
     private void fitsToolbar(@NonNull AwesomeToolbar toolbar, WindowInsetsCompat windowInsets) {
         ViewUtils.doOnPreDrawOnce(toolbar, windowInsets, (view, initialProps) -> {
-            ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
-            if (lp.height > 0) {
-                doFitsToolbar(toolbar, initialProps);
-                doFitsContentView(toolbar);
-            }
+            doFitsToolbar(toolbar, initialProps);
+            doFitsContentView(toolbar);
         });
     }
 
@@ -136,12 +133,13 @@ public class StackDelegate {
     private void doFitsToolbar(@NonNull AwesomeToolbar toolbar, ViewUtils.LayoutProps initialProps) {
         EdgeInsets edge = SystemUI.getEdgeInsetsForView(toolbar);
         ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
+        int toolbarHeight = SystemUI.toolbarHeight(toolbar.getContext());
         if (edge.top == 0) {
             int statusBarHeight = SystemUI.statusBarHeight(getWindow());
-            lp.height = initialProps.height + statusBarHeight;
+            lp.height = toolbarHeight + statusBarHeight;
             toolbar.setPadding(0, statusBarHeight, 0, 0);
         } else {
-            lp.height = initialProps.height;
+            lp.height = toolbarHeight;
             toolbar.setPadding(0, 0, 0, 0);
         }
     }

@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -161,44 +160,31 @@ public abstract class AwesomeFragment extends InternalFragment {
             setBackgroundDrawable();
         }
 
-        applyWindowInsets(getView());
+        applyWindowInsets();
     }
 
-    @Override
-    public void onDestroyView() {
+    private void applyWindowInsets() {
         View rootView = getView();
-        if (rootView != null && mPreDrawListener != null) {
-            rootView.getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
-        }
-        super.onDestroyView();
-    }
-
-    private ViewTreeObserver.OnPreDrawListener mPreDrawListener = null;
-
-    private void applyWindowInsets(View root) {
-        if (root == null) {
+        if (rootView == null) {
             return;
         }
 
         WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(getWindow().getDecorView());
         mStackDelegate.fitsToolbarIfNeeded(windowInsets);
-
-        if (windowInsets != null) {
-            fitsSafeAreaIfNeeded();
-        }
-
-        mPreDrawListener = () -> !fitsSafeAreaIfNeeded();
-        root.getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
+        ViewUtils.doOnPreDrawOnce(rootView, windowInsets,
+                (view, initialPadding) -> {
+                    fitsSafeAreaIfNeeded();
+                });
     }
 
-    private boolean fitsSafeAreaIfNeeded() {
-        if (!isLeafAwesomeFragment() && !mStackDelegate.shouldFitsTabBar()) {
-            return false;
-        }
-
+    private void fitsSafeAreaIfNeeded() {
         View root = getView();
         if (root == null) {
-            return false;
+            return;
+        }
+
+        if (!isLeafAwesomeFragment() && !mStackDelegate.shouldFitsTabBar()) {
+            return;
         }
 
         WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(getWindow().getDecorView());
@@ -234,10 +220,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (!AppUtils.isPaddingEquals(root, edge)) {
             root.setPadding(edge.left, edge.top, edge.right, edge.bottom);
             root.requestLayout();
-            return true;
         }
-
-        return false;
     }
 
     protected boolean shouldFitsTabBar() {
@@ -354,6 +337,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         if (isResumed() && isLeafAwesomeFragment()) {
+            applyWindowInsets();
             setDisplayCutoutWhenLandscape(newConfig.orientation);
         }
         super.onConfigurationChanged(newConfig);
