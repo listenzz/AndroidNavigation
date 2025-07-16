@@ -14,7 +14,7 @@ android {
         minSdkVersion 21
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "13.8.0"
+        versionName "13.8.1"
     }
 
     buildTypes {
