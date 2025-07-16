@@ -99,9 +99,9 @@ public class StackDelegate {
         setToolbarBackButton();
     }
 
-    public void fitsToolbarIfNeeded(WindowInsetsCompat windowInsets) {
+    public void fitsToolbarIfNeeded() {
         if (shouldFitsToolbar()) {
-            fitsToolbar(getToolbar(), windowInsets);
+            fitsToolbar(getToolbar());
         }
     }
 
@@ -113,11 +113,9 @@ public class StackDelegate {
         return getToolbar() != null;
     }
 
-    private void fitsToolbar(@NonNull AwesomeToolbar toolbar, WindowInsetsCompat windowInsets) {
-        ViewUtils.doOnPreDrawOnce(toolbar, windowInsets, (view, initialProps) -> {
-            doFitsToolbar(toolbar, initialProps);
-            doFitsContentView(toolbar);
-        });
+    private void fitsToolbar(@NonNull AwesomeToolbar toolbar) {
+        doFitsToolbar(toolbar);
+        doFitsContentView(toolbar);
     }
 
     private void doFitsContentView(@NonNull AwesomeToolbar toolbar) {
@@ -130,7 +128,7 @@ public class StackDelegate {
         }
     }
 
-    private void doFitsToolbar(@NonNull AwesomeToolbar toolbar, ViewUtils.LayoutProps initialProps) {
+    private void doFitsToolbar(@NonNull AwesomeToolbar toolbar) {
         EdgeInsets edge = SystemUI.getEdgeInsetsForView(toolbar);
         ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
         int toolbarHeight = SystemUI.toolbarHeight(toolbar.getContext());

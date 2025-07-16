@@ -2,77 +2,112 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textColor="#000000"
+                android:textSize="12dp" />
+
+            <Button
+                android:id="@+id/pop_to_root"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="popToRoot  ☜☜"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/status_bar_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="StatusBar Style"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/status_bar_hidden"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="StatusBar Hidden"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/status_bar_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="StatusBar Color"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/no_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="No Toolbar"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/custom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:text="Custom System UI"
+                android:textAllCaps="false" />
+        </LinearLayout>
+
+
+    </ScrollView>
+
     <TextView
-        android:id="@+id/tag"
+        android:id="@+id/result_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
         android:gravity="center"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
         android:textColor="#000000"
-        android:textSize="12dp" />
+        android:textSize="13dp" />
 
-    <Button
-        android:id="@+id/pop_to_root"
+    <EditText
+        android:id="@+id/result"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
-        android:gravity="center"
-        android:text="popToRoot  ☜☜"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/status_bar_style"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:gravity="center"
-        android:text="StatusBar Style"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/status_bar_hidden"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:gravity="center"
-        android:text="StatusBar Hidden"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/status_bar_color"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:gravity="center"
-        android:text="StatusBar Color"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/no_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:gravity="center"
-        android:text="No Toolbar"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/custom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:gravity="center"
-        android:text="Custom System UI"
-        android:textAllCaps="false" />
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_input"
+        android:hint="请输入要返回的结果"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:textSize="14dp" />
 
 </LinearLayout>

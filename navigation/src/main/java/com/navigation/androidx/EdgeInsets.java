@@ -1,5 +1,6 @@
 package com.navigation.androidx;
 
+import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 
 public class EdgeInsets {
@@ -31,6 +32,7 @@ public class EdgeInsets {
         bottom += insets.bottom;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "EdgeInsets{" +

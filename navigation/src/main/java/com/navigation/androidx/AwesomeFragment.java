@@ -159,8 +159,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (isLeafAwesomeFragment()) {
             setBackgroundDrawable();
         }
-
-        applyWindowInsets();
     }
 
     private void applyWindowInsets() {
@@ -169,12 +167,10 @@ public abstract class AwesomeFragment extends InternalFragment {
             return;
         }
 
-        WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(getWindow().getDecorView());
-        mStackDelegate.fitsToolbarIfNeeded(windowInsets);
-        ViewUtils.doOnPreDrawOnce(rootView, windowInsets,
-                (view, initialPadding) -> {
-                    fitsSafeAreaIfNeeded();
-                });
+        ViewUtils.doOnPreDrawOnce(rootView, (view) -> {
+            mStackDelegate.fitsToolbarIfNeeded();
+            fitsSafeAreaIfNeeded();
+        } );
     }
 
     private void fitsSafeAreaIfNeeded() {
@@ -319,7 +315,9 @@ public abstract class AwesomeFragment extends InternalFragment {
     @CallSuper
     public void onResume() {
         super.onResume();
-        //Log.i(TAG, getDebugTag() + "#onResume");
+        // Log.i(TAG, getDebugTag() + "#onResume");
+        applyWindowInsets();
+
         if (childFragmentForAppearance() == null) {
             setNeedsLayoutInDisplayCutoutModeUpdate();
             setNeedsStatusBarAppearanceUpdate();
@@ -336,8 +334,11 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        if (isResumed() && isLeafAwesomeFragment()) {
+        if (isResumed()) {
             applyWindowInsets();
+        }
+
+        if (isResumed() && isLeafAwesomeFragment()) {
             setDisplayCutoutWhenLandscape(newConfig.orientation);
         }
         super.onConfigurationChanged(newConfig);
