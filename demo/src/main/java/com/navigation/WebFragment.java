@@ -44,10 +44,4 @@ public class WebFragment extends BaseFragment {
         setTitle("WebView");
     }
 
-    @Override
-    public boolean preferredEdgeToEdge() {
-        // 适配在 WebView 上使用键盘
-        return false;
-    }
-
 }

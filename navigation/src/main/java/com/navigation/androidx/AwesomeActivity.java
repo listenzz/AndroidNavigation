@@ -22,10 +22,10 @@ public abstract class AwesomeActivity extends AppCompatActivity implements Prese
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        SystemUI.enableEdgeToEdge(getWindow());
         super.onCreate(savedInstanceState);
         mStyle = new Style(this);
         onCustomStyle(mStyle);
-        SystemUI.setDecorFitsSystemWindows(getWindow(), false);
     }
 
     @Override

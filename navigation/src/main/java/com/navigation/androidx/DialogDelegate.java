@@ -80,7 +80,7 @@ public class DialogDelegate {
 
     void setupDialog() {
         Window window = mFragment.getWindow();
-        SystemUI.setDecorFitsSystemWindows(window, false);
+        SystemUI.enableEdgeToEdge(window);
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         Dialog dialog = mFragment.requireDialog();

@@ -3,37 +3,21 @@ package com.navigation.androidx;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 
-import android.annotation.TargetApi;
-import android.content.res.Configuration;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
-@TargetApi(30)
+@RequiresApi(30)
 public class SystemUI30 {
 
-    public static void setDecorFitsSystemWindows(@NonNull Window window, boolean excludeBottom) {
-        View decorView = window.getDecorView();
-        if (excludeBottom) {
-            window.setDecorFitsSystemWindows(true);
-            decorView.setOnApplyWindowInsetsListener((v, insets) -> {
-                WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
-                boolean portrait = window.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
-                return defaultInsets.replaceSystemWindowInsets(
-                        portrait ? defaultInsets.getSystemWindowInsetLeft() : 0,
-                        0,
-                        portrait ? defaultInsets.getSystemWindowInsetRight() : 0,
-                        defaultInsets.getSystemWindowInsetBottom());
-            });
-        } else {
-            decorView.setOnApplyWindowInsetsListener(null);
-            window.setDecorFitsSystemWindows(false);
-        }
-        decorView.requestApplyInsets();
+    public static void enableEdgeToEdge(@NonNull Window window) {
+        window.setDecorFitsSystemWindows(false);
 
+        View decorView = window.getDecorView();
         WindowInsetsController controller = decorView.getWindowInsetsController();
         assert controller != null;
         controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);

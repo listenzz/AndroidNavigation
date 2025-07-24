@@ -194,7 +194,7 @@ public class TabBarFragment extends AwesomeFragment {
             return super.preferredNavigationBarColor();
         }
 
-        if (SystemUI.isGestureNavigationEnabled(getContentResolver()) && preferredEdgeToEdge()) {
+        if (SystemUI.isGestureNavigationEnabled(getContentResolver())) {
             return Color.TRANSPARENT;
         }
 
@@ -208,10 +208,6 @@ public class TabBarFragment extends AwesomeFragment {
     @Override
     protected boolean shouldFitsNavigationBar() {
         if (preferredNavigationBarHidden()) {
-            return false;
-        }
-
-        if (!preferredEdgeToEdge()) {
             return false;
         }
 

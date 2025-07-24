@@ -228,10 +228,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             return false;
         }
 
-        if (!preferredEdgeToEdge()) {
-            return false;
-        }
-
         if (shouldFitsTabBar()) {
             return true;
         }
@@ -761,7 +757,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return child.preferredNavigationBarColor();
         }
 
-        if (SystemUI.isGestureNavigationEnabled(getContentResolver()) && preferredEdgeToEdge()) {
+        if (SystemUI.isGestureNavigationEnabled(getContentResolver())) {
             return Color.TRANSPARENT;
         }
 
@@ -807,14 +803,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         return mStyle.isNavigationBarHidden();
     }
 
-    public boolean preferredEdgeToEdge() {
-        AwesomeFragment child = childFragmentForAppearance();
-        if (child != null) {
-            return child.preferredEdgeToEdge();
-        }
-        return true;
-    }
-
     public void setNeedsNavigationBarAppearanceUpdate() {
         if (!isResumed()) {
             return;
@@ -829,7 +817,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         setNavigationBarColor(preferredNavigationBarColor());
         setNavigationBarHidden(preferredNavigationBarHidden());
         setNavigationBarStyle(preferredNavigationBarStyle());
-        setDecorFitsSystemWindows(!preferredEdgeToEdge());
     }
 
     private void setNavigationBarStyle(BarStyle barStyle) {
@@ -842,10 +829,6 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private void setNavigationBarHidden(boolean hidden) {
         SystemUI.setNavigationBarHidden(getWindow(), hidden);
-    }
-
-    private void setDecorFitsSystemWindows(boolean fits) {
-        SystemUI.setDecorFitsSystemWindows(getWindow(), fits);
     }
 
     // ------ StackFragment -----

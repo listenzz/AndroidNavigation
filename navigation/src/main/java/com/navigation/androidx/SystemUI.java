@@ -3,7 +3,6 @@ package com.navigation.androidx;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.provider.Settings;
@@ -22,31 +21,15 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 public class SystemUI {
-
-    public static void setDecorFitsSystemWindows(@NonNull Window window, boolean decorFitsSystemWindows) {
+    public static void enableEdgeToEdge(@NonNull Window window) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SystemUI30.setDecorFitsSystemWindows(window, decorFitsSystemWindows);
+            SystemUI30.enableEdgeToEdge(window);
             return;
         }
 
-        View decorView = window.getDecorView();
-        if (decorFitsSystemWindows) {
-            WindowCompat.setDecorFitsSystemWindows(window, true);
-            decorView.setOnApplyWindowInsetsListener((v, insets) -> {
-                WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
-                boolean portrait = window.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
-                return defaultInsets.replaceSystemWindowInsets(
-                        portrait ? defaultInsets.getSystemWindowInsetLeft() : 0,
-                        0,
-                        portrait ? defaultInsets.getSystemWindowInsetRight() : 0,
-                        defaultInsets.getSystemWindowInsetBottom());
-            });
-        } else {
-            decorView.setOnApplyWindowInsetsListener(null);
-            WindowCompat.setDecorFitsSystemWindows(window, false);
-        }
-        decorView.requestApplyInsets();
+        WindowCompat.setDecorFitsSystemWindows(window, false);
 
+        View decorView = window.getDecorView();
         int systemUi = decorView.getSystemUiVisibility();
         systemUi |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         systemUi |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
