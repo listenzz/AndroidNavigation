@@ -61,6 +61,7 @@ public class CustomSystemUIFragment extends BaseFragment {
         ((CheckBox)root.findViewById(R.id.navigation_translucent)).setOnCheckedChangeListener((buttonView, isChecked) -> {
             navTranslucentChecked = isChecked;
             setNeedsNavigationBarAppearanceUpdate();
+            getWindow().getDecorView().requestApplyInsets();
         });
 
         ((CheckBox)root.findViewById(R.id.display_cutout)).setOnCheckedChangeListener((buttonView, isChecked) -> {

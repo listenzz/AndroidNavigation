@@ -9,13 +9,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
@@ -59,12 +57,8 @@ public class TabBarFragment extends AwesomeFragment {
         ensureTabBarProvider(savedInstanceState);
 
         mTabBar = createTabBar(root, savedInstanceState);
-        fitsTabBar();
 
-        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
-            fitsTabBar();
-            return insets;
-        });
+        ViewUtils.applyWindowInsets(getWindow(), root, view -> fitsTabBar());
 
         if (mTabBarHidden) {
             hideTabBar();
@@ -72,16 +66,11 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     private void fitsTabBar() {
-        mTabBar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                mTabBar.getViewTreeObserver().removeOnPreDrawListener(this);
-                if (shouldFitsNavigationBar()) {
-                    mTabBar.setPadding(0, 0, 0, SystemUI.navigationBarHeight(getWindow()));
-                } else {
-                    mTabBar.setPadding(0, 0, 0, 0);
-                }
-                return false;
+        ViewUtils.doOnPreDrawOnce(mTabBar, view -> {
+            if (shouldFitsNavigationBar()) {
+                view.setPadding(0, 0, 0, SystemUI.navigationBarHeight(getWindow()));
+            } else {
+                view.setPadding(0, 0, 0, 0);
             }
         });
     }
@@ -96,7 +85,7 @@ public class TabBarFragment extends AwesomeFragment {
             return;
         }
 
-        if (mFragments == null || mFragments.size() == 0) {
+        if (mFragments == null || mFragments.isEmpty()) {
             throw new IllegalArgumentException("必须使用 `setChildFragments` 设置 childFragments");
         }
 

@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ import androidx.fragment.app.InternalFragment;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public abstract class AwesomeFragment extends InternalFragment {
@@ -159,6 +161,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         if (isLeafAwesomeFragment()) {
             setBackgroundDrawable();
         }
+
+        applyWindowInsets();
     }
 
     private void applyWindowInsets() {
@@ -167,10 +171,13 @@ public abstract class AwesomeFragment extends InternalFragment {
             return;
         }
 
-        ViewUtils.doOnPreDrawOnce(rootView, (view) -> {
-            mStackDelegate.fitsToolbarIfNeeded();
-            fitsSafeAreaIfNeeded();
-        } );
+        ViewUtils.applyWindowInsets(getWindow(), rootView, (v) -> {
+            ViewUtils.doOnPreDrawOnce(v, (view) -> {
+                Log.i(TAG, getDebugTag() + "#applyWindowInsets");
+                mStackDelegate.fitsToolbarIfNeeded();
+                fitsSafeAreaIfNeeded();
+            } );
+        });
     }
 
     private void fitsSafeAreaIfNeeded() {
@@ -179,7 +186,7 @@ public abstract class AwesomeFragment extends InternalFragment {
             return;
         }
 
-        if (!isLeafAwesomeFragment() && !mStackDelegate.shouldFitsTabBar()) {
+        if (!isLeafAwesomeFragment()) {
             return;
         }
 
@@ -196,6 +203,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         EdgeInsets rootEdge = SystemUI.getEdgeInsetsForView(root);
+
+        Log.i(TAG, getDebugTag() + "#fitsSafeAreaIfNeeded rootEdge=" + rootEdge);
 
         if (shouldFitsNavigationBar() && rootEdge.bottom == 0) {
             edge.plus(navigationBarInsets);
@@ -265,7 +274,7 @@ public abstract class AwesomeFragment extends InternalFragment {
         AwesomeFragment fragment = getDialogAwesomeFragment();
         if (fragment != null) {
             Dialog dialog = fragment.requireDialog();
-            return dialog.getWindow();
+            return Objects.requireNonNull(dialog.getWindow());
         }
 
         return requireActivity().getWindow();
@@ -312,8 +321,6 @@ public abstract class AwesomeFragment extends InternalFragment {
     public void onResume() {
         super.onResume();
         // Log.i(TAG, getDebugTag() + "#onResume");
-        applyWindowInsets();
-
         if (childFragmentForAppearance() == null) {
             setNeedsLayoutInDisplayCutoutModeUpdate();
             setNeedsStatusBarAppearanceUpdate();
@@ -330,10 +337,6 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        if (isResumed()) {
-            applyWindowInsets();
-        }
-
         if (isResumed() && isLeafAwesomeFragment()) {
             setDisplayCutoutWhenLandscape(newConfig.orientation);
         }

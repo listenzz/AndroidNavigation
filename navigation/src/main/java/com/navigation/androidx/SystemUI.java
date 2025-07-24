@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.provider.Settings;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.DisplayCutout;
 import android.view.View;
@@ -283,18 +284,24 @@ public class SystemUI {
     }
 
     public static EdgeInsets getEdgeInsetsForView(@NonNull View view) {
+        EdgeInsets insets = new EdgeInsets();
         ViewGroup root = (ViewGroup) view.getRootView();
-
         int windowHeight = root.getHeight();
         int windowWidth = root.getWidth();
 
         Rect offset = new Rect();
         view.getDrawingRect(offset);
 
+        Log.i("Navigation", "getEdgeInsetsForView: offset=" + offset + ", windowWidth=" + windowWidth + ", windowHeight=" + windowHeight);
+
+        if (offset.top == 0 && offset.left == 0 && offset.bottom == 0 && offset.right == 0) {
+           return insets;
+        }
+
         try {
             root.offsetDescendantRectToMyCoords(view, offset);
         } catch (Exception e) {
-            // ignore
+            return insets; // 如果发生异常，返回空的 EdgeInsets
         }
 
         int leftMargin = 0;
@@ -310,7 +317,6 @@ public class SystemUI {
             bottomMargin = lp.bottomMargin;
         }
 
-        EdgeInsets insets = new EdgeInsets();
         insets.left = Math.max(offset.left - leftMargin, 0);
         insets.top = Math.max(offset.top - topMargin, 0);
         insets.right = Math.max(windowWidth - offset.right - rightMargin, 0);
