@@ -66,13 +66,11 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     private void fitsTabBar() {
-        ViewUtils.doOnPreDrawOnce(mTabBar, view -> {
-            if (shouldFitsNavigationBar()) {
-                view.setPadding(0, 0, 0, SystemUI.navigationBarHeight(getWindow()));
-            } else {
-                view.setPadding(0, 0, 0, 0);
-            }
-        });
+        if (shouldFitsNavigationBar()) {
+            mTabBar.setPadding(0, 0, 0, SystemUI.navigationBarHeight(getWindow()));
+        } else {
+            mTabBar.setPadding(0, 0, 0, 0);
+        }
     }
 
     private void ensureChildFragments(@Nullable Bundle savedInstanceState) {

@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -172,11 +171,8 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         ViewUtils.applyWindowInsets(getWindow(), rootView, (v) -> {
-            ViewUtils.doOnPreDrawOnce(v, (view) -> {
-                Log.i(TAG, getDebugTag() + "#applyWindowInsets");
-                mStackDelegate.fitsToolbarIfNeeded();
-                fitsSafeAreaIfNeeded();
-            } );
+            mStackDelegate.fitsToolbarIfNeeded();
+            fitsSafeAreaIfNeeded();
         });
     }
 
@@ -203,8 +199,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         EdgeInsets rootEdge = SystemUI.getEdgeInsetsForView(root);
-
-        Log.i(TAG, getDebugTag() + "#fitsSafeAreaIfNeeded rootEdge=" + rootEdge);
 
         if (shouldFitsNavigationBar() && rootEdge.bottom == 0) {
             edge.plus(navigationBarInsets);
