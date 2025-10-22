@@ -269,9 +269,8 @@ public class FragmentHelper {
         presenting.setAnimation(animation);
 
         FragmentManager fragmentManager = presenting.getParentFragmentManager();
-        fragmentManager.beginTransaction().setMaxLifecycle(presented, Lifecycle.State.STARTED).commit();
-        fragmentManager.popBackStack(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        fragmentManager.executePendingTransactions();
+        fragmentManager.beginTransaction().setMaxLifecycle(presented, Lifecycle.State.STARTED).commitNow();
+        fragmentManager.popBackStackImmediate(presented.getSceneId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         Bundle args = getArguments(presented);
         String presentingSceneId = args.getString(PresentableActivity.ARG_PRESENTING_SCENE_ID);

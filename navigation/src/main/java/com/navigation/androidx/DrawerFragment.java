@@ -78,7 +78,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         transaction.add(R.id.drawer_content, mContentFragment, mContentFragment.getSceneId());
         transaction.setPrimaryNavigationFragment(mContentFragment); // primary
         transaction.setMaxLifecycle(mContentFragment, Lifecycle.State.RESUMED);
-        transaction.commit();
+        transaction.commitNow();
     }
 
     private void addMenuFragment() {
@@ -87,7 +87,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         transaction.add(R.id.drawer_menu, mMenuFragment, mMenuFragment.getSceneId());
         transaction.setMaxLifecycle(mMenuFragment, Lifecycle.State.STARTED);
         transaction.hide(mMenuFragment);
-        transaction.commit();
+        transaction.commitNow();
     }
 
     @Override
@@ -188,8 +188,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
             fragmentManager.beginTransaction()
                     .setPrimaryNavigationFragment(menu)
                     .setMaxLifecycle(menu, Lifecycle.State.RESUMED)
-                    .commit();
-            fragmentManager.executePendingTransactions();
+                    .commitNow();
 
             View menuView = menu.requireView();
             menuView.setClickable(true);
@@ -337,8 +336,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction()
                 .show(menu)
-                .commit();
-        fragmentManager.executePendingTransactions();
+                .commitNow();
     }
 
     private void hideMenuFragment() {
@@ -352,8 +350,7 @@ public class DrawerFragment extends AwesomeFragment implements DrawerLayout.Draw
         FragmentManager fragmentManager = getChildFragmentManager();
         fragmentManager.beginTransaction()
                 .hide(menu)
-                .commit();
-        fragmentManager.executePendingTransactions();
+                .commitNow();
     }
 
     public void setDrawerLockMode(final int lockMode) {

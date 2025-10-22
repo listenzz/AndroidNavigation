@@ -111,7 +111,7 @@ public class DialogDelegate {
         fragmentManager.beginTransaction()
                 .setMaxLifecycle(target, Lifecycle.State.STARTED)
                 .add(dialog, dialog.getSceneId())
-                .commit();
+                .commitNow();
 
         completion.run();
     }
@@ -181,8 +181,7 @@ public class DialogDelegate {
             fragmentManager
                     .beginTransaction()
                     .setMaxLifecycle(target, Lifecycle.State.RESUMED)
-                    .commit();
-            fragmentManager.executePendingTransactions();
+                    .commitNow();
 
             AwesomeFragment fragment = (AwesomeFragment) target;
             FragmentHelper.handleFragmentResult(fragment, mFragment);

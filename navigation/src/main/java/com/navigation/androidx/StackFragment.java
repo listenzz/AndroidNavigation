@@ -154,10 +154,9 @@ public class StackFragment extends AwesomeFragment implements SwipeBackLayout.Sw
         fragment.setAnimation(animation);
 
         FragmentManager fragmentManager = getChildFragmentManager();
-        fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commit();
+        fragmentManager.beginTransaction().setMaxLifecycle(topFragment, Lifecycle.State.STARTED).commitNow();
         fragmentManager.popBackStack(fragment.getSceneId(), 0);
-        fragmentManager.beginTransaction().setMaxLifecycle(fragment, Lifecycle.State.RESUMED).commit();
-        fragmentManager.executePendingTransactions();
+        fragmentManager.beginTransaction().setMaxLifecycle(fragment, Lifecycle.State.RESUMED).commitNow();
 
         completion.run();
         FragmentHelper.handleFragmentResult(fragment, topFragment);

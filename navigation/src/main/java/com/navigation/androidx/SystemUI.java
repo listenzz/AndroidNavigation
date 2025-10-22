@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.provider.Settings;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.DisplayCutout;
 import android.view.View;
@@ -267,13 +266,11 @@ public class SystemUI {
 
     public static void showIme(@NonNull Window window) {
         WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(window, window.getDecorView());
-        assert controller != null;
         controller.show(WindowInsetsCompat.Type.ime());
     }
 
     public static void hideIme(@NonNull Window window) {
         WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(window, window.getDecorView());
-        assert controller != null;
         controller.hide(WindowInsetsCompat.Type.ime());
     }
 
@@ -292,10 +289,10 @@ public class SystemUI {
         Rect offset = new Rect();
         view.getDrawingRect(offset);
 
-        Log.i("Navigation", "getEdgeInsetsForView: offset=" + offset + ", windowWidth=" + windowWidth + ", windowHeight=" + windowHeight);
+        // Log.i("Navigation", "getEdgeInsetsForView: offset=" + offset + ", windowWidth=" + windowWidth + ", windowHeight=" + windowHeight);
 
         if (offset.top == 0 && offset.left == 0 && offset.bottom == 0 && offset.right == 0) {
-           return insets;
+            return insets;
         }
 
         try {
