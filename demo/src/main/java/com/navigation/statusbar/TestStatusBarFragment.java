@@ -47,8 +47,6 @@ public class TestStatusBarFragment extends BaseFragment {
         root.findViewById(R.id.status_bar_style).setOnClickListener(v -> requireStackFragment().pushFragment(new StatusBarStyleFragment()));
 
         root.findViewById(R.id.status_bar_hidden).setOnClickListener(v -> requireStackFragment().pushFragment(new StatusBarHiddenFragment()));
-        
-        root.findViewById(R.id.status_bar_color).setOnClickListener(v -> requireStackFragment().pushFragment(new StatusBarColorFragment()));
 
         root.findViewById(R.id.no_toolbar).setOnClickListener(v -> requireStackFragment().pushFragment(new NoToolbarFragment()));
 

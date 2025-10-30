@@ -1,7 +1,5 @@
 package com.navigation.toolbar;
 
-import android.graphics.Color;
-import android.os.Build;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -16,14 +14,6 @@ public class NoToolbarFragment extends TestStatusBarFragment {
     @Override
     protected BarStyle preferredStatusBarStyle() {
         return BarStyle.DarkContent;
-    }
-
-    @Override
-    protected int preferredStatusBarColor() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return Color.parseColor("#4A4A4A");
-        }
-        return Color.TRANSPARENT;
     }
 
     @Override

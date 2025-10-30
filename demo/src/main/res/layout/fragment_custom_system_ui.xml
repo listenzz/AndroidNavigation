@@ -46,13 +46,6 @@
             android:layout_height="24dp" />
 
         <CheckBox
-            android:id="@+id/tinting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="状态栏着色"
-            android:textSize="14sp" />
-
-        <CheckBox
             android:id="@+id/dark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

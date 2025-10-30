@@ -13,7 +13,6 @@ import com.navigation.BaseFragment;
 import com.navigation.R;
 import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.Style;
-import com.navigation.androidx.SystemUI;
 
 public class CoordinatorFragment extends BaseFragment {
 
@@ -27,11 +26,6 @@ public class CoordinatorFragment extends BaseFragment {
     @Override
     protected void onCustomStyle(@NonNull Style style) {
         style.setToolbarBackgroundColor(Color.TRANSPARENT);
-    }
-
-    @Override
-    protected int preferredStatusBarColor() {
-        return Color.TRANSPARENT;
     }
 
     @Nullable

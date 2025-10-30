@@ -55,16 +55,6 @@
                 android:textAllCaps="false" />
 
             <Button
-                android:id="@+id/status_bar_color"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:gravity="center"
-                android:text="StatusBar Color"
-                android:textAllCaps="false" />
-
-            <Button
                 android:id="@+id/no_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

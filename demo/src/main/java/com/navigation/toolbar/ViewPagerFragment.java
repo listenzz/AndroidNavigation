@@ -19,7 +19,6 @@ import com.navigation.R;
 import com.navigation.androidx.AwesomeFragment;
 import com.navigation.androidx.AwesomeToolbar;
 import com.navigation.androidx.Style;
-import com.navigation.androidx.SystemUI;
 
 public class ViewPagerFragment extends BaseFragment {
 

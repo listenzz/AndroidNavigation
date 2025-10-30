@@ -171,12 +171,12 @@ public abstract class AwesomeFragment extends InternalFragment {
         }
 
         ViewUtils.applyWindowInsets(getWindow(), rootView, (v) -> {
-            mStackDelegate.fitsToolbarIfNeeded();
-            fitsSafeAreaIfNeeded();
+            mStackDelegate.applyEdgeToEdge();
+            applyEdgeToEdge();
         });
     }
 
-    private void fitsSafeAreaIfNeeded() {
+    private void applyEdgeToEdge() {
         View root = getView();
         if (root == null) {
             return;
@@ -314,8 +314,8 @@ public abstract class AwesomeFragment extends InternalFragment {
     @CallSuper
     public void onResume() {
         super.onResume();
-        // Log.i(TAG, getDebugTag() + "#onResume");
-        if (childFragmentForAppearance() == null) {
+        if (isLeafAwesomeFragment()) {
+            // Log.i(TAG, getDebugTag() + "#onResume");
             setNeedsLayoutInDisplayCutoutModeUpdate();
             setNeedsStatusBarAppearanceUpdate();
             setNeedsNavigationBarAppearanceUpdate();
@@ -326,7 +326,7 @@ public abstract class AwesomeFragment extends InternalFragment {
     @CallSuper
     public void onPause() {
         super.onPause();
-        //Log.i(TAG, getDebugTag() + "#onPause");
+        // Log.i(TAG, getDebugTag() + "#onPause");
     }
 
     @Override
@@ -705,19 +705,6 @@ public abstract class AwesomeFragment extends InternalFragment {
         return mStyle.isStatusBarHidden();
     }
 
-    protected int preferredStatusBarColor() {
-        AwesomeFragment child = childFragmentForAppearance();
-        if (child != null) {
-            return child.preferredStatusBarColor();
-        }
-
-        if (getShowsDialog()) {
-            return Color.TRANSPARENT;
-        }
-
-        return mStyle.getStatusBarColor();
-    }
-
     public void setNeedsStatusBarAppearanceUpdate() {
         if (!isResumed()) {
             return;
@@ -729,7 +716,6 @@ public abstract class AwesomeFragment extends InternalFragment {
             return;
         }
 
-        setStatusBarColor(preferredStatusBarColor());
         setStatusBarHidden(preferredStatusBarHidden());
         setStatusBarStyle(preferredStatusBarStyle());
     }
@@ -740,10 +726,6 @@ public abstract class AwesomeFragment extends InternalFragment {
 
     private void setStatusBarHidden(boolean hidden) {
         SystemUI.setStatusBarHidden(getWindow(), hidden);
-    }
-
-    private void setStatusBarColor(int color) {
-        SystemUI.setStatusBarColor(getWindow(), color);
     }
 
     // ------- NavigationBar --------

@@ -22,8 +22,6 @@ public class Style implements Cloneable {
     private int toolbarHeight;
 
     private BarStyle statusBarStyle;
-    private int statusBarColor;
-    private boolean statusBarColorAnimated = true;
     private boolean statusBarHidden = false;
 
     private int navigationBarColor = INVALID_COLOR;
@@ -64,7 +62,6 @@ public class Style implements Cloneable {
 
     protected Style(Context context) {
         this.context = context;
-        statusBarColor = AppUtils.fetchContextColor(context, android.R.attr.statusBarColor);
         toolbarBackgroundColor = AppUtils.fetchContextColor(context, android.R.attr.colorPrimary);
         toolbarHeight = AppUtils.fetchContextDimension(context, android.R.attr.actionBarSize);
         boolean isLightStyle = AppUtils.isDark(toolbarBackgroundColor);
@@ -134,22 +131,6 @@ public class Style implements Cloneable {
 
     public BarStyle getStatusBarStyle() {
         return statusBarStyle;
-    }
-
-    public void setStatusBarColor(int color) {
-        statusBarColor = color;
-    }
-
-    public int getStatusBarColor() {
-        return statusBarColor;
-    }
-
-    public boolean isStatusBarColorAnimated() {
-        return statusBarColorAnimated;
-    }
-
-    public void setStatusBarColorAnimated(boolean statusBarColorAnimated) {
-        this.statusBarColorAnimated = statusBarColorAnimated;
     }
 
     public boolean isStatusBarHidden() {

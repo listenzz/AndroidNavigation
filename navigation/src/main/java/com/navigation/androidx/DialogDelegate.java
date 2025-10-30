@@ -81,6 +81,7 @@ public class DialogDelegate {
     void setupDialog() {
         Window window = mFragment.getWindow();
         SystemUI.enableEdgeToEdge(window);
+        SystemUI.setStatusBarColor(window, Color.TRANSPARENT);
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         Dialog dialog = mFragment.requireDialog();

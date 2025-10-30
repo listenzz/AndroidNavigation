@@ -37,10 +37,6 @@ public class CustomSystemUIFragment extends BaseFragment {
 
         textView = root.findViewById(R.id.hint);
 
-        ((CheckBox)root.findViewById(R.id.tinting)).setOnCheckedChangeListener((buttonView, isChecked) -> {
-            statusBarColor = isChecked ? Color.MAGENTA : Color.TRANSPARENT;
-            setNeedsStatusBarAppearanceUpdate();
-        });
         ((CheckBox)root.findViewById(R.id.dark)).setOnCheckedChangeListener((buttonView, isChecked) -> {
             statusBarStyle = isChecked ? BarStyle.DarkContent : BarStyle.LightContent;
             setNeedsStatusBarAppearanceUpdate();
@@ -112,13 +108,6 @@ public class CustomSystemUIFragment extends BaseFragment {
     @Override
     protected BarStyle preferredStatusBarStyle() {
         return statusBarStyle;
-    }
-
-    int statusBarColor = Color.TRANSPARENT;
-
-    @Override
-    protected int preferredStatusBarColor() {
-        return statusBarColor;
     }
 
     boolean statusBarHidden = false;

@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentTransaction;
 
 public class StackDelegate {
@@ -99,7 +98,7 @@ public class StackDelegate {
         setToolbarBackButton();
     }
 
-    public void fitsToolbarIfNeeded() {
+    public void applyEdgeToEdge() {
         if (shouldFitsToolbar()) {
             fitsToolbar(getToolbar());
         }
@@ -132,6 +131,7 @@ public class StackDelegate {
         EdgeInsets edge = SystemUI.getEdgeInsetsForView(toolbar);
         ViewGroup.LayoutParams lp = toolbar.getLayoutParams();
         int toolbarHeight = SystemUI.toolbarHeight(toolbar.getContext());
+
         if (edge.top == 0) {
             int statusBarHeight = SystemUI.statusBarHeight(getWindow());
             lp.height = toolbarHeight + statusBarHeight;

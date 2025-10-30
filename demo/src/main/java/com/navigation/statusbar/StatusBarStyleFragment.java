@@ -1,7 +1,6 @@
 package com.navigation.statusbar;
 
 import android.graphics.Color;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 
@@ -14,11 +13,6 @@ public class StatusBarStyleFragment extends TestStatusBarFragment {
     @Override
     protected BarStyle preferredStatusBarStyle() {
         return BarStyle.DarkContent;
-    }
-
-    @Override
-    protected int preferredStatusBarColor() {
-        return Color.TRANSPARENT;
     }
 
     @Override

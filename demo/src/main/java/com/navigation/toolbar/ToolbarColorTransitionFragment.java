@@ -17,11 +17,6 @@ import com.navigation.androidx.Style;
 public class ToolbarColorTransitionFragment extends BaseFragment {
 
     @Override
-    protected int preferredStatusBarColor() {
-        return Color.TRANSPARENT;
-    }
-
-    @Override
     protected void onCustomStyle(@NonNull Style style) {
         style.setToolbarBackgroundColor(Color.parseColor("#EE6413"));
     }
