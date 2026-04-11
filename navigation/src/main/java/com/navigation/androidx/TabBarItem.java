@@ -72,6 +72,8 @@ public class TabBarItem implements Parcelable {
         dest.writeString(this.unselectedIconUri);
         dest.writeInt(this.iconRes);
         dest.writeInt(this.unselectedIconRes);
+        dest.writeString(this.badgeText);
+        dest.writeByte(this.showDotBadge ? (byte) 1 : (byte) 0);
     }
 
     protected TabBarItem(Parcel in) {
@@ -82,6 +84,8 @@ public class TabBarItem implements Parcelable {
         this.unselectedIconUri = in.readString();
         this.iconRes = in.readInt();
         this.unselectedIconRes = in.readInt();
+        this.badgeText = in.readString();
+        this.showDotBadge = in.readByte() != 0;
     }
 
     public static final Creator<TabBarItem> CREATOR = new Creator<TabBarItem>() {

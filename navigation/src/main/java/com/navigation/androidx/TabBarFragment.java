@@ -225,6 +225,9 @@ public class TabBarFragment extends AwesomeFragment {
 
     public void setSelectedFragment(AwesomeFragment fragment, @NonNull Runnable completion) {
         int index = mFragments.indexOf(fragment);
+        if (index < 0) {
+            throw new IllegalArgumentException("Fragment is not a child of this TabBarFragment.");
+        }
         setSelectedIndex(index, completion);
     }
 
@@ -261,6 +264,11 @@ public class TabBarFragment extends AwesomeFragment {
     }
 
     public void setSelectedIndex(int index, @NonNull Runnable completion) {
+        if (index < 0 || index >= mFragments.size()) {
+            completion.run();
+            return;
+        }
+
         if (isAdded()) {
             scheduleTaskAtStarted(() -> setSelectedIndexSync(index, completion));
         } else {

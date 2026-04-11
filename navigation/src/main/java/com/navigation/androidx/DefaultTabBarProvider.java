@@ -25,7 +25,11 @@ public class DefaultTabBarProvider implements TabBarProvider {
 
     @Override
     public void onDestroyTabBar() {
-        mTabBar.setTabSelectedListener(null);
+        if (mTabBar != null) {
+            mTabBar.setTabSelectedListener(null);
+        }
+        mTabBar = null;
+        mTabBarFragment = null;
     }
 
     @Override

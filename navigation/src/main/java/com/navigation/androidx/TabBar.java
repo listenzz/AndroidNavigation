@@ -111,7 +111,7 @@ public class TabBar extends FrameLayout {
     public void renderTabView(int index) {
         TabView tabView = getTabView(index);
         TabBarItem tabBarItem = getTabBarItem(index);
-        if (tabBarItem != null) {
+        if (tabBarItem != null && tabView != null) {
             bindTabWithData(tabBarItem, tabView, this);
             tabView.initialise();
         }
@@ -144,7 +144,7 @@ public class TabBar extends FrameLayout {
     }
 
     public TabBar setBadgeColor(@ColorRes int color) {
-        this.badgeColor = color;
+        this.badgeColor = ContextCompat.getColor(getContext(), color);
         return this;
     }
 
@@ -172,18 +172,22 @@ public class TabBar extends FrameLayout {
 
             setBackgroundColor(barBackgroundColor);
 
-            int screenWidth = AppUtils.getScreenWidth(getContext());
-            int itemWidth = getTabWidth(getContext(), screenWidth, tabBarItems.size());
+            int availableWidth = resolveAvailableWidth();
+            int itemWidth = getTabWidth(getContext(), availableWidth, tabBarItems.size());
 
             for (TabBarItem currentItem : tabBarItems) {
                 TabView tab = new TabView(getContext());
                 setupTab(tab, currentItem, itemWidth);
             }
-            if (tabs.size() > firstSelectedPosition) {
+            if (firstSelectedPosition >= 0 && tabs.size() > firstSelectedPosition) {
                 selectTabInternal(firstSelectedPosition, false);
             } else if (!tabs.isEmpty()) {
                 selectTabInternal(0, false);
             }
+
+            // Re-layout with the actual measured width to keep tab width stable after
+            // orientation / split-screen / multi-window size changes.
+            post(() -> relayoutTabs(resolveAvailableWidth()));
         }
     }
 
@@ -234,6 +238,10 @@ public class TabBar extends FrameLayout {
     }
 
     private void selectTabInternal(int newPosition, boolean callListener) {
+        if (newPosition < 0 || newPosition >= tabs.size()) {
+            return;
+        }
+
         int oldPosition = selectedPosition;
         if (selectedPosition != newPosition) {
             if (selectedPosition != DEFAULT_SELECTED_POSITION) {
@@ -281,6 +289,40 @@ public class TabBar extends FrameLayout {
             itemWidth = maxWidth;
         }
         return itemWidth;
+    }
+
+    private int resolveAvailableWidth() {
+        int availableWidth = tabContainer.getWidth();
+        if (availableWidth <= 0) {
+            availableWidth = getWidth();
+        }
+        if (availableWidth <= 0) {
+            availableWidth = getMeasuredWidth();
+        }
+        if (availableWidth <= 0) {
+            availableWidth = AppUtils.getScreenWidth(getContext());
+        }
+        return availableWidth;
+    }
+
+    private void relayoutTabs(int availableWidth) {
+        if (availableWidth <= 0 || tabs.isEmpty() || tabBarItems.isEmpty()) {
+            return;
+        }
+
+        int itemWidth = getTabWidth(getContext(), availableWidth, tabBarItems.size());
+        for (TabView tab : tabs) {
+            tab.setTabWidth(itemWidth);
+        }
+        tabContainer.requestLayout();
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (w > 0 && w != oldw) {
+            relayoutTabs(w);
+        }
     }
 
     static void bindTabWithData(TabBarItem tabBarItem, TabView tab, TabBar tabBar) {

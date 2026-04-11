@@ -20,7 +20,7 @@ public class ViewUtils {
             public boolean onPreDraw() {
                 view.getViewTreeObserver().removeOnPreDrawListener(this);
                 callback.invoke(view);
-                return false;
+                return !view.isLayoutRequested();
             }
         });
     }
@@ -28,6 +28,8 @@ public class ViewUtils {
     public static void applyWindowInsets(@NonNull Window window, @NonNull View view, @NonNull ViewCallback callback) {
         WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(window.getDecorView());
         if (windowInsets != null) {
+            callback.invoke(view);
+        } else {
             doOnPreDrawOnce(view, callback);
         }
 
