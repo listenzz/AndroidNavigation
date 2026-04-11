@@ -41,6 +41,49 @@ allprojects {
 }
 ```
 
+## 发布
+
+### 1. 配置版本参数
+
+在 `navigation/gradle.properties` 中修改发布坐标和版本：
+
+```properties
+GROUP=io.github.listenzz
+POM_ARTIFACT_ID=AndroidNavigation
+VERSION_NAME=13.10.1
+```
+
+如果只升级版本号，通常只需要更新 `VERSION_NAME`。
+
+建议同时把 `navigation/build.gradle` 里的 `versionName` 同步为相同版本，避免本地信息不一致：
+
+```groovy
+defaultConfig {
+    versionName "13.10.1"
+}
+```
+
+### 2. 执行发布命令
+
+在项目根目录执行：
+
+```bash
+./gradlew :navigation:publishAndReleaseToMavenCentral
+```
+
+如果需要完整错误栈（排查问题时）：
+
+```bash
+./gradlew :navigation:publishAndReleaseToMavenCentral --stacktrace
+```
+
+### 3. 发布结果检查
+
+发布后可在以下地址查看（把版本号替换为你发布的版本）：
+
+- `https://central.sonatype.com/artifact/io.github.listenzz/AndroidNavigation`
+- `https://repo1.maven.org/maven2/io/github/listenzz/AndroidNavigation/<VERSION_NAME>/`
+
 ## Usage
 
 - [**构建 UI 层级**](#building-hierarchy)
